@@ -2,7 +2,9 @@
 <html lang="es">
   <head>
     <meta charset="utf-8">
-    <title>{{title}}</title>
+    <title>BarberAcademy - Cursos Profesionales de Barbería</title>
+    <meta name="description" content="Aprende barbería profesional con nuestros cursos especializados. Conviértete en un barbero experto con técnicas modernas y certificación oficial.">
+    <meta name="keywords" content="barbería, cursos barbería, barbero profesional, corte cabello, fade, degradado">
     <base href="/">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
@@ -13,26 +15,31 @@
     {{{body}}}
     
     <script>
-      function copyCommand() {
-        navigator.clipboard.writeText('npm start').then(function() {
-          const box = document.querySelector('.command-box');
-          const hint = box.querySelector('.copy-hint');
-          const originalText = hint.textContent;
-          hint.textContent = '¡Copiado!';
-          hint.style.color = '#10b981';
-          
-          setTimeout(() => {
-            hint.textContent = originalText;
-            hint.style.color = '#6b7280';
-          }, 2000);
-        }).catch(function() {
-          console.log('No se pudo copiar al portapapeles');
-        });
-      }
-
-      // Animación de entrada
+      // Smooth scrolling para navegación
       document.addEventListener('DOMContentLoaded', function() {
-        const elements = document.querySelectorAll('.feature-card, .stat-item');
+        const navLinks = document.querySelectorAll('.nav-menu a[href^="#"]');
+        
+        navLinks.forEach(link => {
+          link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const targetId = this.getAttribute('href').substring(1);
+            const targetElement = document.getElementById(targetId);
+            
+            if (targetElement) {
+              targetElement.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+              });
+            }
+          });
+        });
+
+        // Animaciones de entrada
+        const observerOptions = {
+          threshold: 0.1,
+          rootMargin: '0px 0px -50px 0px'
+        };
+
         const observer = new IntersectionObserver((entries) => {
           entries.forEach(entry => {
             if (entry.isIntersecting) {
@@ -40,13 +47,31 @@
               entry.target.style.transform = 'translateY(0)';
             }
           });
-        });
+        }, observerOptions);
 
-        elements.forEach(el => {
+        // Elementos para animar
+        const animateElements = document.querySelectorAll('.course-card, .feature, .section-title');
+        animateElements.forEach(el => {
           el.style.opacity = '0';
-          el.style.transform = 'translateY(20px)';
+          el.style.transform = 'translateY(30px)';
           el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
           observer.observe(el);
+        });
+
+        // Funcionalidad de botones
+        document.querySelectorAll('.btn-primary, .btn-secondary, .btn-enroll, .btn-cta').forEach(btn => {
+          btn.addEventListener('click', function() {
+            // Aquí puedes agregar funcionalidad específica para cada botón
+            if (this.textContent.includes('Ver Cursos') || this.textContent.includes('Comenzar')) {
+              document.getElementById('cursos')?.scrollIntoView({ behavior: 'smooth' });
+            }
+            
+            // Efecto visual de click
+            this.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+              this.style.transform = '';
+            }, 150);
+          });
         });
       });
     </script>

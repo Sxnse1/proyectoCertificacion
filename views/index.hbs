@@ -1,95 +1,157 @@
+<!-- Navigation -->
+<nav class="navbar">
+  <div class="container">
+    <div class="nav-brand">
+      <h2>BarberAcademy</h2>
+    </div>
+    <div class="nav-menu">
+      <a href="#cursos">Cursos</a>
+      <a href="#nosotros">Nosotros</a>
+      <a href="#contacto">Contacto</a>
+    </div>
+  </div>
+</nav>
+
 <!-- Hero Section -->
-<div class="hero-section">
-  <div class="particles"></div>
-  <div class="hero-content">
-    <div class="logo-container">
-      <div class="logo-circle">
-        <span class="logo-text">{{title}}</span>
+<section class="hero-section">
+  <div class="hero-bg"></div>
+  <div class="container">
+    <div class="hero-content">
+      <h1 class="hero-title">Conviértete en un <span class="highlight">Barbero Profesional</span></h1>
+      <p class="hero-subtitle">Aprende las técnicas más modernas de barbería con nuestros cursos profesionales. De principiante a experto en pocas semanas.</p>
+      <div class="hero-buttons">
+        <button class="btn-primary">Ver Cursos</button>
+        <button class="btn-secondary">Conocer Más</button>
+      </div>
+      <div class="hero-stats">
+        <div class="stat">
+          <span class="stat-number">500+</span>
+          <span class="stat-label">Estudiantes</span>
+        </div>
+        <div class="stat">
+          <span class="stat-number">15+</span>
+          <span class="stat-label">Cursos</span>
+        </div>
+        <div class="stat">
+          <span class="stat-number">98%</span>
+          <span class="stat-label">Satisfacción</span>
+        </div>
       </div>
     </div>
-    <h1 class="hero-title">Bienvenido a {{title}}</h1>
-    <p class="hero-subtitle">Una experiencia web moderna construida con Express.js</p>
-    <div class="hero-buttons">
-      <button class="btn-primary">Comenzar</button>
-      <button class="btn-secondary">Explorar</button>
+    <div class="hero-image">
+      <div class="hero-card">
+        <div class="barber-icon">✂️</div>
+        <h3>Curso Básico</h3>
+        <p>Fundamentos de barbería</p>
+        <span class="price">$299</span>
+      </div>
     </div>
   </div>
-</div>
+</section>
 
-<!-- Features Section -->
-<div class="features-section">
+<!-- Courses Section -->
+<section class="courses-section" id="cursos">
   <div class="container">
-    <h2 class="section-title">Características Principales</h2>
+    <h2 class="section-title">Nuestros Cursos Populares</h2>
+    <p class="section-subtitle">Programas diseñados para llevarte desde principiante hasta barbero profesional</p>
     
-    <div class="features-grid">
-      <div class="feature-card">
-        <div class="feature-icon rocket">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M9 11H7a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2h-2M9 11V7a2 2 0 0 1 4 0v4M9 11h6"/>
-          </svg>
+    <div class="courses-grid">
+      <div class="course-card">
+        <div class="course-image">
+          <div class="course-icon">✂️</div>
         </div>
-        <h3>Rápido y Seguro</h3>
-        <p>Aplicación optimizada con las mejores prácticas de seguridad y rendimiento.</p>
+        <div class="course-content">
+          <h3>Barbería Básica</h3>
+          <p>Aprende los fundamentos del corte de cabello masculino, manejo de herramientas y técnicas básicas.</p>
+          <div class="course-details">
+            <span class="duration">6 semanas</span>
+            <span class="level">Principiante</span>
+          </div>
+          <div class="course-price">
+            <span class="price">$299</span>
+            <button class="btn-enroll">Inscribirse</button>
+          </div>
+        </div>
       </div>
 
-      <div class="feature-card">
-        <div class="feature-icon code">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polyline points="16 18 22 12 16 6"></polyline>
-            <polyline points="8 6 2 12 8 18"></polyline>
-          </svg>
+      <div class="course-card featured">
+        <div class="featured-badge">Más Popular</div>
+        <div class="course-image">
+          <div class="course-icon">🏆</div>
         </div>
-        <h3>Código Limpio</h3>
-        <p>Estructura modular y escalable que facilita el mantenimiento y desarrollo.</p>
+        <div class="course-content">
+          <h3>Barbería Profesional</h3>
+          <p>Domina técnicas avanzadas: fade, degradados, diseños creativos y atención al cliente profesional.</p>
+          <div class="course-details">
+            <span class="duration">12 semanas</span>
+            <span class="level">Intermedio</span>
+          </div>
+          <div class="course-price">
+            <span class="price">$599</span>
+            <button class="btn-enroll">Inscribirse</button>
+          </div>
+        </div>
       </div>
 
-      <div class="feature-card">
-        <div class="feature-icon responsive">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
-            <line x1="8" y1="21" x2="16" y2="21"></line>
-            <line x1="12" y1="17" x2="12" y2="21"></line>
-          </svg>
+      <div class="course-card">
+        <div class="course-image">
+          <div class="course-icon">💼</div>
         </div>
-        <h3>Diseño Responsivo</h3>
-        <p>Interfaz adaptable que se ve perfecta en cualquier dispositivo.</p>
+        <div class="course-content">
+          <h3>Barbería Empresarial</h3>
+          <p>Aprende a montar tu propia barbería: gestión, marketing, finanzas y liderazgo empresarial.</p>
+          <div class="course-details">
+            <span class="duration">8 semanas</span>
+            <span class="level">Avanzado</span>
+          </div>
+          <div class="course-price">
+            <span class="price">$899</span>
+            <button class="btn-enroll">Inscribirse</button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
-</div>
+</section>
 
-<!-- Stats Section -->
-<div class="stats-section">
+<!-- Why Choose Us Section -->
+<section class="why-section">
   <div class="container">
-    <div class="stats-grid">
-      <div class="stat-item">
-        <div class="stat-number">100%</div>
-        <div class="stat-label">Express.js</div>
-      </div>
-      <div class="stat-item">
-        <div class="stat-number">⚡</div>
-        <div class="stat-label">Súper Rápido</div>
-      </div>
-      <div class="stat-item">
-        <div class="stat-number">🔒</div>
-        <div class="stat-label">Seguro</div>
-      </div>
-      <div class="stat-item">
-        <div class="stat-number">🚀</div>
-        <div class="stat-label">Moderno</div>
+    <div class="why-content">
+      <h2>¿Por qué elegir BarberAcademy?</h2>
+      <div class="features-grid">
+        <div class="feature">
+          <div class="feature-icon">👨‍🏫</div>
+          <h3>Instructores Expertos</h3>
+          <p>Aprende de barberos profesionales con años de experiencia en el campo.</p>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">🛠️</div>
+          <h3>Herramientas Profesionales</h3>
+          <p>Practica con las mejores herramientas y equipos utilizados en barberías de élite.</p>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">�</div>
+          <h3>Certificación Oficial</h3>
+          <p>Obtén un certificado reconocido que te abrirá puertas en el mundo profesional.</p>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">�</div>
+          <h3>Apoyo Laboral</h3>
+          <p>Te ayudamos a encontrar trabajo o a montar tu propio negocio de barbería.</p>
+        </div>
       </div>
     </div>
   </div>
-</div>
+</section>
 
-<!-- Command Section -->
-<div class="command-section">
+<!-- CTA Section -->
+<section class="cta-section">
   <div class="container">
-    <h3>Empezar es muy fácil</h3>
-    <div class="command-box" onclick="copyCommand()">
-      <span class="command-prompt">$</span>
-      <span class="command-text">npm start</span>
-      <span class="copy-hint">Click para copiar</span>
+    <div class="cta-content">
+      <h2>¿Listo para comenzar tu carrera como barbero?</h2>
+      <p>Únete a más de 500 estudiantes que ya han transformado su futuro profesional</p>
+      <button class="btn-cta">Comenzar Ahora</button>
     </div>
   </div>
-</div>
+</section>
