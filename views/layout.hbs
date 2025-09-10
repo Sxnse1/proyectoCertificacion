@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8">
+    <title>{{title}}</title>
+    <base href="/">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  </head>
+  <body>
+    {{{body}}}
+    
+    <script>
+      function copyCommand() {
+        navigator.clipboard.writeText('npm start').then(function() {
+          const box = document.querySelector('.command-box');
+          const hint = box.querySelector('.copy-hint');
+          const originalText = hint.textContent;
+          hint.textContent = '¡Copiado!';
+          hint.style.color = '#10b981';
+          
+          setTimeout(() => {
+            hint.textContent = originalText;
+            hint.style.color = '#6b7280';
+          }, 2000);
+        }).catch(function() {
+          console.log('No se pudo copiar al portapapeles');
+        });
+      }
+
+      // Animación de entrada
+      document.addEventListener('DOMContentLoaded', function() {
+        const elements = document.querySelectorAll('.feature-card, .stat-item');
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              entry.target.style.opacity = '1';
+              entry.target.style.transform = 'translateY(0)';
+            }
+          });
+        });
+
+        elements.forEach(el => {
+          el.style.opacity = '0';
+          el.style.transform = 'translateY(20px)';
+          el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+          observer.observe(el);
+        });
+      });
+    </script>
+  </body>
+</html>
