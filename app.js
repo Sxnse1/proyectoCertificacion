@@ -6,8 +6,18 @@ var logger = require('morgan');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
+var db = require('./config/database');
 
 var app = express();
+
+// Iniciar conexión a MongoDB y exponerla en app.locals
+db.connect().then(connection => {
+  // Guardamos la conexión y el objeto mongoose para su uso en rutas/controladores
+  app.locals.db = connection; // conexión mongoose
+  app.locals.mongoose = db.getMongoose();
+}).catch(err => {
+  console.error('[db] Error al conectar a MongoDB:', err && (err.message || err));
+});
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
