@@ -49,6 +49,7 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  align-items: center;
 }
 
 .nav-brand h2 {
@@ -88,6 +89,46 @@ body {
   border-color: var(--primary-color) !important;
   transform: translateY(-2px) !important;
   box-shadow: 0 4px 12px rgba(44, 24, 16, 0.2) !important;
+}
+
+/* Mobile login button - always visible on mobile */
+.mobile-login-btn {
+  display: none;
+  background: var(--accent-color) !important;
+  color: var(--text-white) !important;
+  padding: 8px 16px !important;
+  border-radius: 6px !important;
+  font-weight: 600 !important;
+  text-decoration: none !important;
+  font-size: 14px !important;
+  border: 2px solid var(--accent-color) !important;
+  min-height: 40px !important;
+  align-items: center !important;
+}
+
+.mobile-login-btn:hover {
+  background: var(--primary-color) !important;
+  border-color: var(--primary-color) !important;
+}
+
+/* Mobile menu toggle */
+.mobile-menu-toggle {
+  display: none;
+  flex-direction: column;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 5px;
+  z-index: 1001;
+}
+
+.hamburger-line {
+  width: 25px;
+  height: 3px;
+  background-color: var(--text-dark);
+  margin: 3px 0;
+  transition: 0.3s;
+  border-radius: 2px;
 }
 
 /* Hero Section */
@@ -398,6 +439,205 @@ body {
   padding: 2rem 1rem;
 }
 
+/* =====================
+   Responsive adjustments
+   ===================== */
+
+/* Utility: make images and cards fluid */
+img, .hero-image, .hero-card, .course-image {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Ensure forms and inputs are fluid */
+input, textarea, select, button {
+  max-width: 100%;
+}
+
+/* Navbar tweaks */
+.navbar .container {
+  gap: 1rem;
+}
+.nav-menu {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+/* Modals and dialogs general responsiveness */
+.modal, .modal-content {
+  box-sizing: border-box;
+}
+.modal-content {
+  max-width: 720px;
+  width: 100%;
+  margin: 16px;
+}
+
+/* Large tablets / small desktops */
+@media (max-width: 1024px) {
+  .container { padding: 0 18px; }
+  .hero-section .container {
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+  }
+  .hero-title { font-size: 3rem; }
+  .hero-subtitle { font-size: 1.1rem; }
+}
+
+/* Tablets and portrait tablets */
+@media (max-width: 768px) {
+  .container { max-width: 720px; padding: 0 14px; }
+
+  /* Asegurar que el contenido no quede oculto por la navbar fija */
+  body { padding-top: 90px; }
+
+  /* Collapse hero to a single column */
+  .hero-section .container {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  .hero-bg { display: none; }
+  .hero-title { font-size: 2.2rem; }
+  .hero-subtitle { font-size: 1rem; }
+
+  /* Navigation becomes stacked */
+  .navbar .container { flex-direction: row; align-items: center; }
+  .nav-menu { width: 100%; justify-content: flex-end; }
+
+  /* Buttons stack and become full width for touch targets */
+  .hero-buttons { flex-direction: column; gap: 0.75rem; }
+  .btn-primary, .btn-secondary, .btn-enroll, .btn-cta { width: 100%; padding: 12px; }
+
+  /* Cards expand */
+  .hero-card { margin: 0 auto; width: 100%; max-width: 420px; }
+
+  /* Courses grid — reduce card padding */
+  .course-content { padding: 1rem; }
+}
+
+/* Small phones */
+@media (max-width: 480px) {
+  :root { --primary-color: #2c1810; }
+  body { font-size: 15px; }
+  .container { padding: 0 12px; }
+  
+  /* Asegurar visibilidad del botón de login en pantallas muy pequeñas */
+  .login-btn {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    position: relative !important;
+    z-index: 9999 !important;
+    background: var(--accent-color) !important;
+    color: var(--text-white) !important;
+    padding: 16px 20px !important;
+    font-size: 16px !important;
+    font-weight: 700 !important;
+    border: 2px solid var(--accent-color) !important;
+    border-radius: 8px !important;
+    min-height: 52px !important;
+    text-align: center !important;
+    text-decoration: none !important;
+    width: 100% !important;
+    margin: 8px 0 !important;
+  }
+
+  /* Ajustes específicos para login en pantallas muy pequeñas */
+  .login-container { 
+    margin: 20px auto; 
+    position: relative; 
+    z-index: 1200; 
+    background: white !important;
+  }
+
+  /* Forzar visibilidad del botón de login en móviles */
+  .login-container .btn, #loginBtn {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    position: relative !important;
+    z-index: 1300 !important;
+    background-color: #007bff !important;
+    color: white !important;
+    border: 2px solid #007bff !important;
+    width: 100% !important;
+    padding: 16px 20px !important;
+    font-size: 18px !important;
+    font-weight: bold !important;
+    margin: 15px 0 !important;
+    min-height: 56px !important;
+    border-radius: 8px !important;
+    touch-action: manipulation;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+  }
+  
+  .login-container .btn:hover, #loginBtn:hover {
+    background-color: #0056b3 !important;
+    border-color: #0056b3 !important;
+  }
+  
+  .login-container .btn:active, #loginBtn:active {
+    transform: translateY(1px);
+  }
+
+  .nav-brand h2 { font-size: 1.2rem; }
+  .nav-menu { gap: 0.5rem; }
+
+  .hero-title { font-size: 1.6rem; }
+  .hero-subtitle { font-size: 0.95rem; }
+
+  /* Reduce stat sizes */
+  .stat-number { font-size: 1.4rem; }
+
+  /* Make form inputs larger tap area */
+  input, select, textarea { padding: 10px; font-size: 15px; }
+
+  /* Ensure modal fits on very small screens */
+  .modal-content { padding: 12px; margin: 8px; }
+
+  /* Adjust footer/back links spacing */
+  .back-link { margin-top: 14px; }
+}
+
+/* Mejoras adicionales para login en móviles */
+@media (max-width: 600px) {
+  .login-container {
+    position: relative !important;
+    z-index: 1000 !important;
+    background: white !important;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15) !important;
+  }
+  
+  .login-container .btn, 
+  .login-container #loginBtn,
+  .login-container button[type="submit"] {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    width: 100% !important;
+    min-height: 52px !important;
+    font-size: 16px !important;
+    padding: 16px !important;
+    margin: 10px 0 !important;
+    background-color: #007bff !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 6px !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+    touch-action: manipulation !important;
+  }
+}
+
+/* Accessibility: prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
+}
+
 .feature-icon {
   font-size: 3rem;
   margin-bottom: 1rem;
@@ -452,8 +692,77 @@ body {
     font-size: 2.5rem;
   }
   
+  /* Disposición del navbar en móviles */
+  .navbar .container {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    gap: 10px !important;
+  }
+  
+  /* Mostrar botón de login móvil y hamburguesa */
+  .mobile-login-btn {
+    display: flex !important;
+    order: 2;
+  }
+  
+  .mobile-menu-toggle {
+    display: flex !important;
+    order: 3;
+  }
+  
+  .nav-brand {
+    order: 1;
+  }
+  
+  /* Ocultar menú por defecto en móviles */
   .nav-menu {
     display: none;
+    flex-direction: column;
+    gap: 0.5rem;
+    position: absolute;
+    top: 100%;
+    right: 20px;
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    z-index: 1000;
+    min-width: 200px;
+  }
+  
+  /* Mostrar menú cuando está activo */
+  .nav-menu.active {
+    display: flex !important;
+  }
+  
+  .nav-menu a {
+    padding: 12px 16px;
+    border-radius: 4px;
+    text-align: center;
+    display: block;
+  }
+  
+  /* Asegurar que el botón de login sea visible en móviles */
+  .login-btn {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    background: var(--accent-color) !important;
+    color: var(--text-white) !important;
+    padding: 14px 20px !important;
+    border-radius: 6px !important;
+    font-weight: 600 !important;
+    font-size: 16px !important;
+    min-height: 48px !important;
+    text-align: center !important;
+    text-decoration: none !important;
+    border: 2px solid var(--accent-color) !important;
+  }
+  
+  .login-btn:hover {
+    background: var(--primary-color) !important;
+    border-color: var(--primary-color) !important;
   }
   
   .hero-stats {

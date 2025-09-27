@@ -4,7 +4,13 @@
     <div class="nav-brand">
       <h2>StartEducation</h2>
     </div>
-    <div class="nav-menu">
+    <a href="/auth/login" class="mobile-login-btn">🔐 Login</a>
+    <button class="mobile-menu-toggle" id="mobileMenuToggle">
+      <span class="hamburger-line"></span>
+      <span class="hamburger-line"></span>
+      <span class="hamburger-line"></span>
+    </button>
+    <div class="nav-menu" id="navMenu">
       <a href="#cursos">Cursos</a>
       <a href="#nosotros">Nosotros</a>
       <a href="#contacto">Contacto</a>
@@ -157,3 +163,60 @@
     </div>
   </div>
 </section>
+
+<script>
+// Script para manejar el menú móvil
+document.addEventListener('DOMContentLoaded', function() {
+  const mobileToggle = document.getElementById('mobileMenuToggle');
+  const navMenu = document.getElementById('navMenu');
+  
+  if (mobileToggle && navMenu) {
+    mobileToggle.addEventListener('click', function() {
+      navMenu.classList.toggle('active');
+      
+      // Animar el botón hamburguesa
+      const lines = mobileToggle.querySelectorAll('.hamburger-line');
+      if (navMenu.classList.contains('active')) {
+        lines[0].style.transform = 'rotate(45deg) translate(5px, 6px)';
+        lines[1].style.opacity = '0';
+        lines[2].style.transform = 'rotate(-45deg) translate(7px, -6px)';
+      } else {
+        lines[0].style.transform = 'none';
+        lines[1].style.opacity = '1';
+        lines[2].style.transform = 'none';
+      }
+    });
+    
+    // Cerrar menú al hacer click en un enlace
+    const menuLinks = navMenu.querySelectorAll('a');
+    menuLinks.forEach(link => {
+      link.addEventListener('click', function() {
+        navMenu.classList.remove('active');
+        const lines = mobileToggle.querySelectorAll('.hamburger-line');
+        lines[0].style.transform = 'none';
+        lines[1].style.opacity = '1';
+        lines[2].style.transform = 'none';
+      });
+    });
+    
+    // Cerrar menú al hacer click fuera de él
+    document.addEventListener('click', function(event) {
+      if (!mobileToggle.contains(event.target) && !navMenu.contains(event.target)) {
+        navMenu.classList.remove('active');
+        const lines = mobileToggle.querySelectorAll('.hamburger-line');
+        lines[0].style.transform = 'none';
+        lines[1].style.opacity = '1';
+        lines[2].style.transform = 'none';
+      }
+    });
+  }
+  
+  // Asegurar que el botón de login sea visible
+  const loginBtn = document.querySelector('.login-btn');
+  if (loginBtn) {
+    loginBtn.style.display = 'block';
+    loginBtn.style.visibility = 'visible';
+    loginBtn.style.opacity = '1';
+  }
+});
+</script>

@@ -7,7 +7,7 @@
     <style>
         .login-container {
             max-width: 400px;
-            margin: 50px auto;
+            margin: 120px auto 40px; /* dejar espacio por navbar fijo */
             padding: 30px;
             border: 1px solid #ddd;
             border-radius: 8px;
@@ -49,6 +49,12 @@
             font-size: 16px;
             cursor: pointer;
             transition: background-color 0.2s;
+            display: block !important; /* asegurar visibilidad */
+            width: 100%;
+            text-align: center;
+            position: relative;
+            z-index: 10;
+            min-height: 48px; /* tamaño mínimo para toque en móviles */
         }
         .btn:hover {
             background-color: #0056b3;
@@ -88,6 +94,59 @@
             color: #333;
             margin-bottom: 30px;
         }
+        
+        /* Media queries para dispositivos móviles */
+        @media (max-width: 768px) {
+            .login-container {
+                margin: 20px auto;
+                padding: 20px;
+                max-width: 90%;
+            }
+            
+            .btn, #loginBtn {
+                display: block !important;
+                visibility: visible !important;
+                opacity: 1 !important;
+                position: relative !important;
+                z-index: 999 !important;
+                background-color: #007bff !important;
+                color: white !important;
+                border: 2px solid #007bff !important;
+                width: 100% !important;
+                padding: 16px 20px !important;
+                font-size: 18px !important;
+                font-weight: bold !important;
+                margin: 15px 0 !important;
+                min-height: 52px !important;
+                border-radius: 8px !important;
+                touch-action: manipulation;
+            }
+            
+            .btn:hover, #loginBtn:hover {
+                background-color: #0056b3 !important;
+                border-color: #0056b3 !important;
+            }
+            
+            .form-group input {
+                font-size: 16px;
+                padding: 14px;
+                min-height: 48px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .login-container {
+                margin: 10px auto;
+                padding: 15px;
+                max-width: 95%;
+            }
+            
+            .btn, #loginBtn {
+                font-size: 16px !important;
+                padding: 18px 20px !important;
+                min-height: 56px !important;
+            }
+        }
     </style>
 </head>
 <body>
@@ -119,14 +178,14 @@
                        placeholder="Ingresa tu contraseña">
             </div>
             
-            <button type="submit" class="btn" id="loginBtn">
+            <button type="submit" class="btn" id="loginBtn" style="display: block !important; visibility: visible !important;">
                 Iniciar Sesión
             </button>
         </form>
     
         <!-- Botón para crear usuario (redirige a gestión de usuarios) -->
         <div style="text-align: center; margin-top: 16px;">
-            <a href="/register" class="btn" style="background-color: #28a745;">➕ Crear Usuario</a>
+            <a href="/register" class="btn" style="background-color: #28a745; display: block !important; visibility: visible !important; text-decoration: none;">➕ Crear Usuario</a>
         </div>
         
         <!-- Información de acceso -->
@@ -153,6 +212,32 @@
             const btn = document.getElementById('loginBtn');
             btn.disabled = true;
             btn.textContent = 'Iniciando sesión...';
+        });
+        
+        // Script para asegurar visibilidad del botón en móviles
+        document.addEventListener('DOMContentLoaded', function() {
+            const loginBtn = document.getElementById('loginBtn');
+            if (loginBtn) {
+                // Forzar estilos para móviles
+                loginBtn.style.display = 'block';
+                loginBtn.style.visibility = 'visible';
+                loginBtn.style.opacity = '1';
+                loginBtn.style.position = 'relative';
+                loginBtn.style.zIndex = '9999';
+                
+                // Agregar listener para debug en móviles
+                loginBtn.addEventListener('touchstart', function(e) {
+                    console.log('Botón tocado en móvil');
+                }, {passive: true});
+                
+                // Verificar si el botón es visible
+                const rect = loginBtn.getBoundingClientRect();
+                if (rect.height === 0 || rect.width === 0) {
+                    console.warn('Botón no visible, aplicando fix...');
+                    loginBtn.style.minHeight = '50px';
+                    loginBtn.style.width = '100%';
+                }
+            }
         });
     </script>
 </body>
