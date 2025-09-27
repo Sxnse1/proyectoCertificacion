@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🧪 Test de Login - Credenciales</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f8f9fa;
+        }
+        .header {
+            background: #007bff;
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .credentials-section {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .credential-card {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 15px;
+            position: relative;
+        }
+        .credential-card h4 {
+            margin: 0 0 10px 0;
+            color: #495057;
+        }
+        .credential-info {
+            font-family: 'Courier New', monospace;
+            background: #e9ecef;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 5px 0;
+        }
+        .role-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+            color: white;
+        }
+        .instructor { background: #28a745; }
+        .user { background: #17a2b8; }
+        .unknown { background: #6c757d; }
+        .quick-test {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            border-radius: 6px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+        .test-btn {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .test-btn:hover {
+            background: #0056b3;
+        }
+        .status {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 6px;
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🔐 Sistema de Login - Credenciales de Prueba</h1>
+        <p>Todas las contraseñas han sido hasheadas correctamente</p>
+    </div>
+
+    <div class="credentials-section">
+        <h2>👨‍🏫 INSTRUCTORES (van al Dashboard)</h2>
+        
+        <div class="credential-card">
+            <span class="role-badge instructor">INSTRUCTOR</span>
+            <h4>César Dávila</h4>
+            <div class="credential-info">Email: cesardavila1937@gmail.com</div>
+            <div class="credential-info">Contraseña: pass123</div>
+            <div class="credential-info">Estatus: ✅ Activo</div>
+        </div>
+
+        <div class="credential-card">
+            <span class="role-badge instructor">INSTRUCTOR</span>
+            <h4>Ericka</h4>
+            <div class="credential-info">Email: ericka@gmail.com</div>
+            <div class="credential-info">Contraseña: pass123</div>
+            <div class="credential-info">Estatus: ✅ Activo</div>
+        </div>
+    </div>
+
+    <div class="credentials-section">
+        <h2>👨‍🎓 USUARIOS (van a Cursos)</h2>
+        
+        <div class="credential-card">
+            <span class="role-badge user">USER</span>
+            <h4>Carlos García</h4>
+            <div class="credential-info">Email: carlos.garcia@example.com</div>
+            <div class="credential-info">Contraseña: HASHED_PASSWORD_AQUI</div>
+            <div class="credential-info">Estatus: ✅ Activo</div>
+        </div>
+
+        <div class="credential-card">
+            <span class="role-badge unknown">UNKNOWN</span>
+            <h4>Juan Pablo</h4>
+            <div class="credential-info">Email: juanpi@gmail.com</div>
+            <div class="credential-info">Contraseña: ❓ Desconocida (ya estaba hasheada)</div>
+            <div class="credential-info">Estatus: ✅ Activo</div>
+        </div>
+
+        <div class="credential-card">
+            <span class="role-badge unknown">UNKNOWN</span>
+            <h4>Rosa</h4>
+            <div class="credential-info">Email: rosa@gmail.com</div>
+            <div class="credential-info">Contraseña: ❓ Desconocida (ya estaba hasheada)</div>
+            <div class="credential-info">Estatus: ✅ Activo</div>
+        </div>
+    </div>
+
+    <div class="quick-test">
+        <h3>🧪 Pruebas Rápidas</h3>
+        <p>Haz clic en los botones para ir al login con las credenciales prellenadas:</p>
+        
+        <a href="/auth/login?email=cesardavila1937@gmail.com" class="test-btn">
+            🔐 Probar César (Instructor)
+        </a>
+        
+        <a href="/auth/login?email=ericka@gmail.com" class="test-btn">
+            🔐 Probar Ericka (Instructor)
+        </a>
+        
+        <a href="/auth/login?email=carlos.garcia@example.com" class="test-btn">
+            🔐 Probar Carlos (Usuario)
+        </a>
+
+        <a href="/auth/login" class="test-btn" style="background: #28a745;">
+            🔗 Ir al Login Normal
+        </a>
+    </div>
+
+    <div class="status">
+        <h3>📊 Estado del Sistema</h3>
+        <ul>
+            <li>✅ Contraseñas migradas y hasheadas con bcrypt</li>
+            <li>✅ Sistema de login mejorado con manejo de errores</li>
+            <li>✅ Compatibilidad con contraseñas legacy</li>
+            <li>✅ Migración automática en tiempo real</li>
+            <li>✅ Logs detallados para debugging</li>
+        </ul>
+        
+        <p><strong>Nota:</strong> Si encuentras problemas con el login, revisa la consola del servidor para ver los logs detallados del proceso de autenticación.</p>
+    </div>
+
+    <script>
+        // Mostrar información del navegador
+        console.log('🧪 Test de Login - Info del navegador:');
+        console.log('User Agent:', navigator.userAgent);
+        console.log('URL actual:', window.location.href);
+        console.log('Soporte de cookies:', navigator.cookieEnabled);
+    </script>
+</body>
+</html>
