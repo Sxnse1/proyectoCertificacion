@@ -104,7 +104,7 @@ router.get('/', function(req, res, next) {
   }
   
   res.render('cursos-estudiante', {
-    title: 'Plataforma de Cursos - BarberAcademy',
+    title: 'Plataforma de Cursos - StartEducation',
     userName: user,
     userEmail: email,
     userRole: rol,
@@ -134,7 +134,7 @@ router.get('/:cursoId', function(req, res, next) {
   }
   
   res.render('curso-detalle', {
-    title: `${curso.titulo} - BarberAcademy`,
+    title: `${curso.titulo} - StartEducation`,
     userName: user,
     userEmail: email,
     userRole: rol,
@@ -210,7 +210,7 @@ router.get('/mis-cursos', function(req, res, next) {
   };
   
   res.render('mis-cursos', {
-    title: 'Mis Cursos - BarberAcademy',
+    title: 'Mis Cursos - StartEducation',
     userName: user,
     userEmail: email,
     userRole: rol,
@@ -282,7 +282,7 @@ router.get('/certificado/:cursoId', function(req, res, next) {
           <div class="curso">"${curso.titulo}"</div>
           <p>impartido por ${curso.instructor}</p>
           <br>
-          <p><strong>BarberAcademy - StarEducation</strong></p>
+          <p><strong>StartEducation - StarEducation</strong></p>
           <p>Fecha: ${new Date().toLocaleDateString('es-MX')}</p>
         </div>
         <script>window.print();</script>

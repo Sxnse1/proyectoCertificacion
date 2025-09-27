@@ -1,5 +1,6 @@
 var express = require('express');
 var router = express.Router();
+var bcrypt = require('bcryptjs');
 
 /* GET login page */
 router.get('/login', function(req, res, next) {
@@ -72,8 +73,9 @@ router.post('/login', async function(req, res, next) {
       });
     }
     
-    // Verificar contraseña (simple comparación - en producción usar bcrypt)
-    if (user.password !== password) {
+    // Verificar contraseña usando bcrypt para hashes
+    const passwordMatch = await bcrypt.compare(password, user.password);
+    if (!passwordMatch) {
       console.log('[AUTH] ❌ Contraseña incorrecta para:', email);
       return res.render('login', {
         title: 'Proyecto Certificación',
