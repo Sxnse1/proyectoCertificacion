@@ -11,12 +11,19 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var authRouter = require('./routes/auth');
 var systemRouter = require('./routes/system');
+var cursosRouter = require('./routes/cursos');
 
 var app = express();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'hbs');
+
+// Configurar helpers de Handlebars
+var hbs = require('hbs');
+hbs.registerHelper('eq', function(a, b) {
+  return a === b;
+});
 
 app.use(logger('dev'));
 app.use(express.json());
@@ -53,6 +60,7 @@ app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/auth', authRouter);
 app.use('/system', systemRouter);
+app.use('/cursos', cursosRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

@@ -94,4 +94,45 @@ router.get('/diagnostic', function(req, res, next) {
   });
 });
 
+/* GET force database connection - Forzar reconexión */
+router.get('/force-reconnect', async function(req, res, next) {
+  try {
+    console.log('[SYSTEM] 🔄 Forzando reconexión a base de datos...');
+    
+    // Importar módulo de base de datos
+    const db = require('../config/database');
+    
+    // Cerrar conexión existente si la hay
+    try {
+      await db.close();
+      console.log('[SYSTEM] 🔌 Conexión anterior cerrada');
+    } catch (err) {
+      console.log('[SYSTEM] ⚠️ No había conexión previa para cerrar');
+    }
+    
+    // Intentar nueva conexión
+    const connection = await db.connect();
+    req.app.locals.db = db;
+    
+    console.log('[SYSTEM] ✅ Reconexión exitosa');
+    
+    res.json({
+      success: true,
+      message: 'Reconexión a base de datos exitosa',
+      timestamp: new Date().toISOString(),
+      connection_status: 'connected'
+    });
+    
+  } catch (error) {
+    console.error('[SYSTEM] ❌ Error en reconexión:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error forzando reconexión',
+      error: error.message,
+      code: error.code,
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
 module.exports = router;

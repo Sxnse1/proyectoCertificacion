@@ -93,9 +93,9 @@ router.post('/login', async function(req, res, next) {
       console.log('[AUTH] 📚 Redirigiendo instructor al dashboard');
       res.redirect(`/auth/dashboard?user=${encodeURIComponent(nombreCompleto)}&email=${encodeURIComponent(user.email)}&rol=${user.rol}&id=${user.id_usuario}`);
     } else if (user.rol === 'user') {
-      console.log('[AUTH] 🌐 Redirigiendo usuario a UNE');
-      // Redirigir a une.edu.mx
-      res.redirect('https://une.edu.mx');
+      console.log('[AUTH] � Redirigiendo usuario a plataforma de cursos');
+      // Redirigir a la plataforma de cursos interna
+      res.redirect(`/cursos?user=${encodeURIComponent(nombreCompleto)}&email=${encodeURIComponent(user.email)}&rol=${user.rol}&id=${user.id_usuario}`);
     } else {
       console.log('[AUTH] ⚠️ Rol no reconocido:', user.rol);
       return res.render('login', {

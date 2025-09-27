@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{title}}</title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        .mis-cursos-page {
+            min-height: 100vh;
+            background: linear-gradient(135deg, var(--bg-light) 0%, #fff 100%);
+        }
+        
+        .top-bar {
+            background: var(--primary-color);
+            color: white;
+            padding: 15px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .top-bar .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .back-btn {
+            color: white;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            background: rgba(255,255,255,0.1);
+            transition: background 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .back-btn:hover {
+            background: rgba(255,255,255,0.2);
+        }
+        
+        .page-header {
+            padding: 40px 0;
+            text-align: center;
+        }
+        
+        .page-header h1 {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+        
+        .page-header p {
+            font-size: 1.2rem;
+            color: var(--text-light);
+        }
+        
+        .stats-section {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 40px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+        
+        .stat-card {
+            text-align: center;
+            padding: 20px;
+            background: var(--bg-light);
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+        
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--accent-color);
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+        
+        .courses-filters {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .filter-btn {
+            padding: 10px 20px;
+            border: 2px solid var(--primary-color);
+            background: white;
+            color: var(--primary-color);
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        
+        .filter-btn.active {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .filter-btn:hover {
+            background: var(--primary-color);
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        .my-courses-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+        
+        .my-course-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .my-course-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+        
+        .course-status {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            z-index: 2;
+        }
+        
+        .status-activo {
+            background: var(--accent-color);
+            color: white;
+        }
+        
+        .status-completado {
+            background: #28a745;
+            color: white;
+        }
+        
+        .status-pausado {
+            background: #ffc107;
+            color: #333;
+        }
+        
+        .course-image {
+            height: 200px;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 3rem;
+            position: relative;
+        }
+        
+        .course-content {
+            padding: 25px;
+        }
+        
+        .course-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+        
+        .course-instructor {
+            color: var(--text-light);
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+        }
+        
+        .progress-section {
+            margin-bottom: 20px;
+        }
+        
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        
+        .progress-text {
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+        
+        .progress-percentage {
+            font-weight: bold;
+            color: var(--accent-color);
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: var(--bg-light);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-color), var(--primary-color));
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+        
+        .course-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn-continuar {
+            flex: 1;
+            padding: 12px;
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-continuar:hover {
+            background: var(--primary-color);
+            transform: translateY(-2px);
+        }
+        
+        .btn-certificado {
+            padding: 12px;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-certificado:hover {
+            background: #218838;
+            transform: translateY(-2px);
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .empty-state h3 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+        }
+        
+        .empty-state p {
+            color: var(--text-light);
+            margin-bottom: 25px;
+        }
+        
+        .btn-explorar {
+            background: var(--accent-color);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-explorar:hover {
+            background: var(--primary-color);
+            transform: translateY(-2px);
+        }
+        
+        @media (max-width: 768px) {
+            .my-courses-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .courses-filters {
+                justify-content: center;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="mis-cursos-page">
+        <!-- Top Bar -->
+        <div class="top-bar">
+            <div class="container">
+                <a href="/cursos?user={{userName}}&email={{userEmail}}&rol={{userRole}}&id={{userId}}" class="back-btn">
+                    ← Volver a Cursos
+                </a>
+                <div style="font-weight: bold;">{{userName}} - Mis Cursos</div>
+            </div>
+        </div>
+
+        <!-- Page Header -->
+        <div class="container">
+            <div class="page-header">
+                <h1>📚 Mis Cursos</h1>
+                <p>Sigue tu progreso y continúa aprendiendo</p>
+            </div>
+
+            <!-- Stats Section -->
+            <div class="stats-section">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number">{{cursosStats.total}}</div>
+                        <div class="stat-label">Cursos Inscritos</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">{{cursosStats.completados}}</div>
+                        <div class="stat-label">Completados</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">{{cursosStats.activos}}</div>
+                        <div class="stat-label">En Progreso</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">{{cursosStats.certificados}}</div>
+                        <div class="stat-label">Certificados</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filters -->
+            <div class="courses-filters">
+                <button class="filter-btn active" onclick="filtrarCursos('todos')">
+                    📚 Todos
+                </button>
+                <button class="filter-btn" onclick="filtrarCursos('activos')">
+                    ⚡ En Progreso
+                </button>
+                <button class="filter-btn" onclick="filtrarCursos('completados')">
+                    ✅ Completados
+                </button>
+                <button class="filter-btn" onclick="filtrarCursos('pausados')">
+                    ⏸️ Pausados
+                </button>
+            </div>
+
+            <!-- My Courses Grid -->
+            {{#if misCursos.length}}
+            <div class="my-courses-grid" id="cursosGrid">
+                {{#each misCursos}}
+                <div class="my-course-card" data-status="{{estado}}">
+                    <div class="course-status status-{{estado}}">
+                        {{#if (eq estado 'activo')}}En Progreso{{/if}}
+                        {{#if (eq estado 'completado')}}Completado{{/if}}
+                        {{#if (eq estado 'pausado')}}Pausado{{/if}}
+                    </div>
+                    <div class="course-image">
+                        {{icon}}
+                    </div>
+                    <div class="course-content">
+                        <div class="course-title">{{titulo}}</div>
+                        <div class="course-instructor">👨‍🏫 {{instructor}}</div>
+                        
+                        <div class="progress-section">
+                            <div class="progress-header">
+                                <span class="progress-text">Progreso del curso</span>
+                                <span class="progress-percentage">{{progreso}}%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: {{progreso}}%"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="course-actions">
+                            {{#if (eq estado 'completado')}}
+                                <button class="btn-certificado" onclick="descargarCertificado('{{id}}')">
+                                    🏆 Certificado
+                                </button>
+                            {{else}}
+                                <button class="btn-continuar" onclick="continuarCurso('{{id}}')">
+                                    ▶️ Continuar
+                                </button>
+                            {{/if}}
+                        </div>
+                    </div>
+                </div>
+                {{/each}}
+            </div>
+            {{else}}
+            <div class="empty-state">
+                <h3>📚 ¡Aún no tienes cursos!</h3>
+                <p>Explora nuestro catálogo y comienza tu aventura de aprendizaje</p>
+                <button class="btn-explorar" onclick="explorarCursos()">
+                    🔍 Explorar Cursos
+                </button>
+            </div>
+            {{/if}}
+        </div>
+    </div>
+
+    <script>
+        function filtrarCursos(filtro) {
+            // Actualizar botones activos
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Filtrar cursos
+            const cursos = document.querySelectorAll('.my-course-card');
+            cursos.forEach(curso => {
+                const estado = curso.dataset.status;
+                if (filtro === 'todos' || estado === filtro) {
+                    curso.style.display = 'block';
+                    curso.style.animation = 'fadeIn 0.5s ease';
+                } else {
+                    curso.style.display = 'none';
+                }
+            });
+        }
+        
+        function continuarCurso(cursoId) {
+            window.location.href = `/cursos/lecciones/${cursoId}?user={{userName}}&email={{userEmail}}&rol={{userRole}}&id={{userId}}`;
+        }
+        
+        function descargarCertificado(cursoId) {
+            window.open(`/cursos/certificado/${cursoId}?user={{userName}}&id={{userId}}`, '_blank');
+        }
+        
+        function explorarCursos() {
+            window.location.href = '/cursos?user={{userName}}&email={{userEmail}}&rol={{userRole}}&id={{userId}}';
+        }
+        
+        // Animaciones de entrada
+        document.addEventListener('DOMContentLoaded', function() {
+            const cards = document.querySelectorAll('.my-course-card');
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    card.style.transition = 'all 0.6s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+        });
+    </script>
+</body>
+</html>
