@@ -130,10 +130,10 @@ router.post('/login', async function(req, res, next) {
     if (user.rol === 'instructor') {
       console.log('[AUTH] 📚 Redirigiendo instructor al dashboard');
       res.redirect(`/auth/dashboard?user=${encodeURIComponent(nombreCompleto)}&email=${encodeURIComponent(user.email)}&rol=${user.rol}&id=${user.id_usuario}`);
-    } else if (user.rol === 'user') {
-      console.log('[AUTH] � Redirigiendo usuario a plataforma de cursos');
-      // Redirigir a la plataforma de cursos interna
-      res.redirect(`/cursos?user=${encodeURIComponent(nombreCompleto)}&email=${encodeURIComponent(user.email)}&rol=${user.rol}&id=${user.id_usuario}`);
+    } else if (user.rol === 'user' || user.rol === 'estudiante') {
+      console.log('[AUTH] 👨‍🎓 Redirigiendo estudiante a plataforma de cursos de base de datos');
+      // Redirigir a la nueva plataforma de cursos con base de datos
+      res.redirect(`/cursos-db/estudiante?user=${encodeURIComponent(nombreCompleto)}&email=${encodeURIComponent(user.email)}&rol=${user.rol}&id=${user.id_usuario}`);
     } else {
       console.log('[AUTH] ⚠️ Rol no reconocido:', user.rol);
       return res.render('login', {

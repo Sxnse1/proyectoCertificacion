@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{title}} - StartEducation</title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #1a1a1a;
+            color: #ffffff;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .video-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .video-header {
+            background: linear-gradient(135deg, #2c1810 0%, #8b4513 100%);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+        
+        .video-header h1 {
+            margin: 0 0 10px 0;
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #d4af37;
+        }
+        
+        .video-header .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+        
+        .user-badge {
+            background: rgba(212, 175, 55, 0.2);
+            padding: 4px 12px;
+            border-radius: 20px;
+            border: 1px solid #d4af37;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .video-player-wrapper {
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 12px 48px rgba(0,0,0,0.5);
+            margin-bottom: 30px;
+            background: #000;
+            position: relative;
+        }
+        
+        .video-player-wrapper iframe {
+            border-radius: 12px;
+            display: block;
+        }
+        
+        .video-info {
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .video-info h2 {
+            margin: 0 0 15px 0;
+            color: #d4af37;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+        
+        .video-info p {
+            margin: 0;
+            line-height: 1.6;
+            color: #cccccc;
+        }
+        
+        .video-controls {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+        }
+        
+        .control-btn {
+            background: linear-gradient(135deg, #d4af37 0%, #b8941f 100%);
+            color: #1a1a1a;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+        
+        .control-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(212, 175, 55, 0.3);
+        }
+        
+        .control-btn.secondary {
+            background: rgba(255,255,255,0.1);
+            color: #ffffff;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .control-btn.secondary:hover {
+            background: rgba(255,255,255,0.2);
+            box-shadow: 0 8px 25px rgba(255,255,255, 0.1);
+        }
+        
+        .progress-section {
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .progress-section h3 {
+            margin: 0 0 15px 0;
+            color: #d4af37;
+            font-size: 1.2rem;
+        }
+        
+        .progress-bar {
+            background: rgba(255,255,255,0.1);
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+        
+        .progress-fill {
+            background: linear-gradient(90deg, #d4af37 0%, #b8941f 100%);
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        .progress-text {
+            font-size: 0.9rem;
+            color: #cccccc;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .video-container {
+                padding: 15px;
+            }
+            
+            .video-header {
+                padding: 15px;
+            }
+            
+            .video-header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .video-header .user-info {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .video-player-wrapper {
+                margin-bottom: 20px;
+            }
+            
+            .video-info {
+                padding: 20px;
+            }
+            
+            .control-btn {
+                padding: 10px 20px;
+                font-size: 0.85rem;
+            }
+            
+            .video-controls {
+                justify-content: center;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .video-container {
+                padding: 10px;
+            }
+            
+            .video-header {
+                padding: 10px;
+                margin-bottom: 15px;
+            }
+            
+            .video-header h1 {
+                font-size: 1.5rem;
+            }
+            
+            .video-player-wrapper {
+                margin-bottom: 15px;
+                border-radius: 8px;
+            }
+            
+            .video-info {
+                padding: 15px;
+            }
+            
+            .control-btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+        
+        /* Loading animation */
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 200px;
+            color: #d4af37;
+        }
+        
+        .spinner {
+            border: 3px solid rgba(212, 175, 55, 0.3);
+            border-radius: 50%;
+            border-top: 3px solid #d4af37;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="video-container">
+        <!-- Header con información del usuario -->
+        <div class="video-header">
+            <h1>{{videoTitle}}</h1>
+            <div class="user-info">
+                <span>👤 {{userName}}</span>
+                <span class="user-badge">{{userRole}}</span>
+                <span>📧 {{userEmail}}</span>
+            </div>
+        </div>
+        
+        <!-- Reproductor de video -->
+        <div class="video-player-wrapper">
+            <div style="padding:56.25% 0 0 0;position:relative;">
+                <iframe 
+                    src="https://player.vimeo.com/video/{{videoId}}?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" 
+                    frameborder="0" 
+                    allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share" 
+                    referrerpolicy="strict-origin-when-cross-origin" 
+                    style="position:absolute;top:0;left:0;width:100%;height:100%;" 
+                    title="{{videoTitle}}"
+                    id="vimeoPlayer">
+                </iframe>
+            </div>
+        </div>
+        
+        <!-- Información del video -->
+        <div class="video-info">
+            <h2>📚 Descripción del Contenido</h2>
+            <p>{{videoDescription}}</p>
+        </div>
+        
+        <!-- Controles -->
+        <div class="video-controls">
+            <button class="control-btn" onclick="toggleFullscreen()">
+                🔍 Pantalla Completa
+            </button>
+            <button class="control-btn secondary" onclick="restartVideo()">
+                🔄 Reiniciar Video
+            </button>
+            <button class="control-btn secondary" onclick="togglePlayPause()" id="playPauseBtn">
+                ⏸️ Pausar
+            </button>
+            <a href="/cursos?user={{userName}}&email={{userEmail}}&rol={{userRole}}" class="control-btn">
+                📚 Volver a Cursos
+            </a>
+        </div>
+        
+        <!-- Barra de progreso -->
+        <div class="progress-section">
+            <h3>📊 Progreso del Video</h3>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="progress-text" id="progressText">
+                Tiempo: <span id="currentTime">0:00</span> / <span id="totalTime">--:--</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Vimeo Player API -->
+    <script src="https://player.vimeo.com/api/player.js"></script>
+    
+    <script>
+        // Inicializar el reproductor de Vimeo
+        const iframe = document.querySelector('#vimeoPlayer');
+        const player = new Vimeo.Player(iframe);
+        
+        let isPlaying = true;
+        let duration = 0;
+        
+        // Elementos del DOM
+        const progressFill = document.getElementById('progressFill');
+        const progressText = document.getElementById('progressText');
+        const currentTimeSpan = document.getElementById('currentTime');
+        const totalTimeSpan = document.getElementById('totalTime');
+        const playPauseBtn = document.getElementById('playPauseBtn');
+        
+        // Obtener duración del video
+        player.getDuration().then(function(videoDuration) {
+            duration = videoDuration;
+            totalTimeSpan.textContent = formatTime(duration);
+        });
+        
+        // Actualizar progreso
+        player.on('timeupdate', function(data) {
+            const currentTime = data.seconds;
+            const progress = (currentTime / duration) * 100;
+            
+            progressFill.style.width = progress + '%';
+            currentTimeSpan.textContent = formatTime(currentTime);
+        });
+        
+        // Eventos del reproductor
+        player.on('play', function() {
+            isPlaying = true;
+            playPauseBtn.innerHTML = '⏸️ Pausar';
+            console.log('▶️ Video iniciado');
+        });
+        
+        player.on('pause', function() {
+            isPlaying = false;
+            playPauseBtn.innerHTML = '▶️ Reproducir';
+            console.log('⏸️ Video pausado');
+        });
+        
+        player.on('ended', function() {
+            console.log('✅ Video completado');
+            progressFill.style.width = '100%';
+            playPauseBtn.innerHTML = '🔄 Repetir';
+        });
+        
+        // Funciones de control
+        function togglePlayPause() {
+            if (isPlaying) {
+                player.pause();
+            } else {
+                player.play();
+            }
+        }
+        
+        function restartVideo() {
+            player.setCurrentTime(0).then(function() {
+                player.play();
+                console.log('🔄 Video reiniciado');
+            });
+        }
+        
+        function toggleFullscreen() {
+            player.requestFullscreen().catch(function(error) {
+                console.log('Error al activar pantalla completa:', error);
+                // Fallback: intentar fullscreen del navegador
+                if (iframe.requestFullscreen) {
+                    iframe.requestFullscreen();
+                } else if (iframe.webkitRequestFullscreen) {
+                    iframe.webkitRequestFullscreen();
+                } else if (iframe.mozRequestFullScreen) {
+                    iframe.mozRequestFullScreen();
+                } else if (iframe.msRequestFullscreen) {
+                    iframe.msRequestFullscreen();
+                }
+            });
+        }
+        
+        // Función para formatear tiempo
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return mins + ':' + (secs < 10 ? '0' : '') + secs;
+        }
+        
+        // Atajos de teclado
+        document.addEventListener('keydown', function(e) {
+            switch(e.code) {
+                case 'Space':
+                    e.preventDefault();
+                    togglePlayPause();
+                    break;
+                case 'KeyR':
+                    if (e.ctrlKey) {
+                        e.preventDefault();
+                        restartVideo();
+                    }
+                    break;
+                case 'KeyF':
+                    if (e.ctrlKey) {
+                        e.preventDefault();
+                        toggleFullscreen();
+                    }
+                    break;
+            }
+        });
+        
+        // Log de inicialización
+        console.log('🎬 Reproductor de video inicializado');
+        console.log('⌨️ Atajos: Espacio = Play/Pausa, Ctrl+R = Reiniciar, Ctrl+F = Pantalla completa');
+    </script>
+</body>
+</html>

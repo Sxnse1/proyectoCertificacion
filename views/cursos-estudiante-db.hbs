@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <title>{{title}}</title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        .student-platform {
+            min-height: 100vh;
+            background: linear-gradient(135deg, var(--bg-light) 0%, #fff 100%);
+        }
+        
+        .top-bar {
+            background: var(--primary-color);
+            color: white;
+            padding: 15px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .top-bar .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--accent-color);
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--accent-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+        
+        .main-content {
+            padding: 30px 0;
+        }
+        
+        .welcome-section {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .welcome-title {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        
+        .welcome-subtitle {
+            font-size: 1.2rem;
+            color: var(--text-light);
+            margin-bottom: 30px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            text-align: center;
+            border: 1px solid var(--border-color);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .stat-icon {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+        
+        .section-title {
+            font-size: 1.8rem;
+            color: var(--primary-color);
+            font-weight: 600;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .cursos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+        
+        .curso-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid var(--border-color);
+            position: relative;
+        }
+        
+        .curso-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .curso-image {
+            height: 180px;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: white;
+            position: relative;
+        }
+        
+        .curso-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: var(--accent-color);
+            color: var(--primary-color);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .curso-badge.comprado {
+            background: #28a745;
+            color: white;
+        }
+        
+        .curso-content {
+            padding: 20px;
+        }
+        
+        .curso-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+        
+        .curso-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 8px;
+            line-height: 1.3;
+        }
+        
+        .curso-instructor {
+            font-size: 0.9rem;
+            color: var(--text-light);
+            margin-bottom: 10px;
+        }
+        
+        .curso-description {
+            color: var(--text-light);
+            line-height: 1.5;
+            margin-bottom: 15px;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        
+        .curso-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+        }
+        
+        .curso-precio {
+            font-weight: bold;
+            color: var(--accent-color);
+            font-size: 1.1rem;
+        }
+        
+        .curso-nivel {
+            background: var(--bg-light);
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            color: var(--text-dark);
+        }
+        
+        .curso-progress {
+            background: var(--bg-light);
+            height: 6px;
+            border-radius: 3px;
+            overflow: hidden;
+            margin-bottom: 15px;
+        }
+        
+        .curso-progress-fill {
+            height: 100%;
+            background: var(--accent-color);
+            transition: width 0.3s ease;
+        }
+        
+        .curso-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn-curso {
+            flex: 1;
+            background: var(--accent-color);
+            color: var(--primary-color);
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+        
+        .btn-curso:hover {
+            background: var(--primary-color);
+            color: white;
+            transform: translateY(-1px);
+        }
+        
+        .btn-curso.secondary {
+            background: transparent;
+            color: var(--primary-color);
+            border: 2px solid var(--primary-color);
+        }
+        
+        .btn-curso.secondary:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-video {
+            background: #e74c3c;
+            color: white;
+        }
+        
+        .btn-video:hover {
+            background: #c0392b;
+            color: white;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-light);
+        }
+        
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+        
+        .logout-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        
+        .logout-btn:hover {
+            background: #c82333;
+        }
+        
+        .favorito-btn {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: rgba(255,255,255,0.9);
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2rem;
+            color: #dc3545;
+        }
+        
+        .favorito-btn.active {
+            background: #dc3545;
+            color: white;
+        }
+        
+        @media (max-width: 768px) {
+            .welcome-title {
+                font-size: 2rem;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 15px;
+            }
+            
+            .cursos-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .curso-actions {
+                flex-direction: column;
+            }
+            
+            .main-content {
+                padding: 20px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="student-platform">
+        <!-- Top Bar -->
+        <div class="top-bar">
+            <div class="container">
+                <div class="logo">StartEducation</div>
+                <div class="user-info">
+                    <div class="user-avatar">{{userName.[0]}}</div>
+                    <div>
+                        <div style="font-weight: 600;">{{userName}}</div>
+                        <div style="font-size: 0.8rem; opacity: 0.8;">{{userRole}}</div>
+                    </div>
+                    <form action="/auth/logout" method="POST" style="margin: 0;">
+                        <button type="submit" class="logout-btn">Salir</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="container">
+                <!-- Welcome Section -->
+                <div class="welcome-section">
+                    <h1 class="welcome-title">¡Bienvenido, {{userName}}! 👋</h1>
+                    <p class="welcome-subtitle">Continúa tu aprendizaje en barbería profesional</p>
+                </div>
+
+                <!-- Stats Section -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">📚</div>
+                        <div class="stat-number">{{stats.cursos_activos}}</div>
+                        <div class="stat-label">Cursos Activos</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">🎬</div>
+                        <div class="stat-number">{{stats.videos_completados}}</div>
+                        <div class="stat-label">Videos Completados</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">📈</div>
+                        <div class="stat-number">{{stats.progreso_general}}%</div>
+                        <div class="stat-label">Progreso General</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">🏆</div>
+                        <div class="stat-number">{{totalCursos}}</div>
+                        <div class="stat-label">Cursos Disponibles</div>
+                    </div>
+                </div>
+
+                <!-- Cursos Comprados -->
+                {{#if cursosComprados.length}}
+                <h2 class="section-title">📚 Mis Cursos</h2>
+                <div class="cursos-grid">
+                    {{#each cursosComprados}}
+                    <div class="curso-card">
+                        <button class="favorito-btn {{#if es_favorito}}active{{/if}}">❤️</button>
+                        <div class="curso-image">
+                            {{nivel_emoji}}
+                            <div class="curso-badge comprado">Comprado ✓</div>
+                        </div>
+                        <div class="curso-content">
+                            <div class="curso-header">
+                                <div>
+                                    <div class="curso-title">{{titulo}}</div>
+                                    <div class="curso-instructor">👨‍🏫 {{instructor_nombre}}</div>
+                                </div>
+                            </div>
+                            <div class="curso-description">{{descripcion}}</div>
+                            
+                            <div class="curso-meta">
+                                <div class="curso-nivel">{{nivel}} {{nivel_emoji}}</div>
+                                <div style="font-size: 0.8rem; color: var(--text-light);">
+                                    {{videos_completados}}/{{total_videos}} videos
+                                </div>
+                            </div>
+                            
+                            {{#if progreso_porcentaje}}
+                            <div class="curso-progress">
+                                <div class="curso-progress-fill" style="width: {{progreso_porcentaje}}%"></div>
+                            </div>
+                            <div style="font-size: 0.8rem; color: var(--text-light); margin-bottom: 15px;">
+                                Progreso: {{progreso_porcentaje}}%
+                            </div>
+                            {{/if}}
+                            
+                            <div class="curso-actions">
+                                <a href="/cursos/{{id_curso}}?user={{../userName}}&email={{../userEmail}}&rol={{../userRole}}&id={{../userId}}" class="btn-curso">
+                                    📖 Continuar Curso
+                                </a>
+                                <a href="/video?videoId=1122531979&title={{titulo}}&description={{descripcion}}&user={{../userName}}&email={{../userEmail}}&rol={{../userRole}}" class="btn-curso btn-video">
+                                    🎬 Ver Videos
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    {{/each}}
+                </div>
+                {{/if}}
+
+                <!-- Cursos Disponibles -->
+                {{#if cursosDisponibles.length}}
+                <h2 class="section-title">🛒 Cursos Disponibles</h2>
+                <div class="cursos-grid">
+                    {{#each cursosDisponibles}}
+                    <div class="curso-card">
+                        <button class="favorito-btn {{#if es_favorito}}active{{/if}}">❤️</button>
+                        <div class="curso-image">
+                            {{nivel_emoji}}
+                            <div class="curso-badge">{{categoria_nombre}}</div>
+                        </div>
+                        <div class="curso-content">
+                            <div class="curso-header">
+                                <div>
+                                    <div class="curso-title">{{titulo}}</div>
+                                    <div class="curso-instructor">👨‍🏫 {{instructor_nombre}}</div>
+                                </div>
+                            </div>
+                            <div class="curso-description">{{descripcion}}</div>
+                            
+                            <div class="curso-meta">
+                                <div class="curso-precio">{{precio_formateado}}</div>
+                                <div class="curso-nivel">{{nivel}} {{nivel_emoji}}</div>
+                            </div>
+                            
+                            <div style="font-size: 0.8rem; color: var(--text-light); margin-bottom: 15px;">
+                                {{total_modulos}} módulos • {{total_videos}} videos
+                            </div>
+                            
+                            <div class="curso-actions">
+                                <a href="/cursos/{{id_curso}}?user={{../userName}}&email={{../userEmail}}&rol={{../userRole}}&id={{../userId}}" class="btn-curso secondary">
+                                    👁️ Ver Detalles
+                                </a>
+                                <button class="btn-curso" onclick="comprarCurso({{id_curso}})">
+                                    🛒 Comprar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    {{/each}}
+                </div>
+                {{/if}}
+
+                <!-- Empty State -->
+                {{#unless totalCursos}}
+                <div class="empty-state">
+                    <div class="empty-state-icon">📚</div>
+                    <h3>No hay cursos disponibles</h3>
+                    <p>Los cursos aparecerán aquí una vez que estén publicados.</p>
+                </div>
+                {{/unless}}
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Función para comprar curso
+        function comprarCurso(cursoId) {
+            if (confirm('¿Deseas proceder con la compra de este curso?')) {
+                // Aquí iría la lógica de compra
+                alert('Funcionalidad de compra en desarrollo');
+            }
+        }
+        
+        // Manejar favoritos
+        document.querySelectorAll('.favorito-btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                this.classList.toggle('active');
+                // Aquí iría la lógica para guardar/quitar favorito
+            });
+        });
+        
+        console.log('📚 Plataforma de cursos cargada');
+        console.log('👤 Usuario:', '{{userName}}');
+        console.log('📊 Estadísticas:', {
+            cursos_activos: {{stats.cursos_activos}},
+            videos_completados: {{stats.videos_completados}},
+            progreso_general: {{stats.progreso_general}}
+        });
+    </script>
+</body>
+</html>

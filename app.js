@@ -15,6 +15,8 @@ var cursosRouter = require('./routes/cursos');
 var usuariosRouter = require('./routes/usuarios');
 var dashboardRouter = require('./routes/dashboard');
 var registerRouter = require('./routes/register');
+var videoRouter = require('./routes/video');
+var cursosDbRouter = require('./routes/cursos-db');
 
 var app = express();
 
@@ -67,6 +69,8 @@ app.use('/cursos', cursosRouter);
 app.use('/usuarios', usuariosRouter);
 app.use('/dashboard', dashboardRouter);
 app.use('/register', registerRouter);
+app.use('/video', videoRouter);
+app.use('/cursos-db', cursosDbRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
