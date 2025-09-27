@@ -25,6 +25,16 @@ router.post('/login', async function(req, res, next) {
 
     const db = req.app.locals.db;
     
+    // Verificar si hay conexión a base de datos
+    if (!db) {
+      console.log('[AUTH] ⚠️ No hay conexión a base de datos');
+      return res.render('login', {
+        title: 'Proyecto Certificación',
+        error: 'Sistema en mantenimiento. Intenta más tarde.',
+        email: email
+      });
+    }
+    
     console.log('[AUTH] 🔐 Intento de login para:', email);
     
     // Buscar usuario en la base de datos con la nueva estructura

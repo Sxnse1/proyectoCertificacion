@@ -124,3 +124,24 @@ const result = await db.executeQuery(
   { id: userId }
 );
 ```
+
+## 🚀 Despliegue en Heroku
+
+La aplicación está optimizada para Heroku. Consulta `HEROKU.md` para instrucciones detalladas.
+
+### Despliegue rápido:
+```powershell
+# Usando el script automatizado
+.\deploy.ps1 -AppName "tu-app-heroku"
+
+# O manualmente
+git add .
+git commit -m "Deploy to Heroku"
+heroku create tu-app-heroku
+git push heroku main
+```
+
+### URLs importantes después del despliegue:
+- **App principal**: `https://tu-app.herokuapp.com`
+- **Estado del sistema**: `https://tu-app.herokuapp.com/system/status`
+- **Health check**: `https://tu-app.herokuapp.com/system/health`

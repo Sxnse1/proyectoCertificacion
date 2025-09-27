@@ -1,10 +1,28 @@
 {
   "name": "proyectocertificacion",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "private": true,
-  "scripts": {
-    "start": "node ./bin/www"
+  "description": "Sistema de login con roles para instructores y estudiantes",
+  "main": "app.js",
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
   },
+  "scripts": {
+    "start": "node ./bin/www",
+    "dev": "nodemon ./bin/www",
+    "build": "npm install",
+    "heroku-postbuild": "echo 'Build completed'"
+  },
+  "keywords": [
+    "express",
+    "node",
+    "heroku",
+    "sql-server",
+    "authentication"
+  ],
+  "author": "tu-nombre",
+  "license": "MIT",
   "dependencies": {
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
@@ -14,5 +32,8 @@
     "http-errors": "~1.6.3",
     "morgan": "~1.9.1",
     "mssql": "^10.0.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
   }
 }
