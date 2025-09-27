@@ -73,6 +73,23 @@ body {
   color: var(--accent-color);
 }
 
+.login-btn {
+  background: var(--accent-color) !important;
+  color: var(--text-white) !important;
+  padding: 8px 16px !important;
+  border-radius: 6px !important;
+  font-weight: 600 !important;
+  transition: all 0.3s ease !important;
+  border: 2px solid var(--accent-color) !important;
+}
+
+.login-btn:hover {
+  background: var(--primary-color) !important;
+  border-color: var(--primary-color) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 4px 12px rgba(44, 24, 16, 0.2) !important;
+}
+
 /* Hero Section */
 .hero-section {
   min-height: 100vh;

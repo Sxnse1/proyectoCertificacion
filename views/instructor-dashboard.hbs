@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{title}} - Instructor</title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        .instructor-dashboard {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 30px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .welcome-header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid var(--accent-color);
+        }
+        .welcome-header h1 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+            font-size: 2.5rem;
+        }
+        .instructor-badge {
+            display: inline-block;
+            background: var(--accent-color);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        .user-info {
+            background: linear-gradient(135deg, var(--bg-light) 0%, #fff 100%);
+            padding: 25px;
+            border-radius: 8px;
+            margin-bottom: 40px;
+            border-left: 4px solid var(--accent-color);
+        }
+        .user-info h3 {
+            margin-top: 0;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .actions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+        .action-card {
+            background: white;
+            border: 2px solid #f0f0f0;
+            border-radius: 12px;
+            padding: 25px;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .action-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--accent-color);
+        }
+        .action-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            border-color: var(--accent-color);
+        }
+        .action-card h4 {
+            margin-top: 0;
+            color: var(--primary-color);
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+        }
+        .action-card p {
+            color: var(--text-light);
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        .action-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            display: block;
+        }
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background-color: var(--primary-color);
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .btn:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+        }
+        .btn-success {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        }
+        .btn-info {
+            background: linear-gradient(135deg, #17a2b8 0%, #6f42c1 100%);
+        }
+        .btn-warning {
+            background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%);
+            color: #212529;
+        }
+        .btn-danger {
+            background: linear-gradient(135deg, #dc3545 0%, #e83e8c 100%);
+        }
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .stat-card {
+            background: var(--bg-light);
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid #e0e0e0;
+        }
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--accent-color);
+            display: block;
+        }
+        .stat-label {
+            color: var(--text-light);
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+        .logout-section {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 2px solid #f0f0f0;
+        }
+        .current-time {
+            font-size: 0.9rem;
+            color: var(--text-light);
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="instructor-dashboard">
+        <div class="welcome-header">
+            <div class="instructor-badge">👨‍🏫 INSTRUCTOR</div>
+            <h1>Dashboard de Instructor</h1>
+            <p>Panel de control para gestión académica</p>
+        </div>
+        
+        <div class="user-info">
+            <h3>🎓 Información del Instructor</h3>
+            <p><strong>Nombre:</strong> {{userName}}</p>
+            <p><strong>Email:</strong> {{userEmail}}</p>
+            <p><strong>Rol:</strong> {{userRole}}</p>
+            <p><strong>ID Usuario:</strong> {{userId}}</p>
+            <p class="current-time"><strong>Última conexión:</strong> <span id="currentDate"></span></p>
+        </div>
+
+        <div class="stats-row">
+            <div class="stat-card">
+                <span class="stat-number">12</span>
+                <div class="stat-label">Cursos Activos</div>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number">248</span>
+                <div class="stat-label">Estudiantes</div>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number">89%</span>
+                <div class="stat-label">Tasa de Éxito</div>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number">4.8</span>
+                <div class="stat-label">Calificación</div>
+            </div>
+        </div>
+        
+        <div class="actions-grid">
+            <div class="action-card">
+                <div class="action-icon">📚</div>
+                <h4>Gestión de Cursos</h4>
+                <p>Crear, editar y administrar tus cursos de barbería. Gestiona contenido, lecciones y materiales.</p>
+                <a href="/cursos" class="btn btn-primary">Gestionar Cursos</a>
+            </div>
+            
+            <div class="action-card">
+                <div class="action-icon">👥</div>
+                <h4>Estudiantes</h4>
+                <p>Ver lista de estudiantes inscritos, revisar progreso y calificaciones de cada alumno.</p>
+                <a href="/estudiantes" class="btn btn-success">Ver Estudiantes</a>
+            </div>
+            
+            <div class="action-card">
+                <div class="action-icon">📊</div>
+                <h4>Estadísticas</h4>
+                <p>Analiza el rendimiento de tus cursos, métricas de estudiantes y reportes detallados.</p>
+                <a href="/estadisticas" class="btn btn-info">Ver Estadísticas</a>
+            </div>
+            
+            <div class="action-card">
+                <div class="action-icon">📝</div>
+                <h4>Evaluaciones</h4>
+                <p>Crear y gestionar exámenes, tareas y evaluaciones para tus estudiantes.</p>
+                <a href="/evaluaciones" class="btn btn-warning">Crear Evaluación</a>
+            </div>
+            
+            <div class="action-card">
+                <div class="action-icon">💬</div>
+                <h4>Mensajes</h4>
+                <p>Comunicación directa con estudiantes, responder preguntas y dar seguimiento.</p>
+                <a href="/mensajes" class="btn btn-info">Ver Mensajes</a>
+            </div>
+            
+            <div class="action-card">
+                <div class="action-icon">🧪</div>
+                <h4>Probar Sistema</h4>
+                <p>Verificar conexión a la base de datos y funcionamiento del sistema.</p>
+                <a href="/test-db" class="btn btn-warning" target="_blank">Probar Conexión</a>
+            </div>
+        </div>
+        
+        <div class="logout-section">
+            <p style="margin-bottom: 15px; color: var(--text-light);">
+                ¿Terminaste tu sesión de trabajo?
+            </p>
+            <form method="POST" action="/auth/logout" style="display: inline;">
+                <button type="submit" class="btn btn-danger">
+                    🚪 Cerrar Sesión
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Mostrar fecha y hora actual
+        document.getElementById('currentDate').textContent = new Date().toLocaleString('es-ES');
+        
+        // Confirmación antes de cerrar sesión
+        document.querySelector('form[action="/auth/logout"]').addEventListener('submit', function(e) {
+            if (!confirm('¿Estás seguro de que quieres cerrar sesión?')) {
+                e.preventDefault();
+            }
+        });
+
+        // Animación de entrada para las tarjetas
+        const cards = document.querySelectorAll('.action-card');
+        cards.forEach((card, index) => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            setTimeout(() => {
+                card.style.transition = 'all 0.5s ease';
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+            }, index * 100);
+        });
+    </script>
+</body>
+</html>

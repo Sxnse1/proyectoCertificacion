@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{title}} - Login</title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        .login-container {
+            max-width: 400px;
+            margin: 50px auto;
+            padding: 30px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            background: white;
+        }
+        .login-form {
+            display: flex;
+            flex-direction: column;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        .form-group input:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 2px rgba(0,123,255,0.25);
+        }
+        .btn {
+            padding: 12px 24px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        .btn:disabled {
+            background-color: #6c757d;
+            cursor: not-allowed;
+        }
+        .alert {
+            padding: 12px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+        .alert-error {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        .alert-success {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .back-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .back-link a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        .back-link a:hover {
+            text-decoration: underline;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h1>{{title}} - Iniciar Sesión</h1>
+        
+        {{#if error}}
+            <div class="alert alert-error">
+                {{error}}
+            </div>
+        {{/if}}
+        
+        {{#if success}}
+            <div class="alert alert-success">
+                {{success}}
+            </div>
+        {{/if}}
+        
+        <form class="login-form" method="POST" action="/auth/login">
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required 
+                       value="{{email}}" placeholder="ejemplo@correo.com">
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Contraseña:</label>
+                <input type="password" id="password" name="password" required 
+                       placeholder="Ingresa tu contraseña">
+            </div>
+            
+            <button type="submit" class="btn" id="loginBtn">
+                Iniciar Sesión
+            </button>
+        </form>
+        
+        <!-- Información de acceso -->
+        <div style="margin-top: 30px; padding: 20px; background: #f8f9fa; border-radius: 6px; font-size: 0.9em;">
+            <h4 style="margin-top: 0; color: #495057;">🔐 Tipos de Acceso:</h4>
+            <div style="margin-bottom: 15px;">
+                <strong>👨‍🏫 Instructores</strong> → Dashboard de gestión
+                <br><em style="color: #6c757d;">Ejemplo: juan@instructor.com / 123456</em>
+            </div>
+            <div>
+                <strong>👨‍🎓 Estudiantes</strong> → Redirige a une.edu.mx
+                <br><em style="color: #6c757d;">Ejemplo: pedro@student.com / student123</em>
+            </div>
+        </div>
+        
+        <div class="back-link">
+            <a href="/">← Volver al inicio</a>
+        </div>
+    </div>
+
+    <script>
+        // Prevenir múltiples envíos del formulario
+        document.querySelector('.login-form').addEventListener('submit', function() {
+            const btn = document.getElementById('loginBtn');
+            btn.disabled = true;
+            btn.textContent = 'Iniciando sesión...';
+        });
+    </script>
+</body>
+</html>

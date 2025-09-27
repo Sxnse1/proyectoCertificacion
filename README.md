@@ -40,6 +40,12 @@ npm start
 
 ## API Endpoints
 
+### Autenticación
+- `GET /auth/login` - Mostrar página de login
+- `POST /auth/login` - Procesar login
+- `GET /auth/dashboard` - Dashboard después del login
+- `POST /auth/logout` - Cerrar sesión
+
 ### Usuarios
 - `GET /users` - Obtener todos los usuarios
 - `GET /users/:id` - Obtener usuario por ID
@@ -50,6 +56,30 @@ npm start
     "email": "email@example.com"
   }
   ```
+
+## Sistema de Login con Roles
+
+### 👨‍🏫 Instructores (van al Dashboard):
+- **juan@instructor.com** / 123456
+- **maria@instructor.com** / password  
+- **carlos@instructor.com** / 123456
+- **ana@instructor.com** / instructor123
+
+### 👨‍🎓 Usuarios/Estudiantes (redirigen a UNE):
+- **pedro@student.com** / student123
+- **laura@student.com** / user123
+- **diego@student.com** / password123
+
+### 🧪 Usuarios de prueba (diferentes estatus):
+- **test@inactive.com** / test123 (inactivo)
+- **test@banned.com** / test123 (baneado)
+
+### Cómo funciona el login:
+1. Ve a la página principal (`http://localhost:3000`)
+2. Haz clic en "🔐 Iniciar Sesión" en la navegación
+3. **Si eres instructor**: serás redirigido al dashboard de gestión
+4. **Si eres usuario/estudiante**: serás redirigido automáticamente a `https://une.edu.mx`
+5. Los usuarios inactivos o baneados no podrán acceder
 
 ## Estructura del proyecto
 
