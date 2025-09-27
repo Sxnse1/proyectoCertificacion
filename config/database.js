@@ -10,26 +10,34 @@ const config = {
     password: process.env.DB_PASSWORD || '',
     port: parseInt(process.env.DB_PORT) || 1433,
     options: {
-        encrypt: process.env.DB_ENCRYPT === 'true', // Para Azure SQL Database
-        trustServerCertificate: process.env.DB_TRUST_CERT === 'true', // Para desarrollo local
+        encrypt: process.env.DB_ENCRYPT === 'true',
+        trustServerCertificate: process.env.DB_TRUST_CERT === 'true',
         enableArithAbort: true,
-        connectionTimeout: process.env.NODE_ENV === 'production' ? 60000 : 30000,
-        requestTimeout: process.env.NODE_ENV === 'production' ? 60000 : 30000,
-        // Configuraciones adicionales para producción
+        // Timeouts más largos para Heroku y AWS RDS
+        connectionTimeout: process.env.NODE_ENV === 'production' ? 90000 : 30000,
+        requestTimeout: process.env.NODE_ENV === 'production' ? 90000 : 30000,
+        // Configuraciones específicas para AWS RDS en Heroku
         ...(process.env.NODE_ENV === 'production' && {
+            // Usar TLS 1.2 mínimo para AWS RDS
             cryptoCredentialsDetails: {
                 minVersion: 'TLSv1.2'
-            }
+            },
+            // Configuraciones adicionales para estabilidad
+            packetSize: 4096,
+            connectionRetryInterval: 1000,
+            maxRetriesOnFailover: 3,
+            multiSubnetFailover: false
         })
     },
     pool: {
-        max: process.env.NODE_ENV === 'production' ? 20 : 10,
-        min: process.env.NODE_ENV === 'production' ? 5 : 0,
+        max: process.env.NODE_ENV === 'production' ? 15 : 10,
+        min: process.env.NODE_ENV === 'production' ? 2 : 0,
         idleTimeoutMillis: 30000,
-        acquireTimeoutMillis: 60000,
-        createTimeoutMillis: 30000,
+        acquireTimeoutMillis: 90000, // Más tiempo para adquirir conexión
+        createTimeoutMillis: 60000,  // Más tiempo para crear conexión
         destroyTimeoutMillis: 5000,
-        reapIntervalMillis: 1000
+        reapIntervalMillis: 1000,
+        createRetryIntervalMillis: 200
     }
 };
 
@@ -55,6 +63,9 @@ async function connect() {
         console.log(`[DB]    🔌 Puerto: ${config.port}`);
         console.log(`[DB]    🔐 Encriptación: ${config.options.encrypt ? 'SÍ' : 'NO'}`);
         console.log(`[DB]    🛡️  Certificado confiable: ${config.options.trustServerCertificate ? 'SÍ' : 'NO'}`);
+        console.log(`[DB]    🌍 Entorno: ${process.env.NODE_ENV || 'development'}`);
+        console.log(`[DB]    🕒 Timeout conexión: ${config.options.connectionTimeout}ms`);
+        console.log(`[DB]    🕒 Timeout consulta: ${config.options.requestTimeout}ms`);
         console.log('-'.repeat(50));
 
         console.log('[DB] ⏳ Estableciendo conexión...');
@@ -85,20 +96,43 @@ async function connect() {
         console.error('[DB] ❌ ERROR DE CONEXIÓN');
         console.log('='.repeat(50));
         console.error('[DB] 💥 Mensaje de error:', err.message);
-        console.error('[DB] 🔍 Detalles del error:', err.code || 'Sin código');
+        console.error('[DB] 🔍 Código de error:', err.code || 'Sin código');
+        console.error('[DB] 🔍 Número de error:', err.number || 'Sin número');
+        console.error('[DB] 🔍 Estado:', err.state || 'Sin estado');
+        console.error('[DB] 🔍 Severidad:', err.class || 'Sin severidad');
         
+        // Diagnósticos específicos para Heroku y AWS RDS
         if (err.message.includes('ECONNREFUSED')) {
-            console.error('[DB] 💡 Posibles soluciones:');
-            console.error('[DB]    1. Verificar que SQL Server esté ejecutándose');
-            console.error('[DB]    2. Verificar el puerto (por defecto 1433)');
-            console.error('[DB]    3. Verificar firewall de Windows');
-        } else if (err.message.includes('Login failed')) {
-            console.error('[DB] 💡 Posibles soluciones:');
-            console.error('[DB]    1. Verificar usuario y contraseña');
-            console.error('[DB]    2. Verificar permisos del usuario');
-            console.error('[DB]    3. Verificar autenticación SQL habilitada');
+            console.error('[DB] 💡 PROBLEMA DE CONECTIVIDAD:');
+            console.error('[DB]    - El servidor SQL no es accesible');
+            console.error('[DB]    - Verificar que el servidor esté ejecutándose');
+            console.error('[DB]    - Verificar configuración de Security Groups (AWS)');
+        } else if (err.message.includes('ETIMEOUT') || err.message.includes('timeout')) {
+            console.error('[DB] 💡 PROBLEMA DE TIMEOUT:');
+            console.error('[DB]    - Conexión muy lenta o bloqueada');
+            console.error('[DB]    - Verificar Security Groups en AWS RDS');
+            console.error('[DB]    - Verificar que el puerto 1433 esté abierto');
+            console.error('[DB]    - Agregar IPs de Heroku al whitelist');
+        } else if (err.message.includes('Login failed') || err.message.includes('authentication')) {
+            console.error('[DB] 💡 PROBLEMA DE AUTENTICACIÓN:');
+            console.error('[DB]    - Usuario o contraseña incorrectos');
+            console.error('[DB]    - Verificar variables de entorno en Heroku');
+            console.error('[DB]    - Verificar que el usuario tenga permisos');
+        } else if (err.message.includes('Cannot open database')) {
+            console.error('[DB] 💡 PROBLEMA DE BASE DE DATOS:');
+            console.error('[DB]    - La base de datos no existe');
+            console.error('[DB]    - El usuario no tiene acceso a la base de datos');
+            console.error('[DB]    - Verificar nombre de la base de datos');
+        } else if (err.message.includes('getaddrinfo ENOTFOUND')) {
+            console.error('[DB] 💡 PROBLEMA DE DNS:');
+            console.error('[DB]    - No se puede resolver el nombre del servidor');
+            console.error('[DB]    - Verificar el nombre del servidor en variables de entorno');
         }
         
+        console.error('[DB] 🔧 PARA HEROKU - Verificar:');
+        console.error('[DB]    1. heroku config (variables de entorno)');
+        console.error('[DB]    2. Security Groups en AWS RDS');
+        console.error('[DB]    3. heroku logs --tail (logs en vivo)');
         console.log('='.repeat(50));
         throw err;
     }
