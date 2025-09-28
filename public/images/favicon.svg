@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <defs>
+    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#2563eb;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1d4ed8;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Fondo circular -->
+  <circle cx="50" cy="50" r="48" fill="url(#gradient)" stroke="#1e40af" stroke-width="2"/>
+  
+  <!-- Tijeras -->
+  <!-- Hoja izquierda -->
+  <path d="M35 25 L25 35 L30 45 L45 35 Z" fill="white" stroke="#e5e7eb" stroke-width="1"/>
+  <!-- Hoja derecha -->
+  <path d="M65 25 L75 35 L70 45 L55 35 Z" fill="white" stroke="#e5e7eb" stroke-width="1"/>
+  
+  <!-- Mango izquierdo -->
+  <ellipse cx="30" cy="60" rx="8" ry="15" fill="white" stroke="#e5e7eb" stroke-width="1"/>
+  <!-- Mango derecho -->
+  <ellipse cx="70" cy="60" rx="8" ry="15" fill="white" stroke="#e5e7eb" stroke-width="1"/>
+  
+  <!-- Tornillo central -->
+  <circle cx="50" cy="40" r="3" fill="#6b7280"/>
+  <circle cx="50" cy="40" r="1.5" fill="white"/>
+  
+  <!-- Líneas de detalle en las hojas -->
+  <line x1="30" y1="30" x2="40" y2="40" stroke="#e5e7eb" stroke-width="0.5"/>
+  <line x1="70" y1="30" x2="60" y2="40" stroke="#e5e7eb" stroke-width="0.5"/>
+</svg>
