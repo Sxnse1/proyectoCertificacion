@@ -128,16 +128,115 @@ router.post('/login', async function(req, res, next) {
       });
     }
     
-    // Login exitoso
+    // Login exitoso - verificar si necesita 2FA
     console.log('[AUTH] ✅ Login exitoso para:', email, '- Rol:', user.rol);
     
-    // Crear sesión segura
+    const twoFactorService = require('../services/twoFactorService');
+    
+    // Verificar si el usuario requiere 2FA
+    if (twoFactorService.requires2FA(user.rol)) {
+      // Verificar si las columnas de 2FA existen antes de consultarlas
+      let twoFactorData = { two_factor_enabled: false, two_factor_verified: false };
+      
+      try {
+        const twoFactorResult = await db.executeQuery(
+          `SELECT two_factor_enabled, two_factor_verified FROM Usuarios WHERE id_usuario = @id`,
+          { id: user.id_usuario }
+        );
+        
+        if (twoFactorResult.recordset.length > 0) {
+          twoFactorData = twoFactorResult.recordset[0];
+        }
+      } catch (columnError) {
+        // Las columnas de 2FA no existen aún - continuar sin 2FA
+        console.log('[AUTH] ⚠️ Columnas de 2FA no encontradas, continuando sin 2FA:', columnError.message);
+        
+        // Crear sesión normal y continuar
+        req.session.userId = user.id_usuario;
+        req.session.userRole = user.rol;
+        req.session.userName = user.nombre + ' ' + user.apellido;
+        req.session.userEmail = user.email;
+        
+        console.log('[AUTH] ✅ Sesión creada para:', user.email);
+        
+        // Redirigir según el rol
+        if (user.rol === 'instructor' || user.rol === 'admin') {
+          return res.redirect('/dashboard');
+        } else {
+          return res.redirect('/cursos');
+        }
+      }
+      
+      if (!twoFactorData.two_factor_enabled || !twoFactorData.two_factor_verified) {
+        // Usuario necesita configurar 2FA
+        console.log('[AUTH] 🔐 Usuario requiere configurar 2FA:', email);
+        
+        // Crear sesión temporal para configurar 2FA
+        req.session.user = {
+          id: user.id_usuario,
+          nombre: `${user.nombre} ${user.apellido}`,
+          email: user.email,
+          rol: user.rol,
+          two_factor_enabled: false,
+          two_factor_verified: false,
+          loginTime: new Date().toISOString()
+        };
+        
+        req.session.save((err) => {
+          if (err) {
+            console.error('[AUTH] ❌ Error guardando sesión:', err);
+            return res.render('login-bootstrap', {
+              title: 'Iniciar Sesión',
+              error: 'Error interno. Intenta nuevamente.',
+              email: email,
+              layout: false
+            });
+          }
+          
+          console.log('[AUTH] 🔐 Redirigiendo a configuración de 2FA');
+          res.redirect('/two-factor/setup');
+        });
+        return;
+      } else {
+        // Usuario tiene 2FA configurado - necesita verificarlo
+        console.log('[AUTH] 🔐 Usuario requiere verificación 2FA:', email);
+        
+        // Crear sesión pendiente para verificación 2FA
+        req.session.pending2FA = {
+          email: user.email,
+          userId: user.id_usuario,
+          nombre: `${user.nombre} ${user.apellido}`,
+          rol: user.rol,
+          loginTime: new Date().toISOString()
+        };
+        
+        req.session.save((err) => {
+          if (err) {
+            console.error('[AUTH] ❌ Error guardando sesión pendiente:', err);
+            return res.render('login-bootstrap', {
+              title: 'Iniciar Sesión',
+              error: 'Error interno. Intenta nuevamente.',
+              email: email,
+              layout: false
+            });
+          }
+          
+          console.log('[AUTH] 🔐 Redirigiendo a verificación 2FA');
+          res.redirect('/two-factor/verify');
+        });
+        return;
+      }
+    }
+    
+    // Usuario no requiere 2FA o ya está verificado - crear sesión completa
     const nombreCompleto = `${user.nombre} ${user.apellido}`;
     req.session.user = {
       id: user.id_usuario,
       nombre: nombreCompleto,
       email: user.email,
       rol: user.rol,
+      two_factor_enabled: false,
+      two_factor_verified: false,
       loginTime: new Date().toISOString()
     };
     

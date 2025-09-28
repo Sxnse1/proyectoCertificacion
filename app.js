@@ -45,6 +45,25 @@ hbs.registerHelper('substring', function(str, start, length) {
   return str.substring(start, length || str.length).toUpperCase();
 });
 
+hbs.registerHelper('setVar', function(varName, varValue, options) {
+  if (!options.data.root) options.data.root = {};
+  if (!options.data.root[varName]) options.data.root[varName] = {};
+  options.data.root[varName][varValue] = true;
+  return '';
+});
+
+hbs.registerHelper('unless', function(conditional, options) {
+  if (!conditional) {
+    return options.fn(this);
+  } else {
+    return options.inverse(this);
+  }
+});
+
+hbs.registerHelper('json', function(context) {
+  return JSON.stringify(context);
+});
+
 // Configurar express-session para autenticación segura
 var session = require('express-session');
 
@@ -110,6 +129,18 @@ app.use('/usuarios', requireRole(['instructor', 'admin']), usuariosRouter);
 app.use('/dashboard', requireAuth, dashboardRouter);
 app.use('/video', requireAuth, videoRouter);
 app.use('/cursos-db', requireAuth, cursosDbRouter);
+
+// Importar rutas de administración de videos
+const videosAdminRouter = require('./routes/videos-admin');
+app.use('/videos-admin', requireRole(['admin', 'instructor']), videosAdminRouter);
+
+// Ruta temporal para agregar video de Vimeo existente
+const addVimeoTempRouter = require('./routes/add-vimeo-temp');
+app.use('/temp', requireRole(['admin', 'instructor']), addVimeoTempRouter);
+
+// Rutas de autenticación de dos factores
+const twoFactorRouter = require('./routes/two-factor');
+app.use('/two-factor', twoFactorRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

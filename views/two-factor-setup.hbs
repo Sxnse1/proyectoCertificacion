@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{title}} - StartEducation</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/images/favicon.svg">
+    
+    <!-- Bootstrap 5.3 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-color: #ea580c;
+            --primary-hover: #c2410c;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --text-dark: #1f2937;
+            --text-muted: #6b7280;
+            --border-color: #e5e7eb;
+            --bg-light: #f8fafc;
+        }
+
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            color: var(--text-dark);
+            min-height: 100vh;
+        }
+
+        .setup-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .setup-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+
+        .setup-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .setup-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(5deg); }
+        }
+
+        .setup-header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .setup-header p {
+            opacity: 0.9;
+            font-size: 1.1rem;
+            margin: 0;
+            position: relative;
+            z-index: 2;
+        }
+
+        .setup-body {
+            padding: 2rem;
+        }
+
+        .step-container {
+            margin-bottom: 2rem;
+        }
+
+        .step-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .step-number {
+            width: 40px;
+            height: 40px;
+            background: var(--primary-color);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            margin-right: 1rem;
+        }
+
+        .step-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin: 0;
+        }
+
+        .qr-container {
+            text-align: center;
+            padding: 2rem;
+            background: var(--bg-light);
+            border-radius: 12px;
+            border: 2px dashed var(--border-color);
+            margin: 1rem 0;
+        }
+
+        .qr-code {
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            display: inline-block;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .manual-entry {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+
+        .manual-key {
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            word-break: break-all;
+            background: white;
+            padding: 0.5rem;
+            border-radius: 4px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .backup-codes {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+        }
+
+        .backup-codes-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 0.5rem;
+            margin: 1rem 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+
+        .backup-code {
+            background: white;
+            padding: 0.5rem;
+            border-radius: 4px;
+            border: 1px solid #fecaca;
+            text-align: center;
+        }
+
+        .verification-form {
+            background: var(--bg-light);
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 1rem 0;
+        }
+
+        .form-control {
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            padding: 0.75rem 1rem;
+            font-size: 1.1rem;
+            text-align: center;
+            letter-spacing: 0.5rem;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(234, 88, 12, 0.25);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            padding: 0.75rem 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, var(--primary-hover) 0%, #9a3412 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(234, 88, 12, 0.4);
+        }
+
+        .btn-outline-secondary {
+            border-color: var(--border-color);
+            color: var(--text-muted);
+            border-radius: 8px;
+        }
+
+        .alert {
+            border-radius: 8px;
+            border: none;
+        }
+
+        .alert-warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .alert-danger {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .apps-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .app-card {
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .app-card:hover {
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .app-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            color: var(--primary-color);
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.9);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+
+        .spinner-border {
+            color: var(--primary-color);
+        }
+
+        @media (max-width: 768px) {
+            .setup-container {
+                margin: 1rem auto;
+            }
+            
+            .setup-header {
+                padding: 1.5rem;
+            }
+            
+            .setup-body {
+                padding: 1.5rem;
+            }
+            
+            .form-control {
+                font-size: 1rem;
+                letter-spacing: 0.25rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="setup-container">
+        <div class="setup-card">
+            <!-- Header -->
+            <div class="setup-header">
+                <h1><i class="bi bi-shield-check me-2"></i>Configurar 2FA</h1>
+                <p>Protege tu cuenta con autenticación de dos factores</p>
+            </div>
+
+            <div class="setup-body">
+                <!-- Paso 1: Descargar App -->
+                <div class="step-container">
+                    <div class="step-header">
+                        <div class="step-number">1</div>
+                        <h3 class="step-title">Descargar Aplicación de Autenticación</h3>
+                    </div>
+                    
+                    <p class="text-muted">Descarga una de estas aplicaciones en tu dispositivo móvil:</p>
+                    
+                    <div class="apps-grid">
+                        <div class="app-card">
+                            <div class="app-icon">
+                                <i class="bi bi-google"></i>
+                            </div>
+                            <h5>Google Authenticator</h5>
+                            <small class="text-muted">iOS y Android</small>
+                        </div>
+                        <div class="app-card">
+                            <div class="app-icon">
+                                <i class="bi bi-shield-lock"></i>
+                            </div>
+                            <h5>Authy</h5>
+                            <small class="text-muted">iOS, Android, Desktop</small>
+                        </div>
+                        <div class="app-card">
+                            <div class="app-icon">
+                                <i class="bi bi-microsoft"></i>
+                            </div>
+                            <h5>Microsoft Authenticator</h5>
+                            <small class="text-muted">iOS y Android</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Paso 2: Escanear QR -->
+                <div class="step-container">
+                    <div class="step-header">
+                        <div class="step-number">2</div>
+                        <h3 class="step-title">Escanear Código QR</h3>
+                    </div>
+                    
+                    <p class="text-muted">Abre tu aplicación de autenticación y escanea este código QR:</p>
+                    
+                    <div class="qr-container">
+                        <div class="qr-code">
+                            <img src="{{qrCode}}" alt="Código QR para 2FA" style="width: 200px; height: 200px;">
+                        </div>
+                        <p class="mt-2 text-muted"><small>Escanea con tu aplicación de autenticación</small></p>
+                    </div>
+
+                    <!-- Configuración Manual -->
+                    <div class="manual-entry">
+                        <h6><i class="bi bi-keyboard me-2"></i>¿No puedes escanear el código?</h6>
+                        <p class="mb-2">Introduce esta clave manualmente en tu aplicación:</p>
+                        <div class="manual-key">{{manualKey}}</div>
+                    </div>
+                </div>
+
+                <!-- Paso 3: Códigos de Respaldo -->
+                <div class="step-container">
+                    <div class="step-header">
+                        <div class="step-number">3</div>
+                        <h3 class="step-title">Guardar Códigos de Respaldo</h3>
+                    </div>
+                    
+                    <div class="alert alert-warning">
+                        <i class="bi bi-exclamation-triangle me-2"></i>
+                        <strong>¡Importante!</strong> Guarda estos códigos en un lugar seguro. Los necesitarás si pierdes acceso a tu aplicación de autenticación.
+                    </div>
+
+                    <div class="backup-codes">
+                        <h6><i class="bi bi-key me-2"></i>Códigos de Respaldo</h6>
+                        <div class="backup-codes-list">
+                            {{#each backupCodes}}
+                            <div class="backup-code">{{this}}</div>
+                            {{/each}}
+                        </div>
+                        <button type="button" class="btn btn-outline-secondary btn-sm" onclick="downloadBackupCodes()">
+                            <i class="bi bi-download me-2"></i>Descargar Códigos
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Paso 4: Verificar -->
+                <div class="step-container">
+                    <div class="step-header">
+                        <div class="step-number">4</div>
+                        <h3 class="step-title">Verificar Configuración</h3>
+                    </div>
+                    
+                    <p class="text-muted">Introduce el código de 6 dígitos que aparece en tu aplicación de autenticación:</p>
+                    
+                    <div class="verification-form">
+                        <form id="verificationForm">
+                            <div class="mb-3">
+                                <label for="verificationCode" class="form-label">Código de Verificación</label>
+                                <input type="text" class="form-control" id="verificationCode" 
+                                       placeholder="000000" maxlength="6" pattern="[0-9]{6}" required>
+                                <div class="form-text">Introduce el código de 6 dígitos de tu aplicación</div>
+                            </div>
+                            
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                <a href="/dashboard" class="btn btn-outline-secondary me-md-2">
+                                    <i class="bi bi-arrow-left me-2"></i>Cancelar
+                                </a>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-check-circle me-2"></i>Verificar y Activar 2FA
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="alert alert-info mt-4">
+                    <i class="bi bi-info-circle me-2"></i>
+                    Una vez activado el 2FA, necesitarás tu aplicación de autenticación cada vez que inicies sesión.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div>
+            <div class="spinner-border mb-3" role="status">
+                <span class="visually-hidden">Cargando...</span>
+            </div>
+            <p>Configurando autenticación de dos factores...</p>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5.3 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        const secret = '{{secret}}';
+        const backupCodes = {{{json backupCodes}}};
+
+        // Auto-format verification code
+        document.getElementById('verificationCode').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length > 6) value = value.slice(0, 6);
+            e.target.value = value;
+        });
+
+        // Handle form submission
+        document.getElementById('verificationForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const code = document.getElementById('verificationCode').value;
+            
+            if (code.length !== 6) {
+                alert('Por favor ingresa un código de 6 dígitos');
+                return;
+            }
+
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            loadingOverlay.style.display = 'flex';
+
+            try {
+                const response = await fetch('/2fa/verify-setup', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        token: code,
+                        secret: secret,
+                        backup_codes: backupCodes
+                    })
+                });
+
+                const result = await response.json();
+                loadingOverlay.style.display = 'none';
+
+                if (result.success) {
+                    alert('¡2FA configurado exitosamente! Ahora tu cuenta está más segura.');
+                    window.location.href = '/dashboard';
+                } else {
+                    alert('Error: ' + result.error);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                loadingOverlay.style.display = 'none';
+                alert('Error de conexión. Inténtalo nuevamente.');
+            }
+        });
+
+        // Download backup codes
+        function downloadBackupCodes() {
+            const codesText = backupCodes.map((code, index) => 
+                `${(index + 1).toString().padStart(2, '0')}. ${code}`
+            ).join('\n');
+            
+            const element = document.createElement('a');
+            element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(
+                'CÓDIGOS DE RESPALDO - STARTEDUCATION\n' +
+                'Fecha: ' + new Date().toLocaleDateString() + '\n' +
+                'Usuario: {{user.email}}\n\n' +
+                'IMPORTANTE: Guarda estos códigos en un lugar seguro.\n' +
+                'Cada código solo se puede usar una vez.\n\n' +
+                codesText + '\n\n' +
+                'Si necesitas nuevos códigos, ve a tu perfil > Seguridad > Regenerar códigos de respaldo'
+            ));
+            element.setAttribute('download', 'starteducation-backup-codes.txt');
+            element.style.display = 'none';
+            document.body.appendChild(element);
+            element.click();
+            document.body.removeChild(element);
+        }
+
+        console.log('🔐 Configuración de 2FA iniciada para: {{user.email}}');
+    </script>
+</body>
+</html>
