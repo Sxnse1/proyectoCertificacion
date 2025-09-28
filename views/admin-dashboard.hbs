@@ -21,8 +21,8 @@
     <style>
         :root {
             --sidebar-width: 280px;
-            --primary-color: #2563eb;
-            --primary-hover: #1d4ed8;
+            --primary-color: #ea580c;
+            --primary-hover: #c2410c;
             --success-color: #10b981;
             --warning-color: #f59e0b;
             --danger-color: #ef4444;
@@ -71,7 +71,7 @@
         }
 
         .sidebar-brand i {
-            color: #3b82f6;
+            color: var(--primary-color);
         }
 
         .user-profile {
@@ -83,7 +83,7 @@
             width: 48px;
             height: 48px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -133,12 +133,12 @@
         }
 
         .nav-link:hover {
-            background: rgba(59, 130, 246, 0.1);
-            color: #3b82f6;
+            background: rgba(234, 88, 12, 0.1);
+            color: var(--primary-color);
         }
 
         .nav-link.active {
-            background: #3b82f6;
+            background: var(--primary-color);
             color: white;
         }
 
@@ -323,7 +323,7 @@
         .text-warning { color: var(--warning-color) !important; }
         .text-danger { color: var(--danger-color) !important; }
         
-        .bg-primary-light { background-color: rgba(37, 99, 235, 0.1) !important; }
+        .bg-primary-light { background-color: rgba(234, 88, 12, 0.1) !important; }
         .bg-success-light { background-color: rgba(16, 185, 129, 0.1) !important; }
         .bg-warning-light { background-color: rgba(245, 158, 11, 0.1) !important; }
         .bg-danger-light { background-color: rgba(239, 68, 68, 0.1) !important; }

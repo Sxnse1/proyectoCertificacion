@@ -5,16 +5,26 @@ var bcrypt = require('bcryptjs');
 
 /* GET registro de usuario */
 router.get('/', function(req, res, next) {
-  res.render('register', { title: 'Registro' });
+  res.render('register-bootstrap', { 
+    title: 'Registro de Usuario',
+    layout: false 
+  });
 });
 
 /* POST crear cuenta pública */
 router.post('/', async function(req, res, next) {
-  const { nombre, email, password } = req.body;
+  const { nombre, apellido, email, password } = req.body;
 
   // Validaciones básicas
-  if (!nombre || !email || !password) {
-    return res.render('register', { title: 'Registro', error: 'Todos los campos son requeridos', nombre, email });
+  if (!nombre || !apellido || !email || !password) {
+    return res.render('register-bootstrap', { 
+      title: 'Registro de Usuario', 
+      error: 'Todos los campos son requeridos', 
+      nombre, 
+      apellido,
+      email,
+      layout: false 
+    });
   }
 
   try {
@@ -26,21 +36,22 @@ router.post('/', async function(req, res, next) {
       .query('SELECT id_usuario FROM Usuarios WHERE email = @email');
 
     if (check.recordset.length > 0) {
-      return res.render('register', { title: 'Registro', error: 'El email ya está registrado', nombre, email });
+      return res.render('register-bootstrap', { 
+        title: 'Registro de Usuario', 
+        error: 'El email ya está registrado', 
+        nombre, 
+        apellido,
+        email,
+        layout: false 
+      });
     }
 
     // Hashear contraseña
     const hashed = await bcrypt.hash(password, 10);
 
-    // Separar nombre y apellido
-    const fullName = (nombre || '').trim();
-    let firstName = fullName;
-    let lastName = '';
-    if (fullName.includes(' ')) {
-      const parts = fullName.split(' ');
-      firstName = parts.shift();
-      lastName = parts.join(' ');
-    }
+    // Usar nombre y apellido directamente
+    const firstName = (nombre || '').trim();
+    const lastName = (apellido || '').trim();
 
     // Generar nombre_usuario desde email local-part
     const nombreUsuario = email.split('@')[0];
@@ -68,7 +79,11 @@ router.post('/', async function(req, res, next) {
 
   } catch (err) {
     console.error('[REGISTER] Error al registrar usuario:', err);
-    return res.render('register', { title: 'Registro', error: 'Error interno del servidor' });
+    return res.render('register-bootstrap', { 
+      title: 'Registro de Usuario', 
+      error: 'Error interno del servidor',
+      layout: false 
+    });
   }
 });
 
