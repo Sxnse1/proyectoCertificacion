@@ -1,152 +1,270 @@
 <!-- Navigation -->
-<nav class="navbar">
+<nav class="modern-navbar">
   <div class="container">
     <div class="nav-brand">
-      <h2>StartEducation</h2>
+      <span class="logo-text">StartEducation</span>
+      <span class="logo-badge">BARBERÍA</span>
     </div>
-    <a href="/auth/login" class="mobile-login-btn">🔐 Login</a>
-    <button class="mobile-menu-toggle" id="mobileMenuToggle">
-      <span class="hamburger-line"></span>
-      <span class="hamburger-line"></span>
-      <span class="hamburger-line"></span>
-    </button>
-    <div class="nav-menu" id="navMenu">
-      <a href="#cursos">Cursos</a>
-      <a href="#nosotros">Nosotros</a>
-      <a href="#contacto">Contacto</a>
-      <a href="/auth/login" class="login-btn">🔐 Iniciar Sesión</a>
+    <div class="nav-actions">
+      <a href="/auth/login" class="nav-login">Iniciar sesión</a>
+      <a href="/register" class="nav-register">Unirse a la Academia</a>
     </div>
   </div>
 </nav>
 
 <!-- Hero Section -->
-<section class="hero-section">
-  <div class="hero-bg"></div>
-  <div></div>
+<section class="modern-hero">
+  <div class="hero-gradient"></div>
   <div class="container">
     <div class="hero-content">
-      <h1 class="hero-title">Conviértete en un <span class="highlight">Barbero Profesional</span></h1>
-      <p class="hero-subtitle">Aprende las técnicas más modernas de barbería con nuestros cursos profesionales. De principiante a experto en pocas semanas.</p>
-      <div class="hero-buttons">
-        <button class="btn-primary">Ver Cursos</button>
-        <button class="btn-secondary">Conocer Más</button>
-      </div>
-      <div class="hero-stats">
-        <div class="stat">
-          <span class="stat-number">500+</span>
-          <span class="stat-label">Estudiantes</span>
+      <div class="hero-main">
+        <h1 class="hero-title">
+          Conviértete en 
+          <span class="hero-highlight">Barbero Full-Stack</span>
+        </h1>
+        <p class="hero-description">
+          Todo lo que necesitas aprender barbería profesional en un solo lugar
+        </p>
+        <div class="hero-actions">
+          <a href="/register" class="btn-hero-primary">
+            Sé parte de la Academia
+            <span class="btn-label">NUEVO</span>
+          </a>
+          <span class="hero-divider">O también puedes</span>
+          <a href="/auth/login" class="btn-hero-secondary">Iniciar sesión</a>
         </div>
-        <div class="stat">
-          <span class="stat-number">15+</span>
-          <span class="stat-label">Cursos</span>
-        </div>
-        <div class="stat">
-          <span class="stat-number">98%</span>
-          <span class="stat-label">Satisfacción</span>
-        </div>
-      </div>
-    </div>
-    <div class="hero-image">
-      <div class="hero-card">
-        <div class="barber-icon">✂️</div>
-        <h3>Curso Básico</h3>
-        <p>Fundamentos de barbería</p>
-        <span class="price">$299</span>
       </div>
     </div>
   </div>
 </section>
 
-<!-- Courses Section -->
-<section class="courses-section" id="cursos">
+<!-- Cursos Section -->
+<section class="courses-section">
   <div class="container">
-    <h2 class="section-title">Nuestros Cursos Populares</h2>
-    <p class="section-subtitle">Programas diseñados para llevarte desde principiante hasta barbero profesional</p>
-    
+    <div class="section-header">
+      <h2 class="section-title">Cursos disponibles</h2>
+    </div>
     <div class="courses-grid">
-      <div class="course-card">
-        <div class="course-image">
-          <div class="course-icon">✂️</div>
-        </div>
-        <div class="course-content">
-          <h3>Barbería Básica</h3>
-          <p>Aprende los fundamentos del corte de cabello masculino, manejo de herramientas y técnicas básicas.</p>
-          <div class="course-details">
-            <span class="duration">6 semanas</span>
-            <span class="level">Principiante</span>
-          </div>
-          <div class="course-price">
-            <span class="price">$299</span>
-            <button class="btn-enroll">Inscribirse</button>
-          </div>
-        </div>
-      </div>
-
+      <!-- Curso destacado -->
       <div class="course-card featured">
-        <div class="featured-badge">Más Popular</div>
-        <div class="course-image">
-          <div class="course-icon">🏆</div>
-        </div>
+        <div class="course-badge">Exclusivo Lifetime y Anual</div>
+        <div class="course-tag">Nuevo</div>
         <div class="course-content">
-          <h3>Barbería Profesional</h3>
-          <p>Domina técnicas avanzadas: fade, degradados, diseños creativos y atención al cliente profesional.</p>
-          <div class="course-details">
-            <span class="duration">12 semanas</span>
-            <span class="level">Intermedio</span>
-          </div>
-          <div class="course-price">
-            <span class="price">$599</span>
-            <button class="btn-enroll">Inscribirse</button>
-          </div>
+          <h3 class="course-title">Curso de Técnicas Avanzadas de Barbería</h3>
+          <p class="course-subtitle">Técnicas Avanzadas de Barbería</p>
+          <div class="course-duration">Duración: 3h 45m</div>
+          <a href="/auth/login" class="course-link">Ir al curso</a>
+        </div>
+      </div>
+
+      <!-- Otros cursos -->
+      <div class="course-card">
+        <div class="course-content">
+          <h3 class="course-title">Corte Clásico y Moderno</h3>
+          <p class="course-subtitle">Corte Clásico y Moderno</p>
+          <div class="course-duration">Duración: 2h 30m</div>
+          <a href="/auth/login" class="course-link">Ir al curso</a>
         </div>
       </div>
 
       <div class="course-card">
-        <div class="course-image">
-          <div class="course-icon">💼</div>
-        </div>
         <div class="course-content">
-          <h3>Barbería Empresarial</h3>
-          <p>Aprende a montar tu propia barbería: gestión, marketing, finanzas y liderazgo empresarial.</p>
-          <div class="course-details">
-            <span class="duration">8 semanas</span>
-            <span class="level">Avanzado</span>
-          </div>
-          <div class="course-price">
-            <span class="price">$899</span>
-            <button class="btn-enroll">Inscribirse</button>
-          </div>
+          <h3 class="course-title">Afeitado Profesional</h3>
+          <p class="course-subtitle">Afeitado Profesional</p>
+          <div class="course-duration">Duración: 1h 45m</div>
+          <a href="/auth/login" class="course-link">Ir al curso</a>
+        </div>
+      </div>
+
+      <div class="course-card">
+        <div class="course-content">
+          <h3 class="course-title">Barbería desde Cero</h3>
+          <p class="course-subtitle">Barbería desde Cero</p>
+          <div class="course-duration">Duración: 4h 20m</div>
+          <a href="/auth/login" class="course-link">Ir al curso</a>
+        </div>
+      </div>
+
+      <div class="course-card">
+        <div class="course-content">
+          <h3 class="course-title">Diseño de Barba</h3>
+          <p class="course-subtitle">Diseño de Barba</p>
+          <div class="course-duration">Duración: 2h 15m</div>
+          <a href="/auth/login" class="course-link">Ir al curso</a>
+        </div>
+      </div>
+
+      <div class="course-card">
+        <div class="course-content">
+          <h3 class="course-title">Colorimetría Capilar</h3>
+          <p class="course-subtitle">Colorimetría Capilar</p>
+          <div class="course-duration">Duración: 1h 50m</div>
+          <a href="/auth/login" class="course-link">Ir al curso</a>
+        </div>
+      </div>
+
+      <!-- Curso en desarrollo -->
+      <div class="course-card coming-soon">
+        <div class="course-status">Disponible Próximamente</div>
+        <div class="course-development">En desarrollo</div>
+        <div class="course-content">
+          <h3 class="course-title">Barbería Moderna: Tendencias 2025</h3>
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- Why Choose Us Section -->
-<section class="why-section">
+<!-- Benefits Section -->
+<section class="benefits-section">
   <div class="container">
-    <div class="why-content">
-      <h2>¿Por qué elegir StartEducation?</h2>
-      <div class="features-grid">
-        <div class="feature">
-          <div class="feature-icon">👨‍🏫</div>
-          <h3>Instructores Expertos</h3>
-          <p>Aprende de barberos profesionales con años de experiencia en el campo.</p>
+    <div class="section-header">
+      <h2 class="section-title">Disfruta de las ventajas de formar parte de la academia</h2>
+    </div>
+    <div class="benefits-grid">
+      <div class="benefit-card">
+        <div class="benefit-icon">🎓</div>
+        <h3 class="benefit-title">Aprendizaje Estructurado</h3>
+        <p class="benefit-description">Cursos organizados de principiante a experto con metodología probada</p>
+      </div>
+      
+      <div class="benefit-card">
+        <div class="benefit-icon">👨‍🏫</div>
+        <h3 class="benefit-title">Instructores Expertos</h3>
+        <p class="benefit-description">Aprende de barberos profesionales con años de experiencia</p>
+      </div>
+      
+      <div class="benefit-card">
+        <div class="benefit-icon">🏆</div>
+        <h3 class="benefit-title">Certificación Oficial</h3>
+        <p class="benefit-description">Obtén certificados que respalden tus habilidades profesionales</p>
+      </div>
+      
+      <div class="benefit-card">
+        <div class="benefit-icon">🔄</div>
+        <h3 class="benefit-title">Actualizaciones Constantes</h3>
+        <p class="benefit-description">Contenido actualizado con las últimas tendencias y técnicas</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Pricing Section -->
+<section class="pricing-section">
+  <div class="container">
+    <div class="section-header">
+      <h2 class="section-title">Elige tu plan</h2>
+      <p class="section-subtitle">Accede a todo el contenido de la academia</p>
+    </div>
+    
+    <div class="pricing-grid">
+      <!-- Plan Mensual -->
+      <div class="pricing-card">
+        <div class="pricing-header">
+          <h3 class="plan-name">Plan Mensual</h3>
+          <div class="plan-price">
+            <span class="price-amount">$19</span>
+            <span class="price-period">/mes</span>
+          </div>
         </div>
-        <div class="feature">
-          <div class="feature-icon">🛠️</div>
-          <h3>Herramientas Profesionales</h3>
-          <p>Practica con las mejores herramientas y equipos utilizados en barberías de élite.</p>
+        <div class="pricing-features">
+          <div class="feature">✅ Acceso a todos los cursos</div>
+          <div class="feature">✅ Certificación por curso</div>
+          <div class="feature">✅ Soporte por chat</div>
+          <div class="feature">✅ Actualizaciones incluidas</div>
         </div>
-        <div class="feature">
-          <div class="feature-icon">�</div>
-          <h3>Certificación Oficial</h3>
-          <p>Obtén un certificado reconocido que te abrirá puertas en el mundo profesional.</p>
+        <a href="/register" class="pricing-btn">Comenzar prueba</a>
+      </div>
+
+      <!-- Plan Anual (Popular) -->
+      <div class="pricing-card popular">
+        <div class="popular-badge">Más Popular</div>
+        <div class="pricing-header">
+          <h3 class="plan-name">Plan Anual</h3>
+          <div class="plan-price">
+            <span class="price-amount">$149</span>
+            <span class="price-period">/año</span>
+          </div>
+          <div class="plan-savings">Ahorra $79 al año</div>
         </div>
-        <div class="feature">
-          <div class="feature-icon">�</div>
-          <h3>Apoyo Laboral</h3>
-          <p>Te ayudamos a encontrar trabajo o a montar tu propio negocio de barbería.</p>
+        <div class="pricing-features">
+          <div class="feature">✅ Todo del plan mensual</div>
+          <div class="feature">✅ Canal Discord exclusivo</div>
+          <div class="feature">✅ Mentorías grupales mensuales</div>
+          <div class="feature">✅ Acceso prioritario a nuevos cursos</div>
+          <div class="feature">✅ Soporte prioritario</div>
+        </div>
+        <a href="/register" class="pricing-btn">Suscribirme ahora</a>
+      </div>
+
+      <!-- Plan Lifetime -->
+      <div class="pricing-card premium">
+        <div class="premium-badge">Acceso de por vida</div>
+        <div class="pricing-header">
+          <h3 class="plan-name">Plan Lifetime</h3>
+          <div class="plan-price">
+            <span class="price-amount">$399</span>
+            <span class="price-period">pago único</span>
+          </div>
+          <div class="plan-savings">Mejor valor a largo plazo</div>
+        </div>
+        <div class="pricing-features">
+          <div class="feature">✅ Todo del plan anual</div>
+          <div class="feature">✅ Acceso de por vida</div>
+          <div class="feature">✅ Sorteos exclusivos</div>
+          <div class="feature">✅ Beta de nuevos cursos</div>
+          <div class="feature">✅ Mentoría 1:1 trimestral</div>
+          <div class="feature">✅ Certificación Premium</div>
+        </div>
+        <a href="/register" class="pricing-btn">Inversión única</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Testimonials Section -->
+<section class="testimonials-section" id="testimonials">
+  <div class="container">
+    <div class="section-header">
+      <h2 class="section-title">Lo que dicen nuestros estudiantes</h2>
+    </div>
+    <div class="testimonials-grid">
+      <div class="testimonial-card">
+        <div class="testimonial-content">
+          <p>"La academia me ayudó a perfeccionar mis técnicas de fade y degradado. Los cursos son muy detallados y fáciles de seguir."</p>
+        </div>
+        <div class="testimonial-author">
+          <div class="author-avatar">👤</div>
+          <div class="author-info">
+            <div class="author-name">Carlos Mendoza</div>
+            <div class="author-title">Barbero Profesional</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="testimonial-card">
+        <div class="testimonial-content">
+          <p>"Como principiante, los cursos desde cero me dieron toda la base que necesitaba. Ahora trabajo en mi propia barbería."</p>
+        </div>
+        <div class="testimonial-author">
+          <div class="author-avatar">👤</div>
+          <div class="author-info">
+            <div class="author-name">Miguel Torres</div>
+            <div class="author-title">Emprendedor</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="testimonial-card">
+        <div class="testimonial-content">
+          <p>"Las técnicas avanzadas que aprendí aquí han hecho que mis clientes regresen una y otra vez. Excelente inversión."</p>
+        </div>
+        <div class="testimonial-author">
+          <div class="author-avatar">👤</div>
+          <div class="author-info">
+            <div class="author-name">Ana Rodríguez</div>
+            <div class="author-title">Estilista Profesional</div>
+          </div>
         </div>
       </div>
     </div>
@@ -157,66 +275,136 @@
 <section class="cta-section">
   <div class="container">
     <div class="cta-content">
-      <h2>¿Listo para comenzar tu carrera como barbero?</h2>
-      <p>Únete a más de 500 estudiantes que ya han transformado su futuro profesional</p>
-      <button class="btn-cta">Comenzar Ahora</button>
+      <h2 class="cta-title">¿Listo para comenzar tu transformación profesional?</h2>
+      <p class="cta-description">Únete a miles de barberos que ya están mejorando sus habilidades con nosotros</p>
+      <div class="cta-actions">
+        <a href="/register" class="btn-cta-primary">Sé parte de la Academia</a>
+        <a href="/auth/login" class="btn-cta-secondary">Iniciar sesión</a>
+      </div>
     </div>
   </div>
 </section>
 
-<script>
-// Script para manejar el menú móvil
-document.addEventListener('DOMContentLoaded', function() {
-  const mobileToggle = document.getElementById('mobileMenuToggle');
-  const navMenu = document.getElementById('navMenu');
-  
-  if (mobileToggle && navMenu) {
-    mobileToggle.addEventListener('click', function() {
-      navMenu.classList.toggle('active');
+<!-- FAQ Section -->
+<section class="faq-section" id="faq">
+  <div class="container">
+    <div class="section-header">
+      <h2 class="section-title">Preguntas frecuentes</h2>
+      <p class="section-subtitle">F.A.Q</p>
+    </div>
+    
+    <div class="faq-grid">
+      <div class="faq-item">
+        <div class="faq-question">
+          <h3>¿Cómo accedo al contenido de la academia?</h3>
+          <span class="faq-icon">+</span>
+        </div>
+        <div class="faq-answer">
+          <p>Una vez que te registres y elijas tu plan, tendrás acceso inmediato a todo el contenido de la academia. Solo necesitas iniciar sesión en la plataforma.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question">
+          <h3>¿Qué incluye el plan Lifetime?</h3>
+          <span class="faq-icon">+</span>
+        </div>
+        <div class="faq-answer">
+          <p>El plan Lifetime te da acceso de por vida a toda la academia, acceso a un canal exclusivo en Discord, acceso prioritario a nuevos cursos, mentorías grupales, sorteos exclusivos y soporte prioritario.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question">
+          <h3>¿Se actualizará el contenido de la academia?</h3>
+          <span class="faq-icon">+</span>
+        </div>
+        <div class="faq-answer">
+          <p>Sí, el contenido de la academia se actualizará regularmente con nuevos cursos, técnicas y tendencias en barbería profesional.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question">
+          <h3>¿Necesito experiencia previa en barbería?</h3>
+          <span class="faq-icon">+</span>
+        </div>
+        <div class="faq-answer">
+          <p>No es necesario. Nuestros cursos están diseñados tanto para principiantes como para barberos con experiencia que quieren perfeccionar sus técnicas.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question">
+          <h3>¿Ofrecen certificación?</h3>
+          <span class="faq-icon">+</span>
+        </div>
+        <div class="faq-answer">
+          <p>Sí, al completar nuestros cursos recibirás un certificado de finalización que podrás usar para demostrar tus habilidades profesionales.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question">
+          <h3>¿Puedo cancelar mi suscripción?</h3>
+          <span class="faq-icon">+</span>
+        </div>
+        <div class="faq-answer">
+          <p>Puedes cancelar tu suscripción en cualquier momento desde tu panel de usuario. No hay penalizaciones ni costos adicionales.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="modern-footer">
+  <div class="container">
+    <div class="footer-content">
+      <div class="footer-brand">
+        <div class="footer-logo">
+          <span class="logo-text">StartEducation</span>
+          <span class="logo-badge">BARBERÍA</span>
+        </div>
+        <p class="footer-description">
+          La academia de barbería más completa de Latinoamérica
+        </p>
+      </div>
       
-      // Animar el botón hamburguesa
-      const lines = mobileToggle.querySelectorAll('.hamburger-line');
-      if (navMenu.classList.contains('active')) {
-        lines[0].style.transform = 'rotate(45deg) translate(5px, 6px)';
-        lines[1].style.opacity = '0';
-        lines[2].style.transform = 'rotate(-45deg) translate(7px, -6px)';
-      } else {
-        lines[0].style.transform = 'none';
-        lines[1].style.opacity = '1';
-        lines[2].style.transform = 'none';
-      }
-    });
+      <div class="footer-links">
+        <div class="footer-section">
+          <h4>Cursos</h4>
+          <a href="/auth/login">Barbería Básica</a>
+          <a href="/auth/login">Técnicas Avanzadas</a>
+          <a href="/auth/login">Corte Moderno</a>
+          <a href="/auth/login">Afeitado Profesional</a>
+        </div>
+        
+        <div class="footer-section">
+          <h4>Academia</h4>
+          <a href="/register">Unirse</a>
+          <a href="/auth/login">Iniciar Sesión</a>
+          <a href="#testimonials">Testimonios</a>
+          <a href="#faq">Preguntas Frecuentes</a>
+        </div>
+        
+        <div class="footer-section">
+          <h4>Legal</h4>
+          <a href="/legal">Términos Legales</a>
+          <a href="/privacidad">Privacidad</a>
+          <a href="/cookies">Cookies</a>
+          <a href="/reembolsos">Política de Reembolsos</a>
+        </div>
+      </div>
+    </div>
     
-    // Cerrar menú al hacer click en un enlace
-    const menuLinks = navMenu.querySelectorAll('a');
-    menuLinks.forEach(link => {
-      link.addEventListener('click', function() {
-        navMenu.classList.remove('active');
-        const lines = mobileToggle.querySelectorAll('.hamburger-line');
-        lines[0].style.transform = 'none';
-        lines[1].style.opacity = '1';
-        lines[2].style.transform = 'none';
-      });
-    });
-    
-    // Cerrar menú al hacer click fuera de él
-    document.addEventListener('click', function(event) {
-      if (!mobileToggle.contains(event.target) && !navMenu.contains(event.target)) {
-        navMenu.classList.remove('active');
-        const lines = mobileToggle.querySelectorAll('.hamburger-line');
-        lines[0].style.transform = 'none';
-        lines[1].style.opacity = '1';
-        lines[2].style.transform = 'none';
-      }
-    });
-  }
-  
-  // Asegurar que el botón de login sea visible
-  const loginBtn = document.querySelector('.login-btn');
-  if (loginBtn) {
-    loginBtn.style.display = 'block';
-    loginBtn.style.visibility = 'visible';
-    loginBtn.style.opacity = '1';
-  }
-});
-</script>
+    <div class="footer-bottom">
+      <p>&copy; 2025 StartEducation. Todos los derechos reservados.</p>
+      <div class="footer-social">
+        <a href="#" class="social-link">📱</a>
+        <a href="#" class="social-link">🎥</a>
+        <a href="#" class="social-link">💬</a>
+      </div>
+    </div>
+  </div>
+</footer>
