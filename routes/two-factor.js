@@ -204,7 +204,7 @@ router.get('/backup-codes', requireAuth, async function(req, res, next) {
     const user = req.session.user;
 
     if (!user.two_factor_enabled) {
-      return res.redirect('/2fa/setup');
+      return res.redirect('/two-factor/setup');
     }
 
     res.render('two-factor-backup-codes', {
@@ -329,6 +329,93 @@ router.post('/disable', requireAuth, async function(req, res, next) {
 
   } catch (error) {
     console.error('[2FA-DISABLE] Error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Error interno del servidor'
+    });
+  }
+});
+
+/* GET - Página de gestión de 2FA */
+router.get('/manage', function(req, res, next) {
+  // Verificar que el usuario esté autenticado
+  if (!req.session || !req.session.user) {
+    return res.redirect('/auth/login?error=sesion_expirada');
+  }
+
+  // Verificar que tenga 2FA habilitado
+  const twoFactorService = require('../services/twoFactorService');
+  if (!twoFactorService.requires2FA(req.session.user.rol)) {
+    return res.redirect('/dashboard?error=acceso_denegado');
+  }
+
+  res.render('two-factor-manage', {
+    title: 'Gestionar 2FA',
+    user: req.session.user,
+    layout: false
+  });
+});
+
+/* POST - Regenerar códigos de respaldo */
+router.post('/regenerate-backup-codes', async function(req, res, next) {
+  try {
+    const db = req.app.locals.db;
+    
+    // Verificar autenticación
+    if (!req.session || !req.session.user) {
+      return res.status(401).json({
+        success: false,
+        error: 'No autenticado'
+      });
+    }
+
+    const userId = req.session.user.id;
+    console.log('[2FA-REGENERATE] Regenerando códigos para usuario:', userId);
+
+    // Verificar que el usuario tenga 2FA habilitado
+    const userResult = await db.executeQuery(
+      'SELECT two_factor_enabled, two_factor_verified FROM Usuarios WHERE id_usuario = @userId',
+      { userId: userId }
+    );
+
+    if (userResult.recordset.length === 0) {
+      return res.status(404).json({
+        success: false,
+        error: 'Usuario no encontrado'
+      });
+    }
+
+    const user = userResult.recordset[0];
+    if (!user.two_factor_enabled || !user.two_factor_verified) {
+      return res.status(400).json({
+        success: false,
+        error: 'No tienes 2FA habilitado'
+      });
+    }
+
+    // Generar nuevos códigos de respaldo
+    const twoFactorService = require('../services/twoFactorService');
+    const newBackupCodes = twoFactorService.generateBackupCodes();
+
+    // Actualizar en base de dados
+    await db.executeQuery(
+      'UPDATE Usuarios SET backup_codes = @backupCodes WHERE id_usuario = @userId',
+      {
+        backupCodes: JSON.stringify(newBackupCodes),
+        userId: userId
+      }
+    );
+
+    console.log('[2FA-REGENERATE] ✅ Códigos regenerados exitosamente para usuario:', userId);
+
+    res.json({
+      success: true,
+      message: 'Nuevos códigos generados exitosamente',
+      backupCodes: newBackupCodes
+    });
+
+  } catch (error) {
+    console.error('[2FA-REGENERATE] Error:', error);
     res.status(500).json({
       success: false,
       error: 'Error interno del servidor'

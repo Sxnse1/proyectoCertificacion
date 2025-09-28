@@ -10,7 +10,7 @@ GO
 IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID('[dbo].[Usuarios]') AND name = 'two_factor_secret')
 BEGIN
     ALTER TABLE [dbo].[Usuarios] 
-    ADD [two_factor_secret] NVARCHAR(32) NULL;
+    ADD [two_factor_secret] NVARCHAR(64) NULL;
     
     PRINT '✅ Columna two_factor_secret agregada exitosamente';
 END
@@ -49,7 +49,7 @@ END
 IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID('[dbo].[Usuarios]') AND name = 'backup_codes')
 BEGIN
     ALTER TABLE [dbo].[Usuarios] 
-    ADD [backup_codes] NVARCHAR(1000) NULL;
+    ADD [backup_codes] NVARCHAR(2000) NULL;
     
     PRINT '✅ Columna backup_codes agregada exitosamente';
 END

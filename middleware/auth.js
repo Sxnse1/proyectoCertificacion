@@ -4,7 +4,22 @@
 const requireAuth = (req, res, next) => {
   // Verificar si el usuario está autenticado mediante sesión
   if (req.session && req.session.user) {
-    // Usuario autenticado, continuar
+    const twoFactorService = require('../services/twoFactorService');
+    
+    // Verificar si es instructor/admin y necesita 2FA
+    if (twoFactorService.requires2FA(req.session.user.rol)) {
+      // Verificar si tiene 2FA configurado y verificado
+      if (!req.session.user.two_factor_enabled || !req.session.user.two_factor_verified) {
+        console.log('[AUTH MIDDLEWARE] 🔐 Usuario requiere completar configuración de 2FA');
+        console.log('[AUTH MIDDLEWARE] 👤 Usuario:', req.session.user.email);
+        console.log('[AUTH MIDDLEWARE] 🎭 Rol:', req.session.user.rol);
+        
+        // Redirigir a configuración de 2FA
+        return res.redirect('/two-factor/setup');
+      }
+    }
+    
+    // Usuario autenticado y con 2FA completo (si es necesario), continuar
     return next();
   }
   
@@ -24,6 +39,16 @@ const requireRole = (allowedRoles) => {
     if (!req.session || !req.session.user) {
       console.log('[AUTH MIDDLEWARE] 🚫 Acceso denegado - Usuario no autenticado');
       return res.redirect('/auth/login?error=sesion_expirada');
+    }
+    
+    // Verificar 2FA si es necesario
+    const twoFactorService = require('../services/twoFactorService');
+    if (twoFactorService.requires2FA(req.session.user.rol)) {
+      if (!req.session.user.two_factor_enabled || !req.session.user.two_factor_verified) {
+        console.log('[AUTH MIDDLEWARE] 🔐 Usuario requiere completar configuración de 2FA');
+        console.log('[AUTH MIDDLEWARE] 👤 Usuario:', req.session.user.email);
+        return res.redirect('/two-factor/setup');
+      }
     }
     
     // Verificar rol

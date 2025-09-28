@@ -176,23 +176,32 @@
         }
 
         .backup-section {
-            border-top: 1px solid var(--border-color);
-            padding-top: 1.5rem;
-            margin-top: 1.5rem;
+            border-top: 2px solid var(--border-color);
+            padding-top: 2rem;
+            margin-top: 2rem;
+            text-align: center;
         }
 
         .backup-toggle {
-            color: var(--text-muted);
+            color: var(--primary-color);
             text-decoration: none;
-            font-size: 0.9rem;
-            display: flex;
+            font-size: 1rem;
+            font-weight: 500;
+            display: inline-flex;
             align-items: center;
             justify-content: center;
-            transition: color 0.3s ease;
+            padding: 0.75rem 1.5rem;
+            border: 2px solid var(--primary-color);
+            border-radius: 8px;
+            background: rgba(234, 88, 12, 0.1);
+            transition: all 0.3s ease;
         }
 
         .backup-toggle:hover {
-            color: var(--primary-color);
+            color: white;
+            background: var(--primary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(234, 88, 12, 0.3);
         }
 
         .backup-form {
@@ -215,6 +224,12 @@
         .alert-danger {
             background: #fef2f2;
             color: #991b1b;
+        }
+
+        .alert-info {
+            background: #eff6ff;
+            color: #1e40af;
+            border-left: 4px solid #3b82f6;
         }
 
         .timer-display {
@@ -328,9 +343,15 @@
 
             <!-- Backup Code Section -->
             <div class="backup-section">
+                <div class="alert alert-info mb-3">
+                    <i class="bi bi-info-circle me-2"></i>
+                    <strong>¿No puedes acceder a tu aplicación authenticator?</strong><br>
+                    <small>Si perdiste tu teléfono o la app no funciona, puedes usar los códigos de respaldo que descargaste.</small>
+                </div>
+                
                 <a href="#" class="backup-toggle" id="backupToggle">
                     <i class="bi bi-key me-2"></i>
-                    ¿No tienes acceso a tu aplicación? Usar código de respaldo
+                    ¿Perdiste tu teléfono? Usar código de respaldo
                 </a>
                 
                 <div class="backup-form" id="backupForm">
@@ -392,7 +413,7 @@
             
             backupForm.style.display = isVisible ? 'none' : 'block';
             this.innerHTML = isVisible 
-                ? '<i class="bi bi-key me-2"></i>¿No tienes acceso a tu aplicación? Usar código de respaldo'
+                ? '<i class="bi bi-key me-2"></i>¿Perdiste tu teléfono? Usar código de respaldo'
                 : '<i class="bi bi-x-circle me-2"></i>Cancelar código de respaldo';
         });
 
@@ -435,7 +456,7 @@
                     ? { token: code }
                     : { backup_code: code };
 
-                const response = await fetch('/2fa/verify', {
+                const response = await fetch('/two-factor/verify', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'

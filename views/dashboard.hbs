@@ -134,6 +134,22 @@
                 <p>Ver información de la base de datos</p>
                 <a href="/users" class="btn">Ver Datos</a>
             </div>
+            
+            {{#if (eq currentUser.rol 'instructor')}}
+            <div class="action-card">
+                <h4>🔐 Gestionar 2FA</h4>
+                <p>Administrar autenticación de dos factores</p>
+                <a href="/two-factor/manage" class="btn btn-primary">Gestionar 2FA</a>
+            </div>
+            {{/if}}
+            
+            {{#if (eq currentUser.rol 'instructor')}}
+            <div class="action-card">
+                <h4>🎥 Gestionar Videos</h4>
+                <p>Administrar contenido del curso</p>
+                <a href="/videos-admin" class="btn btn-primary">Ver Videos</a>
+            </div>
+            {{/if}}
         </div>
         
         <div class="logout-section">
