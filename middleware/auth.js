@@ -1,0 +1,74 @@
+// Middleware de autenticación para StartEducation
+// Este middleware protege rutas que requieren autenticación
+
+const requireAuth = (req, res, next) => {
+  // Verificar si el usuario está autenticado mediante sesión
+  if (req.session && req.session.user) {
+    // Usuario autenticado, continuar
+    return next();
+  }
+  
+  // Si no está autenticado, redirigir al login
+  console.log('[AUTH MIDDLEWARE] 🚫 Acceso denegado - Usuario no autenticado');
+  console.log('[AUTH MIDDLEWARE] 📍 Ruta intentada:', req.originalUrl);
+  
+  // Guardar la URL original para redirigir después del login
+  req.session.redirectTo = req.originalUrl;
+  
+  return res.redirect('/auth/login?error=sesion_expirada');
+};
+
+const requireRole = (allowedRoles) => {
+  return (req, res, next) => {
+    // Verificar autenticación primero
+    if (!req.session || !req.session.user) {
+      console.log('[AUTH MIDDLEWARE] 🚫 Acceso denegado - Usuario no autenticado');
+      return res.redirect('/auth/login?error=sesion_expirada');
+    }
+    
+    // Verificar rol
+    const userRole = req.session.user.rol;
+    if (!allowedRoles.includes(userRole)) {
+      console.log('[AUTH MIDDLEWARE] 🚫 Acceso denegado - Rol insuficiente');
+      console.log('[AUTH MIDDLEWARE] 👤 Usuario:', req.session.user.email);
+      console.log('[AUTH MIDDLEWARE] 🎭 Rol actual:', userRole);
+      console.log('[AUTH MIDDLEWARE] 🎯 Roles permitidos:', allowedRoles);
+      
+      return res.redirect('/auth/login?error=acceso_denegado');
+    }
+    
+    // Usuario autorizado
+    return next();
+  };
+};
+
+// Middleware para inyectar datos del usuario en las vistas
+const injectUserData = (req, res, next) => {
+  if (req.session && req.session.user) {
+    res.locals.currentUser = req.session.user;
+    res.locals.isAuthenticated = true;
+  } else {
+    res.locals.currentUser = null;
+    res.locals.isAuthenticated = false;
+  }
+  next();
+};
+
+// Middleware para logging de accesos
+const logAccess = (req, res, next) => {
+  const timestamp = new Date().toISOString();
+  const user = req.session?.user?.email || 'Anónimo';
+  const userAgent = req.get('User-Agent');
+  const ip = req.ip || req.connection.remoteAddress;
+  
+  console.log(`[ACCESS LOG] ${timestamp} | ${user} | ${req.method} ${req.originalUrl} | IP: ${ip}`);
+  
+  next();
+};
+
+module.exports = {
+  requireAuth,
+  requireRole,
+  injectUserData,
+  logAccess
+};

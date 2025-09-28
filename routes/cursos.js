@@ -92,23 +92,23 @@ const misCursosEjemplo = [
 
 /* GET cursos page - Plataforma de cursos para estudiantes */
 router.get('/', function(req, res, next) {
-  const { user, email, rol, id } = req.query;
+  // La autenticación ya se verifica en el middleware
+  const user = req.session.user;
   
-  if (!user || !email || !rol) {
-    return res.redirect('/auth/login');
-  }
+  console.log('[CURSOS] 📚 Acceso a cursos:', user.email, '- Rol:', user.rol);
   
-  // Solo permitir acceso a usuarios (estudiantes)
-  if (rol !== 'user') {
+  // Solo permitir acceso a usuarios (estudiantes) - Los instructores también pueden ver cursos
+  if (user.rol !== 'user' && user.rol !== 'estudiante' && user.rol !== 'instructor') {
+    console.log('[CURSOS] 🚫 Rol no autorizado:', user.rol);
     return res.redirect('/auth/login?error=acceso_denegado');
   }
   
   res.render('cursos-estudiante', {
     title: 'Plataforma de Cursos - StartEducation',
-    userName: user,
-    userEmail: email,
-    userRole: rol,
-    userId: id,
+    userName: user.nombre,
+    userEmail: user.email,
+    userRole: user.rol,
+    userId: user.id,
     cursos: cursosEjemplo,
     cursosDestacados: cursosEjemplo.slice(0, 2)
   });

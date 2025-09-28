@@ -3,25 +3,26 @@ var router = express.Router();
 
 /* GET dashboard - Redirige según el rol del usuario */
 router.get('/', function(req, res, next) {
-  const { user, email, rol, id } = req.query;
+  // La autenticación ya se verifica en el middleware
+  const user = req.session.user;
   
-  // Verificar autenticación
-  if (!user || !email || !rol || !id) {
-    return res.redirect('/auth/login');
-  }
+  console.log('[DASHBOARD] 🎯 Acceso al dashboard:', user.email, '- Rol:', user.rol);
   
   // Redirigir según el rol
-  if (rol === 'instructor') {
-    res.render('instructor-dashboard', {
-      title: 'Dashboard Instructor - StarEducation',
-      userName: user,
-      userEmail: email,
-      userRole: rol,
-      userId: id
+  if (user.rol === 'instructor') {
+    res.render('admin-dashboard', {
+      title: 'Dashboard Administrativo - StartEducation',
+      userName: user.nombre,
+      userEmail: user.email,
+      userRole: user.rol,
+      userId: user.id,
+      layout: false
     });
-  } else if (rol === 'user') {
-    res.redirect(`/cursos?user=${user}&email=${email}&rol=${rol}&id=${id}`);
+  } else if (user.rol === 'user' || user.rol === 'estudiante') {
+    console.log('[DASHBOARD] 👨‍🎓 Redirigiendo estudiante a cursos');
+    res.redirect('/cursos');
   } else {
+    console.log('[DASHBOARD] ⚠️ Rol no válido:', user.rol);
     res.redirect('/auth/login?error=rol_invalido');
   }
 });

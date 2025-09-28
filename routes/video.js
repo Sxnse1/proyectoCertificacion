@@ -3,24 +3,34 @@ var router = express.Router();
 
 /* GET video player page */
 router.get('/', function(req, res, next) {
-  const { videoId, title, description, user, email, rol, simple } = req.query;
+  const { videoId, title, description, simple, duration, order, status, module, createdAt } = req.query;
   
-  // Si no hay parámetros de usuario, redirigir al login
-  if (!user || !email) {
-    return res.redirect('/auth/login');
+  // La autenticación ya se verifica en el middleware
+  const user = req.session.user;
+  
+  console.log('[VIDEO] 🎬 Acceso a video:', user.email, '- Video ID:', videoId);
+  
+  // Usar versión simple si se especifica, o minimal si se especifica
+  let template = 'video-player-minimal'; // Usar por defecto la versión minimalista
+  if (simple === 'true') {
+    template = 'video-player-simple';
+  } else if (req.query.classic === 'true') {
+    template = 'video-player';
   }
-  
-  // Usar versión simple si se especifica
-  const template = simple === 'true' ? 'video-player-simple' : 'video-player';
   
   res.render(template, {
     title: title || 'Reproducción de Video',
     videoTitle: title || 'Video del Curso',
     videoDescription: description || 'Contenido educativo del curso de barbería',
-    userName: user,
-    userEmail: email,
-    userRole: rol,
-    videoId: videoId || '1122531979' // ID por defecto del video de Vimeo
+    userName: user.nombre,
+    userEmail: user.email,
+    userRole: user.rol,
+    videoId: videoId || '1122531979', // ID por defecto del video de Vimeo
+    videoDuration: duration || null,
+    videoOrder: order || 1,
+    videoStatus: status || 'publicado',
+    moduleId: module || null,
+    videoCreatedAt: createdAt || new Date().toISOString()
   });
 });
 
@@ -47,21 +57,26 @@ router.get('/simple', function(req, res, next) {
 /* GET video específico por ID */
 router.get('/:videoId', function(req, res, next) {
   const { videoId } = req.params;
-  const { title, description, user, email, rol } = req.query;
+  const { title, description, duration, order, status, module, createdAt } = req.query;
   
-  // Si no hay parámetros de usuario, redirigir al login
-  if (!user || !email) {
-    return res.redirect('/auth/login');
-  }
+  // La autenticación ya se verifica en el middleware
+  const user = req.session.user;
   
-  res.render('video-player', {
+  console.log('[VIDEO] 🎬 Acceso a video específico:', user.email, '- Video ID:', videoId);
+  
+  res.render('video-player-minimal', {
     title: `Video: ${title || 'Contenido del Curso'}`,
     videoTitle: title || 'Video del Curso',
     videoDescription: description || 'Contenido educativo del curso de barbería',
-    userName: user,
-    userEmail: email,
-    userRole: rol,
-    videoId: videoId
+    userName: user.nombre,
+    userEmail: user.email,
+    userRole: user.rol,
+    videoId: videoId,
+    videoDuration: duration || null,
+    videoOrder: order || 1,
+    videoStatus: status || 'publicado',
+    moduleId: module || null,
+    videoCreatedAt: createdAt || new Date().toISOString()
   });
 });
 

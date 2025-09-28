@@ -59,7 +59,12 @@ router.post('/', async function(req, res, next) {
       `);
 
     // Redirigir al login con mensaje de éxito
-    return res.render('login', { title: 'Iniciar Sesión', success: 'Registro exitoso. Puedes iniciar sesión ahora.', email: email });
+    return res.render('login-bootstrap', { 
+      title: 'Iniciar Sesión', 
+      success: 'Registro exitoso. Puedes iniciar sesión ahora.', 
+      email: email,
+      layout: false 
+    });
 
   } catch (err) {
     console.error('[REGISTER] Error al registrar usuario:', err);

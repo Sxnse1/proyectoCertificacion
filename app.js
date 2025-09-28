@@ -30,6 +30,35 @@ hbs.registerHelper('eq', function(a, b) {
   return a === b;
 });
 
+hbs.registerHelper('formatDate', function(dateString) {
+  if (!dateString) return 'N/A';
+  const date = new Date(dateString);
+  return date.toLocaleDateString('es-ES', { 
+    year: 'numeric', 
+    month: 'long', 
+    day: 'numeric' 
+  });
+});
+
+hbs.registerHelper('substring', function(str, start, length) {
+  if (!str) return '';
+  return str.substring(start, length || str.length).toUpperCase();
+});
+
+// Configurar express-session para autenticación segura
+var session = require('express-session');
+
+app.use(session({
+  secret: 'starteducation-barberia-academy-2025-secure-key',
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    secure: false, // Cambiar a true en producción con HTTPS
+    httpOnly: true,
+    maxAge: 24 * 60 * 60 * 1000 // 24 horas
+  }
+}));
+
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -61,16 +90,26 @@ if (process.env.DB_SERVER && process.env.DB_SERVER !== 'localhost') {
   app.locals.db = null;
 }
 
+// Importar middleware de autenticación
+const { requireAuth, requireRole, injectUserData, logAccess } = require('./middleware/auth');
+
+// Aplicar middleware global
+app.use(injectUserData);
+app.use(logAccess);
+
+// Rutas públicas (sin autenticación)
 app.use('/', indexRouter);
-app.use('/users', usersRouter);
 app.use('/auth', authRouter);
-app.use('/system', systemRouter);
-app.use('/cursos', cursosRouter);
-app.use('/usuarios', usuariosRouter);
-app.use('/dashboard', dashboardRouter);
 app.use('/register', registerRouter);
-app.use('/video', videoRouter);
-app.use('/cursos-db', cursosDbRouter);
+
+// Rutas protegidas (requieren autenticación)
+app.use('/users', requireAuth, usersRouter);
+app.use('/system', requireRole(['instructor', 'admin']), systemRouter);
+app.use('/cursos', requireAuth, cursosRouter);
+app.use('/usuarios', requireRole(['instructor', 'admin']), usuariosRouter);
+app.use('/dashboard', requireAuth, dashboardRouter);
+app.use('/video', requireAuth, videoRouter);
+app.use('/cursos-db', requireAuth, cursosDbRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

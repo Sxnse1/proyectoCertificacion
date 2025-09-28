@@ -4,9 +4,12 @@ var bcrypt = require('bcryptjs');
 
 /* GET login page */
 router.get('/login', function(req, res, next) {
-  res.render('login', { 
-    title: 'Proyecto Certificación',
-    email: req.query.email || ''
+  res.render('login-bootstrap', { 
+    title: 'Iniciar Sesión',
+    email: req.query.email || '',
+    error: req.query.error ? decodeURIComponent(req.query.error) : null,
+    success: req.query.success ? decodeURIComponent(req.query.success) : null,
+    layout: false
   });
 });
 
@@ -17,10 +20,11 @@ router.post('/login', async function(req, res, next) {
     
     // Validación básica
     if (!email || !password) {
-      return res.render('login', {
-        title: 'Proyecto Certificación',
+      return res.render('login-bootstrap', {
+        title: 'Iniciar Sesión',
         error: 'Por favor ingresa email y contraseña',
-        email: email
+        email: email,
+        layout: false
       });
     }
 
@@ -29,10 +33,11 @@ router.post('/login', async function(req, res, next) {
     // Verificar si hay conexión a base de datos
     if (!db) {
       console.log('[AUTH] ⚠️ No hay conexión a base de datos');
-      return res.render('login', {
-        title: 'Proyecto Certificación',
+      return res.render('login-bootstrap', {
+        title: 'Iniciar Sesión',
         error: 'Sistema en mantenimiento. Intenta más tarde.',
-        email: email
+        email: email,
+        layout: false
       });
     }
     
@@ -49,10 +54,11 @@ router.post('/login', async function(req, res, next) {
     
     if (result.recordset.length === 0) {
       console.log('[AUTH] ❌ Usuario no encontrado:', email);
-      return res.render('login', {
-        title: 'Proyecto Certificación',
+      return res.render('login-bootstrap', {
+        title: 'Iniciar Sesión',
         error: 'Email o contraseña incorrectos',
-        email: email
+        email: email,
+        layout: false
       });
     }
     
@@ -68,10 +74,11 @@ router.post('/login', async function(req, res, next) {
         errorMessage = 'Tu cuenta ha sido suspendida. Contacta al administrador.';
       }
       
-      return res.render('login', {
-        title: 'Proyecto Certificación',
+      return res.render('login-bootstrap', {
+        title: 'Iniciar Sesión',
         error: errorMessage,
-        email: email
+        email: email,
+        layout: false
       });
     }
     
@@ -113,72 +120,111 @@ router.post('/login', async function(req, res, next) {
     
     if (!passwordMatch) {
       console.log('[AUTH] ❌ Contraseña incorrecta para:', email);
-      return res.render('login', {
-        title: 'Proyecto Certificación',
+      return res.render('login-bootstrap', {
+        title: 'Iniciar Sesión',
         error: 'Email o contraseña incorrectos',
-        email: email
+        email: email,
+        layout: false
       });
     }
     
     // Login exitoso
     console.log('[AUTH] ✅ Login exitoso para:', email, '- Rol:', user.rol);
     
-    // Crear nombre completo
+    // Crear sesión segura
     const nombreCompleto = `${user.nombre} ${user.apellido}`;
+    req.session.user = {
+      id: user.id_usuario,
+      nombre: nombreCompleto,
+      email: user.email,
+      rol: user.rol,
+      loginTime: new Date().toISOString()
+    };
     
-    // Redirigir según el rol del usuario
-    if (user.rol === 'instructor') {
-      console.log('[AUTH] 📚 Redirigiendo instructor al dashboard');
-      res.redirect(`/auth/dashboard?user=${encodeURIComponent(nombreCompleto)}&email=${encodeURIComponent(user.email)}&rol=${user.rol}&id=${user.id_usuario}`);
-    } else if (user.rol === 'user' || user.rol === 'estudiante') {
-      console.log('[AUTH] 👨‍🎓 Redirigiendo estudiante a plataforma de cursos de base de datos');
-      // Redirigir a la nueva plataforma de cursos con base de datos
-      res.redirect(`/cursos-db/estudiante?user=${encodeURIComponent(nombreCompleto)}&email=${encodeURIComponent(user.email)}&rol=${user.rol}&id=${user.id_usuario}`);
-    } else {
-      console.log('[AUTH] ⚠️ Rol no reconocido:', user.rol);
-      return res.render('login', {
-        title: 'Proyecto Certificación',
-        error: 'Rol de usuario no válido. Contacta al administrador.',
-        email: email
-      });
-    }
+    // Guardar sesión antes de redirigir
+    req.session.save((err) => {
+      if (err) {
+        console.error('[AUTH] ❌ Error guardando sesión:', err);
+        return res.render('login-bootstrap', {
+          title: 'Iniciar Sesión',
+          error: 'Error interno. Intenta nuevamente.',
+          email: email,
+          layout: false
+        });
+      }
+      
+      console.log('[AUTH] 💾 Sesión creada exitosamente para:', email);
+      
+      // Verificar si hay una URL de redirección guardada
+      const redirectTo = req.session.redirectTo || null;
+      delete req.session.redirectTo;
+      
+      // Redirigir según el rol del usuario
+      if (user.rol === 'instructor') {
+        console.log('[AUTH] 📚 Redirigiendo instructor al dashboard');
+        res.redirect(redirectTo || '/dashboard');
+      } else if (user.rol === 'user' || user.rol === 'estudiante') {
+        console.log('[AUTH] 👨‍🎓 Redirigiendo estudiante a plataforma de cursos');
+        res.redirect(redirectTo || '/cursos');
+      } else {
+        console.log('[AUTH] ⚠️ Rol no reconocido:', user.rol);
+        return res.render('login-bootstrap', {
+          title: 'Iniciar Sesión',
+          error: 'Rol de usuario no válido. Contacta al administrador.',
+          email: email,
+          layout: false
+        });
+      }
+    });
     
   } catch (error) {
     console.error('[AUTH] ❌ Error en login:', error.message);
-    res.render('login', {
-      title: 'Proyecto Certificación',
+    res.render('login-bootstrap', {
+      title: 'Iniciar Sesión',
       error: 'Error interno del servidor. Intenta nuevamente.',
-      email: req.body.email || ''
+      email: req.body.email || '',
+      layout: false
     });
   }
 });
 
 /* GET dashboard - Página después del login (solo para instructores) */
 router.get('/dashboard', function(req, res, next) {
-  const { user, email, rol, id } = req.query;
-  
-  if (!user || !email || !rol) {
-    return res.redirect('/auth/login');
-  }
-  
-  // Solo permitir acceso a instructores
-  if (rol !== 'instructor') {
-    return res.redirect('/auth/login?error=acceso_denegado');
-  }
-  
-  res.render('instructor-dashboard', {
-    title: 'Dashboard de Instructor',
-    userName: user,
-    userEmail: email,
-    userRole: rol,
-    userId: id
-  });
+  // Esta ruta ya no es necesaria ya que el dashboard está protegido por middleware
+  // Redirigir al dashboard principal
+  res.redirect('/dashboard');
 });
 
 /* POST logout */
 router.post('/logout', function(req, res, next) {
-  console.log('[AUTH] 👋 Usuario cerró sesión');
-  res.redirect('/?message=Sesión cerrada correctamente');
+  const userEmail = req.session?.user?.email || 'Usuario desconocido';
+  
+  req.session.destroy((err) => {
+    if (err) {
+      console.error('[AUTH] ❌ Error destruyendo sesión:', err);
+      return res.redirect('/?error=Error cerrando sesión');
+    }
+    
+    console.log('[AUTH] 👋 Sesión cerrada exitosamente para:', userEmail);
+    res.clearCookie('connect.sid'); // Limpiar cookie de sesión
+    res.redirect('/?message=Sesión cerrada correctamente');
+  });
+});
+
+/* GET logout - También permitir logout por GET */
+router.get('/logout', function(req, res, next) {
+  const userEmail = req.session?.user?.email || 'Usuario desconocido';
+  
+  req.session.destroy((err) => {
+    if (err) {
+      console.error('[AUTH] ❌ Error destruyendo sesión:', err);
+      return res.redirect('/?error=Error cerrando sesión');
+    }
+    
+    console.log('[AUTH] 👋 Sesión cerrada exitosamente para:', userEmail);
+    res.clearCookie('connect.sid');
+    res.redirect('/?message=Sesión cerrada correctamente');
+  });
 });
 
 module.exports = router;
