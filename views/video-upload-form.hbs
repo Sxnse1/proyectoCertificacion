@@ -3,16 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Subir Video - StartEducation Admin</title>
+    <title>Subir Video - StartEducation</title>
     
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="/images/favicon.svg">
-    <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.svg">
-    <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.svg">
-    <link rel="apple-touch-icon" href="/images/favicon.svg">
     
     <!-- Bootstrap 5.3 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/        </div>
+
+        <!-- Upload Form -->
+        <div class="upload-container">
+            <form id="uploadForm">
+                <!-- Información del Video -->
+                <div class="form-section">
+                    <h3 class="section-title">
+                        <i class="bi bi-info-circle text-primary"></i>
+                        Información del Video
+                    </h3>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="titulo" class="form-label">
+                                <i class="bi bi-type"></i>
+                                Título del Video *
+                            </label>
+                            <input type="text" class="form-control" id="titulo" name="titulo" required 
+                                   placeholder="Ej: Técnicas básicas de corte degradado">
+                            <div class="form-text">Título descriptivo que verán los estudiantes</div>
+                        </div>" rel="stylesheet">
     <!-- Bootstrap Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
     <!-- Google Fonts -->
@@ -36,43 +54,117 @@
         }
 
         body {
-            background-color: var(--bg-light);
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
             color: var(--text-dark);
+            min-height: 100vh;
         }
 
-        .admin-header {
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
-            color: white;
-            padding: 2rem 0;
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header-section {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border-left: 5px solid var(--primary-color);
+        }
+
+        .header-title {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .header-title h1 {
+            color: var(--text-dark);
+            font-weight: 700;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .header-subtitle {
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+            font-size: 1.1rem;
         }
 
         .upload-container {
             background: white;
-            border-radius: 1rem;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            padding: 2rem;
-            margin: 2rem 0;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .section-title {
+            color: var(--text-dark);
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.25rem;
+        }
+
+        .form-section {
+            margin-bottom: 2.5rem;
+            padding: 1.5rem;
+            background: var(--bg-light);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
         }
 
         .file-drop-area {
-            border: 2px dashed var(--border-color);
-            border-radius: 1rem;
+            border: 3px dashed var(--border-color);
+            border-radius: 16px;
             padding: 3rem 2rem;
             text-align: center;
             transition: all 0.3s ease;
             cursor: pointer;
-            background: var(--bg-light);
+            background: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .file-drop-area::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, transparent 30%, rgba(234, 88, 12, 0.05) 30%, rgba(234, 88, 12, 0.05) 70%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .file-drop-area:hover::before,
+        .file-drop-area.dragover::before {
+            opacity: 1;
         }
 
         .file-drop-area:hover,
         .file-drop-area.dragover {
             border-color: var(--primary-color);
-            background: rgba(234, 88, 12, 0.05);
+            background: rgba(234, 88, 12, 0.02);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(234, 88, 12, 0.15);
         }
 
         .file-drop-area.has-file {
             border-color: var(--success-color);
-            background: rgba(16, 185, 129, 0.05);
+            background: rgba(16, 185, 129, 0.02);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.15);
         }
 
         .file-input {
@@ -95,51 +187,126 @@
             border-radius: 0.5rem;
         }
 
-        .btn-upload {
-            background: var(--primary-color);
-            border-color: var(--primary-color);
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
+            border: none;
             color: white;
             font-weight: 600;
-            padding: 0.75rem 2rem;
-            border-radius: 0.75rem;
-            transition: all 0.2s ease;
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            text-transform: none;
+            letter-spacing: 0.025em;
         }
 
-        .btn-upload:hover {
-            background: var(--primary-hover);
-            border-color: var(--primary-hover);
+        .btn-primary:hover {
+            background: linear-gradient(135deg, var(--primary-hover) 0%, var(--primary-color) 100%);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(234, 88, 12, 0.3);
+        }
+
+        .btn-primary:disabled {
+            background: var(--text-muted);
+            transform: none;
+            box-shadow: none;
+        }
+
+        .btn-outline-secondary {
+            border: 2px solid var(--border-color);
+            color: var(--text-dark);
+            font-weight: 500;
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-outline-secondary:hover {
+            background: var(--text-dark);
+            border-color: var(--text-dark);
             color: white;
             transform: translateY(-2px);
         }
 
-        .btn-upload:disabled {
-            background: var(--text-muted);
-            border-color: var(--text-muted);
-            transform: none;
-        }
-
         .form-control, .form-select {
             border: 2px solid var(--border-color);
-            border-radius: 0.75rem;
-            padding: 0.75rem 1rem;
-            transition: border-color 0.2s ease;
+            border-radius: 12px;
+            padding: 0.875rem 1.25rem;
+            transition: all 0.3s ease;
+            background: white;
+            font-weight: 500;
         }
 
         .form-control:focus, .form-select:focus {
             border-color: var(--primary-color);
-            box-shadow: 0 0 0 0.2rem rgba(234, 88, 12, 0.25);
+            box-shadow: 0 0 0 0.25rem rgba(234, 88, 12, 0.1);
+            background: white;
+            transform: translateY(-1px);
         }
 
-        .navbar-admin {
-            background: white;
-            border-bottom: 1px solid var(--border-color);
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        .form-label {
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .form-text {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+        }
+
+        .alert {
+            border: none;
+            border-radius: 12px;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .alert-success {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success-color);
+            border-left: 4px solid var(--success-color);
+        }
+
+        .alert-danger {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger-color);
+            border-left: 4px solid var(--danger-color);
+        }
+
+        .alert-warning {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning-color);
+            border-left: 4px solid var(--warning-color);
+        }
+
+        .drop-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .file-info {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--success-color);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-top: 1rem;
+            display: none;
+        }
+
+        .file-info.show {
+            display: block;
         }
 
         .breadcrumb {
-            background: none;
-            padding: 0;
-            margin: 0;
+            background: var(--bg-light);
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            margin-bottom: 1rem;
         }
 
         .breadcrumb-item a {
@@ -187,52 +354,69 @@
         .file-requirements {
             background: rgba(234, 88, 12, 0.05);
             border: 1px solid rgba(234, 88, 12, 0.2);
-            border-radius: 0.75rem;
-            padding: 1rem;
+            border-radius: 12px;
+            padding: 1.25rem;
             margin-top: 1rem;
+        }
+
+        .video-preview {
+            max-width: 100%;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            flex-wrap: wrap;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                padding: 1rem;
+            }
+            
+            .upload-container {
+                padding: 1.5rem;
+            }
+            
+            .action-buttons {
+                justify-content: stretch;
+            }
+            
+            .action-buttons .btn {
+                flex: 1;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-admin">
-        <div class="container">
-            <a class="navbar-brand" href="/dashboard">
-                <i class="bi bi-scissors text-primary me-2"></i>StartEducation Admin
-            </a>
-            
-            <div class="navbar-nav ms-auto">
-                <div class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                        <i class="bi bi-person-circle me-1"></i>{{userName}}
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="/dashboard"><i class="bi bi-house me-2"></i>Dashboard</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="/auth/logout"><i class="bi bi-box-arrow-right me-2"></i>Cerrar Sesión</a></li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </nav>
-
-    <!-- Header -->
-    <section class="admin-header">
-        <div class="container">
-            <div class="row align-items-center">
-                <div class="col-md-8">
-                    <nav aria-label="breadcrumb" class="mb-3">
+    <div class="main-container">
+        <!-- Header Section -->
+        <div class="header-section">
+            <div class="header-title">
+                <div>
+                    <h1>
+                        <i class="bi bi-cloud-upload text-primary"></i>
+                        Subir Nuevo Video
+                    </h1>
+                    <p class="header-subtitle">Sube un video que se almacenará automáticamente en Vimeo y estará disponible para tus estudiantes</p>
+                    
+                    <!-- Breadcrumb -->
+                    <nav aria-label="breadcrumb">
                         <ol class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="/dashboard">Dashboard</a></li>
-                            <li class="breadcrumb-item"><a href="/videos-admin">Gestión de Videos</a></li>
+                            <li class="breadcrumb-item"><a href="/dashboard"><i class="bi bi-house me-1"></i>Dashboard</a></li>
+                            <li class="breadcrumb-item"><a href="/videos-admin"><i class="bi bi-play-circle me-1"></i>Videos</a></li>
                             <li class="breadcrumb-item active">Subir Video</li>
                         </ol>
                     </nav>
-                    <h1 class="mb-2">📹 Subir Nuevo Video</h1>
-                    <p class="mb-0 opacity-75">Sube un video que se almacenará automáticamente en Vimeo</p>
                 </div>
-                <div class="col-md-4 text-md-end">
-                    <a href="/videos-admin" class="btn btn-light">
+                <div class="d-flex gap-2">
+                    <a href="/videos-admin" class="btn btn-outline-secondary">
                         <i class="bi bi-arrow-left me-2"></i>Volver
                     </a>
                 </div>
@@ -247,112 +431,181 @@
                 <div class="col-lg-8">
                     <form id="uploadForm" class="upload-container">
                         <!-- Información del Video -->
-                        <div class="mb-4">
-                            <h4 class="mb-3">📝 Información del Video</h4>
+                        <div class="form-section">
+                            <h3 class="section-title">
+                                <i class="bi bi-info-circle text-primary"></i>
+                                Información del Video
+                            </h3>
                             
                             <div class="row">
                                 <div class="col-md-6 mb-3">
-                                    <label for="titulo" class="form-label">Título del Video *</label>
-                                    <input type="text" class="form-control" id="titulo" name="titulo" required>
+                                    <label for="titulo" class="form-label">
+                                        <i class="bi bi-type"></i>
+                                        Título del Video *
+                                    </label>
+                                    <input type="text" class="form-control" id="titulo" name="titulo" required 
+                                           placeholder="Ej: Técnicas básicas de corte degradado">
+                                    <div class="form-text">Título descriptivo que verán los estudiantes</div>
                                 </div>
                                 <div class="col-md-6 mb-3">
-                                    <label for="id_modulo" class="form-label">Módulo *</label>
+                                    <label for="id_modulo" class="form-label">
+                                        <i class="bi bi-collection"></i>
+                                        Módulo del Curso *
+                                    </label>
                                     <select class="form-select" id="id_modulo" name="id_modulo" required>
                                         <option value="">Seleccionar módulo...</option>
                                         {{#each modulos}}
                                         <option value="{{this.id_modulo}}">{{this.titulo}} - {{this.curso_titulo}}</option>
                                         {{/each}}
                                     </select>
+                                    <div class="form-text">Selecciona el módulo al que pertenece este video</div>
                                 </div>
                             </div>
 
                             <div class="mb-3">
-                                <label for="descripcion" class="form-label">Descripción</label>
-                                <textarea class="form-control" id="descripcion" name="descripcion" rows="3" 
-                                         placeholder="Describe el contenido del video..."></textarea>
+                                <label for="descripcion" class="form-label">
+                                    <i class="bi bi-textarea-t"></i>
+                                    Descripción del Video
+                                </label>
+                                <textarea class="form-control" id="descripcion" name="descripcion" rows="4" 
+                                         placeholder="Describe detalladamente qué aprenderán los estudiantes en este video..."></textarea>
+                                <div class="form-text">Descripción opcional que ayudará a los estudiantes a entender el contenido</div>
                             </div>
 
                             <div class="row">
                                 <div class="col-md-6 mb-3">
-                                    <label for="duracion_minutos" class="form-label">Duración (minutos)</label>
+                                    <label for="duracion_minutos" class="form-label">
+                                        <i class="bi bi-stopwatch"></i>
+                                        Duración Estimada (minutos)
+                                    </label>
                                     <input type="number" class="form-control" id="duracion_minutos" name="duracion_minutos" 
-                                           min="1" placeholder="Ej: 15">
+                                           min="1" max="180" placeholder="15">
+                                    <div class="form-text">Duración aproximada del video</div>
                                 </div>
                                 <div class="col-md-6 mb-3">
-                                    <label for="estatus" class="form-label">Estado</label>
+                                    <label for="estatus" class="form-label">
+                                        <i class="bi bi-toggle-on"></i>
+                                        Estado del Video
+                                    </label>
                                     <select class="form-select" id="estatus" name="estatus">
-                                        <option value="borrador">Borrador</option>
-                                        <option value="activo">Activo</option>
-                                        <option value="archivado">Archivado</option>
+                                        <option value="borrador">📝 Borrador</option>
+                                        <option value="activo">✅ Activo</option>
+                                        <option value="archivado">📦 Archivado</option>
                                     </select>
+                                    <div class="form-text">Solo los videos activos son visibles para estudiantes</div>
                                 </div>
                             </div>
                         </div>
 
                         <!-- Subida de Archivo -->
-                        <div class="mb-4">
-                            <h4 class="mb-3">🎬 Archivo de Video</h4>
+                        <div class="form-section">
+                            <h3 class="section-title">
+                                <i class="bi bi-camera-video text-primary"></i>
+                                Archivo de Video
+                            </h3>
                             
                             <div class="file-drop-area" id="fileDropArea">
                                 <input type="file" class="file-input" id="videoFile" name="video" accept="video/*" required>
                                 <div class="drop-content">
-                                    <i class="bi bi-cloud-upload text-primary" style="font-size: 3rem;"></i>
-                                    <h5 class="mt-3 mb-2">Arrastra tu video aquí</h5>
-                                    <p class="text-muted mb-3">o <span class="text-primary" style="cursor: pointer;">haz clic para seleccionar</span></p>
-                                    <small class="text-muted">Formatos soportados: MP4, AVI, MOV, WMV (máximo 2GB)</small>
+                                    <i class="bi bi-cloud-upload text-primary" style="font-size: 4rem; opacity: 0.7;"></i>
+                                    <h4 class="mt-3 mb-2 text-dark">Arrastra tu video aquí</h4>
+                                    <p class="text-muted mb-3">o <strong class="text-primary" style="cursor: pointer;">haz clic para seleccionar desde tu dispositivo</strong></p>
+                                    <div class="row text-center">
+                                        <div class="col-3 mb-2">
+                                            <i class="bi bi-file-earmark-play text-primary fs-4"></i>
+                                            <small class="d-block text-muted">MP4</small>
+                                        </div>
+                                        <div class="col-3 mb-2">
+                                            <i class="bi bi-file-earmark-play text-success fs-4"></i>
+                                            <small class="d-block text-muted">AVI</small>
+                                        </div>
+                                        <div class="col-3 mb-2">
+                                            <i class="bi bi-file-earmark-play text-warning fs-4"></i>
+                                            <small class="d-block text-muted">MOV</small>
+                                        </div>
+                                        <div class="col-3 mb-2">
+                                            <i class="bi bi-file-earmark-play text-info fs-4"></i>
+                                            <small class="d-block text-muted">WMV</small>
+                                        </div>
+                                    </div>
+                                    <small class="text-muted mt-2">Tamaño máximo: 2GB</small>
                                 </div>
                             </div>
 
                             <div class="file-info" id="fileInfo">
                                 <div class="d-flex align-items-center">
-                                    <i class="bi bi-file-earmark-play text-primary me-3" style="font-size: 2rem;"></i>
-                                    <div>
-                                        <h6 class="mb-1" id="fileName"></h6>
-                                        <small class="text-muted" id="fileSize"></small>
+                                    <div class="me-3">
+                                        <i class="bi bi-file-earmark-play text-success" style="font-size: 2.5rem;"></i>
                                     </div>
-                                    <button type="button" class="btn btn-outline-danger btn-sm ms-auto" onclick="removeFile()">
-                                        <i class="bi bi-x"></i>
+                                    <div class="flex-grow-1">
+                                        <h5 class="mb-1 text-success" id="fileName"></h5>
+                                        <div class="d-flex align-items-center gap-3">
+                                            <small class="text-muted" id="fileSize"></small>
+                                            <span class="badge bg-success-light text-success">
+                                                <i class="bi bi-check-circle me-1"></i>Listo para subir
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <button type="button" class="btn btn-outline-danger btn-sm" onclick="removeFile()">
+                                        <i class="bi bi-trash me-1"></i>Quitar
                                     </button>
                                 </div>
                             </div>
 
                             <div class="file-requirements">
-                                <h6 class="text-warning mb-2"><i class="bi bi-info-circle me-2"></i>Requisitos del archivo</h6>
-                                <ul class="mb-0 small">
-                                    <li>Tamaño máximo: 2 GB</li>
-                                    <li>Formatos: MP4, AVI, MOV, WMV</li>
-                                    <li>El video se subirá automáticamente a Vimeo</li>
-                                    <li>La subida puede tomar varios minutos dependiendo del tamaño</li>
-                                </ul>
+                                <div class="alert alert-warning">
+                                    <h6 class="alert-heading">
+                                        <i class="bi bi-info-circle me-2"></i>Información importante
+                                    </h6>
+                                    <ul class="mb-0">
+                                        <li><strong>Tamaño máximo:</strong> 2 GB por archivo</li>
+                                        <li><strong>Formatos admitidos:</strong> MP4, AVI, MOV, WMV</li>
+                                        <li><strong>Destino:</strong> El video se almacenará automáticamente en Vimeo</li>
+                                        <li><strong>Tiempo de subida:</strong> Puede tomar varios minutos según el tamaño</li>
+                                        <li><strong>Recomendación:</strong> Usa MP4 con codificación H.264 para mejor compatibilidad</li>
+                                    </ul>
+                                </div>
                             </div>
                         </div>
 
                         <!-- Progress Bar -->
-                        <div class="upload-progress" id="uploadProgress">
-                            <div class="d-flex justify-content-between align-items-center mb-2">
-                                <span>Subiendo video...</span>
-                                <span id="progressPercent">0%</span>
+                        <div class="upload-progress" id="uploadProgress" style="display: none;">
+                            <div class="form-section">
+                                <h3 class="section-title">
+                                    <i class="bi bi-upload text-primary"></i>
+                                    Subiendo Video
+                                </h3>
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="fw-semibold">Progreso de subida</span>
+                                    <span id="progressPercent" class="badge bg-primary">0%</span>
+                                </div>
+                                <div class="progress" style="height: 12px;">
+                                    <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                                         id="progressBar" style="width: 0%"></div>
+                                </div>
+                                <div class="d-flex justify-content-between mt-2">
+                                    <small class="text-muted" id="progressStatus">Preparando subida...</small>
+                                    <small class="text-muted" id="uploadSpeed"></small>
+                                </div>
                             </div>
-                            <div class="progress">
-                                <div class="progress-bar" id="progressBar" style="width: 0%"></div>
-                            </div>
-                            <small class="text-muted mt-1" id="progressStatus">Preparando subida...</small>
                         </div>
 
                         <!-- Upload Status -->
                         <div class="upload-status" id="uploadStatus"></div>
 
-                        <!-- Submit Button -->
-                        <div class="text-center">
-                            <button type="submit" class="btn btn-upload" id="submitBtn">
+                        <!-- Action Buttons -->
+                        <div class="action-buttons">
+                            <a href="/videos-admin" class="btn btn-outline-secondary">
+                                <i class="bi bi-arrow-left me-2"></i>Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-primary" id="submitBtn">
                                 <i class="bi bi-cloud-upload me-2"></i>Subir Video a Vimeo
                             </button>
                         </div>
                     </form>
                 </div>
             </div>
-        </div>
-    </section>
+    </div>
 
     <!-- Bootstrap 5.3 JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
