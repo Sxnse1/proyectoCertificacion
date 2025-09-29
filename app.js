@@ -121,6 +121,18 @@ hbs.registerHelper('for', function(from, to, options) {
   return result;
 });
 
+// Helper para formatear precios
+hbs.registerHelper('formatPrice', function(price) {
+  if (!price || isNaN(price)) return '$0.00';
+  return '$' + parseFloat(price).toFixed(2);
+});
+
+// Helper para formatear rating promedio
+hbs.registerHelper('formatRating', function(rating) {
+  if (!rating || isNaN(rating)) return '0.0';
+  return parseFloat(rating).toFixed(1);
+});
+
 // Configurar express-session para autenticación segura
 var session = require('express-session');
 
@@ -208,6 +220,10 @@ app.use('/etiquetas-admin', requireRole(['admin', 'instructor']), etiquetasAdmin
 // Ruta de administración de módulos
 const modulosAdminRouter = require('./routes/modulos-admin');
 app.use('/modulos-admin', requireRole(['admin', 'instructor']), modulosAdminRouter);
+
+// Ruta de administración de cursos
+const cursosAdminRouter = require('./routes/cursos-admin');
+app.use('/cursos-admin', requireRole(['admin', 'instructor']), cursosAdminRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
