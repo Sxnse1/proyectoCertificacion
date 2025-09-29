@@ -80,14 +80,22 @@ hbs.registerHelper('subtract', function(a, b) {
   return a - b;
 });
 
-hbs.registerHelper('for', function(from, to, current, options) {
+hbs.registerHelper('for', function(from, to, options) {
+  // Si no se pasa el parámetro options, significa que current no fue pasado
+  if (typeof options === 'undefined') {
+    options = to;
+    to = from;
+    from = 1;
+  }
+  
+  // Validar que options tenga la función fn
+  if (!options || typeof options.fn !== 'function') {
+    return '';
+  }
+  
   let result = '';
   for (let i = from; i <= to; i++) {
-    const data = {
-      page: i,
-      active: i === current
-    };
-    result += options.fn(data);
+    result += options.fn(i);
   }
   return result;
 });

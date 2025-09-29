@@ -35,7 +35,7 @@ router.get('/', async function(req, res, next) {
       LEFT JOIN Cursos c ON ce.id_curso = c.id_curso
       ${whereClause}
       GROUP BY e.id_etiqueta, e.nombre
-      ORDER BY e.nombre
+      ORDER BY e.id_etiqueta
       OFFSET @offset ROWS FETCH NEXT @limit ROWS ONLY
     `;
 
