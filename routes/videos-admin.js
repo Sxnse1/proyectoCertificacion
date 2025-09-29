@@ -41,9 +41,25 @@ router.get('/', async function(req, res, next) {
     const videos = result.recordset;
     console.log('[VIDEOS-ADMIN] 📹 Videos encontrados:', videos.length);
     
+    // Obtener módulos para el modal de subida
+    const modulosResult = await db.executeQuery(`
+      SELECT 
+        m.id_modulo,
+        m.titulo,
+        c.titulo as curso_titulo,
+        CONCAT(c.titulo, ' - ', m.titulo) as display_name
+      FROM Modulos m
+      INNER JOIN Cursos c ON m.id_curso = c.id_curso
+      WHERE c.estatus = 'publicado'
+      ORDER BY c.titulo, m.orden, m.titulo
+    `);
+    
+    const modulos = modulosResult.recordset;
+    
     res.render('videos-admin', {
       title: 'Gestión de Videos',
       videos: videos,
+      modulos: modulos,
       userName: req.session.user.nombre,
       userRole: req.session.user.rol,
       layout: false
@@ -126,14 +142,52 @@ router.get('/nuevo', async function(req, res, next) {
 });
 
 /* POST - Subir nuevo video */
+// Ruta temporal de prueba sin Vimeo
+router.post('/upload-test', async (req, res) => {
+  console.log('[TEST-UPLOAD] 🧪 Ruta de prueba simple');
+  console.log('[TEST-UPLOAD] 📝 Body:', req.body);
+  console.log('[TEST-UPLOAD] 📁 File:', req.file);
+  
+  res.json({
+    success: true,
+    message: 'Ruta de prueba funcionando',
+    received: {
+      body: req.body,
+      file: req.file ? 'Archivo presente' : 'Sin archivo'
+    }
+  });
+});
+
 router.post('/upload', 
+  (req, res, next) => {
+    console.log('[VIDEO-UPLOAD] 📋 Datos recibidos:', {
+      body: req.body,
+      file: req.file ? 'Archivo presente' : 'Sin archivo'
+    });
+    next();
+  },
   uploadConfig.single('video'),
+  (req, res, next) => {
+    console.log('[VIDEO-UPLOAD] 🗂️ Después de multer:', {
+      body: req.body,
+      file: req.file ? {
+        filename: req.file.filename,
+        path: req.file.path,
+        size: req.file.size,
+        mimetype: req.file.mimetype
+      } : 'Sin archivo'
+    });
+    next();
+  },
   validateVideoData,
   async function(req, res, next) {
     let tempFilePath = null;
     
     try {
+      console.log('[VIDEO-UPLOAD] 🎬 Iniciando proceso de upload');
+      
       if (!req.file) {
+        console.log('[VIDEO-UPLOAD] ❌ No se recibió archivo');
         return res.status(400).json({
           success: false,
           error: 'No se recibió ningún archivo de video'
@@ -141,21 +195,29 @@ router.post('/upload',
       }
       
       tempFilePath = req.file.path;
-      const { titulo, descripcion, id_modulo, duracion_minutos = 0 } = req.body;
+      const { titulo, descripcion, id_modulo, duracion_minutos = 0, estatus = 'borrador' } = req.body;
       
       console.log('[VIDEO-UPLOAD] 🎬 Iniciando proceso de upload:', titulo);
       console.log('[VIDEO-UPLOAD] 📁 Archivo temporal:', tempFilePath);
       
-      // Preparar datos para Vimeo
-      const videoData = {
-        titulo: titulo,
-        descripcion: descripcion,
-        privacidad: 'unlisted' // Privado por defecto para cursos de pago
+      // SIMULACIÓN TEMPORAL - No subir a Vimeo por ahora para debugging
+      console.log('[VIDEO-UPLOAD] 🧪 MODO DEBUG: Simulando upload a Vimeo...');
+      const vimeoResult = {
+        video_id: 'debug_' + Date.now(),
+        vimeo_url: 'https://vimeo.com/debug_' + Date.now(),
+        embed_url: 'https://player.vimeo.com/video/debug_' + Date.now()
       };
       
-      // Subir a Vimeo
-      console.log('[VIDEO-UPLOAD] ☁️ Subiendo a Vimeo...');
-      const vimeoResult = await vimeoService.uploadVideo(tempFilePath, videoData);
+      // Preparar datos para Vimeo (comentado temporalmente)
+      // const videoData = {
+      //   titulo: titulo,
+      //   descripcion: descripcion,
+      //   privacidad: 'unlisted' // Privado por defecto para cursos de pago
+      // };
+      
+      // Subir a Vimeo (comentado temporalmente)
+      // console.log('[VIDEO-UPLOAD] ☁️ Subiendo a Vimeo...');
+      // const vimeoResult = await vimeoService.uploadVideo(tempFilePath, videoData);
       
       // Guardar en base de datos
       const db = req.app.locals.db;
@@ -186,7 +248,7 @@ router.post('/upload',
         url: vimeoResult.embed_url,
         duracion_segundos: (parseInt(duracion_minutos) || 0) * 60,
         orden: siguienteOrden,
-        estatus: req.body.estatus || 'borrador'
+        estatus: estatus
       });
       
       const nuevoVideo = insertResult.recordset[0];

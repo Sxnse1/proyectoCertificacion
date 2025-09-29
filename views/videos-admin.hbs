@@ -436,9 +436,9 @@
                     <a href="/dashboard" class="btn btn-outline-secondary">
                         <i class="bi bi-arrow-left me-2"></i>Dashboard
                     </a>
-                    <a href="/video/upload" class="btn btn-primary">
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#uploadVideoModal">
                         <i class="bi bi-plus-circle me-2"></i>Subir Video
-                    </a>
+                    </button>
                 </div>
             </div>
 
@@ -713,9 +713,344 @@
         // Initialize on page load
         document.addEventListener('DOMContentLoaded', function() {
             updateCounters();
+            initUploadModal();
             console.log('🎥 Gestión de Videos StartEducation cargado');
             console.log(`📊 Total videos encontrados: ${videoCards.length}`);
         });
+    </script>
+
+    <!-- Modal de Subida de Video -->
+    <div class="modal fade" id="uploadVideoModal" tabindex="-1" aria-labelledby="uploadVideoModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="uploadVideoModalLabel">
+                        <i class="bi bi-cloud-upload text-primary"></i>
+                        Subir Nuevo Video
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="uploadForm" enctype="multipart/form-data">
+                        <!-- Información del Video -->
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="titulo" class="form-label">
+                                    <i class="bi bi-type"></i>
+                                    Título del Video *
+                                </label>
+                                <input type="text" class="form-control" id="titulo" name="titulo" required 
+                                       placeholder="Ej: Técnicas básicas de corte degradado">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="duracion_minutos" class="form-label">
+                                    <i class="bi bi-clock"></i>
+                                    Duración (minutos) *
+                                </label>
+                                <input type="number" class="form-control" id="duracion_minutos" name="duracion_minutos" 
+                                       min="1" max="180" required placeholder="45">
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="id_modulo" class="form-label">
+                                    <i class="bi bi-collection"></i>
+                                    Módulo del Curso *
+                                </label>
+                                <select class="form-select" id="id_modulo" name="id_modulo" required>
+                                    <option value="">Selecciona un módulo...</option>
+                                    {{#each modulos}}
+                                    <option value="{{this.id_modulo}}">{{this.curso_titulo}} - {{this.titulo}}</option>
+                                    {{/each}}
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="estatus" class="form-label">
+                                    <i class="bi bi-toggle-on"></i>
+                                    Estado del Video *
+                                </label>
+                                <select class="form-select" id="estatus" name="estatus" required>
+                                    <option value="activo">Activo (Visible para estudiantes)</option>
+                                    <option value="borrador">Borrador (Solo visible para instructores)</option>
+                                    <option value="archivado">Archivado (No visible)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="descripcion" class="form-label">
+                                <i class="bi bi-card-text"></i>
+                                Descripción
+                            </label>
+                            <textarea class="form-control" id="descripcion" name="descripcion" rows="3" 
+                                      placeholder="Descripción detallada del contenido del video..."></textarea>
+                        </div>
+
+                        <!-- Subida de Archivo -->
+                        <div class="mb-3">
+                            <label class="form-label">
+                                <i class="bi bi-file-earmark-play text-primary"></i>
+                                Archivo de Video *
+                            </label>
+                            
+                            <div class="file-drop-area" id="fileDropArea">
+                                <input type="file" class="file-input" id="fileInput" name="video" accept="video/*" required>
+                                <div class="drop-content">
+                                    <i class="bi bi-cloud-upload" style="font-size: 2.5rem; color: var(--primary-color); margin-bottom: 1rem;"></i>
+                                    <h5>Arrastra tu video aquí</h5>
+                                    <p class="text-muted">o <strong>haz clic para seleccionar</strong></p>
+                                    <p class="small text-muted">Formatos: MP4, MOV, AVI, WMV (máx. 500MB)</p>
+                                </div>
+                            </div>
+                            
+                            <div class="file-info" id="fileInfo" style="display: none;">
+                                <div class="d-flex align-items-center justify-content-between mt-2 p-2 bg-light rounded">
+                                    <div>
+                                        <strong>Archivo:</strong>
+                                        <span id="fileName"></span>
+                                    </div>
+                                    <div>
+                                        <span class="badge bg-primary" id="fileSize"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="upload-progress" id="uploadProgress" style="display: none;">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span>Subiendo video...</span>
+                                <span id="progressText">0%</span>
+                            </div>
+                            <div class="progress">
+                                <div class="progress-bar" id="progressBar" role="progressbar" style="width: 0%"></div>
+                            </div>
+                        </div>
+
+                        <div class="upload-status" id="uploadStatus" style="display: none;"></div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" form="uploadForm" class="btn btn-primary" id="submitBtn">
+                        <i class="bi bi-cloud-upload me-2"></i>Subir Video
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .file-drop-area {
+            border: 2px dashed #dee2e6;
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+            min-height: 150px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        .file-drop-area:hover,
+        .file-drop-area.dragover {
+            border-color: #ea580c;
+            background: rgba(234, 88, 12, 0.05);
+        }
+
+        .file-drop-area.has-file {
+            border-color: #10b981;
+            background: rgba(16, 185, 129, 0.05);
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .upload-status.success {
+            background: rgba(16, 185, 129, 0.1);
+            color: #10b981;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            border-radius: 8px;
+            padding: 1rem;
+        }
+
+        .upload-status.error {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            border-radius: 8px;
+            padding: 1rem;
+        }
+    </style>
+
+    <script>
+        function initUploadModal() {
+            const fileDropArea = document.getElementById('fileDropArea');
+            const fileInput = document.getElementById('fileInput');
+            const fileInfo = document.getElementById('fileInfo');
+            const fileName = document.getElementById('fileName');
+            const fileSize = document.getElementById('fileSize');
+            const uploadForm = document.getElementById('uploadForm');
+            const uploadProgress = document.getElementById('uploadProgress');
+            const progressBar = document.getElementById('progressBar');
+            const progressText = document.getElementById('progressText');
+            const uploadStatus = document.getElementById('uploadStatus');
+            const submitBtn = document.getElementById('submitBtn');
+
+            // Drag & drop handlers
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                fileDropArea.addEventListener(eventName, preventDefaults, false);
+            });
+
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+
+            ['dragenter', 'dragover'].forEach(eventName => {
+                fileDropArea.addEventListener(eventName, () => fileDropArea.classList.add('dragover'), false);
+            });
+
+            ['dragleave', 'drop'].forEach(eventName => {
+                fileDropArea.addEventListener(eventName, () => fileDropArea.classList.remove('dragover'), false);
+            });
+
+            // Handle file drop
+            fileDropArea.addEventListener('drop', (e) => {
+                const dt = e.dataTransfer;
+                const files = dt.files;
+                
+                if (files.length > 0) {
+                    fileInput.files = files;
+                    handleFileSelect(files[0]);
+                }
+            });
+
+            // Handle click to select file
+            fileDropArea.addEventListener('click', () => fileInput.click());
+
+            // Handle file selection
+            fileInput.addEventListener('change', (e) => {
+                if (e.target.files.length > 0) {
+                    handleFileSelect(e.target.files[0]);
+                }
+            });
+
+            function handleFileSelect(file) {
+                console.log('📁 Archivo seleccionado:', file.name, file.size);
+                
+                fileName.textContent = file.name;
+                fileSize.textContent = formatFileSize(file.size);
+                fileInfo.style.display = 'block';
+                fileDropArea.classList.add('has-file');
+                
+                fileDropArea.innerHTML = `
+                    <div class="drop-content">
+                        <i class="bi bi-file-earmark-play" style="font-size: 2.5rem; color: #10b981; margin-bottom: 1rem;"></i>
+                        <h5 class="text-success">¡Archivo seleccionado!</h5>
+                        <p><strong>${file.name}</strong></p>
+                        <p class="small text-muted">Haz clic para cambiar</p>
+                    </div>
+                `;
+            }
+
+            function formatFileSize(bytes) {
+                if (bytes === 0) return '0 Bytes';
+                const k = 1024;
+                const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+                const i = Math.floor(Math.log(bytes) / Math.log(k));
+                return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+            }
+
+            function showStatus(type, message) {
+                uploadStatus.className = `upload-status ${type}`;
+                uploadStatus.innerHTML = message;
+                uploadStatus.style.display = 'block';
+            }
+
+            function hideStatus() {
+                uploadStatus.style.display = 'none';
+            }
+
+            // Handle form submission
+            uploadForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                if (!fileInput.files[0]) {
+                    showStatus('error', 'Por favor selecciona un archivo de video.');
+                    return;
+                }
+
+                const formData = new FormData();
+                formData.append('video', fileInput.files[0]);
+                formData.append('titulo', document.getElementById('titulo').value);
+                formData.append('descripcion', document.getElementById('descripcion').value);
+                formData.append('id_modulo', document.getElementById('id_modulo').value);
+                formData.append('duracion_minutos', document.getElementById('duracion_minutos').value);
+                formData.append('estatus', document.getElementById('estatus').value);
+
+                // Show progress
+                uploadProgress.style.display = 'block';
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="bi bi-hourglass-split me-2"></i>Subiendo...';
+                hideStatus();
+
+                try {
+                    console.log('🚀 Enviando video al servidor...');
+                    const response = await fetch('/videos-admin/upload', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    const result = await response.json();
+                    console.log('📡 Respuesta del servidor:', result);
+
+                    if (result.success) {
+                        showStatus('success', '¡Video subido exitosamente!');
+                        
+                        // Close modal and refresh page after 2 seconds
+                        setTimeout(() => {
+                            bootstrap.Modal.getInstance(document.getElementById('uploadVideoModal')).hide();
+                            location.reload();
+                        }, 2000);
+                    } else {
+                        showStatus('error', 'Error al subir el video: ' + result.error);
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = '<i class="bi bi-cloud-upload me-2"></i>Subir Video';
+                    }
+                } catch (error) {
+                    console.error('❌ Error:', error);
+                    showStatus('error', 'Error de conexión al subir el video.');
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="bi bi-cloud-upload me-2"></i>Subir Video';
+                }
+
+                uploadProgress.style.display = 'none';
+            });
+
+            // Reset form when modal closes
+            document.getElementById('uploadVideoModal').addEventListener('hidden.bs.modal', () => {
+                uploadForm.reset();
+                fileInfo.style.display = 'none';
+                fileDropArea.classList.remove('has-file');
+                fileDropArea.innerHTML = `
+                    <div class="drop-content">
+                        <i class="bi bi-cloud-upload" style="font-size: 2.5rem; color: var(--primary-color); margin-bottom: 1rem;"></i>
+                        <h5>Arrastra tu video aquí</h5>
+                        <p class="text-muted">o <strong>haz clic para seleccionar</strong></p>
+                        <p class="small text-muted">Formatos: MP4, MOV, AVI, WMV (máx. 500MB)</p>
+                    </div>
+                `;
+                hideStatus();
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="bi bi-cloud-upload me-2"></i>Subir Video';
+            });
+        }
     </script>
 </body>
 </html>
