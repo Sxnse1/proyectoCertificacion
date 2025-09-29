@@ -10,6 +10,12 @@ const requireAuth = (req, res, next) => {
     if (twoFactorService.requires2FA(req.session.user.rol)) {
       // Verificar si tiene 2FA configurado y verificado
       if (!req.session.user.two_factor_enabled || !req.session.user.two_factor_verified) {
+        // Permitir acceso a rutas de configuración de 2FA
+        if (req.path.startsWith('/two-factor/')) {
+          console.log('[AUTH MIDDLEWARE] 🔐 Permitiendo acceso a configuración de 2FA');
+          return next();
+        }
+        
         console.log('[AUTH MIDDLEWARE] 🔐 Usuario requiere completar configuración de 2FA');
         console.log('[AUTH MIDDLEWARE] 👤 Usuario:', req.session.user.email);
         console.log('[AUTH MIDDLEWARE] 🎭 Rol:', req.session.user.rol);
@@ -29,6 +35,20 @@ const requireAuth = (req, res, next) => {
   
   // Guardar la URL original para redirigir después del login
   req.session.redirectTo = req.originalUrl;
+  
+  return res.redirect('/auth/login?error=sesion_expirada');
+};
+
+// Middleware específico para autenticación básica (sin verificar 2FA)
+const requireBasicAuth = (req, res, next) => {
+  // Solo verificar si el usuario está autenticado
+  if (req.session && req.session.user) {
+    return next();
+  }
+  
+  // Si no está autenticado, redirigir al login
+  console.log('[AUTH MIDDLEWARE] 🚫 Acceso denegado - Usuario no autenticado');
+  console.log('[AUTH MIDDLEWARE] 📍 Ruta intentada:', req.originalUrl);
   
   return res.redirect('/auth/login?error=sesion_expirada');
 };
@@ -93,6 +113,7 @@ const logAccess = (req, res, next) => {
 
 module.exports = {
   requireAuth,
+  requireBasicAuth,
   requireRole,
   injectUserData,
   logAccess

@@ -64,6 +64,34 @@ hbs.registerHelper('json', function(context) {
   return JSON.stringify(context);
 });
 
+hbs.registerHelper('gt', function(a, b) {
+  return a > b;
+});
+
+hbs.registerHelper('lt', function(a, b) {
+  return a < b;
+});
+
+hbs.registerHelper('add', function(a, b) {
+  return a + b;
+});
+
+hbs.registerHelper('subtract', function(a, b) {
+  return a - b;
+});
+
+hbs.registerHelper('for', function(from, to, current, options) {
+  let result = '';
+  for (let i = from; i <= to; i++) {
+    const data = {
+      page: i,
+      active: i === current
+    };
+    result += options.fn(data);
+  }
+  return result;
+});
+
 // Configurar express-session para autenticación segura
 var session = require('express-session');
 
@@ -141,6 +169,14 @@ app.use('/temp', requireRole(['admin', 'instructor']), addVimeoTempRouter);
 // Rutas de autenticación de dos factores
 const twoFactorRouter = require('./routes/two-factor');
 app.use('/two-factor', twoFactorRouter);
+
+// Ruta de administración de categorías
+const categoriasAdminRouter = require('./routes/categorias-admin');
+app.use('/categorias-admin', requireRole(['admin', 'instructor']), categoriasAdminRouter);
+
+// Ruta de administración de etiquetas
+const etiquetasAdminRouter = require('./routes/etiquetas-admin');
+app.use('/etiquetas-admin', requireRole(['admin', 'instructor']), etiquetasAdminRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

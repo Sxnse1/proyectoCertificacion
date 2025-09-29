@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const twoFactorService = require('../services/twoFactorService');
-const { requireAuth } = require('../middleware/auth');
+const { requireBasicAuth } = require('../middleware/auth');
 
 /* GET - Página de configuración de 2FA */
-router.get('/setup', requireAuth, async function(req, res, next) {
+router.get('/setup', requireBasicAuth, async function(req, res, next) {
   try {
     const user = req.session.user;
 
@@ -41,7 +41,7 @@ router.get('/setup', requireAuth, async function(req, res, next) {
 });
 
 /* POST - Verificar y activar 2FA */
-router.post('/verify-setup', requireAuth, async function(req, res, next) {
+router.post('/verify-setup', requireBasicAuth, async function(req, res, next) {
   try {
     const { token, secret, backup_codes } = req.body;
     const user = req.session.user;
@@ -199,7 +199,7 @@ router.post('/verify', async function(req, res, next) {
 });
 
 /* GET - Página para regenerar códigos de respaldo */
-router.get('/backup-codes', requireAuth, async function(req, res, next) {
+router.get('/backup-codes', requireBasicAuth, async function(req, res, next) {
   try {
     const user = req.session.user;
 
@@ -223,7 +223,7 @@ router.get('/backup-codes', requireAuth, async function(req, res, next) {
 });
 
 /* POST - Regenerar códigos de respaldo */
-router.post('/regenerate-backup-codes', requireAuth, async function(req, res, next) {
+router.post('/regenerate-backup-codes', requireBasicAuth, async function(req, res, next) {
   try {
     const { current_password } = req.body;
     const user = req.session.user;
@@ -272,7 +272,7 @@ router.post('/regenerate-backup-codes', requireAuth, async function(req, res, ne
 });
 
 /* POST - Desactivar 2FA */
-router.post('/disable', requireAuth, async function(req, res, next) {
+router.post('/disable', requireBasicAuth, async function(req, res, next) {
   try {
     const { current_password, token } = req.body;
     const user = req.session.user;

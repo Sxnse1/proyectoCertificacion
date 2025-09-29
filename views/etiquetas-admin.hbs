@@ -1,0 +1,957 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{title}} - StartEducation</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <style>
+        :root {
+            --primary-color: #ea580c;
+            --primary-hover: #dc2626;
+            --secondary-color: #64748b;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --info-color: #3b82f6;
+            --dark-color: #1e293b;
+            --light-color: #f8fafc;
+            --border-color: #e2e8f0;
+            --text-muted: #64748b;
+            --text-dark: #0f172a;
+            --bg-light: #f8fafc;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+        }
+
+        body {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .container-fluid {
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header-section {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border-left: 5px solid var(--primary-color);
+        }
+
+        .header-title {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .header-title h1 {
+            color: var(--text-dark);
+            font-weight: 700;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .stat-card {
+            background: var(--bg-light);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            border: 1px solid var(--border-color);
+            transition: transform 0.2s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            display: block;
+        }
+
+        .stat-label {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        .controls-section {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .controls-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .search-group {
+            flex: 1;
+            max-width: 400px;
+        }
+
+        .search-input {
+            border-radius: 12px;
+            border: 2px solid var(--border-color);
+            padding: 0.75rem 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(234, 88, 12, 0.25);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            border-radius: 12px;
+            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+            transition: all 0.3s ease;
+            border: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color) 0%, #dc2626 100%);
+            box-shadow: 0 4px 15px rgba(234, 88, 12, 0.3);
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, var(--primary-hover) 0%, #9a3412 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(234, 88, 12, 0.4);
+        }
+
+        .btn-success {
+            background: var(--success-color);
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-success:hover {
+            background: #059669;
+            transform: translateY(-2px);
+        }
+
+        .btn-warning {
+            background: var(--warning-color);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            padding: 0.5rem 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-warning:hover {
+            background: #d97706;
+            color: white;
+        }
+
+        .btn-danger {
+            background: var(--danger-color);
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            padding: 0.5rem 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+
+        .btn-info {
+            background: var(--info-color);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-info:hover {
+            background: #2563eb;
+            color: white;
+        }
+
+        .table-section {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .table-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, #dc2626 100%);
+            color: white;
+            padding: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .table-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .table-responsive {
+            border-radius: 0;
+        }
+
+        .table {
+            margin: 0;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+        .table thead th {
+            background: var(--bg-light);
+            color: var(--text-dark);
+            font-weight: 600;
+            padding: 1rem;
+            border: none;
+            white-space: nowrap;
+        }
+
+        .table tbody td {
+            padding: 1rem;
+            border-top: 1px solid var(--border-color);
+            vertical-align: middle;
+        }
+
+        .table tbody tr:hover {
+            background: rgba(234, 88, 12, 0.05);
+        }
+
+        .etiqueta-name {
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .etiqueta-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.35rem 0.75rem;
+            background: var(--primary-color);
+            color: white;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .etiqueta-badge.empty {
+            background: var(--text-muted);
+        }
+
+        .curso-stats {
+            min-width: 200px;
+        }
+
+        .stat-badges {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .stat-badges .badge {
+            font-size: 0.75rem;
+            padding: 0.35rem 0.65rem;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            width: fit-content;
+        }
+
+        .actions-group {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .pagination-section {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .pagination {
+            margin: 0;
+            justify-content: center;
+        }
+
+        .page-link {
+            border: none;
+            color: var(--text-muted);
+            padding: 0.75rem 1rem;
+            margin: 0 0.25rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .page-link:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .page-item.active .page-link {
+            background: var(--primary-color);
+            border: none;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--text-muted);
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .empty-state h3 {
+            color: var(--text-dark);
+            margin-bottom: 1rem;
+        }
+
+        .modal-content {
+            border-radius: 16px;
+            border: none;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, #dc2626 100%);
+            color: white;
+            border-radius: 16px 16px 0 0;
+            padding: 1.5rem;
+        }
+
+        .modal-title {
+            font-weight: 700;
+        }
+
+        .btn-close {
+            filter: brightness(0) invert(1);
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .form-control {
+            border-radius: 8px;
+            border: 2px solid var(--border-color);
+            padding: 0.75rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(234, 88, 12, 0.25);
+        }
+
+        .batch-input {
+            min-height: 120px;
+            font-family: monospace;
+        }
+
+        .loading-state {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .spinner-border {
+            color: var(--primary-color);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container-fluid {
+                padding: 1rem;
+            }
+
+            .header-title {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .controls-row {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .search-group {
+                max-width: none;
+            }
+
+            .stats-row {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            }
+
+            .actions-group {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <!-- Header Section -->
+        <div class="header-section">
+            <div class="header-title">
+                <h1>
+                    <i class="bi bi-tags-fill"></i>
+                    Gestión de Etiquetas
+                </h1>
+                <div class="d-flex gap-2">
+                    <a href="/categorias-admin" class="btn btn-outline-secondary">
+                        <i class="bi bi-collection me-2"></i>Categorías
+                    </a>
+                    <a href="/dashboard" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-left me-2"></i>Dashboard
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Estadísticas -->
+            <div class="stats-row">
+                <div class="stat-card">
+                    <span class="stat-number">{{stats.total_etiquetas}}</span>
+                    <div class="stat-label">Total Etiquetas</div>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">{{stats.etiquetas_en_uso}}</span>
+                    <div class="stat-label">En Uso</div>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">{{stats.etiquetas_sin_uso}}</span>
+                    <div class="stat-label">Sin Usar</div>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">{{stats.total_asignaciones}}</span>
+                    <div class="stat-label">Total Asignaciones</div>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">{{stats.cursos_etiquetados}}</span>
+                    <div class="stat-label">Cursos Etiquetados</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Controls Section -->
+        <div class="controls-section">
+            <div class="controls-row">
+                <div class="search-group">
+                    <form method="GET" class="d-flex w-100">
+                        <input type="text" 
+                               class="form-control search-input" 
+                               name="search" 
+                               placeholder="Buscar etiquetas..." 
+                               value="{{search}}">
+                        <button type="submit" class="btn btn-primary ms-2">
+                            <i class="bi bi-search"></i>
+                        </button>
+                    </form>
+                </div>
+                <div class="action-buttons">
+                    <button type="button" class="btn btn-info" onclick="showBatchModal()">
+                        <i class="bi bi-plus-square me-2"></i>Lote
+                    </button>
+                    <button type="button" class="btn btn-success" onclick="showCreateModal()">
+                        <i class="bi bi-plus-circle me-2"></i>Nueva Etiqueta
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Table Section -->
+        <div class="table-section">
+            <div class="table-header">
+                <h2 class="table-title">
+                    <i class="bi bi-list-ul me-2"></i>
+                    Lista de Etiquetas
+                    {{#if search}}
+                        <small>(Filtrado por: "{{search}}")</small>
+                    {{/if}}
+                </h2>
+                <div class="text-end">
+                    <small>Página {{currentPage}} de {{totalPages}} ({{totalRecords}} total)</small>
+                </div>
+            </div>
+            
+            {{#if etiquetas.length}}
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Etiqueta</th>
+                            <th>Estado de Cursos</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{#each etiquetas}}
+                        <tr>
+                            <td>
+                                <span class="badge bg-secondary">#{{id_etiqueta}}</span>
+                            </td>
+                            <td>
+                                <div class="etiqueta-name">
+                                    <span class="etiqueta-badge {{#if (eq total_cursos 0)}}empty{{/if}}">
+                                        <i class="bi bi-tag"></i>
+                                        {{nombre}}
+                                    </span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="curso-stats">
+                                    {{#if (gt total_cursos 0)}}
+                                        <div class="stat-badges">
+                                            <span class="badge bg-primary">
+                                                <i class="bi bi-collection"></i> {{total_cursos}} total
+                                            </span>
+                                            {{#if (gt cursos_publicados 0)}}
+                                                <span class="badge bg-success">
+                                                    <i class="bi bi-check-circle"></i> {{cursos_publicados}} publicados
+                                                </span>
+                                            {{/if}}
+                                            {{#if (gt cursos_borrador 0)}}
+                                                <span class="badge bg-warning">
+                                                    <i class="bi bi-pencil-square"></i> {{cursos_borrador}} borradores
+                                                </span>
+                                            {{/if}}
+                                            {{#if (gt cursos_inactivos 0)}}
+                                                <span class="badge bg-secondary">
+                                                    <i class="bi bi-pause-circle"></i> {{cursos_inactivos}} inactivos
+                                                </span>
+                                            {{/if}}
+                                        </div>
+                                    {{else}}
+                                        <span class="badge bg-light text-muted">
+                                            <i class="bi bi-collection"></i> Sin cursos
+                                        </span>
+                                    {{/if}}
+                                </div>
+                            </td>
+                            <td>
+                                <div class="actions-group">
+                                    <button type="button" class="btn btn-warning btn-sm" 
+                                            onclick="editEtiqueta({{id_etiqueta}})">
+                                        <i class="bi bi-pencil"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-danger btn-sm" 
+                                            onclick="deleteEtiqueta({{id_etiqueta}}, '{{nombre}}', {{total_cursos}})">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {{/each}}
+                    </tbody>
+                </table>
+            </div>
+            {{else}}
+            <div class="empty-state">
+                <i class="bi bi-tags"></i>
+                <h3>No hay etiquetas</h3>
+                <p>{{#if search}}No se encontraron etiquetas que coincidan con "{{search}}"{{else}}Aún no has creado ninguna etiqueta{{/if}}</p>
+                {{#unless search}}
+                <button type="button" class="btn btn-primary" onclick="showCreateModal()">
+                    <i class="bi bi-plus-circle me-2"></i>Crear Primera Etiqueta
+                </button>
+                {{/unless}}
+            </div>
+            {{/if}}
+        </div>
+
+        <!-- Pagination -->
+        {{#if (gt totalPages 1)}}
+        <div class="pagination-section">
+            <nav aria-label="Navegación de páginas">
+                <ul class="pagination">
+                    {{#if (gt currentPage 1)}}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{subtract currentPage 1}}{{#if search}}&search={{search}}{{/if}}">
+                            <i class="bi bi-chevron-left"></i>
+                        </a>
+                    </li>
+                    {{/if}}
+
+                    {{#for 1 totalPages}}
+                    <li class="page-item {{#if (eq this ../currentPage)}}active{{/if}}">
+                        <a class="page-link" href="?page={{this}}{{#if ../search}}&search={{../search}}{{/if}}">{{this}}</a>
+                    </li>
+                    {{/for}}
+
+                    {{#if (lt currentPage totalPages)}}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{add currentPage 1}}{{#if search}}&search={{search}}{{/if}}">
+                            <i class="bi bi-chevron-right"></i>
+                        </a>
+                    </li>
+                    {{/if}}
+                </ul>
+            </nav>
+        </div>
+        {{/if}}
+    </div>
+
+    <!-- Modal Crear/Editar Etiqueta -->
+    <div class="modal fade" id="etiquetaModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="etiquetaModalTitle">
+                        <i class="bi bi-tag me-2"></i>Nueva Etiqueta
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="etiquetaForm">
+                        <div class="mb-3">
+                            <label for="etiquetaNombre" class="form-label">
+                                Nombre de la Etiqueta <span class="text-danger">*</span>
+                            </label>
+                            <input type="text" 
+                                   class="form-control" 
+                                   id="etiquetaNombre" 
+                                   name="nombre" 
+                                   placeholder="ej. Tijeras, Principiante, Fade..."
+                                   maxlength="50" 
+                                   required>
+                            <div class="form-text">
+                                Máximo 50 caracteres. Solo letras, números, espacios y guiones.
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" onclick="saveEtiqueta()">
+                        <i class="bi bi-check-circle me-2"></i>Guardar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Crear Etiquetas en Lote -->
+    <div class="modal fade" id="batchModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="bi bi-plus-square me-2"></i>Crear Etiquetas en Lote
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="batchEtiquetas" class="form-label">
+                            Etiquetas (una por línea)
+                        </label>
+                        <textarea class="form-control batch-input" 
+                                  id="batchEtiquetas" 
+                                  rows="8" 
+                                  placeholder="Tijeras&#10;Navaja&#10;Máquina&#10;Principiante&#10;Intermedio&#10;Avanzado&#10;Fade&#10;Undercut&#10;Clásico&#10;Moderno"></textarea>
+                        <div class="form-text">
+                            Escribe cada etiqueta en una línea separada. Se ignorarán líneas vacías y duplicadas.
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <h6>Etiquetas sugeridas para barbería:</h6>
+                        <div class="d-flex flex-wrap gap-2">
+                            <button type="button" class="btn btn-outline-primary btn-sm" onclick="addSuggestedTag('Tijeras')">Tijeras</button>
+                            <button type="button" class="btn btn-outline-primary btn-sm" onclick="addSuggestedTag('Navaja')">Navaja</button>
+                            <button type="button" class="btn btn-outline-primary btn-sm" onclick="addSuggestedTag('Máquina')">Máquina</button>
+                            <button type="button" class="btn btn-outline-primary btn-sm" onclick="addSuggestedTag('Principiante')">Principiante</button>
+                            <button type="button" class="btn btn-outline-primary btn-sm" onclick="addSuggestedTag('Intermedio')">Intermedio</button>
+                            <button type="button" class="btn btn-outline-primary btn-sm" onclick="addSuggestedTag('Avanzado')">Avanzado</button>
+                            <button type="button" class="btn btn-outline-primary btn-sm" onclick="addSuggestedTag('Fade')">Fade</button>
+                            <button type="button" class="btn btn-outline-primary btn-sm" onclick="addSuggestedTag('Undercut')">Undercut</button>
+                            <button type="button" class="btn btn-outline-primary btn-sm" onclick="addSuggestedTag('Clásico')">Clásico</button>
+                            <button type="button" class="btn btn-outline-primary btn-sm" onclick="addSuggestedTag('Moderno')">Moderno</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-info" onclick="processBatch()">
+                        <i class="bi bi-plus-square me-2"></i>Crear Etiquetas
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading State -->
+    <div class="loading-state" id="loadingState">
+        <div class="spinner-border" role="status">
+            <span class="visually-hidden">Cargando...</span>
+        </div>
+        <p class="mt-2">Procesando...</p>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let etiquetaModal;
+        let batchModal;
+        let isEditing = false;
+        let currentEtiquetaId = null;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            etiquetaModal = new bootstrap.Modal(document.getElementById('etiquetaModal'));
+            batchModal = new bootstrap.Modal(document.getElementById('batchModal'));
+        });
+
+        function showCreateModal() {
+            isEditing = false;
+            currentEtiquetaId = null;
+            document.getElementById('etiquetaModalTitle').innerHTML = '<i class="bi bi-tag me-2"></i>Nueva Etiqueta';
+            document.getElementById('etiquetaForm').reset();
+            etiquetaModal.show();
+        }
+
+        function showBatchModal() {
+            document.getElementById('batchEtiquetas').value = '';
+            batchModal.show();
+        }
+
+        function addSuggestedTag(tag) {
+            const textarea = document.getElementById('batchEtiquetas');
+            const currentValue = textarea.value.trim();
+            const lines = currentValue ? currentValue.split('\n') : [];
+            
+            if (!lines.includes(tag)) {
+                lines.push(tag);
+                textarea.value = lines.join('\n');
+            }
+        }
+
+        function editEtiqueta(id) {
+            isEditing = true;
+            currentEtiquetaId = id;
+            
+            document.getElementById('etiquetaModalTitle').innerHTML = '<i class="bi bi-pencil me-2"></i>Editar Etiqueta';
+            
+            showLoading();
+            
+            fetch(`/etiquetas-admin/${id}`)
+                .then(response => response.json())
+                .then(data => {
+                    hideLoading();
+                    if (data.success) {
+                        document.getElementById('etiquetaNombre').value = data.etiqueta.nombre;
+                        etiquetaModal.show();
+                    } else {
+                        showAlert('Error al cargar la etiqueta: ' + data.message, 'danger');
+                    }
+                })
+                .catch(error => {
+                    hideLoading();
+                    console.error('Error:', error);
+                    showAlert('Error al cargar la etiqueta', 'danger');
+                });
+        }
+
+        function saveEtiqueta() {
+            const form = document.getElementById('etiquetaForm');
+            const formData = new FormData(form);
+            
+            const data = {
+                nombre: formData.get('nombre').trim()
+            };
+
+            if (!data.nombre) {
+                showAlert('El nombre de la etiqueta es obligatorio', 'warning');
+                return;
+            }
+
+            showLoading();
+
+            const url = isEditing ? `/etiquetas-admin/${currentEtiquetaId}` : '/etiquetas-admin';
+            const method = isEditing ? 'PUT' : 'POST';
+
+            fetch(url, {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                hideLoading();
+                if (data.success) {
+                    showAlert(data.message, 'success');
+                    etiquetaModal.hide();
+                    setTimeout(() => location.reload(), 1500);
+                } else {
+                    showAlert(data.message, 'danger');
+                }
+            })
+            .catch(error => {
+                hideLoading();
+                console.error('Error:', error);
+                showAlert('Error al guardar la etiqueta', 'danger');
+            });
+        }
+
+        function processBatch() {
+            const textarea = document.getElementById('batchEtiquetas');
+            const content = textarea.value.trim();
+            
+            if (!content) {
+                showAlert('Debe ingresar al menos una etiqueta', 'warning');
+                return;
+            }
+
+            const etiquetas = content.split('\n')
+                .map(line => line.trim())
+                .filter(line => line.length > 0);
+
+            if (etiquetas.length === 0) {
+                showAlert('No se encontraron etiquetas válidas', 'warning');
+                return;
+            }
+
+            showLoading();
+
+            fetch('/etiquetas-admin/batch', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ etiquetas })
+            })
+            .then(response => response.json())
+            .then(data => {
+                hideLoading();
+                if (data.success) {
+                    let message = data.message;
+                    if (data.errores && data.errores.length > 0) {
+                        message += '\n\nAdvertencias:\n' + data.errores.join('\n');
+                    }
+                    showAlert(message, 'success');
+                    batchModal.hide();
+                    setTimeout(() => location.reload(), 2000);
+                } else {
+                    showAlert(data.message, 'danger');
+                }
+            })
+            .catch(error => {
+                hideLoading();
+                console.error('Error:', error);
+                showAlert('Error al procesar las etiquetas', 'danger');
+            });
+        }
+
+        function deleteEtiqueta(id, nombre, totalCursos) {
+            const confirmMessage = totalCursos > 0 
+                ? `¿Estás seguro de eliminar la etiqueta "${nombre}"?\n\nEsto desvinculará la etiqueta de ${totalCursos} curso(s).`
+                : `¿Estás seguro de eliminar la etiqueta "${nombre}"?`;
+                
+            if (!confirm(confirmMessage)) {
+                return;
+            }
+
+            showLoading();
+
+            fetch(`/etiquetas-admin/${id}`, {
+                method: 'DELETE'
+            })
+            .then(response => response.json())
+            .then(data => {
+                hideLoading();
+                if (data.success) {
+                    showAlert(data.message, 'success');
+                    setTimeout(() => location.reload(), 1500);
+                } else {
+                    showAlert(data.message, 'danger');
+                }
+            })
+            .catch(error => {
+                hideLoading();
+                console.error('Error:', error);
+                showAlert('Error al eliminar la etiqueta', 'danger');
+            });
+        }
+
+        function showLoading() {
+            document.getElementById('loadingState').style.display = 'block';
+        }
+
+        function hideLoading() {
+            document.getElementById('loadingState').style.display = 'none';
+        }
+
+        function showAlert(message, type = 'info') {
+            // Crear elemento de alerta
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+            alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 9999; max-width: 400px;';
+            alertDiv.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+
+            document.body.appendChild(alertDiv);
+
+            // Auto remover después de 5 segundos
+            setTimeout(() => {
+                if (alertDiv.parentNode) {
+                    alertDiv.parentNode.removeChild(alertDiv);
+                }
+            }, 5000);
+        }
+    </script>
+</body>
+</html>
