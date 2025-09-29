@@ -38,7 +38,23 @@ router.get('/', async function(req, res, next) {
       ORDER BY v.fecha_creacion DESC
     `);
     
-    const videos = result.recordset;
+    const videos = result.recordset.map(video => {
+      // Extraer ID de Vimeo de la URL
+      let vimeoId = null;
+      if (video.url_vimeo) {
+        const vimeoIdMatch = video.url_vimeo.match(/vimeo\.com\/(\d+)/) || 
+                            video.url_vimeo.match(/player\.vimeo\.com\/video\/(\d+)/);
+        if (vimeoIdMatch) {
+          vimeoId = vimeoIdMatch[1];
+        }
+      }
+      
+      return {
+        ...video,
+        vimeo_id: vimeoId
+      };
+    });
+    
     console.log('[VIDEOS-ADMIN] 📹 Videos encontrados:', videos.length);
     
     // Obtener módulos para el modal de subida

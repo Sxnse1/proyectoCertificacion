@@ -1,3 +1,0 @@
-# Este es un placeholder para favicon.ico
-# En producción, se debería generar un archivo ICO real
-# Por ahora, el navegador usará el SVG que es más moderno y escalable

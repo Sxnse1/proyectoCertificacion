@@ -4,315 +4,463 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{title}} - StartEducation</title>
-    <link rel='stylesheet' href='/stylesheets/style.css' />
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/images/favicon.svg">
+    
+    <!-- Bootstrap 5.3 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
     <style>
-        body {
-            background-color: #1a1a1a;
-            color: #ffffff;
-            margin: 0;
-            padding: 0;
+        :root {
+            --primary-color: #ea580c;
+            --primary-hover: #c2410c;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --text-dark: #1f2937;
+            --text-muted: #6b7280;
+            --border-color: #e5e7eb;
+            --bg-light: #f8fafc;
+        }
+
+        * {
             font-family: 'Inter', sans-serif;
         }
-        
-        .video-container {
-            max-width: 1200px;
+
+        body {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            color: var(--text-dark);
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+
+        .main-container {
+            max-width: 1400px;
             margin: 0 auto;
-            padding: 20px;
+            padding: 2rem;
         }
-        
+
         .video-header {
-            background: linear-gradient(135deg, #2c1810 0%, #8b4513 100%);
-            padding: 20px;
-            border-radius: 12px;
-            margin-bottom: 30px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--border-color);
+            padding: 2rem;
+            margin-bottom: 2rem;
         }
-        
-        .video-header h1 {
-            margin: 0 0 10px 0;
-            font-size: 2.2rem;
+
+        .video-title {
+            color: var(--primary-color);
             font-weight: 700;
-            color: #d4af37;
-        }
-        
-        .video-header .user-info {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
             display: flex;
             align-items: center;
-            gap: 15px;
-            font-size: 0.9rem;
-            opacity: 0.9;
+            gap: 1rem;
         }
-        
-        .user-badge {
-            background: rgba(212, 175, 55, 0.2);
-            padding: 4px 12px;
-            border-radius: 20px;
-            border: 1px solid #d4af37;
-            font-size: 0.8rem;
-            font-weight: 500;
+
+        .video-subtitle {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            margin-bottom: 1.5rem;
         }
-        
-        .video-player-wrapper {
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 12px 48px rgba(0,0,0,0.5);
-            margin-bottom: 30px;
-            background: #000;
-            position: relative;
-        }
-        
-        .video-player-wrapper iframe {
-            border-radius: 12px;
-            display: block;
-        }
-        
-        .video-info {
-            background: rgba(255,255,255,0.05);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 12px;
-            padding: 25px;
-            margin-bottom: 30px;
-        }
-        
-        .video-info h2 {
-            margin: 0 0 15px 0;
-            color: #d4af37;
-            font-size: 1.5rem;
-            font-weight: 600;
-        }
-        
-        .video-info p {
-            margin: 0;
-            line-height: 1.6;
-            color: #cccccc;
-        }
-        
-        .video-controls {
+
+        .user-info-section {
             display: flex;
-            gap: 15px;
+            align-items: center;
+            gap: 1rem;
             flex-wrap: wrap;
-            margin-bottom: 30px;
         }
-        
-        .control-btn {
-            background: linear-gradient(135deg, #d4af37 0%, #b8941f 100%);
-            color: #1a1a1a;
+
+        .user-badge {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .video-content {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+
+        .video-player-section {
+            position: relative;
+            background: #000;
+        }
+
+        .vimeo-container {
+            position: relative;
+            width: 100%;
+            height: 0;
+            padding-bottom: 56.25%; /* 16:9 aspect ratio */
+        }
+
+        .vimeo-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             border: none;
-            padding: 12px 24px;
-            border-radius: 8px;
+        }
+
+        .video-info-section {
+            padding: 2rem;
+        }
+
+        .video-meta {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .meta-item {
+            background: var(--bg-light);
+            padding: 1rem;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+
+        .meta-label {
+            font-size: 0.75rem;
             font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-decoration: none;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.5rem;
+        }
+
+        .meta-value {
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--text-dark);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .status-badge {
             display: inline-flex;
             align-items: center;
-            gap: 8px;
-            font-size: 0.9rem;
+            gap: 0.25rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
-        
-        .control-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(212, 175, 55, 0.3);
+
+        .status-publicado {
+            background: rgba(16, 185, 129, 0.1);
+            color: #059669;
         }
-        
-        .control-btn.secondary {
-            background: rgba(255,255,255,0.1);
-            color: #ffffff;
-            border: 1px solid rgba(255,255,255,0.2);
+
+        .status-borrador {
+            background: rgba(245, 158, 11, 0.1);
+            color: #d97706;
         }
-        
-        .control-btn.secondary:hover {
-            background: rgba(255,255,255,0.2);
-            box-shadow: 0 8px 25px rgba(255,255,255, 0.1);
+
+        .status-archivado {
+            background: rgba(107, 114, 128, 0.1);
+            color: #4b5563;
         }
-        
-        .progress-section {
-            background: rgba(255,255,255,0.05);
+
+        .video-description {
+            background: var(--bg-light);
+            padding: 1.5rem;
             border-radius: 12px;
-            padding: 20px;
-            border: 1px solid rgba(255,255,255,0.1);
+            border: 1px solid var(--border-color);
+            margin-bottom: 2rem;
         }
-        
-        .progress-section h3 {
-            margin: 0 0 15px 0;
-            color: #d4af37;
-            font-size: 1.2rem;
-        }
-        
-        .progress-bar {
-            background: rgba(255,255,255,0.1);
-            height: 8px;
-            border-radius: 4px;
-            overflow: hidden;
-            margin-bottom: 10px;
-        }
-        
-        .progress-fill {
-            background: linear-gradient(90deg, #d4af37 0%, #b8941f 100%);
-            height: 100%;
-            width: 0%;
-            transition: width 0.3s ease;
-        }
-        
-        .progress-text {
-            font-size: 0.9rem;
-            color: #cccccc;
-        }
-        
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .video-container {
-                padding: 15px;
-            }
-            
-            .video-header {
-                padding: 15px;
-            }
-            
-            .video-header h1 {
-                font-size: 1.8rem;
-            }
-            
-            .video-header .user-info {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 10px;
-            }
-            
-            .video-player-wrapper {
-                margin-bottom: 20px;
-            }
-            
-            .video-info {
-                padding: 20px;
-            }
-            
-            .control-btn {
-                padding: 10px 20px;
-                font-size: 0.85rem;
-            }
-            
-            .video-controls {
-                justify-content: center;
-            }
-        }
-        
-        @media (max-width: 480px) {
-            .video-container {
-                padding: 10px;
-            }
-            
-            .video-header {
-                padding: 10px;
-                margin-bottom: 15px;
-            }
-            
-            .video-header h1 {
-                font-size: 1.5rem;
-            }
-            
-            .video-player-wrapper {
-                margin-bottom: 15px;
-                border-radius: 8px;
-            }
-            
-            .video-info {
-                padding: 15px;
-            }
-            
-            .control-btn {
-                width: 100%;
-                justify-content: center;
-            }
-        }
-        
-        /* Loading animation */
-        .loading {
+
+        .description-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 1rem;
             display: flex;
-            justify-content: center;
             align-items: center;
-            height: 200px;
-            color: #d4af37;
+            gap: 0.5rem;
         }
-        
-        .spinner {
-            border: 3px solid rgba(212, 175, 55, 0.3);
+
+        .description-text {
+            color: var(--text-muted);
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
+            border: none;
+            font-weight: 500;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, var(--primary-hover) 0%, var(--primary-color) 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(234, 88, 12, 0.3);
+        }
+
+        .btn-outline-secondary {
+            border-color: var(--border-color);
+            color: var(--text-muted);
+            font-weight: 500;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-outline-secondary:hover {
+            background: var(--bg-light);
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+            transform: translateY(-1px);
+        }
+
+        .loading-state {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 400px;
+            color: var(--text-muted);
+        }
+
+        .loading-spinner {
+            border: 3px solid var(--border-color);
+            border-top: 3px solid var(--primary-color);
             border-radius: 50%;
-            border-top: 3px solid #d4af37;
             width: 40px;
             height: 40px;
             animation: spin 1s linear infinite;
+            margin-right: 1rem;
         }
-        
+
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+
+        .fullscreen-btn {
+            position: absolute;
+            bottom: 1rem;
+            right: 1rem;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            border: none;
+            padding: 0.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+
+        .fullscreen-btn:hover {
+            background: rgba(0, 0, 0, 0.9);
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                padding: 1rem;
+            }
+            
+            .video-title {
+                font-size: 2rem;
+            }
+            
+            .video-header,
+            .video-info-section {
+                padding: 1.5rem;
+            }
+            
+            .video-meta {
+                grid-template-columns: 1fr;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
     </style>
 </head>
 <body>
-    <div class="video-container">
-        <!-- Header con información del usuario -->
+    <div class="main-container">
+        <!-- Header Section -->
         <div class="video-header">
-            <h1>{{videoTitle}}</h1>
-            <div class="user-info">
-                <span>👤 {{userName}}</span>
-                <span class="user-badge">{{userRole}}</span>
-                <span>📧 {{userEmail}}</span>
+            <div class="d-flex justify-content-between align-items-start flex-wrap">
+                <div class="flex-grow-1">
+                    <h1 class="video-title">
+                        <i class="bi bi-play-circle"></i>
+                        {{videoTitle}}
+                    </h1>
+                    <p class="video-subtitle">{{videoDescription}}</p>
+                    <div class="user-info-section">
+                        <div class="user-badge">
+                            <i class="bi bi-person-circle"></i>
+                            {{userName}}
+                        </div>
+                        <span class="badge bg-secondary">{{userRole}}</span>
+                        <small class="text-muted">
+                            <i class="bi bi-envelope"></i>
+                            {{userEmail}}
+                        </small>
+                    </div>
+                </div>
+                <div class="action-buttons mt-3 mt-md-0">
+                    <button class="btn btn-outline-secondary" onclick="window.close()">
+                        <i class="bi bi-arrow-left"></i> Cerrar
+                    </button>
+                </div>
             </div>
         </div>
-        
-        <!-- Reproductor de video -->
-        <div class="video-player-wrapper">
-            <div style="padding:56.25% 0 0 0;position:relative;">
-                <iframe 
-                    src="https://player.vimeo.com/video/{{videoId}}?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" 
-                    frameborder="0" 
-                    allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share" 
-                    referrerpolicy="strict-origin-when-cross-origin" 
-                    style="position:absolute;top:0;left:0;width:100%;height:100%;" 
-                    title="{{videoTitle}}"
-                    id="vimeoPlayer">
-                </iframe>
+
+        <!-- Video Content Section -->
+        <div class="video-content">
+            <!-- Video Player -->
+            <div class="video-player-section">
+                <div class="vimeo-container">
+                    <iframe 
+                        src="https://player.vimeo.com/video/{{videoId}}?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" 
+                        frameborder="0" 
+                        allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share" 
+                        referrerpolicy="strict-origin-when-cross-origin" 
+                        title="{{videoTitle}}"
+                        id="vimeoPlayer">
+                    </iframe>
+                </div>
+                <button class="fullscreen-btn" onclick="toggleFullscreen()" title="Pantalla completa">
+                    <i class="bi bi-fullscreen"></i>
+                </button>
             </div>
-        </div>
-        
-        <!-- Información del video -->
-        <div class="video-info">
-            <h2>📚 Descripción del Contenido</h2>
-            <p>{{videoDescription}}</p>
-        </div>
-        
-        <!-- Controles -->
-        <div class="video-controls">
-            <button class="control-btn" onclick="toggleFullscreen()">
-                🔍 Pantalla Completa
-            </button>
-            <button class="control-btn secondary" onclick="restartVideo()">
-                🔄 Reiniciar Video
-            </button>
-            <button class="control-btn secondary" onclick="togglePlayPause()" id="playPauseBtn">
-                ⏸️ Pausar
-            </button>
-            <a href="/cursos?user={{userName}}&email={{userEmail}}&rol={{userRole}}" class="control-btn">
-                📚 Volver a Cursos
-            </a>
-        </div>
-        
-        <!-- Barra de progreso -->
-        <div class="progress-section">
-            <h3>📊 Progreso del Video</h3>
-            <div class="progress-bar">
-                <div class="progress-fill" id="progressFill"></div>
-            </div>
-            <div class="progress-text" id="progressText">
-                Tiempo: <span id="currentTime">0:00</span> / <span id="totalTime">--:--</span>
+
+            <!-- Video Information -->
+            <div class="video-info-section">
+                <!-- Video Metadata -->
+                <div class="video-meta">
+                    {{#if videoDuration}}
+                    <div class="meta-item">
+                        <div class="meta-label">Duración</div>
+                        <div class="meta-value">
+                            <i class="bi bi-clock"></i>
+                            <span id="durationDisplay">{{videoDuration}}s</span>
+                        </div>
+                    </div>
+                    {{/if}}
+                    
+                    {{#if videoOrder}}
+                    <div class="meta-item">
+                        <div class="meta-label">Orden</div>
+                        <div class="meta-value">
+                            <i class="bi bi-list-ol"></i>
+                            Lección #{{videoOrder}}
+                        </div>
+                    </div>
+                    {{/if}}
+                    
+                    {{#if videoStatus}}
+                    <div class="meta-item">
+                        <div class="meta-label">Estado</div>
+                        <div class="meta-value">
+                            <span class="status-badge status-{{videoStatus}}">
+                                {{#if (eq videoStatus 'publicado')}}
+                                    <i class="bi bi-check-circle"></i>
+                                {{else if (eq videoStatus 'borrador')}}
+                                    <i class="bi bi-clock"></i>
+                                {{else}}
+                                    <i class="bi bi-archive"></i>
+                                {{/if}}
+                                {{videoStatus}}
+                            </span>
+                        </div>
+                    </div>
+                    {{/if}}
+                    
+                    {{#if moduleId}}
+                    <div class="meta-item">
+                        <div class="meta-label">Módulo</div>
+                        <div class="meta-value">
+                            <i class="bi bi-collection"></i>
+                            Módulo {{moduleId}}
+                        </div>
+                    </div>
+                    {{/if}}
+                </div>
+
+                <!-- Video Description -->
+                {{#if videoDescription}}
+                <div class="video-description">
+                    <div class="description-title">
+                        <i class="bi bi-info-circle"></i>
+                        Descripción del Video
+                    </div>
+                    <p class="description-text">{{videoDescription}}</p>
+                </div>
+                {{/if}}
+
+                <!-- Progress Section -->
+                <div class="video-description">
+                    <div class="description-title">
+                        <i class="bi bi-graph-up"></i>
+                        Progreso de Reproducción
+                    </div>
+                    <div class="progress mb-3" style="height: 8px;">
+                        <div class="progress-bar" role="progressbar" style="width: 0%; background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);" id="progressFill"></div>
+                    </div>
+                    <div class="d-flex justify-content-between small text-muted">
+                        <span id="currentTime">0:00</span>
+                        <span id="totalTime">--:--</span>
+                    </div>
+                </div>
+
+                <!-- Control Buttons -->
+                <div class="action-buttons">
+                    <button class="btn btn-primary" onclick="togglePlayPause()" id="playPauseBtn">
+                        <i class="bi bi-pause-fill"></i> Pausar
+                    </button>
+                    <button class="btn btn-outline-secondary" onclick="restartVideo()">
+                        <i class="bi bi-arrow-clockwise"></i> Reiniciar
+                    </button>
+                    <button class="btn btn-outline-secondary" onclick="toggleFullscreen()">
+                        <i class="bi bi-fullscreen"></i> Pantalla Completa
+                    </button>
+                    <button class="btn btn-outline-secondary" onclick="window.history.back()">
+                        <i class="bi bi-arrow-left"></i> Volver
+                    </button>
+                </div>
             </div>
         </div>
     </div>
 
+    <!-- Bootstrap 5.3 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
     <!-- Vimeo Player API -->
     <script src="https://player.vimeo.com/api/player.js"></script>
     
@@ -326,7 +474,6 @@
         
         // Elementos del DOM
         const progressFill = document.getElementById('progressFill');
-        const progressText = document.getElementById('progressText');
         const currentTimeSpan = document.getElementById('currentTime');
         const totalTimeSpan = document.getElementById('totalTime');
         const playPauseBtn = document.getElementById('playPauseBtn');
@@ -335,12 +482,14 @@
         player.getDuration().then(function(videoDuration) {
             duration = videoDuration;
             totalTimeSpan.textContent = formatTime(duration);
+        }).catch(function(error) {
+            console.log('Error obteniendo duración:', error);
         });
         
         // Actualizar progreso
         player.on('timeupdate', function(data) {
             const currentTime = data.seconds;
-            const progress = (currentTime / duration) * 100;
+            const progress = duration > 0 ? (currentTime / duration) * 100 : 0;
             
             progressFill.style.width = progress + '%';
             currentTimeSpan.textContent = formatTime(currentTime);
@@ -349,20 +498,21 @@
         // Eventos del reproductor
         player.on('play', function() {
             isPlaying = true;
-            playPauseBtn.innerHTML = '⏸️ Pausar';
+            playPauseBtn.innerHTML = '<i class="bi bi-pause-fill"></i> Pausar';
             console.log('▶️ Video iniciado');
         });
         
         player.on('pause', function() {
             isPlaying = false;
-            playPauseBtn.innerHTML = '▶️ Reproducir';
+            playPauseBtn.innerHTML = '<i class="bi bi-play-fill"></i> Reproducir';
             console.log('⏸️ Video pausado');
         });
         
         player.on('ended', function() {
             console.log('✅ Video completado');
             progressFill.style.width = '100%';
-            playPauseBtn.innerHTML = '🔄 Repetir';
+            playPauseBtn.innerHTML = '<i class="bi bi-arrow-clockwise"></i> Repetir';
+            isPlaying = false;
         });
         
         // Funciones de control
@@ -378,27 +528,33 @@
             player.setCurrentTime(0).then(function() {
                 player.play();
                 console.log('🔄 Video reiniciado');
+            }).catch(function(error) {
+                console.log('Error reiniciando video:', error);
             });
         }
         
         function toggleFullscreen() {
             player.requestFullscreen().catch(function(error) {
-                console.log('Error al activar pantalla completa:', error);
-                // Fallback: intentar fullscreen del navegador
-                if (iframe.requestFullscreen) {
-                    iframe.requestFullscreen();
-                } else if (iframe.webkitRequestFullscreen) {
-                    iframe.webkitRequestFullscreen();
-                } else if (iframe.mozRequestFullScreen) {
-                    iframe.mozRequestFullScreen();
-                } else if (iframe.msRequestFullscreen) {
-                    iframe.msRequestFullscreen();
+                console.log('Error activando pantalla completa:', error);
+                
+                // Fallback: fullscreen del iframe
+                const elem = iframe;
+                if (elem.requestFullscreen) {
+                    elem.requestFullscreen();
+                } else if (elem.webkitRequestFullscreen) {
+                    elem.webkitRequestFullscreen();
+                } else if (elem.mozRequestFullScreen) {
+                    elem.mozRequestFullScreen();
+                } else if (elem.msRequestFullscreen) {
+                    elem.msRequestFullscreen();
                 }
             });
         }
         
         // Función para formatear tiempo
         function formatTime(seconds) {
+            if (!seconds || isNaN(seconds)) return '0:00';
+            
             const mins = Math.floor(seconds / 60);
             const secs = Math.floor(seconds % 60);
             return mins + ':' + (secs < 10 ? '0' : '') + secs;
@@ -406,29 +562,74 @@
         
         // Atajos de teclado
         document.addEventListener('keydown', function(e) {
+            // No interceptar si hay un input enfocado
+            if (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA') {
+                return;
+            }
+            
             switch(e.code) {
                 case 'Space':
                     e.preventDefault();
                     togglePlayPause();
                     break;
                 case 'KeyR':
-                    if (e.ctrlKey) {
+                    if (e.ctrlKey || e.metaKey) {
                         e.preventDefault();
                         restartVideo();
                     }
                     break;
                 case 'KeyF':
-                    if (e.ctrlKey) {
+                    if (e.ctrlKey || e.metaKey) {
                         e.preventDefault();
                         toggleFullscreen();
+                    }
+                    break;
+                case 'Escape':
+                    if (document.fullscreenElement) {
+                        document.exitFullscreen();
                     }
                     break;
             }
         });
         
-        // Log de inicialización
+        // Formatear duración inicial si existe
+        const durationDisplay = document.getElementById('durationDisplay');
+        {{#if videoDuration}}
+        if (durationDisplay) {
+            const seconds = {{videoDuration}};
+            durationDisplay.textContent = formatDurationText(seconds);
+        }
+        {{/if}}
+        
+        // Función para formatear duración
+        function formatDurationText(seconds) {
+            if (!seconds || isNaN(seconds)) return '0m';
+            
+            const hours = Math.floor(seconds / 3600);
+            const minutes = Math.floor((seconds % 3600) / 60);
+            
+            if (hours > 0) {
+                return `${hours}h ${minutes}m`;
+            } else {
+                return `${minutes}m`;
+            }
+        }
+        
+        // Mostrar notificación de atajos
         console.log('🎬 Reproductor de video inicializado');
-        console.log('⌨️ Atajos: Espacio = Play/Pausa, Ctrl+R = Reiniciar, Ctrl+F = Pantalla completa');
+        console.log('⌨️ Atajos disponibles:');
+        console.log('   • Espacio: Play/Pausa');
+        console.log('   • Ctrl+R: Reiniciar video');
+        console.log('   • Ctrl+F: Pantalla completa');
+        console.log('   • Escape: Salir de pantalla completa');
+        
+        // Tooltip para atajos
+        setTimeout(() => {
+            if (typeof bootstrap !== 'undefined') {
+                const tooltips = document.querySelectorAll('[title]');
+                tooltips.forEach(el => new bootstrap.Tooltip(el));
+            }
+        }, 1000);
     </script>
 </body>
 </html>

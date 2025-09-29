@@ -80,6 +80,27 @@ hbs.registerHelper('subtract', function(a, b) {
   return a - b;
 });
 
+hbs.registerHelper('range', function(start, end) {
+  const result = [];
+  for (let i = start; i <= end; i++) {
+    result.push(i);
+  }
+  return result;
+});
+
+hbs.registerHelper('formatDuration', function(seconds) {
+  if (!seconds || isNaN(seconds)) return '0m';
+  
+  const hours = Math.floor(seconds / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
+  
+  if (hours > 0) {
+    return `${hours}h ${minutes}m`;
+  } else {
+    return `${minutes}m`;
+  }
+});
+
 hbs.registerHelper('for', function(from, to, options) {
   // Si no se pasa el parámetro options, significa que current no fue pasado
   if (typeof options === 'undefined') {
@@ -170,9 +191,7 @@ app.use('/cursos-db', requireAuth, cursosDbRouter);
 const videosAdminRouter = require('./routes/videos-admin');
 app.use('/videos-admin', requireRole(['admin', 'instructor']), videosAdminRouter);
 
-// Ruta temporal para agregar video de Vimeo existente
-const addVimeoTempRouter = require('./routes/add-vimeo-temp');
-app.use('/temp', requireRole(['admin', 'instructor']), addVimeoTempRouter);
+// Ruta temporal eliminada - funcionalidad movida a videos-admin
 
 // Rutas de autenticación de dos factores
 const twoFactorRouter = require('./routes/two-factor');
@@ -185,6 +204,10 @@ app.use('/categorias-admin', requireRole(['admin', 'instructor']), categoriasAdm
 // Ruta de administración de etiquetas
 const etiquetasAdminRouter = require('./routes/etiquetas-admin');
 app.use('/etiquetas-admin', requireRole(['admin', 'instructor']), etiquetasAdminRouter);
+
+// Ruta de administración de módulos
+const modulosAdminRouter = require('./routes/modulos-admin');
+app.use('/modulos-admin', requireRole(['admin', 'instructor']), modulosAdminRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

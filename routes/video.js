@@ -10,13 +10,8 @@ router.get('/', function(req, res, next) {
   
   console.log('[VIDEO] 🎬 Acceso a video:', user.email, '- Video ID:', videoId);
   
-  // Usar versión simple si se especifica, o minimal si se especifica
-  let template = 'video-player-minimal'; // Usar por defecto la versión minimalista
-  if (simple === 'true') {
-    template = 'video-player-simple';
-  } else if (req.query.classic === 'true') {
-    template = 'video-player';
-  }
+  // Usar la vista de video-player disponible
+  let template = 'video-player';
   
   res.render(template, {
     title: title || 'Reproducción de Video',
@@ -43,7 +38,7 @@ router.get('/simple', function(req, res, next) {
     return res.redirect('/auth/login');
   }
   
-  res.render('video-player-simple', {
+  res.render('video-player', {
     title: title || 'Reproducción de Video',
     videoTitle: title || 'Video del Curso',
     videoDescription: description || 'Contenido educativo del curso de barbería',
@@ -64,7 +59,7 @@ router.get('/:videoId', function(req, res, next) {
   
   console.log('[VIDEO] 🎬 Acceso a video específico:', user.email, '- Video ID:', videoId);
   
-  res.render('video-player-minimal', {
+  res.render('video-player', {
     title: `Video: ${title || 'Contenido del Curso'}`,
     videoTitle: title || 'Video del Curso',
     videoDescription: description || 'Contenido educativo del curso de barbería',

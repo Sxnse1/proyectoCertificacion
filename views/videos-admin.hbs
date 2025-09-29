@@ -494,7 +494,14 @@
             {{#if videos.length}}
                 <div class="videos-grid" id="videosGrid">
                     {{#each videos}}
-                    <div class="video-card" data-status="{{this.estatus}}" data-module="{{this.id_modulo}}">
+                    <div class="video-card" data-status="{{this.estatus}}" data-module="{{this.id_modulo}}"
+                         data-vimeo-id="{{this.vimeo_id}}"
+                         data-titulo="{{this.titulo}}"
+                         data-descripcion="{{this.descripcion}}"
+                         data-duracion="{{this.duracion_segundos}}"
+                         data-orden="{{this.orden}}"
+                         data-estatus="{{this.estatus}}"
+                         data-modulo-id="{{this.id_modulo}}">
                         <!-- Video Thumbnail -->
                         <div class="video-thumbnail">
                             {{#if this.url_vimeo}}
@@ -541,10 +548,17 @@
                             </div>
 
                             <div class="video-actions">
-                                {{#if this.url_vimeo}}
-                                <a href="{{this.url_vimeo}}" target="_blank" class="btn btn-primary btn-sm">
+                                {{#if this.vimeo_id}}
+                                <button class="btn btn-primary btn-sm video-play-btn" 
+                                        data-vimeo-id="{{this.vimeo_id}}"
+                                        data-titulo="{{this.titulo}}"
+                                        data-descripcion="{{this.descripcion}}"
+                                        data-duracion="{{this.duracion_segundos}}"
+                                        data-orden="{{this.orden}}"
+                                        data-estatus="{{this.estatus}}"
+                                        data-modulo="{{this.id_modulo}}">
                                     <i class="bi bi-play-circle me-1"></i>Ver
-                                </a>
+                                </button>
                                 {{/if}}
                                 
                                 <div class="btn-group">
@@ -1051,6 +1065,72 @@
                 submitBtn.innerHTML = '<i class="bi bi-cloud-upload me-2"></i>Subir Video';
             });
         }
+
+        // Función para abrir el reproductor de video
+        function openVideoPlayer(element) {
+            const vimeoId = element.dataset.vimeoId;
+            if (!vimeoId) return;
+            
+            const titulo = element.dataset.titulo || '';
+            const descripcion = element.dataset.descripcion || '';
+            const duracion = element.dataset.duracion || 0;
+            const orden = element.dataset.orden || 1;
+            const estatus = element.dataset.estatus || 'publicado';
+            const modulo = element.dataset.modulo || element.dataset.moduloId || '';
+            
+            // Construir URL con parámetros codificados
+            const params = new URLSearchParams({
+                title: titulo,
+                description: descripcion,
+                duration: duracion,
+                order: orden,
+                status: estatus,
+                module: modulo
+            });
+            
+            const url = `/video/${vimeoId}?${params.toString()}`;
+            
+            // Abrir en nueva pestaña
+            window.open(url, '_blank');
+        }
+
+        // Event listeners para elementos de reproducción
+        document.addEventListener('DOMContentLoaded', function() {
+            // Botones de reproducir
+            const playButtons = document.querySelectorAll('.video-play-btn');
+            playButtons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    openVideoPlayer(this);
+                });
+            });
+            
+            // Overlays de reproducción
+            const playOverlays = document.querySelectorAll('.video-play-overlay');
+            playOverlays.forEach(overlay => {
+                overlay.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const videoCard = this.closest('.video-card');
+                    if (videoCard) {
+                        openVideoPlayer(videoCard);
+                    }
+                });
+            });
+            
+            // Thumbnails de video
+            const videoThumbnails = document.querySelectorAll('.video-thumbnail');
+            videoThumbnails.forEach(thumbnail => {
+                thumbnail.addEventListener('click', function(e) {
+                    // Solo si el clic no fue en botones de acción
+                    if (!e.target.closest('.video-actions')) {
+                        const videoCard = this.closest('.video-card');
+                        if (videoCard && videoCard.dataset.vimeoId) {
+                            openVideoPlayer(videoCard);
+                        }
+                    }
+                });
+            });
+        });
     </script>
 </body>
 </html>
