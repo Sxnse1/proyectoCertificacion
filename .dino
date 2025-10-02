@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "build": {
+    "commands": [
+      "npm install"
+    ]
+  },
+  "run": {
+    "start": "deno run --allow-all --unstable-detect-cjs ./bin/www"
+  },
+  "env": {
+    "NODE_ENV": "production"
+  }
+}
