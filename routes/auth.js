@@ -545,4 +545,261 @@ router.post('/change-password', async function(req, res, next) {
   }
 });
 
+/* GET forgot password page */
+router.get('/forgot-password', function(req, res, next) {
+  res.render('forgot-password', { 
+    title: 'Plataforma de Barbería',
+    email: req.query.email || '',
+    error: req.query.error ? decodeURIComponent(req.query.error) : null,
+    success: req.query.success ? decodeURIComponent(req.query.success) : null,
+    info: req.query.info ? decodeURIComponent(req.query.info) : null,
+    layout: false
+  });
+});
+
+/* POST forgot password - Enviar email de recuperación */
+router.post('/forgot-password', async function(req, res, next) {
+  try {
+    const { email } = req.body;
+    
+    // Validación básica
+    if (!email) {
+      return res.render('forgot-password', {
+        title: 'Plataforma de Barbería',
+        error: 'Por favor ingresa tu email',
+        email: email,
+        layout: false
+      });
+    }
+
+    // Validar formato de email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.render('forgot-password', {
+        title: 'Plataforma de Barbería',
+        error: 'Por favor ingresa un email válido',
+        email: email,
+        layout: false
+      });
+    }
+
+    const db = req.app.locals.db;
+    
+    // Verificar si hay conexión a base de datos
+    if (!db) {
+      console.log('[AUTH] ⚠️ No hay conexión a base de datos');
+      return res.render('forgot-password', {
+        title: 'Plataforma de Barbería',
+        error: 'Sistema en mantenimiento. Intenta más tarde.',
+        email: email,
+        layout: false
+      });
+    }
+    
+    console.log('[AUTH] 🔄 Solicitud de recuperación de contraseña para:', email);
+    
+    // Buscar usuario en la base de datos
+    const result = await db.executeQuery(
+      'SELECT id_usuario, nombre, apellido, email FROM Usuarios WHERE email = @email AND estatus = @estatus',
+      { email: email, estatus: 'activo' }
+    );
+    
+    // Por seguridad, siempre mostramos el mismo mensaje aunque el usuario no exista
+    const successMessage = 'Si el email existe en nuestro sistema, recibirás las instrucciones para restablecer tu contraseña en los próximos minutos.';
+    
+    if (result.recordset && result.recordset.length > 0) {
+      const usuario = result.recordset[0];
+      
+      // Generar token único para reseteo
+      const crypto = require('crypto');
+      const resetToken = crypto.randomBytes(32).toString('hex');
+      const resetTokenExpiry = new Date(Date.now() + 3600000); // 1 hora
+      
+      // Guardar token en la base de datos
+      await db.executeQuery(
+        `UPDATE Usuarios 
+         SET reset_token = @token, reset_token_expiry = @expiry 
+         WHERE id_usuario = @userId`,
+        { token: resetToken, expiry: resetTokenExpiry, userId: usuario.id_usuario }
+      );
+      
+      // Enviar email con instrucciones
+      const emailService = require('../services/emailService');
+      
+      const resetUrl = `${req.protocol}://${req.get('host')}/auth/reset-password?token=${resetToken}`;
+      
+      try {
+        await emailService.enviarRecuperacionPassword(
+          usuario.email,
+          usuario.nombre,
+          usuario.apellido,
+          resetUrl
+        );
+        console.log('[AUTH] ✅ Email de recuperación enviado a:', email);
+      } catch (emailError) {
+        console.error('[AUTH] ❌ Error enviando email:', emailError.message);
+        // No revelamos el error de email al usuario por seguridad
+      }
+    } else {
+      console.log('[AUTH] ⚠️ Intento de recuperación para email no existente:', email);
+    }
+    
+    // Siempre mostrar mensaje de éxito por seguridad
+    res.render('forgot-password', {
+      title: 'Plataforma de Barbería',
+      success: successMessage,
+      email: '',
+      layout: false
+    });
+    
+  } catch (error) {
+    console.error('[AUTH] ❌ Error en forgot-password:', error);
+    res.render('forgot-password', {
+      title: 'Plataforma de Barbería',
+      error: 'Ocurrió un error interno. Intenta más tarde.',
+      email: req.body.email || '',
+      layout: false
+    });
+  }
+});
+
+/* GET reset password page */
+router.get('/reset-password', async function(req, res, next) {
+  try {
+    const { token } = req.query;
+    
+    if (!token) {
+      return res.redirect('/auth/forgot-password?error=' + encodeURIComponent('Token no válido'));
+    }
+    
+    const db = req.app.locals.db;
+    
+    if (!db) {
+      return res.redirect('/auth/forgot-password?error=' + encodeURIComponent('Sistema en mantenimiento'));
+    }
+    
+    // Verificar token y que no haya expirado
+    const result = await db.executeQuery(
+      'SELECT id_usuario, nombre, apellido, email FROM Usuarios WHERE reset_token = @token AND reset_token_expiry > @now AND estatus = @estatus',
+      { token: token, now: new Date(), estatus: 'activo' }
+    );
+    
+    if (!result.recordset || result.recordset.length === 0) {
+      return res.redirect('/auth/forgot-password?error=' + encodeURIComponent('El enlace ha expirado o no es válido. Solicita uno nuevo.'));
+    }
+
+    res.render('reset-password', {
+      title: 'Plataforma de Barbería',
+      token: token,
+      layout: false
+    });  } catch (error) {
+    console.error('[AUTH] ❌ Error en reset-password GET:', error);
+    res.redirect('/auth/forgot-password?error=' + encodeURIComponent('Ocurrió un error. Intenta más tarde.'));
+  }
+});
+
+/* POST reset password - Cambiar contraseña */
+router.post('/reset-password', async function(req, res, next) {
+  try {
+    const { token, password, confirmPassword } = req.body;
+    
+    // Validaciones básicas
+    if (!token || !password || !confirmPassword) {
+      return res.render('reset-password', {
+        title: 'Plataforma de Barbería',
+        error: 'Todos los campos son obligatorios',
+        token: token,
+        layout: false
+      });
+    }
+    
+    if (password !== confirmPassword) {
+      return res.render('reset-password', {
+        title: 'Plataforma de Barbería',
+        error: 'Las contraseñas no coinciden',
+        token: token,
+        layout: false
+      });
+    }
+    
+    // Validar fortaleza de contraseña
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
+    if (!passwordRegex.test(password)) {
+      return res.render('reset-password', {
+        title: 'Plataforma de Barbería',
+        error: 'La contraseña debe tener al menos 8 caracteres, incluyendo mayúsculas, minúsculas, números y símbolos',
+        token: token,
+        layout: false
+      });
+    }
+    
+    const db = req.app.locals.db;
+    
+    if (!db) {
+      return res.render('reset-password', {
+        title: 'Plataforma de Barbería',
+        error: 'Sistema en mantenimiento. Intenta más tarde.',
+        token: token,
+        layout: false
+      });
+    }
+    
+    // Verificar token y que no haya expirado
+    const result = await db.executeQuery(
+      'SELECT id_usuario, nombre, apellido, email FROM Usuarios WHERE reset_token = @token AND reset_token_expiry > @now AND estatus = @estatus',
+      { token: token, now: new Date(), estatus: 'activo' }
+    );
+    
+    if (!result.recordset || result.recordset.length === 0) {
+      return res.render('reset-password', {
+        title: 'Plataforma de Barbería',
+        error: 'El enlace ha expirado o no es válido. Solicita uno nuevo.',
+        token: token,
+        layout: false
+      });
+    }
+    
+    const usuario = result.recordset[0];
+    
+    // Encriptar nueva contraseña
+    const saltRounds = 12;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+    
+    // Actualizar contraseña y limpiar token
+    await db.executeQuery(
+      `UPDATE Usuarios 
+       SET password = @password, reset_token = NULL, reset_token_expiry = NULL, 
+           tiene_password_temporal = 0, fecha_password_temporal = NULL
+       WHERE id_usuario = @userId`,
+      { password: hashedPassword, userId: usuario.id_usuario }
+    );
+    
+    console.log('[AUTH] ✅ Contraseña restablecida para usuario:', usuario.email);
+    
+    // Enviar email de confirmación (opcional)
+    try {
+      const emailService = require('../services/emailService');
+      await emailService.enviarConfirmacionCambioPassword(
+        usuario.email,
+        usuario.nombre,
+        usuario.apellido
+      );
+    } catch (emailError) {
+      console.error('[AUTH] ⚠️ Error enviando email de confirmación:', emailError.message);
+    }
+    
+    // Redirigir al login con mensaje de éxito
+    res.redirect('/auth/login?success=' + encodeURIComponent('Tu contraseña ha sido cambiada exitosamente. Ya puedes iniciar sesión.'));
+    
+  } catch (error) {
+    console.error('[AUTH] ❌ Error en reset-password POST:', error);
+    res.render('reset-password', {
+      title: 'Plataforma de Barbería',
+      error: 'Ocurrió un error interno. Intenta más tarde.',
+      token: req.body.token,
+      layout: false
+    });
+  }
+});
+
 module.exports = router;

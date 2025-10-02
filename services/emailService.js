@@ -311,6 +311,204 @@ class EmailService {
       return { success: false, error: error.message };
     }
   }
+
+  /**
+   * Envía email con enlace para recuperar contraseña
+   */
+  async enviarRecuperacionPassword(email, nombre, apellido, resetUrl) {
+    try {
+      if (!this.transporter || !process.env.SMTP_USER) {
+        console.log('[EMAIL] ⚠️ Servicio de email no configurado, mostrando enlace en consola');
+        console.log(`[EMAIL] 🔗 Enlace de recuperación para ${email}: ${resetUrl}`);
+        return { success: false, message: 'Servicio de email no configurado' };
+      }
+
+      const nombreCompleto = `${nombre} ${apellido}`;
+      
+      const mailOptions = {
+        from: {
+          name: 'Plataforma de Barbería',
+          address: process.env.SMTP_USER
+        },
+        to: email,
+        subject: '🔐 Recuperar tu contraseña - Plataforma de Barbería',
+        html: `
+        <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; background: #f8f9fa;">
+          <!-- Header -->
+          <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px 20px; text-align: center;">
+            <h1 style="margin: 0; font-size: 28px; font-weight: 700;">🔐 Recuperar Contraseña</h1>
+            <p style="margin: 10px 0 0 0; font-size: 16px; opacity: 0.9;">Plataforma de Barbería</p>
+          </div>
+          
+          <!-- Content -->
+          <div style="padding: 40px 30px; background: white;">
+            <h2 style="color: #2c3e50; font-size: 24px; margin-bottom: 20px;">¡Hola ${nombreCompleto}!</h2>
+            
+            <p style="color: #555; font-size: 16px; line-height: 1.6; margin-bottom: 25px;">
+              Recibimos una solicitud para restablecer la contraseña de tu cuenta. Si no fuiste tú quien hizo esta solicitud, puedes ignorar este email de forma segura.
+            </p>
+            
+            <p style="color: #555; font-size: 16px; line-height: 1.6; margin-bottom: 30px;">
+              Para crear una nueva contraseña, haz clic en el siguiente botón:
+            </p>
+            
+            <div style="text-align: center; margin: 35px 0;">
+              <a href="${resetUrl}" 
+                 style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+                        color: white; 
+                        text-decoration: none; 
+                        padding: 15px 30px; 
+                        border-radius: 25px; 
+                        font-weight: 600; 
+                        font-size: 16px; 
+                        display: inline-block;
+                        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);">
+                🔗 Restablecer mi contraseña
+              </a>
+            </div>
+            
+            <div style="background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 8px; padding: 20px; margin: 30px 0;">
+              <h3 style="color: #856404; margin: 0 0 10px 0; font-size: 18px;">
+                ⚠️ Información importante:
+              </h3>
+              <ul style="color: #856404; margin: 0; padding-left: 20px;">
+                <li>Este enlace expirará en <strong>1 hora</strong></li>
+                <li>Solo puede ser usado una vez</li>
+                <li>Si no solicitaste este cambio, ignora este email</li>
+              </ul>
+            </div>
+            
+            <p style="color: #777; font-size: 14px; line-height: 1.5; margin-top: 30px;">
+              Si el botón no funciona, puedes copiar y pegar este enlace en tu navegador:<br>
+              <a href="${resetUrl}" style="color: #667eea; word-break: break-all;">${resetUrl}</a>
+            </p>
+          </div>
+          
+          <!-- Footer -->
+          <div style="background: #2c3e50; color: white; padding: 25px 30px; text-align: center;">
+            <p style="margin: 0; font-size: 14px; opacity: 0.8;">
+              © 2024 Plataforma de Barbería - Todos los derechos reservados
+            </p>
+            <p style="margin: 10px 0 0 0; font-size: 12px; opacity: 0.6;">
+              Este es un email automático, por favor no responder directamente.
+            </p>
+          </div>
+        </div>
+        `
+      };
+
+      const info = await this.transporter.sendMail(mailOptions);
+      console.log('[EMAIL] ✅ Email de recuperación enviado:', info.messageId);
+      
+      return { success: true, messageId: info.messageId };
+
+    } catch (error) {
+      console.error('[EMAIL] ❌ Error enviando recuperación:', error.message);
+      return { success: false, error: error.message };
+    }
+  }
+
+  /**
+   * Envía email de confirmación de cambio de contraseña
+   */
+  async enviarConfirmacionCambioPassword(email, nombre, apellido) {
+    try {
+      if (!this.transporter || !process.env.SMTP_USER) {
+        console.log('[EMAIL] ⚠️ Servicio de email no configurado para confirmación');
+        return { success: false, message: 'Servicio de email no configurado' };
+      }
+
+      const nombreCompleto = `${nombre} ${apellido}`;
+      const fechaActual = new Date().toLocaleString('es-ES', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        timeZone: 'America/Mexico_City'
+      });
+      
+      const mailOptions = {
+        from: {
+          name: 'Plataforma de Barbería',
+          address: process.env.SMTP_USER
+        },
+        to: email,
+        subject: '✅ Contraseña cambiada exitosamente - Plataforma de Barbería',
+        html: `
+        <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; background: #f8f9fa;">
+          <!-- Header -->
+          <div style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%); color: white; padding: 30px 20px; text-align: center;">
+            <h1 style="margin: 0; font-size: 28px; font-weight: 700;">✅ Contraseña Actualizada</h1>
+            <p style="margin: 10px 0 0 0; font-size: 16px; opacity: 0.9;">Plataforma de Barbería</p>
+          </div>
+          
+          <!-- Content -->
+          <div style="padding: 40px 30px; background: white;">
+            <h2 style="color: #2c3e50; font-size: 24px; margin-bottom: 20px;">¡Hola ${nombreCompleto}!</h2>
+            
+            <p style="color: #555; font-size: 16px; line-height: 1.6; margin-bottom: 25px;">
+              Te confirmamos que tu contraseña ha sido cambiada exitosamente el día <strong>${fechaActual}</strong>.
+            </p>
+            
+            <div style="background: #d4edda; border: 1px solid #c3e6cb; border-radius: 8px; padding: 20px; margin: 30px 0; text-align: center;">
+              <h3 style="color: #155724; margin: 0 0 10px 0; font-size: 18px;">
+                🔐 Tu cuenta está segura
+              </h3>
+              <p style="color: #155724; margin: 0; font-size: 16px;">
+                Ya puedes iniciar sesión con tu nueva contraseña
+              </p>
+            </div>
+            
+            <div style="text-align: center; margin: 35px 0;">
+              <a href="${process.env.BASE_URL || 'http://localhost:3000'}/auth/login" 
+                 style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+                        color: white; 
+                        text-decoration: none; 
+                        padding: 15px 30px; 
+                        border-radius: 25px; 
+                        font-weight: 600; 
+                        font-size: 16px; 
+                        display: inline-block;
+                        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);">
+                🚀 Iniciar Sesión
+              </a>
+            </div>
+            
+            <div style="background: #f8d7da; border: 1px solid #f5c6cb; border-radius: 8px; padding: 20px; margin: 30px 0;">
+              <h3 style="color: #721c24; margin: 0 0 10px 0; font-size: 18px;">
+                ⚠️ ¿No fuiste tú?
+              </h3>
+              <p style="color: #721c24; margin: 0; font-size: 14px; line-height: 1.5;">
+                Si no cambiaste tu contraseña, tu cuenta podría estar comprometida. 
+                Contacta inmediatamente a nuestro equipo de soporte.
+              </p>
+            </div>
+          </div>
+          
+          <!-- Footer -->
+          <div style="background: #2c3e50; color: white; padding: 25px 30px; text-align: center;">
+            <p style="margin: 0; font-size: 14px; opacity: 0.8;">
+              © 2024 Plataforma de Barbería - Todos los derechos reservados
+            </p>
+            <p style="margin: 10px 0 0 0; font-size: 12px; opacity: 0.6;">
+              Este es un email automático, por favor no responder directamente.
+            </p>
+          </div>
+        </div>
+        `
+      };
+
+      const info = await this.transporter.sendMail(mailOptions);
+      console.log('[EMAIL] ✅ Confirmación de cambio de contraseña enviada:', info.messageId);
+      
+      return { success: true, messageId: info.messageId };
+
+    } catch (error) {
+      console.error('[EMAIL] ❌ Error enviando confirmación:', error.message);
+      return { success: false, error: error.message };
+    }
+  }
 }
 
 // Exportar instancia singleton
