@@ -136,16 +136,34 @@ hbs.registerHelper('formatRating', function(rating) {
 // Configurar express-session para autenticación segura
 var session = require('express-session');
 
+// Configurar proxy de confianza para Heroku
+if (process.env.NODE_ENV === 'production') {
+  app.set('trust proxy', 1); // Confiar en el primer proxy (Heroku)
+}
+
+// Detectar si estamos en Heroku (tiene PORT definido) y usar configuración apropiada
+const isHeroku = process.env.PORT && process.env.NODE_ENV === 'production';
+const isLocalDevelopment = !isHeroku;
+
+console.log('[SESSION CONFIG] 🔧 Configurando sesiones...');
+console.log('[SESSION CONFIG] 🌍 Entorno:', process.env.NODE_ENV || 'development');
+console.log('[SESSION CONFIG] 🏠 Es Heroku:', isHeroku);
+console.log('[SESSION CONFIG] 💻 Es desarrollo local:', isLocalDevelopment);
+
 app.use(session({
   secret: process.env.SESSION_SECRET || 'fallback-secret-key-change-in-production',
   resave: false,
   saveUninitialized: false,
+  name: 'sessionId', // Nombre personalizado para la cookie
   cookie: {
-    secure: process.env.NODE_ENV === 'production', // Solo true en producción con HTTPS real
+    secure: isHeroku, // true solo en Heroku con HTTPS
     httpOnly: true,
-    maxAge: 24 * 60 * 60 * 1000 // 24 horas
+    maxAge: 24 * 60 * 60 * 1000, // 24 horas
+    sameSite: isHeroku ? 'none' : 'lax' // Para funcionar con HTTPS en Heroku
   }
 }));
+
+console.log('[SESSION CONFIG] ✅ Sesiones configuradas - secure:', isHeroku);
 
 app.use(logger('dev'));
 app.use(express.json());
