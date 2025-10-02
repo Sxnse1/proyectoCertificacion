@@ -34,7 +34,7 @@
     "singleQuote": false,
     "proseWrap": "preserve"
   },
-  "nodeModulesDir": true,
+  "nodeModulesDir": "auto",
   "unstable": ["detect-cjs"],
   "tasks": {
     "start": "deno run --allow-all --unstable-detect-cjs ./bin/www"
