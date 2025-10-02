@@ -225,6 +225,10 @@ app.use('/modulos-admin', requireRole(['admin', 'instructor']), modulosAdminRout
 const cursosAdminRouter = require('./routes/cursos-admin');
 app.use('/cursos-admin', requireRole(['admin', 'instructor']), cursosAdminRouter);
 
+// Ruta de administración de usuarios
+const usuariosAdminRouter = require('./routes/usuarios-admin');
+app.use('/usuarios-admin', requireRole(['admin', 'instructor']), usuariosAdminRouter);
+
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));
