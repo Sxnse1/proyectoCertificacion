@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 const bcrypt = require('bcryptjs');
+const emailService = require('../services/emailService');
 
 /* GET - Lista de usuarios con filtros y paginación */
 router.get('/', async function(req, res, next) {
@@ -239,11 +240,11 @@ router.post('/', async function(req, res, next) {
     const passwordTemporal = generarPasswordTemporal();
     const hashedPassword = await bcrypt.hash(passwordTemporal, 10);
 
-    // Crear el usuario
+    // Crear el usuario con contraseña temporal
     const insertQuery = `
-      INSERT INTO Usuarios (nombre, apellido, nombre_usuario, email, password, rol, estatus, fecha_registro)
+      INSERT INTO Usuarios (nombre, apellido, nombre_usuario, email, password, rol, estatus, fecha_registro, tiene_password_temporal, fecha_password_temporal)
       OUTPUT INSERTED.id_usuario, INSERTED.nombre, INSERTED.apellido, INSERTED.nombre_usuario, INSERTED.email, INSERTED.rol, INSERTED.estatus, INSERTED.fecha_registro
-      VALUES (@nombre, @apellido, @nombre_usuario, @email, @password, @rol, @estatus, GETDATE())
+      VALUES (@nombre, @apellido, @nombre_usuario, @email, @password, @rol, @estatus, GETDATE(), 1, GETDATE())
     `;
 
     const result = await db.executeQuery(insertQuery, {
@@ -259,8 +260,26 @@ router.post('/', async function(req, res, next) {
     const newUsuario = result.recordset[0];
     console.log(`[USUARIOS] ✅ Usuario creado exitosamente - ID: ${newUsuario.id_usuario}`);
 
-    // TODO: Enviar credenciales por email (tarea opcional)
-    console.log(`[USUARIOS] 📧 Contraseña temporal para ${email}: ${passwordTemporal}`);
+    // Enviar contraseña temporal por email
+    console.log(`[USUARIOS] 📧 Enviando contraseña temporal por email a: ${email}`);
+    
+    try {
+      const emailResult = await emailService.enviarPasswordTemporal(
+        email.trim(),
+        nombre.trim(),
+        apellido.trim(),
+        passwordTemporal
+      );
+      
+      if (emailResult.success) {
+        console.log(`[USUARIOS] ✅ Email enviado correctamente - MessageID: ${emailResult.messageId}`);
+      } else {
+        console.log(`[USUARIOS] ⚠️ ${emailResult.message}`);
+      }
+    } catch (emailError) {
+      console.error(`[USUARIOS] ❌ Error enviando email:`, emailError.message);
+      // No fallar la creación del usuario si el email falla
+    }
 
     res.json({
       success: true,
@@ -529,6 +548,81 @@ router.put('/:id', async function(req, res, next) {
 
   } catch (error) {
     console.error('[USUARIOS] ❌ Error actualizando usuario:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error interno del servidor'
+    });
+  }
+});
+
+/* POST - Cambiar estado de usuario */
+router.post('/:id/status', async function(req, res, next) {
+  try {
+    const db = req.app.locals.db;
+    const usuarioId = parseInt(req.params.id);
+    const { estatus } = req.body;
+
+    if (isNaN(usuarioId)) {
+      return res.status(400).json({
+        success: false,
+        message: 'ID de usuario inválido'
+      });
+    }
+
+    // Validar estatus
+    if (!['activo', 'inactivo', 'baneado'].includes(estatus)) {
+      return res.status(400).json({
+        success: false,
+        message: 'El estatus debe ser "activo", "inactivo" o "baneado"'
+      });
+    }
+
+    console.log(`[USUARIOS] Cambiando estado del usuario ID: ${usuarioId} a: ${estatus}`);
+
+    // Verificar que el usuario existe y obtener datos actuales
+    const existsQuery = `
+      SELECT id_usuario, nombre, apellido, estatus 
+      FROM Usuarios 
+      WHERE id_usuario = @id
+    `;
+    const existsResult = await db.executeQuery(existsQuery, { id: usuarioId });
+
+    if (existsResult.recordset.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: 'Usuario no encontrado'
+      });
+    }
+
+    const usuario = existsResult.recordset[0];
+
+    // Actualizar solo el estatus
+    const updateQuery = `
+      UPDATE Usuarios 
+      SET estatus = @estatus
+      WHERE id_usuario = @id
+    `;
+
+    await db.executeQuery(updateQuery, {
+      id: usuarioId,
+      estatus: estatus
+    });
+
+    const statusNames = {
+      'activo': 'activado',
+      'inactivo': 'desactivado',
+      'baneado': 'baneado'
+    };
+
+    console.log(`[USUARIOS] ✅ Estado del usuario "${usuario.nombre} ${usuario.apellido}" cambiado a: ${estatus}`);
+
+    res.json({
+      success: true,
+      message: `Usuario "${usuario.nombre} ${usuario.apellido}" ${statusNames[estatus]} exitosamente`
+    });
+
+  } catch (error) {
+    console.error('[USUARIOS] ❌ Error cambiando estado del usuario:', error);
     res.status(500).json({
       success: false,
       message: 'Error interno del servidor'

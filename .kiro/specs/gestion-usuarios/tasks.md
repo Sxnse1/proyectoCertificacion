@@ -43,6 +43,8 @@
     - _Requisitos: 5.1, 5.2, 5.5_
 
 - [ ] 4. Crear vista principal usuarios-admin.hbs
+
+
   - [ ] 4.1 Implementar estructura base de la vista
     - Crear header section con título, breadcrumb y botones de acción
     - Implementar stats cards con estadísticas de usuarios

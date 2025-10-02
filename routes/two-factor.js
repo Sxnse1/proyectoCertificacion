@@ -96,10 +96,20 @@ router.post('/verify-setup', requireBasicAuth, async function(req, res, next) {
 
 /* GET - Página de verificación 2FA en login */
 router.get('/verify', function(req, res, next) {
+  console.log('[2FA] 🔍 Verificando sesión pendiente de 2FA');
+  console.log('[2FA] 📊 Sesión actual:', {
+    hasSession: !!req.session,
+    hasPending2FA: !!req.session?.pending2FA,
+    sessionKeys: req.session ? Object.keys(req.session) : 'No session'
+  });
+  
   // Verificar que hay una sesión pendiente de 2FA
   if (!req.session.pending2FA) {
+    console.log('[2FA] ❌ No hay sesión pendiente de 2FA, redirigiendo a login');
     return res.redirect('/auth/login?error=sesion_invalida');
   }
+  
+  console.log('[2FA] ✅ Sesión pendiente encontrada para:', req.session.pending2FA.email);
 
   res.render('two-factor-verify', {
     title: 'Verificación de Dos Factores',

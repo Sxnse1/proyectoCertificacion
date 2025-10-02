@@ -137,11 +137,11 @@ hbs.registerHelper('formatRating', function(rating) {
 var session = require('express-session');
 
 app.use(session({
-  secret: 'starteducation-barberia-academy-2025-secure-key',
+  secret: process.env.SESSION_SECRET || 'fallback-secret-key-change-in-production',
   resave: false,
   saveUninitialized: false,
   cookie: {
-    secure: false, // Cambiar a true en producción con HTTPS
+    secure: process.env.NODE_ENV === 'production', // Solo true en producción con HTTPS real
     httpOnly: true,
     maxAge: 24 * 60 * 60 * 1000 // 24 horas
   }

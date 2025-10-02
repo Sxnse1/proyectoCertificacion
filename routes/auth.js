@@ -43,9 +43,11 @@ router.post('/login', async function(req, res, next) {
     
     console.log('[AUTH] 🔐 Intento de login para:', email);
     
-    // Buscar usuario en la base de datos con la nueva estructura
+    // Buscar usuario en la base de datos incluyendo información de contraseña temporal
     const result = await db.executeQuery(
-      `SELECT id_usuario, nombre, apellido, nombre_usuario, email, password, rol, estatus 
+      `SELECT id_usuario, nombre, apellido, nombre_usuario, email, password, rol, estatus, 
+              ISNULL(tiene_password_temporal, 0) as tiene_password_temporal, 
+              fecha_password_temporal
        FROM Usuarios WHERE email = @email`,
       { email: email.toLowerCase() }
     );
@@ -128,8 +130,39 @@ router.post('/login', async function(req, res, next) {
       });
     }
     
-    // Login exitoso - verificar si necesita 2FA
+    // Login exitoso - verificar si tiene contraseña temporal
     console.log('[AUTH] ✅ Login exitoso para:', email, '- Rol:', user.rol);
+    
+    // Verificar si el usuario tiene contraseña temporal
+    if (user.tiene_password_temporal) {
+      console.log('[AUTH] 🔐 Usuario tiene contraseña temporal, requiere cambio');
+      
+      // Crear sesión temporal para el cambio de contraseña
+      req.session.tempUser = {
+        id: user.id_usuario,
+        nombre: `${user.nombre} ${user.apellido}`,
+        email: user.email,
+        rol: user.rol,
+        requirePasswordChange: true,
+        fecha_password_temporal: user.fecha_password_temporal
+      };
+      
+      req.session.save((err) => {
+        if (err) {
+          console.error('[AUTH] ❌ Error guardando sesión temporal:', err);
+          return res.render('login-bootstrap', {
+            title: 'Iniciar Sesión',
+            error: 'Error interno. Intenta nuevamente.',
+            email: email,
+            layout: false
+          });
+        }
+        
+        console.log('[AUTH] 🔄 Redirigiendo a cambio de contraseña obligatorio');
+        res.redirect('/auth/change-password');
+      });
+      return;
+    }
     
     const twoFactorService = require('../services/twoFactorService');
     
@@ -210,6 +243,8 @@ router.post('/login', async function(req, res, next) {
           loginTime: new Date().toISOString()
         };
         
+        console.log('[AUTH] 💾 Guardando sesión pendiente de 2FA para:', email);
+        
         req.session.save((err) => {
           if (err) {
             console.error('[AUTH] ❌ Error guardando sesión pendiente:', err);
@@ -221,8 +256,13 @@ router.post('/login', async function(req, res, next) {
             });
           }
           
+          console.log('[AUTH] ✅ Sesión pendiente guardada exitosamente');
           console.log('[AUTH] 🔐 Redirigiendo a verificación 2FA');
-          res.redirect('/two-factor/verify');
+          
+          // Añadir un pequeño delay para asegurar que la sesión se guarde
+          setTimeout(() => {
+            res.redirect('/two-factor/verify');
+          }, 100);
         });
         return;
       }
@@ -324,6 +364,185 @@ router.get('/logout', function(req, res, next) {
     res.clearCookie('connect.sid');
     res.redirect('/?message=Sesión cerrada correctamente');
   });
+});
+
+/* GET - Formulario de cambio de contraseña obligatorio */
+router.get('/change-password', function(req, res, next) {
+  // Verificar que el usuario tenga una sesión temporal válida
+  if (!req.session.tempUser || !req.session.tempUser.requirePasswordChange) {
+    console.log('[AUTH] ⚠️ Intento de acceso a cambio de contraseña sin sesión válida');
+    return res.redirect('/auth/login?error=Sesión no válida');
+  }
+  
+  const tempUser = req.session.tempUser;
+  console.log('[AUTH] 📄 Mostrando formulario de cambio de contraseña para:', tempUser.email);
+  
+  res.render('change-password', {
+    title: 'Cambiar Contraseña',
+    userName: tempUser.nombre,
+    email: tempUser.email,
+    error: req.query.error ? decodeURIComponent(req.query.error) : null,
+    success: req.query.success ? decodeURIComponent(req.query.success) : null,
+    layout: false
+  });
+});
+
+/* POST - Procesar cambio de contraseña obligatorio */
+router.post('/change-password', async function(req, res, next) {
+  try {
+    // Verificar sesión temporal
+    if (!req.session.tempUser || !req.session.tempUser.requirePasswordChange) {
+      return res.redirect('/auth/login?error=Sesión no válida');
+    }
+    
+    const { currentPassword, newPassword, confirmPassword } = req.body;
+    const tempUser = req.session.tempUser;
+    
+    // Validaciones
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      return res.render('change-password', {
+        title: 'Cambiar Contraseña',
+        userName: tempUser.nombre,
+        email: tempUser.email,
+        error: 'Todos los campos son obligatorios',
+        layout: false
+      });
+    }
+    
+    if (newPassword !== confirmPassword) {
+      return res.render('change-password', {
+        title: 'Cambiar Contraseña',
+        userName: tempUser.nombre,
+        email: tempUser.email,
+        error: 'Las contraseñas nuevas no coinciden',
+        layout: false
+      });
+    }
+    
+    if (newPassword.length < 6) {
+      return res.render('change-password', {
+        title: 'Cambiar Contraseña',
+        userName: tempUser.nombre,
+        email: tempUser.email,
+        error: 'La nueva contraseña debe tener al menos 6 caracteres',
+        layout: false
+      });
+    }
+    
+    const db = req.app.locals.db;
+    
+    // Verificar contraseña actual
+    const userResult = await db.executeQuery(
+      'SELECT password FROM Usuarios WHERE id_usuario = @id',
+      { id: tempUser.id }
+    );
+    
+    if (userResult.recordset.length === 0) {
+      return res.render('change-password', {
+        title: 'Cambiar Contraseña',
+        userName: tempUser.nombre,
+        email: tempUser.email,
+        error: 'Usuario no encontrado',
+        layout: false
+      });
+    }
+    
+    const user = userResult.recordset[0];
+    const passwordMatch = await bcrypt.compare(currentPassword, user.password);
+    
+    if (!passwordMatch) {
+      console.log('[AUTH] ❌ Contraseña actual incorrecta para:', tempUser.email);
+      return res.render('change-password', {
+        title: 'Cambiar Contraseña',
+        userName: tempUser.nombre,
+        email: tempUser.email,
+        error: 'La contraseña actual es incorrecta',
+        layout: false
+      });
+    }
+    
+    // Hashear nueva contraseña
+    const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+    
+    // Actualizar contraseña y quitar el flag de contraseña temporal
+    await db.executeQuery(
+      `UPDATE Usuarios 
+       SET password = @newPassword, 
+           tiene_password_temporal = 0, 
+           fecha_password_temporal = NULL 
+       WHERE id_usuario = @id`,
+      { 
+        newPassword: hashedNewPassword, 
+        id: tempUser.id 
+      }
+    );
+    
+    console.log('[AUTH] ✅ Contraseña actualizada exitosamente para:', tempUser.email);
+    
+    // Enviar notificación por email
+    const emailService = require('../services/emailService');
+    try {
+      await emailService.enviarNotificacionCambioPassword(
+        tempUser.email,
+        tempUser.nombre.split(' ')[0], // Primer nombre
+        tempUser.nombre.split(' ').slice(1).join(' ') // Apellidos
+      );
+    } catch (emailError) {
+      console.error('[AUTH] ⚠️ Error enviando notificación de cambio:', emailError.message);
+    }
+    
+    // Crear sesión completa del usuario
+    req.session.user = {
+      id: tempUser.id,
+      nombre: tempUser.nombre,
+      email: tempUser.email,
+      rol: tempUser.rol,
+      two_factor_enabled: false,
+      two_factor_verified: false,
+      loginTime: new Date().toISOString()
+    };
+    
+    // Limpiar sesión temporal
+    delete req.session.tempUser;
+    
+    req.session.save((err) => {
+      if (err) {
+        console.error('[AUTH] ❌ Error guardando sesión completa:', err);
+        return res.render('change-password', {
+          title: 'Cambiar Contraseña',
+          userName: tempUser.nombre,
+          email: tempUser.email,
+          error: 'Error interno. Contacta al administrador.',
+          layout: false
+        });
+      }
+      
+      console.log('[AUTH] 💾 Sesión completa creada para:', tempUser.email);
+      
+      // Redirigir según el rol
+      if (tempUser.rol === 'instructor') {
+        res.redirect('/dashboard?success=Contraseña actualizada correctamente');
+      } else {
+        res.redirect('/cursos?success=Contraseña actualizada correctamente');
+      }
+    });
+    
+  } catch (error) {
+    console.error('[AUTH] ❌ Error en cambio de contraseña:', error.message);
+    
+    const tempUser = req.session.tempUser;
+    if (tempUser) {
+      res.render('change-password', {
+        title: 'Cambiar Contraseña',
+        userName: tempUser.nombre,
+        email: tempUser.email,
+        error: 'Error interno del servidor. Intenta nuevamente.',
+        layout: false
+      });
+    } else {
+      res.redirect('/auth/login?error=Error interno del servidor');
+    }
+  }
 });
 
 module.exports = router;
