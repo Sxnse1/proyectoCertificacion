@@ -77,9 +77,12 @@ async function connect() {
         console.log('[DB] 🧪 Probando conexión con consulta...');
         const testResult = await pool.request().query('SELECT @@VERSION as version, GETDATE() as fecha');
         
-        console.log('[DB] 📊 Información del servidor:');
-        console.log(`[DB]    📅 Fecha/Hora servidor: ${testResult.recordset[0].fecha}`);
-        console.log(`[DB]    💾 Versión SQL Server: ${testResult.recordset[0].version.split('\n')[0]}`);
+        // Solo mostrar información detallada en desarrollo
+        if (process.env.NODE_ENV !== 'production') {
+            console.log('[DB] 📊 Información del servidor:');
+            console.log(`[DB]    📅 Fecha/Hora servidor: ${testResult.recordset[0].fecha}`);
+            console.log(`[DB]    💾 Versión SQL Server: ${testResult.recordset[0].version.split('\n')[0]}`);
+        }
         
         console.log('='.repeat(50));
         console.log('[DB] 🎉 BASE DE DATOS LISTA PARA USAR');

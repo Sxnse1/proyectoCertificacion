@@ -37,6 +37,10 @@
   "nodeModulesDir": "auto",
   "unstable": ["detect-cjs"],
   "tasks": {
-    "start": "deno run --allow-all --unstable-detect-cjs ./bin/www"
+    "start": "deno run --allow-all --unstable-detect-cjs ./bin/www",
+    "dev": "deno run --allow-all --unstable-detect-cjs --watch ./bin/www"
+  },
+  "imports": {
+    "@std/": "https://deno.land/std@0.204.0/"
   }
 }

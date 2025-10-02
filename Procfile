@@ -1,1 +1,1 @@
-web: deno run --allow-all --unstable-detect-cjs ./bin/www
+web: deno run --allow-all --unstable-detect-cjs ./start.js

@@ -1,0 +1,17 @@
+{
+  "version": 2,
+  "build": {
+    "env": {
+      "NODE_ENV": "production"
+    }
+  },
+  "functions": {
+    "api/**/*.js": {
+      "runtime": "deno"
+    }
+  },
+  "env": {
+    "NODE_ENV": "production",
+    "PORT": "8000"
+  }
+}
