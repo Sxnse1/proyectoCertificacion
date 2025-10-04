@@ -141,6 +141,11 @@ if (process.env.NODE_ENV === 'production') {
   app.set('trust proxy', 1); // Confiar en el primer proxy (Heroku)
 }
 
+// Configurar proxy de confianza para Heroku
+if (process.env.NODE_ENV === 'production') {
+  app.set('trust proxy', 1); // Confiar en el primer proxy (Heroku)
+}
+
 // Detectar si estamos en Heroku (tiene PORT definido) y usar configuración apropiada
 const isHeroku = process.env.PORT && process.env.NODE_ENV === 'production';
 const isLocalDevelopment = !isHeroku;

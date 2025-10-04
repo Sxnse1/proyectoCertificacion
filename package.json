@@ -2,7 +2,6 @@
   "name": "proyectocertificacion",
   "version": "1.0.0",
   "private": true,
-  "type": "commonjs",
   "description": "Sistema de login con roles para instructores y estudiantes",
   "main": "app.js",
   "engines": {
