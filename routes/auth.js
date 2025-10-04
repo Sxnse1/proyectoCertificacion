@@ -164,7 +164,8 @@ router.post('/login', async function(req, res, next) {
       return;
     }
     
-    const twoFactorService = require('../services/twoFactorService');
+        // Importar el servicio de two-factor auth
+    const twoFactorService = require('../services/twoFactorService.js');
     
     // Verificar si el usuario requiere 2FA
     if (twoFactorService.requires2FA(user.rol)) {
@@ -480,7 +481,7 @@ router.post('/change-password', async function(req, res, next) {
     console.log('[AUTH] ✅ Contraseña actualizada exitosamente para:', tempUser.email);
     
     // Enviar notificación por email
-    const emailService = require('../services/emailService');
+    const emailService = require('../services/emailService.js');
     try {
       await emailService.enviarNotificacionCambioPassword(
         tempUser.email,
@@ -624,7 +625,7 @@ router.post('/forgot-password', async function(req, res, next) {
       );
       
       // Enviar email con instrucciones
-      const emailService = require('../services/emailService');
+      const emailService = require('../services/emailService.js');
       
       const resetUrl = `${req.protocol}://${req.get('host')}/auth/reset-password?token=${resetToken}`;
       
@@ -778,7 +779,7 @@ router.post('/reset-password', async function(req, res, next) {
     
     // Enviar email de confirmación (opcional)
     try {
-      const emailService = require('../services/emailService');
+      const emailService = require('../services/emailService.js');
       await emailService.enviarConfirmacionCambioPassword(
         usuario.email,
         usuario.nombre,
