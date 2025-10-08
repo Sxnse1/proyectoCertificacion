@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Certificados - StartEducation</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #FF6B35;
+            --secondary-color: #004E89;
+            --gold-color: #FFD700;
+        }
+
+        body {
+            background: #f8f9fa;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .page-header {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 40px 0;
+            margin-bottom: 40px;
+        }
+
+        .certificate-card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .certificate-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+        }
+
+        .certificate-header {
+            background: linear-gradient(135deg, var(--gold-color), #FFA500);
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        .certificate-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="10" cy="10" r="1" fill="white" opacity="0.3"/></svg>');
+            background-size: 20px 20px;
+        }
+
+        .certificate-icon {
+            width: 100px;
+            height: 100px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            font-size: 3rem;
+            color: var(--gold-color);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            position: relative;
+            z-index: 1;
+        }
+
+        .certificate-body {
+            padding: 30px;
+        }
+
+        .course-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--secondary-color);
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .certificate-details {
+            margin: 20px 0;
+        }
+
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .detail-item:last-child {
+            border-bottom: none;
+        }
+
+        .detail-label {
+            color: #6c757d;
+            font-weight: 500;
+        }
+
+        .detail-value {
+            font-weight: 600;
+            color: var(--secondary-color);
+        }
+
+        .validation-code {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            font-family: 'Courier New', monospace;
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--primary-color);
+            border: 2px dashed #dee2e6;
+            margin: 20px 0;
+        }
+
+        .certificate-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn-certificate {
+            padding: 12px;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-download {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+        }
+
+        .btn-download:hover {
+            background: #e55a2b;
+            transform: scale(1.05);
+        }
+
+        .btn-share {
+            background: #3b5998;
+            color: white;
+            border: none;
+        }
+
+        .btn-share:hover {
+            background: #2d4373;
+        }
+
+        .btn-verify {
+            background: var(--secondary-color);
+            color: white;
+            border: none;
+        }
+
+        .btn-print {
+            background: #6c757d;
+            color: white;
+            border: none;
+        }
+
+        .achievement-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: var(--gold-color);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+        }
+
+        .empty-state i {
+            font-size: 6rem;
+            color: #dee2e6;
+            margin-bottom: 20px;
+        }
+
+        .stats-section {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .stat-label {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="page-header">
+        <div class="container">
+            <h1><i class="fas fa-award"></i> Mis Certificados</h1>
+            <p class="mb-0">Tus logros y certificaciones</p>
+        </div>
+    </div>
+
+    <div class="container">
+        {{#if certificados.length}}
+            <!-- Stats -->
+            <div class="stats-section">
+                <div class="row">
+                    <div class="col-md-4 stat-item">
+                        <div class="stat-number">{{certificados.length}}</div>
+                        <div class="stat-label">Certificados Obtenidos</div>
+                    </div>
+                    <div class="col-md-4 stat-item">
+                        <div class="stat-number">{{horasTotales}}</div>
+                        <div class="stat-label">Horas de Estudio</div>
+                    </div>
+                    <div class="col-md-4 stat-item">
+                        <div class="stat-number">{{cursosCompletados}}%</div>
+                        <div class="stat-label">Tasa de Completado</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Certificates Grid -->
+            <div class="row g-4">
+                {{#each certificados}}
+                <div class="col-lg-6 col-md-12">
+                    <div class="certificate-card">
+                        <div class="achievement-badge">
+                            <i class="fas fa-medal"></i> Completado
+                        </div>
+                        
+                        <div class="certificate-header">
+                            <div class="certificate-icon">
+                                <i class="fas fa-trophy"></i>
+                            </div>
+                            <h3 style="color: white; font-weight: 700; margin: 0;">
+                                Certificado de Finalización
+                            </h3>
+                        </div>
+
+                        <div class="certificate-body">
+                            <h4 class="course-title">{{curso_titulo}}</h4>
+                            
+                            <div class="certificate-details">
+                                <div class="detail-item">
+                                    <span class="detail-label">
+                                        <i class="fas fa-user-graduate"></i> Estudiante
+                                    </span>
+                                    <span class="detail-value">{{usuario_nombre}}</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">
+                                        <i class="fas fa-chalkboard-teacher"></i> Instructor
+                                    </span>
+                                    <span class="detail-value">{{instructor_nombre}}</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">
+                                        <i class="fas fa-calendar-check"></i> Fecha de emisión
+                                    </span>
+                                    <span class="detail-value">{{formatDate fecha_emision}}</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">
+                                        <i class="fas fa-clock"></i> Duración
+                                    </span>
+                                    <span class="detail-value">{{duracion_horas}} horas</span>
+                                </div>
+                            </div>
+
+                            <div class="validation-code">
+                                <small style="display: block; color: #6c757d; margin-bottom: 5px;">
+                                    Código de Validación
+                                </small>
+                                {{codigo_validacion}}
+                            </div>
+
+                            <div class="certificate-actions">
+                                <button class="btn btn-certificate btn-download" 
+                                        onclick="descargarCertificado({{id_certificado}})">
+                                    <i class="fas fa-download"></i> Descargar PDF
+                                </button>
+                                <button class="btn btn-certificate btn-print" 
+                                        onclick="imprimirCertificado({{id_certificado}})">
+                                    <i class="fas fa-print"></i> Imprimir
+                                </button>
+                                <button class="btn btn-certificate btn-share" 
+                                        onclick="compartirCertificado('{{codigo_validacion}}')">
+                                    <i class="fas fa-share-alt"></i> Compartir
+                                </button>
+                                <button class="btn btn-certificate btn-verify" 
+                                        onclick="verificarCertificado('{{codigo_validacion}}')">
+                                    <i class="fas fa-check-circle"></i> Verificar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {{/each}}
+            </div>
+        {{else}}
+            <div class="empty-state">
+                <i class="fas fa-certificate"></i>
+                <h3>Aún no tienes certificados</h3>
+                <p class="text-muted">Completa cursos para obtener certificados oficiales</p>
+                <a href="/cursos" class="btn btn-primary btn-lg mt-3">
+                    <i class="fas fa-graduation-cap"></i> Explorar Cursos
+                </a>
+            </div>
+        {{/if}}
+
+        <!-- Verificar Certificado -->
+        <div class="stats-section mt-4">
+            <h4 class="text-center mb-4">
+                <i class="fas fa-shield-alt"></i> Verificar Certificado
+            </h4>
+            <p class="text-center text-muted">
+                Ingresa un código de validación para verificar la autenticidad de un certificado
+            </p>
+            <div class="row justify-content-center">
+                <div class="col-md-6">
+                    <div class="input-group input-group-lg">
+                        <input type="text" class="form-control" id="codigoVerificacion" 
+                               placeholder="Ingresa el código de validación">
+                        <button class="btn btn-primary" onclick="verificarCodigo()">
+                            <i class="fas fa-search"></i> Verificar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center mt-4">
+            <a href="/dashboard" class="btn btn-light btn-lg">
+                <i class="fas fa-arrow-left"></i> Volver al Dashboard
+            </a>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function descargarCertificado(idCertificado) {
+            window.open(`/certificados/${idCertificado}/descargar`, '_blank');
+        }
+
+        function imprimirCertificado(idCertificado) {
+            window.open(`/certificados/${idCertificado}/imprimir`, '_blank');
+        }
+
+        function compartirCertificado(codigo) {
+            const url = `${window.location.origin}/certificados/verificar/${codigo}`;
+            
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Mi Certificado - StartEducation',
+                    text: `He completado un curso en StartEducation. Verifica mi certificado:`,
+                    url: url
+                }).catch(err => console.log('Error sharing:', err));
+            } else {
+                // Fallback: copiar al portapapeles
+                navigator.clipboard.writeText(url).then(() => {
+                    alert('Enlace copiado al portapapeles');
+                });
+            }
+        }
+
+        function verificarCertificado(codigo) {
+            window.open(`/certificados/verificar/${codigo}`, '_blank');
+        }
+
+        function verificarCodigo() {
+            const codigo = document.getElementById('codigoVerificacion').value;
+            if (codigo) {
+                window.open(`/certificados/verificar/${codigo}`, '_blank');
+            } else {
+                alert('Por favor ingresa un código de validación');
+            }
+        }
+    </script>
+</body>
+</html>

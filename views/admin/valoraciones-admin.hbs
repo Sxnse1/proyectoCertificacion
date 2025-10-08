@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Valoraciones - Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #FF6B35;
+            --secondary-color: #004E89;
+        }
+
+        body {
+            background: #f5f6fa;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .admin-header {
+            background: linear-gradient(135deg, var(--secondary-color), #003366);
+            color: white;
+            padding: 30px 0;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary-color), #F7931E);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--secondary-color);
+        }
+
+        .stat-label {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+
+        .content-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            margin-bottom: 30px;
+        }
+
+        .filter-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+        }
+
+        .review-card {
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+            transition: all 0.3s;
+        }
+
+        .review-card:hover {
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .review-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-avatar {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--primary-color), #F7931E);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+
+        .stars {
+            color: #ffc107;
+            font-size: 1.2rem;
+        }
+
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        .status-aprobada {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-pendiente {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-rechazada {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .curso-preview {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .curso-preview img {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        .chart-container {
+            height: 250px;
+            margin-bottom: 20px;
+        }
+
+        .rating-bar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .rating-bar-fill {
+            flex-grow: 1;
+            height: 10px;
+            background: #e9ecef;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .rating-bar-progress {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-color), #F7931E);
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-header">
+        <div class="container-fluid">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1><i class="fas fa-star"></i> Gestión de Valoraciones</h1>
+                    <p class="mb-0">Moderación y análisis de reseñas de cursos</p>
+                </div>
+                <a href="/admin/dashboard" class="btn btn-light btn-lg">
+                    <i class="fas fa-arrow-left"></i> Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="container-fluid">
+        <!-- Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-comment"></i>
+                </div>
+                <div class="stat-value">{{totalValoraciones}}</div>
+                <div class="stat-label">Total de Valoraciones</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="stat-value">{{pendientesModeracion}}</div>
+                <div class="stat-label">Pendientes de Moderación</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-star"></i>
+                </div>
+                <div class="stat-value">{{promedioGeneral}}</div>
+                <div class="stat-label">Rating Promedio General</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-calendar-day"></i>
+                </div>
+                <div class="stat-value">{{valoracionesMes}}</div>
+                <div class="stat-label">Valoraciones Este Mes</div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="content-card">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h2><i class="fas fa-list"></i> Todas las Valoraciones</h2>
+                        <button class="btn btn-warning" onclick="verPendientes()">
+                            <i class="fas fa-exclamation-circle"></i> Pendientes ({{pendientesModeracion}})
+                        </button>
+                    </div>
+
+                    <!-- Filtros -->
+                    <div class="filter-section">
+                        <div class="row">
+                            <div class="col-md-3 mb-3">
+                                <label class="form-label">Estado</label>
+                                <select class="form-select" id="filtroEstado" onchange="filtrar()">
+                                    <option value="">Todos</option>
+                                    <option value="aprobada">Aprobadas</option>
+                                    <option value="pendiente">Pendientes</option>
+                                    <option value="rechazada">Rechazadas</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label class="form-label">Calificación</label>
+                                <select class="form-select" id="filtroRating" onchange="filtrar()">
+                                    <option value="">Todas</option>
+                                    <option value="5">5 estrellas</option>
+                                    <option value="4">4 estrellas</option>
+                                    <option value="3">3 estrellas</option>
+                                    <option value="2">2 estrellas</option>
+                                    <option value="1">1 estrella</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label class="form-label">Curso</label>
+                                <select class="form-select" id="filtroCurso" onchange="filtrar()">
+                                    <option value="">Todos</option>
+                                    {{#each cursos}}
+                                    <option value="{{id_curso}}">{{titulo}}</option>
+                                    {{/each}}
+                                </select>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label class="form-label">Buscar</label>
+                                <input type="text" class="form-control" id="buscar" 
+                                       placeholder="Usuario, comentario..." onkeyup="buscar()">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Reviews List -->
+                    <div id="listaValoraciones">
+                        {{#each valoraciones}}
+                        <div class="review-card" data-estado="{{estatus}}" data-rating="{{calificacion}}" data-curso="{{id_curso}}">
+                            <div class="review-header">
+                                <div class="user-info">
+                                    <div class="user-avatar">{{iniciales}}</div>
+                                    <div>
+                                        <strong>{{usuario_nombre}}</strong>
+                                        <br>
+                                        <small class="text-muted">{{formatDate fecha}}</small>
+                                    </div>
+                                </div>
+                                <div class="text-end">
+                                    <div class="stars">
+                                        {{#repeat calificacion}}
+                                        <i class="fas fa-star"></i>
+                                        {{/repeat}}
+                                        {{#repeat (subtract 5 calificacion)}}
+                                        <i class="far fa-star"></i>
+                                        {{/repeat}}
+                                    </div>
+                                    <span class="status-badge status-{{estatus}}">{{estatus}}</span>
+                                </div>
+                            </div>
+
+                            <div class="curso-preview">
+                                <img src="{{curso_imagen}}" alt="{{curso_titulo}}">
+                                <div>
+                                    <strong>{{curso_titulo}}</strong>
+                                    <br>
+                                    <small class="text-muted">{{instructor_nombre}}</small>
+                                </div>
+                            </div>
+
+                            <p class="mb-3">{{comentario}}</p>
+
+                            <div class="d-flex gap-2">
+                                {{#if (eq estatus 'pendiente')}}
+                                <button class="btn btn-sm btn-success" onclick="aprobar({{id_valoracion}})">
+                                    <i class="fas fa-check"></i> Aprobar
+                                </button>
+                                <button class="btn btn-sm btn-danger" onclick="rechazar({{id_valoracion}})">
+                                    <i class="fas fa-times"></i> Rechazar
+                                </button>
+                                {{/if}}
+                                {{#if (eq estatus 'aprobada')}}
+                                <button class="btn btn-sm btn-warning" onclick="ocultar({{id_valoracion}})">
+                                    <i class="fas fa-eye-slash"></i> Ocultar
+                                </button>
+                                {{/if}}
+                                {{#if (eq estatus 'rechazada')}}
+                                <button class="btn btn-sm btn-success" onclick="aprobar({{id_valoracion}})">
+                                    <i class="fas fa-check"></i> Aprobar
+                                </button>
+                                {{/if}}
+                                <button class="btn btn-sm btn-info" onclick="verDetalle({{id_valoracion}})">
+                                    <i class="fas fa-eye"></i> Ver Detalle
+                                </button>
+                                <button class="btn btn-sm btn-danger" onclick="eliminar({{id_valoracion}})">
+                                    <i class="fas fa-trash"></i> Eliminar
+                                </button>
+                            </div>
+                        </div>
+                        {{/each}}
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="content-card">
+                    <h3 class="mb-4"><i class="fas fa-chart-bar"></i> Distribución de Ratings</h3>
+                    <div class="chart-container">
+                        <canvas id="ratingsChart"></canvas>
+                    </div>
+                    {{#each distribucionRatings}}
+                    <div class="rating-bar">
+                        <span style="min-width: 30px;">{{estrellas}} <i class="fas fa-star text-warning"></i></span>
+                        <div class="rating-bar-fill">
+                            <div class="rating-bar-progress" style="width: {{porcentaje}}%"></div>
+                        </div>
+                        <strong>{{cantidad}}</strong>
+                    </div>
+                    {{/each}}
+                </div>
+
+                <div class="content-card">
+                    <h3 class="mb-4"><i class="fas fa-trophy"></i> Cursos Mejor Valorados</h3>
+                    <div class="list-group">
+                        {{#each cursosMejorValorados}}
+                        <div class="list-group-item">
+                            <div class="curso-preview">
+                                <img src="{{imagen}}" alt="{{titulo}}">
+                                <div class="flex-grow-1">
+                                    <strong>{{titulo}}</strong>
+                                    <br>
+                                    <div class="d-flex justify-content-between">
+                                        <span class="stars">
+                                            <i class="fas fa-star"></i> {{rating}}
+                                        </span>
+                                        <small class="text-muted">{{cantidad_reviews}} reviews</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {{/each}}
+                    </div>
+                </div>
+
+                <div class="content-card">
+                    <h3 class="mb-4"><i class="fas fa-exclamation-triangle"></i> Cursos con Rating Bajo</h3>
+                    <div class="list-group">
+                        {{#each cursosRatingBajo}}
+                        <div class="list-group-item">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong>{{titulo}}</strong>
+                                    <br>
+                                    <span class="stars text-danger">
+                                        <i class="fas fa-star"></i> {{rating}}
+                                    </span>
+                                </div>
+                                <button class="btn btn-sm btn-warning" onclick="verCurso({{id_curso}})">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                        {{/each}}
+                    </div>
+                </div>
+
+                <div class="content-card">
+                    <h3 class="mb-4"><i class="fas fa-chart-line"></i> Estadísticas</h3>
+                    <div class="mb-3">
+                        <small class="text-muted">Tasa de Aprobación</small>
+                        <div class="progress" style="height: 25px;">
+                            <div class="progress-bar bg-success" style="width: {{tasaAprobacion}}%">
+                                {{tasaAprobacion}}%
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <small class="text-muted">Valoraciones Positivas (4-5⭐)</small>
+                        <div class="progress" style="height: 25px;">
+                            <div class="progress-bar bg-primary" style="width: {{porcentajePositivas}}%">
+                                {{porcentajePositivas}}%
+                            </div>
+                        </div>
+                    </div>
+                    <div class="alert alert-info mt-3">
+                        <strong><i class="fas fa-info-circle"></i> Promedio de Respuesta</strong>
+                        <br>
+                        {{tiempoPromedioRespuesta}} horas
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        function filtrar() {
+            const estado = document.getElementById('filtroEstado').value;
+            const rating = document.getElementById('filtroRating').value;
+            const curso = document.getElementById('filtroCurso').value;
+            const cards = document.querySelectorAll('.review-card');
+
+            cards.forEach(card => {
+                const matchEstado = !estado || card.dataset.estado === estado;
+                const matchRating = !rating || card.dataset.rating === rating;
+                const matchCurso = !curso || card.dataset.curso === curso;
+
+                card.style.display = (matchEstado && matchRating && matchCurso) ? '' : 'none';
+            });
+        }
+
+        function buscar() {
+            const busqueda = document.getElementById('buscar').value.toLowerCase();
+            const cards = document.querySelectorAll('.review-card');
+
+            cards.forEach(card => {
+                const texto = card.textContent.toLowerCase();
+                card.style.display = texto.includes(busqueda) ? '' : 'none';
+            });
+        }
+
+        function aprobar(id) {
+            if (confirm('¿Aprobar esta valoración?')) {
+                fetch(`/admin/valoraciones/${id}/aprobar`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'}
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Valoración aprobada');
+                        location.reload();
+                    }
+                });
+            }
+        }
+
+        function rechazar(id) {
+            const motivo = prompt('Motivo del rechazo:');
+            if (motivo) {
+                fetch(`/admin/valoraciones/${id}/rechazar`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({motivo})
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Valoración rechazada');
+                        location.reload();
+                    }
+                });
+            }
+        }
+
+        function ocultar(id) {
+            if (confirm('¿Ocultar esta valoración?')) {
+                fetch(`/admin/valoraciones/${id}/ocultar`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'}
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Valoración ocultada');
+                        location.reload();
+                    }
+                });
+            }
+        }
+
+        function eliminar(id) {
+            if (confirm('¿Eliminar permanentemente esta valoración?')) {
+                fetch(`/admin/valoraciones/${id}`, {
+                    method: 'DELETE',
+                    headers: {'Content-Type': 'application/json'}
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Valoración eliminada');
+                        location.reload();
+                    }
+                });
+            }
+        }
+
+        function verDetalle(id) {
+            window.location.href = `/admin/valoraciones/${id}`;
+        }
+
+        function verPendientes() {
+            document.getElementById('filtroEstado').value = 'pendiente';
+            filtrar();
+        }
+
+        function verCurso(id) {
+            window.location.href = `/admin/cursos/${id}`;
+        }
+    </script>
+</body>
+</html>

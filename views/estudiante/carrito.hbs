@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carrito de Compras - StartEducation</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #FF6B35;
+            --secondary-color: #004E89;
+        }
+
+        body {
+            background: #f8f9fa;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .page-header {
+            background: linear-gradient(135deg, var(--primary-color), #F7931E);
+            color: white;
+            padding: 40px 0;
+            margin-bottom: 40px;
+        }
+
+        .cart-item {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .cart-item:hover {
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+        }
+
+        .course-image {
+            width: 120px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+
+        .course-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--secondary-color);
+            margin-bottom: 5px;
+        }
+
+        .course-instructor {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+
+        .course-price {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .summary-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 20px;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .summary-total {
+            font-size: 1.5rem;
+            font-weight: 700;
+            padding-top: 15px;
+        }
+
+        .btn-checkout {
+            background: linear-gradient(135deg, var(--primary-color), #F7931E);
+            border: none;
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .btn-checkout:hover {
+            transform: scale(1.02);
+            box-shadow: 0 5px 20px rgba(255, 107, 53, 0.3);
+        }
+
+        .empty-cart {
+            text-align: center;
+            padding: 80px 20px;
+        }
+
+        .empty-cart i {
+            font-size: 6rem;
+            color: #dee2e6;
+            margin-bottom: 20px;
+        }
+
+        .btn-remove {
+            color: #dc3545;
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 5px 10px;
+        }
+
+        .btn-remove:hover {
+            color: #bd2130;
+        }
+
+        .btn-save {
+            color: var(--secondary-color);
+            background: none;
+            border: none;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="page-header">
+        <div class="container">
+            <h1><i class="fas fa-shopping-cart"></i> Carrito de Compras</h1>
+            <p class="mb-0">{{carrito.length}} curso(s) en tu carrito</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8">
+                {{#if carrito.length}}
+                    {{#each carrito}}
+                    <div class="cart-item">
+                        <div class="row align-items-center">
+                            <div class="col-md-2">
+                                <img src="{{#if miniatura}}{{miniatura}}{{else}}/images/default-course.jpg{{/if}}" 
+                                     alt="{{titulo}}" class="course-image">
+                            </div>
+                            <div class="col-md-6">
+                                <h3 class="course-title">{{titulo}}</h3>
+                                <p class="course-instructor">
+                                    <i class="fas fa-user"></i> {{instructor_nombre}}
+                                </p>
+                                <div class="d-flex gap-2">
+                                    <span class="badge bg-secondary">{{nivel}}</span>
+                                    <span class="badge bg-info">{{categoria_nombre}}</span>
+                                </div>
+                            </div>
+                            <div class="col-md-2 text-center">
+                                <div class="course-price">${{precio}}</div>
+                            </div>
+                            <div class="col-md-2 text-center">
+                                <button class="btn-save" onclick="guardarParaDespues({{id_curso}})" 
+                                        title="Guardar para después">
+                                    <i class="fas fa-bookmark"></i>
+                                </button>
+                                <button class="btn-remove" onclick="eliminarDelCarrito({{id_curso}})" 
+                                        title="Eliminar">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    {{/each}}
+
+                    <div class="mt-3">
+                        <a href="/cursos" class="btn btn-outline-primary">
+                            <i class="fas fa-plus"></i> Seguir Comprando
+                        </a>
+                    </div>
+                {{else}}
+                    <div class="empty-cart">
+                        <i class="fas fa-shopping-cart"></i>
+                        <h3>Tu carrito está vacío</h3>
+                        <p class="text-muted">Explora nuestros cursos y agrega los que te interesen</p>
+                        <a href="/cursos" class="btn btn-primary btn-lg mt-3">
+                            <i class="fas fa-graduation-cap"></i> Explorar Cursos
+                        </a>
+                    </div>
+                {{/if}}
+            </div>
+
+            {{#if carrito.length}}
+            <div class="col-lg-4">
+                <div class="summary-card">
+                    <h4 class="mb-4">Resumen de Compra</h4>
+                    
+                    <div class="summary-row">
+                        <span>Subtotal:</span>
+                        <span>${{subtotal}}</span>
+                    </div>
+                    
+                    <div class="summary-row">
+                        <span>Descuento:</span>
+                        <span class="text-success">-${{descuento}}</span>
+                    </div>
+                    
+                    <div class="summary-row">
+                        <span>Impuestos:</span>
+                        <span>${{impuestos}}</span>
+                    </div>
+                    
+                    <div class="summary-row summary-total">
+                        <span>Total:</span>
+                        <span class="text-primary">${{total}}</span>
+                    </div>
+
+                    <button class="btn btn-checkout" onclick="procederAlPago()">
+                        <i class="fas fa-lock"></i> Proceder al Pago
+                    </button>
+
+                    <div class="mt-3 text-center">
+                        <small class="text-muted">
+                            <i class="fas fa-shield-alt"></i> Pago seguro con SSL
+                        </small>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <div class="mb-3">
+                        <label class="form-label">¿Tienes un cupón?</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="codigoCupon" 
+                                   placeholder="Código de cupón">
+                            <button class="btn btn-outline-secondary" onclick="aplicarCupon()">
+                                Aplicar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {{/if}}
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function eliminarDelCarrito(idCurso) {
+            if (confirm('¿Eliminar este curso del carrito?')) {
+                fetch(`/carrito/${idCurso}/eliminar`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        location.reload();
+                    } else {
+                        alert('Error: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error al eliminar el curso');
+                });
+            }
+        }
+
+        function guardarParaDespues(idCurso) {
+            fetch(`/carrito/${idCurso}/guardar`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Curso guardado para después');
+                    location.reload();
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+
+        function procederAlPago() {
+            window.location.href = '/checkout';
+        }
+
+        function aplicarCupon() {
+            const codigo = document.getElementById('codigoCupon').value;
+            if (codigo) {
+                fetch('/carrito/aplicar-cupon', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ codigo })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Cupón aplicado exitosamente');
+                        location.reload();
+                    } else {
+                        alert('Cupón inválido o expirado');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+            }
+        }
+    </script>
+</body>
+</html>

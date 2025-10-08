@@ -3,7 +3,7 @@ var router = express.Router();
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  res.render('index-bootstrap', { 
+  res.render('shared/index-bootstrap', { 
     title: 'Academia de Barbería Profesional',
     layout: false 
   });

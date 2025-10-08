@@ -7,16 +7,8 @@ var logger = require('morgan');
 // Importar configuración de base de datos
 var db = require('./config/database');
 
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
-var authRouter = require('./routes/auth');
-var systemRouter = require('./routes/system');
-var cursosRouter = require('./routes/cursos');
-var usuariosRouter = require('./routes/usuarios');
-var dashboardRouter = require('./routes/dashboard');
-var registerRouter = require('./routes/register');
-var videoRouter = require('./routes/video');
-var cursosDbRouter = require('./routes/cursos-db');
+// Importar configurador centralizado de rutas
+const configureRoutes = require('./routes/index.routes');
 
 var app = express();
 
@@ -25,113 +17,8 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'hbs');
 
 // Configurar helpers de Handlebars
-var hbs = require('hbs');
-hbs.registerHelper('eq', function(a, b) {
-  return a === b;
-});
-
-hbs.registerHelper('formatDate', function(dateString) {
-  if (!dateString) return 'N/A';
-  const date = new Date(dateString);
-  return date.toLocaleDateString('es-ES', { 
-    year: 'numeric', 
-    month: 'long', 
-    day: 'numeric' 
-  });
-});
-
-hbs.registerHelper('substring', function(str, start, length) {
-  if (!str) return '';
-  return str.substring(start, length || str.length).toUpperCase();
-});
-
-hbs.registerHelper('setVar', function(varName, varValue, options) {
-  if (!options.data.root) options.data.root = {};
-  if (!options.data.root[varName]) options.data.root[varName] = {};
-  options.data.root[varName][varValue] = true;
-  return '';
-});
-
-hbs.registerHelper('unless', function(conditional, options) {
-  if (!conditional) {
-    return options.fn(this);
-  } else {
-    return options.inverse(this);
-  }
-});
-
-hbs.registerHelper('json', function(context) {
-  return JSON.stringify(context);
-});
-
-hbs.registerHelper('gt', function(a, b) {
-  return a > b;
-});
-
-hbs.registerHelper('lt', function(a, b) {
-  return a < b;
-});
-
-hbs.registerHelper('add', function(a, b) {
-  return a + b;
-});
-
-hbs.registerHelper('subtract', function(a, b) {
-  return a - b;
-});
-
-hbs.registerHelper('range', function(start, end) {
-  const result = [];
-  for (let i = start; i <= end; i++) {
-    result.push(i);
-  }
-  return result;
-});
-
-hbs.registerHelper('formatDuration', function(seconds) {
-  if (!seconds || isNaN(seconds)) return '0m';
-  
-  const hours = Math.floor(seconds / 3600);
-  const minutes = Math.floor((seconds % 3600) / 60);
-  
-  if (hours > 0) {
-    return `${hours}h ${minutes}m`;
-  } else {
-    return `${minutes}m`;
-  }
-});
-
-hbs.registerHelper('for', function(from, to, options) {
-  // Si no se pasa el parámetro options, significa que current no fue pasado
-  if (typeof options === 'undefined') {
-    options = to;
-    to = from;
-    from = 1;
-  }
-  
-  // Validar que options tenga la función fn
-  if (!options || typeof options.fn !== 'function') {
-    return '';
-  }
-  
-  let result = '';
-  for (let i = from; i <= to; i++) {
-    result += options.fn(i);
-  }
-  return result;
-});
-
-// Helper para formatear precios
-hbs.registerHelper('formatPrice', function(price) {
-  if (!price || isNaN(price)) return '$0.00';
-  return '$' + parseFloat(price).toFixed(2);
-});
-
-// Helper para formatear rating promedio
-hbs.registerHelper('formatRating', function(rating) {
-  if (!rating || isNaN(rating)) return '0.0';
-  return parseFloat(rating).toFixed(1);
-});
+const registerHandlebarsHelpers = require('./config/handlebars-helpers');
+registerHandlebarsHelpers();
 
 // Configurar express-session para autenticación segura
 var session = require('express-session');
@@ -208,49 +95,10 @@ const { requireAuth, requireRole, injectUserData, logAccess } = require('./middl
 app.use(injectUserData);
 app.use(logAccess);
 
-// Rutas públicas (sin autenticación)
-app.use('/', indexRouter);
-app.use('/auth', authRouter);
-app.use('/register', registerRouter);
-
-// Rutas protegidas (requieren autenticación)
-app.use('/users', requireAuth, usersRouter);
-app.use('/system', requireRole(['instructor', 'admin']), systemRouter);
-app.use('/cursos', requireAuth, cursosRouter);
-app.use('/usuarios', requireRole(['instructor', 'admin']), usuariosRouter);
-app.use('/dashboard', requireAuth, dashboardRouter);
-app.use('/video', requireAuth, videoRouter);
-app.use('/cursos-db', requireAuth, cursosDbRouter);
-
-// Importar rutas de administración de videos
-const videosAdminRouter = require('./routes/videos-admin');
-app.use('/videos-admin', requireRole(['admin', 'instructor']), videosAdminRouter);
-
-// Ruta temporal eliminada - funcionalidad movida a videos-admin
-
-// Rutas de autenticación de dos factores
-const twoFactorRouter = require('./routes/two-factor');
-app.use('/two-factor', twoFactorRouter);
-
-// Ruta de administración de categorías
-const categoriasAdminRouter = require('./routes/categorias-admin');
-app.use('/categorias-admin', requireRole(['admin', 'instructor']), categoriasAdminRouter);
-
-// Ruta de administración de etiquetas
-const etiquetasAdminRouter = require('./routes/etiquetas-admin');
-app.use('/etiquetas-admin', requireRole(['admin', 'instructor']), etiquetasAdminRouter);
-
-// Ruta de administración de módulos
-const modulosAdminRouter = require('./routes/modulos-admin');
-app.use('/modulos-admin', requireRole(['admin', 'instructor']), modulosAdminRouter);
-
-// Ruta de administración de cursos
-const cursosAdminRouter = require('./routes/cursos-admin');
-app.use('/cursos-admin', requireRole(['admin', 'instructor']), cursosAdminRouter);
-
-// Ruta de administración de usuarios
-const usuariosAdminRouter = require('./routes/usuarios-admin');
-app.use('/usuarios-admin', requireRole(['admin', 'instructor']), usuariosAdminRouter);
+// ============================================================
+// 🚀 CONFIGURAR TODAS LAS RUTAS DE LA APLICACIÓN
+// ============================================================
+configureRoutes(app);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -271,7 +119,7 @@ app.use(function(err, req, res, next) {
 
   // render the error page
   res.status(err.status || 500);
-  res.render('error');
+  res.render('shared/error');
 });
 
 module.exports = app;

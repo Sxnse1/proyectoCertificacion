@@ -1,0 +1,1121 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{title}} - StartEducation</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/images/favicon.svg">
+    
+    <!-- Bootstrap 5.3 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-color: #ea580c;
+            --primary-hover: #c2410c;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --info-color: #3b82f6;
+            --text-dark: #1f2937;
+            --text-muted: #6b7280;
+            --border-color: #e5e7eb;
+            --bg-light: #f8fafc;
+        }
+
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            color: var(--text-dark);
+            min-height: 100vh;
+        }
+
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header-section {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--border-color);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .page-title {
+            color: var(--primary-color);
+            font-weight: 700;
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .page-subtitle {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            margin-bottom: 0;
+        }
+
+        .stats-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--border-color);
+            text-align: center;
+            transition: transform 0.2s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .stat-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-total { color: var(--info-color); }
+        .stat-activos { color: var(--success-color); }
+        .stat-inactivos { color: var(--warning-color); }
+        .stat-baneados { color: var(--danger-color); }
+        .stat-instructores { color: #8b5cf6; }
+        .stat-estudiantes { color: #06b6d4; }
+        .stat-nuevos { color: var(--primary-color); }
+
+        .content-section {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+        }
+
+        .section-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
+            color: white;
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .section-title {
+            font-weight: 600;
+            font-size: 1.25rem;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-custom {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-custom:hover {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.5);
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        .filters-section {
+            padding: 1.5rem 2rem;
+            background: var(--bg-light);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .table-section {
+            padding: 0;
+        }
+
+        .table {
+            margin: 0;
+        }
+
+        .table th {
+            background: var(--bg-light);
+            color: var(--text-dark);
+            font-weight: 600;
+            border: none;
+            padding: 1rem;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .table td {
+            padding: 1rem;
+            border-color: var(--border-color);
+            vertical-align: middle;
+        }
+
+        .table tbody tr:hover {
+            background-color: rgba(234, 88, 12, 0.05);
+        }
+
+        .usuario-card {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .usuario-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+
+        .usuario-info {
+            flex-grow: 1;
+        }
+
+        .usuario-nombre {
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 0.25rem;
+            font-size: 1rem;
+        }
+
+        .usuario-email {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .usuario-username {
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            background: var(--bg-light);
+            padding: 0.125rem 0.5rem;
+            border-radius: 12px;
+            display: inline-block;
+        }
+
+        .badge-custom {
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .badge-rol {
+            background: rgba(59, 130, 246, 0.1);
+            color: #1d4ed8;
+        }
+
+        .badge-rol.instructor {
+            background: rgba(168, 85, 247, 0.1);
+            color: #7c3aed;
+        }
+
+        .badge-estatus {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.75rem;
+        }
+
+        .status-activo {
+            background: rgba(16, 185, 129, 0.1);
+            color: #059669;
+        }
+
+        .status-inactivo {
+            background: rgba(245, 158, 11, 0.1);
+            color: #d97706;
+        }
+
+        .status-baneado {
+            background: rgba(239, 68, 68, 0.1);
+            color: #dc2626;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 0.5rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .stat-cursos {
+            background: rgba(168, 85, 247, 0.1);
+            color: #7c3aed;
+            border-color: rgba(168, 85, 247, 0.2);
+        }
+
+        .stat-progreso {
+            background: rgba(59, 130, 246, 0.1);
+            color: #1d4ed8;
+            border-color: rgba(59, 130, 246, 0.2);
+        }
+
+        .stat-compras {
+            background: rgba(16, 185, 129, 0.1);
+            color: #059669;
+            border-color: rgba(16, 185, 129, 0.2);
+        }
+
+        .btn-action {
+            padding: 0.4rem 0.6rem;
+            border-radius: 6px;
+            border: none;
+            font-size: 0.875rem;
+            transition: all 0.2s ease;
+            margin: 0 0.125rem;
+        }
+
+        .btn-view {
+            background: rgba(59, 130, 246, 0.1);
+            color: #1d4ed8;
+        }
+
+        .btn-view:hover {
+            background: rgba(59, 130, 246, 0.2);
+            color: #1e40af;
+        }
+
+        .btn-edit {
+            background: rgba(245, 158, 11, 0.1);
+            color: #d97706;
+        }
+
+        .btn-edit:hover {
+            background: rgba(245, 158, 11, 0.2);
+            color: #b45309;
+        }
+
+        .btn-delete {
+            background: rgba(239, 68, 68, 0.1);
+            color: #dc2626;
+        }
+
+        .btn-delete:hover {
+            background: rgba(239, 68, 68, 0.2);
+            color: #b91c1c;
+        }
+
+        .pagination-section {
+            padding: 1.5rem 2rem;
+            background: var(--bg-light);
+            border-top: 1px solid var(--border-color);
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(234, 88, 12, 0.25);
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
+            color: white;
+            border-bottom: none;
+        }
+
+        .modal-header .btn-close {
+            filter: invert(1);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--text-muted);
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                padding: 1rem;
+            }
+            
+            .page-title {
+                font-size: 2rem;
+            }
+            
+            .table-responsive {
+                font-size: 0.875rem;
+            }
+            
+            .usuario-card {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            
+            .btn-action {
+                padding: 0.3rem 0.5rem;
+                font-size: 0.75rem;
+            }
+
+            .stats-cards {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <!-- Header Section -->
+        <div class="header-section">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="page-title">
+                        <i class="bi bi-people"></i>
+                        Gestión de Usuarios
+                    </h1>
+                    <p class="page-subtitle">Administra los usuarios de la plataforma</p>
+                </div>
+                <div>
+                    <a href="/dashboard" class="btn btn-outline-secondary me-2">
+                        <i class="bi bi-arrow-left"></i> Volver al Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistics Cards -->
+        <div class="stats-cards">
+            <div class="stat-card">
+                <div class="stat-icon stat-total">
+                    <i class="bi bi-people-fill"></i>
+                </div>
+                <div class="stat-number stat-total">{{stats.total_usuarios}}</div>
+                <div class="stat-label">Total Usuarios</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon stat-activos">
+                    <i class="bi bi-person-check"></i>
+                </div>
+                <div class="stat-number stat-activos">{{stats.usuarios_activos}}</div>
+                <div class="stat-label">Activos</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon stat-inactivos">
+                    <i class="bi bi-person-dash"></i>
+                </div>
+                <div class="stat-number stat-inactivos">{{stats.usuarios_inactivos}}</div>
+                <div class="stat-label">Inactivos</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon stat-baneados">
+                    <i class="bi bi-person-x"></i>
+                </div>
+                <div class="stat-number stat-baneados">{{stats.usuarios_baneados}}</div>
+                <div class="stat-label">Baneados</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon stat-instructores">
+                    <i class="bi bi-mortarboard"></i>
+                </div>
+                <div class="stat-number stat-instructores">{{stats.total_instructores}}</div>
+                <div class="stat-label">Instructores</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon stat-estudiantes">
+                    <i class="bi bi-book"></i>
+                </div>
+                <div class="stat-number stat-estudiantes">{{stats.total_estudiantes}}</div>
+                <div class="stat-label">Estudiantes</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon stat-nuevos">
+                    <i class="bi bi-person-plus"></i>
+                </div>
+                <div class="stat-number stat-nuevos">{{stats.nuevos_mes_actual}}</div>
+                <div class="stat-label">Nuevos este mes</div>
+            </div>
+        </div>
+
+        <!-- Content Section -->
+        <div class="content-section">
+            <!-- Section Header -->
+            <div class="section-header">
+                <h2 class="section-title">
+                    <i class="bi bi-list-ul"></i>
+                    Lista de Usuarios
+                </h2>
+                <button type="button" class="btn btn-custom" data-bs-toggle="modal" data-bs-target="#createUsuarioModal">
+                    <i class="bi bi-plus-circle"></i> Nuevo Usuario
+                </button>
+            </div>
+
+            <!-- Filters Section -->
+            <div class="filters-section">
+                <form method="GET" class="row g-3">
+                    <div class="col-md-4">
+                        <label for="search" class="form-label">Buscar usuario</label>
+                        <input type="text" class="form-control" id="search" name="search" 
+                               value="{{search}}" placeholder="Buscar por nombre, email o usuario...">
+                    </div>
+                    <div class="col-md-2">
+                        <label for="rol" class="form-label">Rol</label>
+                        <select class="form-select" id="rol" name="rol">
+                            <option value="">Todos los roles</option>
+                            <option value="user" {{#if (eq rolFilter 'user')}}selected{{/if}}>Estudiante</option>
+                            <option value="instructor" {{#if (eq rolFilter 'instructor')}}selected{{/if}}>Instructor</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label for="estatus" class="form-label">Estado</label>
+                        <select class="form-select" id="estatus" name="estatus">
+                            <option value="">Todos los estados</option>
+                            <option value="activo" {{#if (eq estatusFilter 'activo')}}selected{{/if}}>Activo</option>
+                            <option value="inactivo" {{#if (eq estatusFilter 'inactivo')}}selected{{/if}}>Inactivo</option>
+                            <option value="baneado" {{#if (eq estatusFilter 'baneado')}}selected{{/if}}>Baneado</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label for="limit" class="form-label">Por página</label>
+                        <select class="form-select" id="limit" name="limit">
+                            <option value="10" {{#if (eq limit 10)}}selected{{/if}}>10</option>
+                            <option value="25" {{#if (eq limit 25)}}selected{{/if}}>25</option>
+                            <option value="50" {{#if (eq limit 50)}}selected{{/if}}>50</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2 d-flex align-items-end gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-search"></i> Buscar
+                        </button>
+                        <a href="/admin/usuarios" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-clockwise"></i> Limpiar
+                        </a>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Table Section -->
+            <div class="table-section">
+                {{#if usuarios.length}}
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th width="35%">Usuario</th>
+                                <th width="15%">Rol</th>
+                                <th width="10%">Estado</th>
+                                <th width="10%">Registro</th>
+                                <th width="20%">Actividad</th>
+                                <th width="10%">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {{#each usuarios}}
+                            <tr>
+                                <td>
+                                    <div class="usuario-card">
+                                        <div class="usuario-avatar">
+                                            {{substring nombre 0 1}}{{substring apellido 0 1}}
+                                        </div>
+                                        <div class="usuario-info">
+                                            <div class="usuario-nombre">{{nombre}} {{apellido}}</div>
+                                            <div class="usuario-email">{{email}}</div>
+                                            <div class="usuario-username">@{{nombre_usuario}}</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge badge-custom badge-rol {{rol}}">
+                                        {{#if (eq rol 'instructor')}}
+                                            <i class="bi bi-mortarboard"></i>
+                                        {{else}}
+                                            <i class="bi bi-person"></i>
+                                        {{/if}}
+                                        {{#if (eq rol 'instructor')}}Instructor{{else}}Estudiante{{/if}}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge status-{{estatus}}">
+                                        {{#if (eq estatus 'activo')}}
+                                            <i class="bi bi-check-circle"></i>
+                                        {{else if (eq estatus 'inactivo')}}
+                                            <i class="bi bi-pause-circle"></i>
+                                        {{else}}
+                                            <i class="bi bi-x-circle"></i>
+                                        {{/if}}
+                                        {{estatus}}
+                                    </span>
+                                </td>
+                                <td>
+                                    <small class="text-muted">{{fecha_registro_formateada}}</small>
+                                </td>
+                                <td>
+                                    <div class="stats-grid">
+                                        {{#if (eq rol 'instructor')}}
+                                        <div class="stat-item stat-cursos" title="Cursos creados">
+                                            <i class="bi bi-mortarboard"></i><br>
+                                            <strong>{{cursos_creados}}</strong><br>
+                                            <small>Cursos</small>
+                                        </div>
+                                        {{else}}
+                                        <div class="stat-item stat-progreso" title="Cursos en progreso">
+                                            <i class="bi bi-play-circle"></i><br>
+                                            <strong>{{cursos_en_progreso}}</strong><br>
+                                            <small>Progreso</small>
+                                        </div>
+                                        {{/if}}
+                                        <div class="stat-item stat-compras" title="Compras realizadas">
+                                            <i class="bi bi-cart"></i><br>
+                                            <strong>{{compras_realizadas}}</strong><br>
+                                            <small>Compras</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="d-flex flex-column gap-1">
+                                        <button type="button" class="btn btn-action btn-view" 
+                                                onclick="viewUsuario({{id_usuario}})" title="Ver detalles">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-action btn-edit" 
+                                                onclick="editUsuario({{id_usuario}})" title="Editar">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                        <div class="dropdown">
+                                            <button class="btn btn-action btn-view dropdown-toggle" 
+                                                    data-bs-toggle="dropdown" title="Más opciones">
+                                                <i class="bi bi-three-dots"></i>
+                                            </button>
+                                            <ul class="dropdown-menu">
+                                                {{#if (eq estatus 'activo')}}
+                                                <li><a class="dropdown-item" href="#" onclick="changeStatus({{id_usuario}}, 'inactivo', '{{nombre}} {{apellido}}')">
+                                                    <i class="bi bi-pause-circle text-warning me-2"></i>Desactivar
+                                                </a></li>
+                                                {{/if}}
+                                                {{#if (eq estatus 'inactivo')}}
+                                                <li><a class="dropdown-item" href="#" onclick="changeStatus({{id_usuario}}, 'activo', '{{nombre}} {{apellido}}')">
+                                                    <i class="bi bi-check-circle text-success me-2"></i>Activar
+                                                </a></li>
+                                                {{/if}}
+                                                {{#unless (eq estatus 'baneado')}}
+                                                <li><a class="dropdown-item text-danger" href="#" onclick="changeStatus({{id_usuario}}, 'baneado', '{{nombre}} {{apellido}}')">
+                                                    <i class="bi bi-x-circle me-2"></i>Banear
+                                                </a></li>
+                                                {{/unless}}
+                                                {{#if (eq estatus 'baneado')}}
+                                                <li><a class="dropdown-item" href="#" onclick="changeStatus({{id_usuario}}, 'activo', '{{nombre}} {{apellido}}')">
+                                                    <i class="bi bi-check-circle text-success me-2"></i>Desbanear
+                                                </a></li>
+                                                {{/if}}
+                                                <li><hr class="dropdown-divider"></li>
+                                                <li><a class="dropdown-item text-danger" href="#" onclick="deleteUsuario({{id_usuario}}, '{{nombre}} {{apellido}}', {{cursos_creados}}, {{compras_realizadas}})">
+                                                    <i class="bi bi-trash me-2"></i>Eliminar
+                                                </a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            {{/each}}
+                        </tbody>
+                    </table>
+                </div>
+                {{else}}
+                <div class="empty-state">
+                    <i class="bi bi-people"></i>
+                    <h4>No hay usuarios</h4>
+                    <p>No se encontraron usuarios con los criterios de búsqueda especificados.</p>
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createUsuarioModal">
+                        <i class="bi bi-plus-circle"></i> Crear Primer Usuario
+                    </button>
+                </div>
+                {{/if}}
+            </div>
+
+            <!-- Pagination Section -->
+            {{#if totalPages}}
+            <div class="pagination-section">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <small class="text-muted">
+                            Mostrando {{usuarios.length}} de {{totalRecords}} usuarios
+                        </small>
+                    </div>
+                    <nav>
+                        <ul class="pagination mb-0">
+                            <li class="page-item {{#unless (gt currentPage 1)}}disabled{{/unless}}">
+                                <a class="page-link" href="/admin/usuarios?page={{subtract currentPage 1}}&search={{search}}&rol={{rolFilter}}&estatus={{estatusFilter}}&limit={{limit}}">
+                                    <i class="bi bi-chevron-left"></i>
+                                </a>
+                            </li>
+                            
+                            {{#for 1 totalPages}}
+                            <li class="page-item {{#if (eq this ../currentPage)}}active{{/if}}">
+                                <a class="page-link" href="/admin/usuarios?page={{this}}&search={{../search}}&rol={{../rolFilter}}&estatus={{../estatusFilter}}&limit={{../limit}}">
+                                    {{this}}
+                                </a>
+                            </li>
+                            {{/for}}
+                            
+                            <li class="page-item {{#unless (lt currentPage totalPages)}}disabled{{/unless}}">
+                                <a class="page-link" href="/admin/usuarios?page={{add currentPage 1}}&search={{search}}&rol={{rolFilter}}&estatus={{estatusFilter}}&limit={{limit}}">
+                                    <i class="bi bi-chevron-right"></i>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+            {{/if}}
+        </div>
+    </div>
+
+    <!-- Modal Crear Usuario -->
+    <div class="modal fade" id="createUsuarioModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="bi bi-plus-circle"></i> Crear Nuevo Usuario
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="createUsuarioForm">
+                    <div class="modal-body">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="create_nombre" class="form-label">Nombre *</label>
+                                <input type="text" class="form-control" id="create_nombre" name="nombre" required
+                                       placeholder="Nombre del usuario">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="create_apellido" class="form-label">Apellido *</label>
+                                <input type="text" class="form-control" id="create_apellido" name="apellido" required
+                                       placeholder="Apellido del usuario">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="create_nombre_usuario" class="form-label">Nombre de Usuario *</label>
+                                <input type="text" class="form-control" id="create_nombre_usuario" name="nombre_usuario" required
+                                       placeholder="nombre_usuario">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="create_email" class="form-label">Email *</label>
+                                <input type="email" class="form-control" id="create_email" name="email" required
+                                       placeholder="usuario@ejemplo.com">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="create_rol" class="form-label">Rol *</label>
+                                <select class="form-select" id="create_rol" name="rol" required>
+                                    <option value="">Seleccionar rol...</option>
+                                    <option value="user">Estudiante</option>
+                                    <option value="instructor">Instructor</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="create_estatus" class="form-label">Estado *</label>
+                                <select class="form-select" id="create_estatus" name="estatus" required>
+                                    <option value="activo">Activo</option>
+                                    <option value="inactivo">Inactivo</option>
+                                </select>
+                            </div>
+                            <div class="col-12">
+                                <div class="alert alert-info">
+                                    <i class="bi bi-info-circle"></i>
+                                    Se generará una contraseña temporal que será mostrada después de crear el usuario.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-circle"></i> Crear Usuario
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Editar Usuario -->
+    <div class="modal fade" id="editUsuarioModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="bi bi-pencil"></i> Editar Usuario
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="editUsuarioForm">
+                    <input type="hidden" id="edit_id_usuario" name="id_usuario">
+                    <div class="modal-body">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="edit_nombre" class="form-label">Nombre *</label>
+                                <input type="text" class="form-control" id="edit_nombre" name="nombre" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="edit_apellido" class="form-label">Apellido *</label>
+                                <input type="text" class="form-control" id="edit_apellido" name="apellido" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="edit_nombre_usuario" class="form-label">Nombre de Usuario *</label>
+                                <input type="text" class="form-control" id="edit_nombre_usuario" name="nombre_usuario" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="edit_email" class="form-label">Email *</label>
+                                <input type="email" class="form-control" id="edit_email" name="email" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="edit_rol" class="form-label">Rol *</label>
+                                <select class="form-select" id="edit_rol" name="rol" required>
+                                    <option value="user">Estudiante</option>
+                                    <option value="instructor">Instructor</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="edit_estatus" class="form-label">Estado *</label>
+                                <select class="form-select" id="edit_estatus" name="estatus" required>
+                                    <option value="activo">Activo</option>
+                                    <option value="inactivo">Inactivo</option>
+                                    <option value="baneado">Baneado</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-circle"></i> Actualizar Usuario
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Ver Usuario -->
+    <div class="modal fade" id="viewUsuarioModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="bi bi-eye"></i> Detalles del Usuario
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="viewUsuarioContent">
+                    <!-- Contenido cargado dinámicamente -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5.3 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // Crear usuario
+        document.getElementById('createUsuarioForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData);
+            
+            try {
+                const response = await fetch('/admin/usuarios', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showAlert('success', result.message);
+                    bootstrap.Modal.getInstance(document.getElementById('createUsuarioModal')).hide();
+                    setTimeout(() => location.reload(), 1500);
+                } else {
+                    showAlert('danger', result.message);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showAlert('danger', 'Error al crear el usuario');
+            }
+        });
+
+        // Ver usuario
+        async function viewUsuario(id) {
+            try {
+                const response = await fetch(`/admin/usuarios/${id}`);
+                const result = await response.json();
+                
+                if (result.success) {
+                    const usuario = result.usuario;
+                    document.getElementById('viewUsuarioContent').innerHTML = `
+                        <div class="row g-3">
+                            <div class="col-12 text-center">
+                                <div class="usuario-avatar mx-auto" style="width: 80px; height: 80px; font-size: 2rem;">
+                                    ${usuario.nombre.charAt(0)}${usuario.apellido.charAt(0)}
+                                </div>
+                                <h4 class="mt-3">${usuario.nombre} ${usuario.apellido}</h4>
+                                <p class="text-muted">@${usuario.nombre_usuario}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <h6>Información Básica</h6>
+                                <p><strong>Email:</strong> ${usuario.email}</p>
+                                <p><strong>Rol:</strong> 
+                                    <span class="badge badge-custom badge-rol ${usuario.rol}">
+                                        ${usuario.rol === 'instructor' ? 'Instructor' : 'Estudiante'}
+                                    </span>
+                                </p>
+                                <p><strong>Estado:</strong> 
+                                    <span class="badge status-${usuario.estatus}">${usuario.estatus}</span>
+                                </p>
+                                <p><strong>Registro:</strong> ${new Date(usuario.fecha_registro).toLocaleDateString('es-ES')}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <h6>Estadísticas</h6>
+                                <div class="row text-center">
+                                    ${usuario.rol === 'instructor' ? `
+                                    <div class="col-6">
+                                        <div class="border rounded p-2">
+                                            <h5 class="mb-0 text-primary">${usuario.cursos_creados}</h5>
+                                            <small>Cursos Creados</small>
+                                        </div>
+                                    </div>
+                                    ` : `
+                                    <div class="col-6">
+                                        <div class="border rounded p-2">
+                                            <h5 class="mb-0 text-info">${usuario.cursos_en_progreso}</h5>
+                                            <small>En Progreso</small>
+                                        </div>
+                                    </div>
+                                    `}
+                                    <div class="col-6">
+                                        <div class="border rounded p-2">
+                                            <h5 class="mb-0 text-success">${usuario.compras_realizadas}</h5>
+                                            <small>Compras</small>
+                                        </div>
+                                    </div>
+                                    ${usuario.certificados_obtenidos ? `
+                                    <div class="col-12 mt-2">
+                                        <div class="border rounded p-2">
+                                            <h5 class="mb-0 text-warning">${usuario.certificados_obtenidos}</h5>
+                                            <small>Certificados</small>
+                                        </div>
+                                    </div>
+                                    ` : ''}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    
+                    const modal = new bootstrap.Modal(document.getElementById('viewUsuarioModal'));
+                    modal.show();
+                } else {
+                    showAlert('danger', result.message);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showAlert('danger', 'Error al obtener los detalles del usuario');
+            }
+        }
+
+        // Editar usuario
+        async function editUsuario(id) {
+            try {
+                const response = await fetch(`/admin/usuarios/${id}`);
+                const result = await response.json();
+                
+                if (result.success) {
+                    const usuario = result.usuario;
+                    
+                    document.getElementById('edit_id_usuario').value = usuario.id_usuario;
+                    document.getElementById('edit_nombre').value = usuario.nombre;
+                    document.getElementById('edit_apellido').value = usuario.apellido;
+                    document.getElementById('edit_nombre_usuario').value = usuario.nombre_usuario;
+                    document.getElementById('edit_email').value = usuario.email;
+                    document.getElementById('edit_rol').value = usuario.rol;
+                    document.getElementById('edit_estatus').value = usuario.estatus;
+                    
+                    const modal = new bootstrap.Modal(document.getElementById('editUsuarioModal'));
+                    modal.show();
+                } else {
+                    showAlert('danger', result.message);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showAlert('danger', 'Error al obtener los datos del usuario');
+            }
+        }
+
+        document.getElementById('editUsuarioForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData);
+            const id = data.id_usuario;
+            
+            try {
+                const response = await fetch(`/admin/usuarios/${id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showAlert('success', result.message);
+                    bootstrap.Modal.getInstance(document.getElementById('editUsuarioModal')).hide();
+                    setTimeout(() => location.reload(), 1500);
+                } else {
+                    showAlert('danger', result.message);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showAlert('danger', 'Error al actualizar el usuario');
+            }
+        });
+
+        // Cambiar estado del usuario
+        async function changeStatus(id, newStatus, nombre) {
+            const statusNames = {
+                'activo': 'activar',
+                'inactivo': 'desactivar',
+                'baneado': 'banear'
+            };
+            
+            if (confirm(`¿Estás seguro de que deseas ${statusNames[newStatus]} al usuario "${nombre}"?`)) {
+                try {
+                    const response = await fetch(`/admin/usuarios/${id}/status`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ estatus: newStatus })
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        showAlert('success', result.message);
+                        setTimeout(() => location.reload(), 1500);
+                    } else {
+                        showAlert('danger', result.message);
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    showAlert('danger', 'Error al cambiar el estado del usuario');
+                }
+            }
+        }
+
+        // Eliminar usuario
+        function deleteUsuario(id, nombre, cursosCreados, comprasRealizadas) {
+            if (cursosCreados > 0 || comprasRealizadas > 0) {
+                showAlert('warning', `No se puede eliminar al usuario "${nombre}" porque tiene datos relacionados. Considera cambiar su estado a "inactivo" en su lugar.`);
+                return;
+            }
+            
+            if (confirm(`¿Estás seguro de que deseas eliminar al usuario "${nombre}"?\n\nEsta acción no se puede deshacer.`)) {
+                fetch(`/admin/usuarios/${id}`, {
+                    method: 'DELETE'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showAlert('success', data.message);
+                        setTimeout(() => location.reload(), 1500);
+                    } else {
+                        showAlert('danger', data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showAlert('danger', 'Error al eliminar el usuario');
+                });
+            }
+        }
+
+        // Función para mostrar alertas
+        function showAlert(type, message) {
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+            alert.style.cssText = 'top: 20px; right: 20px; z-index: 9999; max-width: 400px;';
+            alert.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            
+            document.body.appendChild(alert);
+            
+            setTimeout(() => {
+                if (alert.parentNode) {
+                    alert.remove();
+                }
+            }, 5000);
+        }
+    </script>
+</body>
+</html>

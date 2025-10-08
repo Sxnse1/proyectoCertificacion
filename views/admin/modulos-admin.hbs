@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{title}} - StartEducation</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/images/favicon.svg">
+    
+    <!-- Bootstrap 5.3 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- SortableJS -->
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+    
+    <style>
+        :root {
+            --primary-color: #ea580c;
+            --primary-hover: #c2410c;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --text-dark: #1f2937;
+            --text-muted: #6b7280;
+            --border-color: #e5e7eb;
+            --bg-light: #f8fafc;
+        }
+
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            color: var(--text-dark);
+            min-height: 100vh;
+        }
+
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header-section {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--border-color);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .page-title {
+            color: var(--primary-color);
+            font-weight: 700;
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .page-subtitle {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            margin-bottom: 0;
+        }
+
+        .content-section {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+        }
+
+        .section-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
+            color: white;
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .section-title {
+            font-weight: 600;
+            font-size: 1.25rem;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-custom {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-custom:hover {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.5);
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        .filters-section {
+            padding: 1.5rem 2rem;
+            background: var(--bg-light);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .table-section {
+            padding: 0;
+        }
+
+        .table {
+            margin: 0;
+        }
+
+        .table th {
+            background: var(--bg-light);
+            color: var(--text-dark);
+            font-weight: 600;
+            border: none;
+            padding: 1rem;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .table td {
+            padding: 1rem;
+            border-color: var(--border-color);
+            vertical-align: middle;
+        }
+
+        .table tbody tr:hover {
+            background-color: rgba(234, 88, 12, 0.05);
+        }
+
+        .badge-custom {
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .badge-videos {
+            background: rgba(59, 130, 246, 0.1);
+            color: #1d4ed8;
+        }
+
+        .badge-duration {
+            background: rgba(168, 85, 247, 0.1);
+            color: #7c3aed;
+        }
+
+        .btn-action {
+            padding: 0.4rem 0.6rem;
+            border-radius: 6px;
+            border: none;
+            font-size: 0.875rem;
+            transition: all 0.2s ease;
+            margin: 0 0.125rem;
+        }
+
+        .btn-edit {
+            background: rgba(59, 130, 246, 0.1);
+            color: #1d4ed8;
+        }
+
+        .btn-edit:hover {
+            background: rgba(59, 130, 246, 0.2);
+            color: #1e40af;
+        }
+
+        .btn-delete {
+            background: rgba(239, 68, 68, 0.1);
+            color: #dc2626;
+        }
+
+        .btn-delete:hover {
+            background: rgba(239, 68, 68, 0.2);
+            color: #b91c1c;
+        }
+
+        .pagination-section {
+            padding: 1.5rem 2rem;
+            background: var(--bg-light);
+            border-top: 1px solid var(--border-color);
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(234, 88, 12, 0.25);
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
+            color: white;
+            border-bottom: none;
+        }
+
+        .modal-header .btn-close {
+            filter: invert(1);
+        }
+
+        .drag-handle {
+            cursor: grab;
+            color: var(--text-muted);
+            transition: color 0.2s ease;
+        }
+
+        .drag-handle:hover {
+            color: var(--primary-color);
+        }
+
+        .sortable-ghost {
+            opacity: 0.4;
+        }
+
+        .sortable-drag {
+            transform: rotate(5deg);
+        }
+
+        .curso-info {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+        }
+
+        .orden-badge {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
+            color: white;
+            font-weight: 600;
+            min-width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 0.25rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+        }
+
+        .stat-published {
+            background: rgba(16, 185, 129, 0.1);
+            color: #059669;
+        }
+
+        .stat-draft {
+            background: rgba(245, 158, 11, 0.1);
+            color: #d97706;
+        }
+
+        .stat-archived {
+            background: rgba(107, 114, 128, 0.1);
+            color: #4b5563;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--text-muted);
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                padding: 1rem;
+            }
+            
+            .page-title {
+                font-size: 2rem;
+            }
+            
+            .table-responsive {
+                font-size: 0.875rem;
+            }
+            
+            .btn-action {
+                padding: 0.3rem 0.5rem;
+                font-size: 0.75rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <!-- Header Section -->
+        <div class="header-section">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="page-title">
+                        <i class="bi bi-collection"></i>
+                        Gestión de Módulos
+                    </h1>
+                    <p class="page-subtitle">Organiza y administra los módulos de tus cursos</p>
+                </div>
+                <div>
+                    <a href="/dashboard" class="btn btn-outline-secondary me-2">
+                        <i class="bi bi-arrow-left"></i> Volver al Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Content Section -->
+        <div class="content-section">
+            <!-- Section Header -->
+            <div class="section-header">
+                <h2 class="section-title">
+                    <i class="bi bi-list-ul"></i>
+                    Lista de Módulos
+                </h2>
+                <button type="button" class="btn btn-custom" data-bs-toggle="modal" data-bs-target="#createModuloModal">
+                    <i class="bi bi-plus-circle"></i> Nuevo Módulo
+                </button>
+            </div>
+
+            <!-- Filters Section -->
+            <div class="filters-section">
+                <form method="GET" class="row g-3">
+                    <div class="col-md-4">
+                        <label for="search" class="form-label">Buscar módulo</label>
+                        <input type="text" class="form-control" id="search" name="search" 
+                               value="{{filters.search}}" placeholder="Buscar por título...">
+                    </div>
+                    <div class="col-md-3">
+                        <label for="curso" class="form-label">Filtrar por curso</label>
+                        <select class="form-select" id="curso" name="curso">
+                            <option value="">Todos los cursos</option>
+                            {{#each cursos}}
+                            <option value="{{id_curso}}" {{#if (eq ../filters.curso id_curso)}}selected{{/if}}>
+                                {{titulo}}
+                            </option>
+                            {{/each}}
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label for="limit" class="form-label">Por página</label>
+                        <select class="form-select" id="limit" name="limit">
+                            <option value="10" {{#if (eq filters.limit 10)}}selected{{/if}}>10</option>
+                            <option value="25" {{#if (eq filters.limit 25)}}selected{{/if}}>25</option>
+                            <option value="50" {{#if (eq filters.limit 50)}}selected{{/if}}>50</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3 d-flex align-items-end gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-search"></i> Buscar
+                        </button>
+                        <a href="/admin/modulos" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-clockwise"></i> Limpiar
+                        </a>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Table Section -->
+            <div class="table-section">
+                {{#if modulos.length}}
+                <div class="table-responsive">
+                    <table class="table" id="modulosTable">
+                        <thead>
+                            <tr>
+                                <th width="50"></th>
+                                <th width="60">Orden</th>
+                                <th>Módulo</th>
+                                <th>Curso</th>
+                                <th width="120">Videos</th>
+                                <th width="100">Duración</th>
+                                <th width="150">Última Modificación</th>
+                                <th width="120">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="sortable-modulos">
+                            {{#each modulos}}
+                            <tr data-id="{{id_modulo}}" data-orden="{{orden}}">
+                                <td>
+                                    <i class="bi bi-grip-vertical drag-handle"></i>
+                                </td>
+                                <td>
+                                    <div class="orden-badge">{{orden}}</div>
+                                </td>
+                                <td>
+                                    <div>
+                                        <strong>{{titulo}}</strong>
+                                        <div class="stats-grid">
+                                            {{#if videos_publicados}}
+                                            <div class="stat-item stat-published">
+                                                {{videos_publicados}} Pub.
+                                            </div>
+                                            {{/if}}
+                                            {{#if videos_borrador}}
+                                            <div class="stat-item stat-draft">
+                                                {{videos_borrador}} Borr.
+                                            </div>
+                                            {{/if}}
+                                            {{#if videos_archivados}}
+                                            <div class="stat-item stat-archived">
+                                                {{videos_archivados}} Arch.
+                                            </div>
+                                            {{/if}}
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div>
+                                        <strong>{{curso_titulo}}</strong>
+                                        <div class="curso-info">
+                                            <i class="bi bi-circle-fill" style="font-size: 0.5rem; color: {{#if (eq curso_estatus 'publicado')}}var(--success-color){{else if (eq curso_estatus 'borrador')}}var(--warning-color){{else}}var(--text-muted){{/if}};"></i>
+                                            {{curso_estatus}}
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge badge-custom badge-videos">
+                                        <i class="bi bi-play-circle"></i> {{total_videos}}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge badge-custom badge-duration">
+                                        <i class="bi bi-clock"></i> {{duracion_display}}
+                                    </span>
+                                </td>
+                                <td>
+                                    <small class="text-muted">
+                                        {{#if fecha_modificacion_formateada}}
+                                        {{fecha_modificacion_formateada}}
+                                        {{else}}
+                                        Sin modificar
+                                        {{/if}}
+                                    </small>
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-action btn-edit" 
+                                            onclick="editModulo({{id_modulo}}, '{{titulo}}', {{orden}}, {{id_curso}})">
+                                        <i class="bi bi-pencil"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-action btn-delete" 
+                                            onclick="deleteModulo({{id_modulo}}, '{{titulo}}', {{total_videos}})">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            {{/each}}
+                        </tbody>
+                    </table>
+                </div>
+                {{else}}
+                <div class="empty-state">
+                    <i class="bi bi-collection"></i>
+                    <h4>No hay módulos</h4>
+                    <p>No se encontraron módulos con los criterios de búsqueda especificados.</p>
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createModuloModal">
+                        <i class="bi bi-plus-circle"></i> Crear Primer Módulo
+                    </button>
+                </div>
+                {{/if}}
+            </div>
+
+            <!-- Pagination Section -->
+            {{#if pagination.totalPages}}
+            <div class="pagination-section">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <small class="text-muted">
+                            Mostrando {{modulos.length}} de {{pagination.totalRecords}} módulos
+                        </small>
+                    </div>
+                    <nav>
+                        <ul class="pagination mb-0">
+                            <li class="page-item {{#unless pagination.hasPrev}}disabled{{/unless}}">
+                                <a class="page-link" href="/admin/modulos?page={{pagination.prevPage}}&search={{filters.search}}&curso={{filters.curso}}&limit={{filters.limit}}">
+                                    <i class="bi bi-chevron-left"></i>
+                                </a>
+                            </li>
+                            
+                            {{#each (range 1 pagination.totalPages)}}
+                            <li class="page-item {{#if (eq this ../pagination.currentPage)}}active{{/if}}">
+                                <a class="page-link" href="/admin/modulos?page={{this}}&search={{../filters.search}}&curso={{../filters.curso}}&limit={{../filters.limit}}">
+                                    {{this}}
+                                </a>
+                            </li>
+                            {{/each}}
+                            
+                            <li class="page-item {{#unless pagination.hasNext}}disabled{{/unless}}">
+                                <a class="page-link" href="/admin/modulos?page={{pagination.nextPage}}&search={{filters.search}}&curso={{filters.curso}}&limit={{filters.limit}}">
+                                    <i class="bi bi-chevron-right"></i>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+            {{/if}}
+        </div>
+    </div>
+
+    <!-- Modal Crear Módulo -->
+    <div class="modal fade" id="createModuloModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="bi bi-plus-circle"></i> Crear Nuevo Módulo
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="createModuloForm">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="create_curso" class="form-label">Curso *</label>
+                            <select class="form-select" id="create_curso" name="id_curso" required>
+                                <option value="">Seleccionar curso...</option>
+                                {{#each cursos}}
+                                <option value="{{id_curso}}">{{titulo}}</option>
+                                {{/each}}
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="create_titulo" class="form-label">Título del Módulo *</label>
+                            <input type="text" class="form-control" id="create_titulo" name="titulo" required
+                                   placeholder="Ej: Introducción al tema">
+                        </div>
+                        <div class="mb-3">
+                            <label for="create_orden" class="form-label">Orden</label>
+                            <input type="number" class="form-control" id="create_orden" name="orden" min="1"
+                                   placeholder="Orden automático si se deja vacío">
+                            <div class="form-text">Si no especificas un orden, se asignará automáticamente el siguiente disponible.</div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-circle"></i> Crear Módulo
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Editar Módulo -->
+    <div class="modal fade" id="editModuloModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="bi bi-pencil"></i> Editar Módulo
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="editModuloForm">
+                    <input type="hidden" id="edit_id_modulo" name="id_modulo">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="edit_titulo" class="form-label">Título del Módulo *</label>
+                            <input type="text" class="form-control" id="edit_titulo" name="titulo" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="edit_orden" class="form-label">Orden *</label>
+                            <input type="number" class="form-control" id="edit_orden" name="orden" min="1" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-circle"></i> Actualizar Módulo
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5.3 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // Configurar Sortable para reordenar módulos
+        const sortable = Sortable.create(document.getElementById('sortable-modulos'), {
+            handle: '.drag-handle',
+            animation: 150,
+            ghostClass: 'sortable-ghost',
+            dragClass: 'sortable-drag',
+            onEnd: function(evt) {
+                const rows = document.querySelectorAll('#sortable-modulos tr');
+                const modulos = [];
+                
+                rows.forEach((row, index) => {
+                    modulos.push({
+                        id_modulo: parseInt(row.dataset.id),
+                        nuevo_orden: index + 1
+                    });
+                });
+                
+                // Enviar al servidor
+                fetch('/modulos-admin/reorder', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ modulos })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Actualizar los números de orden en la interfaz
+                        rows.forEach((row, index) => {
+                            const ordenBadge = row.querySelector('.orden-badge');
+                            ordenBadge.textContent = index + 1;
+                            row.dataset.orden = index + 1;
+                        });
+                        
+                        showAlert('success', data.message);
+                    } else {
+                        showAlert('danger', data.message);
+                        location.reload(); // Recargar en caso de error
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showAlert('danger', 'Error al reordenar módulos');
+                    location.reload();
+                });
+            }
+        });
+
+        // Crear módulo
+        document.getElementById('createModuloForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData);
+            
+            try {
+                const response = await fetch('/admin/modulos', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showAlert('success', result.message);
+                    bootstrap.Modal.getInstance(document.getElementById('createModuloModal')).hide();
+                    setTimeout(() => location.reload(), 1500);
+                } else {
+                    showAlert('danger', result.message);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showAlert('danger', 'Error al crear el módulo');
+            }
+        });
+
+        // Editar módulo
+        function editModulo(id, titulo, orden, cursoId) {
+            document.getElementById('edit_id_modulo').value = id;
+            document.getElementById('edit_titulo').value = titulo;
+            document.getElementById('edit_orden').value = orden;
+            
+            const modal = new bootstrap.Modal(document.getElementById('editModuloModal'));
+            modal.show();
+        }
+
+        document.getElementById('editModuloForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData);
+            const id = data.id_modulo;
+            
+            try {
+                const response = await fetch(`/admin/modulos/${id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showAlert('success', result.message);
+                    bootstrap.Modal.getInstance(document.getElementById('editModuloModal')).hide();
+                    setTimeout(() => location.reload(), 1500);
+                } else {
+                    showAlert('danger', result.message);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showAlert('danger', 'Error al actualizar el módulo');
+            }
+        });
+
+        // Eliminar módulo
+        function deleteModulo(id, titulo, totalVideos) {
+            let message = `¿Estás seguro de que deseas eliminar el módulo "${titulo}"?`;
+            
+            if (totalVideos > 0) {
+                showAlert('warning', `No se puede eliminar el módulo "${titulo}" porque tiene ${totalVideos} video(s) asociado(s). Elimina primero los videos.`);
+                return;
+            }
+            
+            if (confirm(message)) {
+                fetch(`/admin/modulos/${id}`, {
+                    method: 'DELETE'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showAlert('success', data.message);
+                        setTimeout(() => location.reload(), 1500);
+                    } else {
+                        showAlert('danger', data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showAlert('danger', 'Error al eliminar el módulo');
+                });
+            }
+        }
+
+        // Función para mostrar alertas
+        function showAlert(type, message) {
+            // Crear el elemento de alerta
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+            alert.style.cssText = 'top: 20px; right: 20px; z-index: 9999; max-width: 400px;';
+            alert.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            
+            // Agregar al body
+            document.body.appendChild(alert);
+            
+            // Auto-remover después de 5 segundos
+            setTimeout(() => {
+                if (alert.parentNode) {
+                    alert.remove();
+                }
+            }, 5000);
+        }
+
+        // Handlebars helpers para las condiciones
+        if (typeof Handlebars !== 'undefined') {
+            Handlebars.registerHelper('eq', function(a, b) {
+                return a === b;
+            });
+            
+            Handlebars.registerHelper('range', function(start, end) {
+                const result = [];
+                for (let i = start; i <= end; i++) {
+                    result.push(i);
+                }
+                return result;
+            });
+        }
+    </script>
+</body>
+</html>

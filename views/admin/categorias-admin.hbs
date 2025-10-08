@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{title}} - StartEducation</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/images/favicon.svg">
+    
+    <!-- Bootstrap 5.3 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-color: #ea580c;
+            --primary-hover: #c2410c;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --text-dark: #1f2937;
+            --text-muted: #6b7280;
+            --border-color: #e5e7eb;
+            --bg-light: #f8fafc;
+        }
+
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            color: var(--text-dark);
+            min-height: 100vh;
+        }
+
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header-section {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border-left: 5px solid var(--primary-color);
+        }
+
+        .header-title {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .header-title h1 {
+            color: var(--text-dark);
+            font-weight: 700;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .stat-card {
+            background: var(--bg-light);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            border: 1px solid var(--border-color);
+            transition: transform 0.2s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            display: block;
+        }
+
+        .stat-label {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        .controls-section {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .controls-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .search-group {
+            display: flex;
+            gap: 0.5rem;
+            flex: 1;
+            max-width: 400px;
+        }
+
+        .search-input {
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            font-size: 0.95rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .search-input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(234, 88, 12, 0.25);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, var(--primary-hover) 0%, #9a3412 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(234, 88, 12, 0.4);
+        }
+
+        .btn-success {
+            background: var(--success-color);
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-success:hover {
+            background: #059669;
+            transform: translateY(-2px);
+        }
+
+        .btn-warning {
+            background: var(--warning-color);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            padding: 0.5rem 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-warning:hover {
+            background: #d97706;
+            color: white;
+        }
+
+        .btn-danger {
+            background: var(--danger-color);
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            padding: 0.5rem 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+
+        .table-section {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .table-header {
+            background: var(--bg-light);
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .table {
+            margin: 0;
+        }
+
+        .table th {
+            background: var(--bg-light);
+            border: none;
+            font-weight: 600;
+            color: var(--text-dark);
+            padding: 1rem;
+        }
+
+        .table td {
+            border: none;
+            padding: 1rem;
+            vertical-align: middle;
+        }
+
+        .table tbody tr {
+            border-bottom: 1px solid #f1f5f9;
+            transition: background-color 0.2s ease;
+        }
+
+        .table tbody tr:hover {
+            background-color: rgba(234, 88, 12, 0.05);
+        }
+
+        .categoria-name {
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .categoria-description {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            max-width: 300px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .curso-count {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.25rem 0.75rem;
+            background: var(--primary-color);
+            color: white;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .curso-count.empty {
+            background: var(--text-muted);
+        }
+
+        .curso-stats {
+            min-width: 200px;
+        }
+
+        .stat-badges {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .stat-badges .badge {
+            font-size: 0.75rem;
+            padding: 0.35rem 0.65rem;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            width: fit-content;
+        }
+
+        .actions-group {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .pagination-section {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .pagination {
+            margin: 0;
+            justify-content: center;
+        }
+
+        .page-link {
+            border: none;
+            color: var(--text-muted);
+            padding: 0.75rem 1rem;
+            margin: 0 0.25rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .page-link:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .page-item.active .page-link {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--text-muted);
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.95);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+
+        .spinner-border {
+            color: var(--primary-color);
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                padding: 1rem;
+            }
+            
+            .header-section {
+                padding: 1.5rem;
+            }
+            
+            .controls-row {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .search-group {
+                max-width: none;
+            }
+            
+            .actions-group {
+                justify-content: center;
+            }
+            
+            .table-responsive {
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="text-center">
+            <div class="spinner-border mb-3" role="status">
+                <span class="visually-hidden">Cargando...</span>
+            </div>
+            <p>Procesando...</p>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <!-- Header Section -->
+        <div class="header-section">
+            <div class="header-title">
+                <h1>
+                    <i class="bi bi-tags"></i>
+                    Gestión de Categorías
+                </h1>
+                <div class="d-flex gap-2">
+                    <a href="/dashboard" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-left me-2"></i>Dashboard
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Estadísticas -->
+            <div class="stats-row">
+                <div class="stat-card">
+                    <span class="stat-number">{{stats.total_categorias}}</span>
+                    <div class="stat-label">Total Categorías</div>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">{{stats.categorias_con_cursos}}</span>
+                    <div class="stat-label">Con Cursos</div>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">{{stats.categorias_vacias}}</span>
+                    <div class="stat-label">Sin Cursos</div>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">{{stats.total_cursos_publicados}}</span>
+                    <div class="stat-label">Cursos Publicados</div>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">{{stats.total_cursos_borrador}}</span>
+                    <div class="stat-label">Cursos en Borrador</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Controls Section -->
+        <div class="controls-section">
+            <div class="controls-row">
+                <div class="search-group">
+                    <form method="GET" class="d-flex w-100">
+                        <input type="text" 
+                               class="form-control search-input" 
+                               name="search" 
+                               placeholder="Buscar categorías..." 
+                               value="{{search}}">
+                        <button type="submit" class="btn btn-primary ms-2">
+                            <i class="bi bi-search"></i>
+                        </button>
+                    </form>
+                </div>
+                <div class="action-buttons">
+                    <button type="button" class="btn btn-success" onclick="showCreateModal()">
+                        <i class="bi bi-plus-circle me-2"></i>Nueva Categoría
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Table Section -->
+        <div class="table-section">
+            <div class="table-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-list-ul me-2"></i>
+                    Lista de Categorías
+                    {{#if search}}
+                        <small class="text-muted">- Resultados para "{{search}}"</small>
+                    {{/if}}
+                </h5>
+            </div>
+            
+            {{#if categorias.length}}
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Descripción</th>
+                            <th>Estado de Cursos</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{#each categorias}}
+                        <tr>
+                            <td>
+                                <span class="badge bg-secondary">#{{id_categoria}}</span>
+                            </td>
+                            <td>
+                                <div class="categoria-name">{{nombre}}</div>
+                            </td>
+                            <td>
+                                <div class="categoria-description" title="{{descripcion}}">
+                                    {{#if descripcion}}
+                                        {{descripcion}}
+                                    {{else}}
+                                        <em>Sin descripción</em>
+                                    {{/if}}
+                                </div>
+                            </td>
+                            <td>
+                                <div class="curso-stats">
+                                    {{#if (gt total_cursos 0)}}
+                                        <div class="stat-badges">
+                                            <span class="badge bg-primary">
+                                                <i class="bi bi-collection"></i> {{total_cursos}} total
+                                            </span>
+                                            {{#if (gt cursos_publicados 0)}}
+                                                <span class="badge bg-success">
+                                                    <i class="bi bi-check-circle"></i> {{cursos_publicados}} publicados
+                                                </span>
+                                            {{/if}}
+                                            {{#if (gt cursos_borrador 0)}}
+                                                <span class="badge bg-warning">
+                                                    <i class="bi bi-pencil-square"></i> {{cursos_borrador}} borradores
+                                                </span>
+                                            {{/if}}
+                                            {{#if (gt cursos_inactivos 0)}}
+                                                <span class="badge bg-secondary">
+                                                    <i class="bi bi-pause-circle"></i> {{cursos_inactivos}} inactivos
+                                                </span>
+                                            {{/if}}
+                                        </div>
+                                    {{else}}
+                                        <span class="badge bg-light text-muted">
+                                            <i class="bi bi-collection"></i> Sin cursos
+                                        </span>
+                                    {{/if}}
+                                </div>
+                            </td>
+                            <td>
+                                <div class="actions-group">
+                                    <button type="button" class="btn btn-warning btn-sm" 
+                                            onclick="editCategoria({{id_categoria}})">
+                                        <i class="bi bi-pencil"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-danger btn-sm" 
+                                            onclick="deleteCategoria({{id_categoria}}, '{{nombre}}', {{total_cursos}})">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {{/each}}
+                    </tbody>
+                </table>
+            </div>
+            {{else}}
+            <div class="empty-state">
+                <i class="bi bi-tags"></i>
+                <h4>No hay categorías</h4>
+                <p>
+                    {{#if search}}
+                        No se encontraron categorías que coincidan con "{{search}}"
+                    {{else}}
+                        Aún no has creado ninguna categoría
+                    {{/if}}
+                </p>
+                <button type="button" class="btn btn-primary" onclick="showCreateModal()">
+                    <i class="bi bi-plus-circle me-2"></i>Crear Primera Categoría
+                </button>
+            </div>
+            {{/if}}
+        </div>
+
+        <!-- Pagination -->
+        {{#if (gt totalPages 1)}}
+        <div class="pagination-section">
+            <nav aria-label="Paginación de categorías">
+                <ul class="pagination">
+                    {{#if (gt currentPage 1)}}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{subtract currentPage 1}}{{#if search}}&search={{search}}{{/if}}">Anterior</a>
+                    </li>
+                    {{/if}}
+                    
+                    {{#for 1 totalPages currentPage}}
+                    <li class="page-item {{#if active}}active{{/if}}">
+                        <a class="page-link" href="?page={{page}}{{#if ../search}}&search={{../search}}{{/if}}">{{page}}</a>
+                    </li>
+                    {{/for}}
+                    
+                    {{#if (lt currentPage totalPages)}}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{add currentPage 1}}{{#if search}}&search={{search}}{{/if}}">Siguiente</a>
+                    </li>
+                    {{/if}}
+                </ul>
+            </nav>
+            
+            <div class="text-center mt-3">
+                <small class="text-muted">
+                    Página {{currentPage}} de {{totalPages}} ({{totalRecords}} categorías en total)
+                </small>
+            </div>
+        </div>
+        {{/if}}
+    </div>
+
+    <!-- Modal para Crear/Editar Categoría -->
+    <div class="modal fade" id="categoriaModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalTitle">Nueva Categoría</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="categoriaForm">
+                    <div class="modal-body">
+                        <input type="hidden" id="categoriaId">
+                        
+                        <div class="mb-3">
+                            <label for="nombre" class="form-label">Nombre *</label>
+                            <input type="text" class="form-control" id="nombre" 
+                                   placeholder="Ej: Desarrollo Web" maxlength="100" required>
+                            <div class="form-text">Máximo 100 caracteres</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="descripcion" class="form-label">Descripción</label>
+                            <textarea class="form-control" id="descripcion" rows="3" 
+                                      placeholder="Descripción opcional de la categoría"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-circle me-2"></i>Guardar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Variables globales
+        let categoriaModal;
+        
+        // Inicializar cuando carga la página
+        document.addEventListener('DOMContentLoaded', function() {
+            categoriaModal = new bootstrap.Modal(document.getElementById('categoriaModal'));
+            
+            // Configurar formulario
+            document.getElementById('categoriaForm').addEventListener('submit', handleFormSubmit);
+        });
+        
+        // Mostrar modal para crear categoría
+        function showCreateModal() {
+            document.getElementById('modalTitle').textContent = 'Nueva Categoría';
+            document.getElementById('categoriaForm').reset();
+            document.getElementById('categoriaId').value = '';
+            categoriaModal.show();
+        }
+        
+        // Editar categoría
+        async function editCategoria(id) {
+            try {
+                showLoading(true);
+                
+                const response = await fetch(`/admin/categorias/${id}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    document.getElementById('modalTitle').textContent = 'Editar Categoría';
+                    document.getElementById('categoriaId').value = data.categoria.id_categoria;
+                    document.getElementById('nombre').value = data.categoria.nombre;
+                    document.getElementById('descripcion').value = data.categoria.descripcion || '';
+                    
+                    categoriaModal.show();
+                } else {
+                    alert('❌ Error: ' + data.message);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('❌ Error cargando los datos de la categoría');
+            } finally {
+                showLoading(false);
+            }
+        }
+        
+        // Eliminar categoría
+        async function deleteCategoria(id, nombre, totalCursos) {
+            if (totalCursos > 0) {
+                alert(`❌ No se puede eliminar la categoría "${nombre}" porque tiene ${totalCursos} curso(s) asociado(s).\n\nPrimero mueve los cursos a otra categoría.`);
+                return;
+            }
+            
+            if (!confirm(`⚠️ ¿Estás seguro de que quieres eliminar la categoría "${nombre}"?\n\nEsta acción no se puede deshacer.`)) {
+                return;
+            }
+            
+            try {
+                showLoading(true);
+                
+                const response = await fetch(`/admin/categorias/${id}`, {
+                    method: 'DELETE'
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    alert('✅ ' + data.message);
+                    window.location.reload();
+                } else {
+                    alert('❌ Error: ' + data.message);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('❌ Error eliminando la categoría');
+            } finally {
+                showLoading(false);
+            }
+        }
+        
+        // Manejar envío del formulario
+        async function handleFormSubmit(e) {
+            e.preventDefault();
+            
+            const id = document.getElementById('categoriaId').value;
+            const nombre = document.getElementById('nombre').value.trim();
+            const descripcion = document.getElementById('descripcion').value.trim();
+            
+            if (!nombre) {
+                alert('❌ El nombre de la categoría es obligatorio');
+                return;
+            }
+            
+            try {
+                showLoading(true);
+                
+                const url = id ? `/admin/categorias/${id}` : '/admin/categorias';
+                const method = id ? 'PUT' : 'POST';
+                
+                const response = await fetch(url, {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        nombre: nombre,
+                        descripcion: descripcion || null
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    alert('✅ ' + data.message);
+                    categoriaModal.hide();
+                    window.location.reload();
+                } else {
+                    alert('❌ Error: ' + data.message);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('❌ Error guardando la categoría');
+            } finally {
+                showLoading(false);
+            }
+        }
+        
+        // Mostrar/ocultar loading
+        function showLoading(show) {
+            const overlay = document.getElementById('loadingOverlay');
+            overlay.style.display = show ? 'flex' : 'none';
+        }
+    </script>
+</body>
+</html>

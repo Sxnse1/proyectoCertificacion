@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Compras - StartEducation</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #FF6B35;
+            --secondary-color: #004E89;
+        }
+
+        body {
+            background: #f8f9fa;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .page-header {
+            background: linear-gradient(135deg, #8e2de2, #4a00e0);
+            color: white;
+            padding: 40px 0;
+            margin-bottom: 40px;
+        }
+
+        .purchase-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .purchase-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+
+        .purchase-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f8f9fa;
+        }
+
+        .purchase-id {
+            font-size: 0.9rem;
+            color: #6c757d;
+            font-weight: 600;
+        }
+
+        .purchase-date {
+            color: #6c757d;
+            font-size: 0.85rem;
+        }
+
+        .course-info {
+            display: flex;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .course-thumbnail {
+            width: 150px;
+            height: 100px;
+            border-radius: 10px;
+            object-fit: cover;
+        }
+
+        .course-details h4 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--secondary-color);
+            margin-bottom: 8px;
+        }
+
+        .course-meta {
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .course-meta span {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+
+        .purchase-amount {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .payment-method {
+            background: #f8f9fa;
+            padding: 10px 15px;
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+
+        .purchase-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .btn-action {
+            flex: 1;
+            padding: 10px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .progress-section {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+        }
+
+        .progress-bar-custom {
+            height: 8px;
+            border-radius: 10px;
+            background: #e9ecef;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-color), #F7931E);
+            transition: width 0.3s ease;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary-color), #F7931E);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--secondary-color);
+        }
+
+        .stat-label {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+        }
+
+        .empty-state i {
+            font-size: 6rem;
+            color: #dee2e6;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="page-header">
+        <div class="container">
+            <h1><i class="fas fa-shopping-bag"></i> Mis Compras</h1>
+            <p class="mb-0">Historial de cursos adquiridos</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-graduation-cap"></i>
+                </div>
+                <div class="stat-value">{{totalCursos}}</div>
+                <div class="stat-label">Cursos Comprados</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-dollar-sign"></i>
+                </div>
+                <div class="stat-value">${{totalGastado}}</div>
+                <div class="stat-label">Total Invertido</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="stat-value">{{progresoPromedio}}%</div>
+                <div class="stat-label">Progreso Promedio</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-award"></i>
+                </div>
+                <div class="stat-value">{{cursosCompletados}}</div>
+                <div class="stat-label">Cursos Completados</div>
+            </div>
+        </div>
+
+        <!-- Purchase List -->
+        {{#if compras.length}}
+            {{#each compras}}
+            <div class="purchase-card">
+                <div class="purchase-header">
+                    <div>
+                        <div class="purchase-id">
+                            <i class="fas fa-hashtag"></i> Compra #{{id_compra}}
+                        </div>
+                        <div class="purchase-date">
+                            <i class="fas fa-calendar"></i> {{formatDate fecha_compra}}
+                        </div>
+                    </div>
+                    <div class="purchase-amount">${{monto}}</div>
+                </div>
+
+                <div class="course-info">
+                    <img src="{{#if curso_miniatura}}{{curso_miniatura}}{{else}}/images/default-course.jpg{{/if}}" 
+                         alt="{{curso_titulo}}" 
+                         class="course-thumbnail">
+                    
+                    <div class="course-details flex-grow-1">
+                        <h4>{{curso_titulo}}</h4>
+                        
+                        <div class="course-meta">
+                            <span>
+                                <i class="fas fa-user"></i>
+                                {{instructor_nombre}}
+                            </span>
+                            <span>
+                                <i class="fas fa-signal"></i>
+                                {{curso_nivel}}
+                            </span>
+                            <span>
+                                <i class="fas fa-tag"></i>
+                                {{categoria_nombre}}
+                            </span>
+                        </div>
+
+                        {{#if metodo_pago}}
+                        <div class="payment-method mt-3">
+                            <i class="fas fa-credit-card"></i>
+                            <span>Pagado con {{metodo_pago}}</span>
+                        </div>
+                        {{/if}}
+
+                        <!-- Progreso -->
+                        <div class="progress-section">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-muted">Progreso del curso</span>
+                                <span class="fw-bold">{{progreso}}%</span>
+                            </div>
+                            <div class="progress-bar-custom">
+                                <div class="progress-fill" style="width: {{progreso}}%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="purchase-actions">
+                    <a href="/cursos/{{id_curso}}" class="btn btn-primary btn-action">
+                        <i class="fas fa-play"></i> Continuar Curso
+                    </a>
+                    <button class="btn btn-outline-secondary btn-action" 
+                            onclick="descargarFactura({{id_compra}})">
+                        <i class="fas fa-file-invoice"></i> Descargar Factura
+                    </button>
+                    {{#if (eq progreso 100)}}
+                    <a href="/certificados" class="btn btn-outline-success btn-action">
+                        <i class="fas fa-certificate"></i> Ver Certificado
+                    </a>
+                    {{/if}}
+                    <button class="btn btn-outline-info btn-action" 
+                            onclick="dejarValoracion({{id_curso}})">
+                        <i class="fas fa-star"></i> Valorar
+                    </button>
+                </div>
+
+                {{#if descripcion}}
+                <div class="mt-3 p-3 bg-light rounded">
+                    <small class="text-muted">
+                        <i class="fas fa-info-circle"></i> {{descripcion}}
+                    </small>
+                </div>
+                {{/if}}
+            </div>
+            {{/each}}
+        {{else}}
+            <div class="empty-state">
+                <i class="fas fa-shopping-bag"></i>
+                <h3>No has realizado compras aún</h3>
+                <p class="text-muted">Explora nuestro catálogo y adquiere los cursos que te interesen</p>
+                <a href="/cursos" class="btn btn-primary btn-lg mt-3">
+                    <i class="fas fa-graduation-cap"></i> Explorar Cursos
+                </a>
+            </div>
+        {{/if}}
+
+        <div class="text-center mt-4">
+            <a href="/dashboard" class="btn btn-light btn-lg">
+                <i class="fas fa-arrow-left"></i> Volver al Dashboard
+            </a>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function descargarFactura(idCompra) {
+            window.open(`/compras/${idCompra}/factura`, '_blank');
+        }
+
+        function dejarValoracion(idCurso) {
+            window.location.href = `/cursos/${idCurso}/valorar`;
+        }
+    </script>
+</body>
+</html>

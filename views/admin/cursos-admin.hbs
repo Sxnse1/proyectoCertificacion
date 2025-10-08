@@ -1,0 +1,1101 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{title}} - StartEducation</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/images/favicon.svg">
+    
+    <!-- Bootstrap 5.3 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-color: #ea580c;
+            --primary-hover: #c2410c;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --text-dark: #1f2937;
+            --text-muted: #6b7280;
+            --border-color: #e5e7eb;
+            --bg-light: #f8fafc;
+        }
+
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            color: var(--text-dark);
+            min-height: 100vh;
+        }
+
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header-section {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--border-color);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .page-title {
+            color: var(--primary-color);
+            font-weight: 700;
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .page-subtitle {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            margin-bottom: 0;
+        }
+
+        .content-section {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+        }
+
+        .section-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
+            color: white;
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .section-title {
+            font-weight: 600;
+            font-size: 1.25rem;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-custom {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-custom:hover {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.5);
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        .filters-section {
+            padding: 1.5rem 2rem;
+            background: var(--bg-light);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .table-section {
+            padding: 0;
+        }
+
+        .table {
+            margin: 0;
+        }
+
+        .table th {
+            background: var(--bg-light);
+            color: var(--text-dark);
+            font-weight: 600;
+            border: none;
+            padding: 1rem;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .table td {
+            padding: 1rem;
+            border-color: var(--border-color);
+            vertical-align: middle;
+        }
+
+        .table tbody tr:hover {
+            background-color: rgba(234, 88, 12, 0.05);
+        }
+
+        .curso-card {
+            display: flex;
+            gap: 1rem;
+            align-items: start;
+        }
+
+        .curso-miniatura {
+            width: 80px;
+            height: 60px;
+            border-radius: 8px;
+            object-fit: cover;
+            background: var(--bg-light);
+            border: 2px solid var(--border-color);
+            flex-shrink: 0;
+        }
+
+        .curso-info {
+            flex-grow: 1;
+        }
+
+        .curso-titulo {
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 0.25rem;
+            font-size: 1rem;
+        }
+
+        .curso-descripcion {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            line-height: 1.4;
+            margin-bottom: 0.5rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .curso-meta {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .badge-custom {
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .badge-nivel {
+            background: rgba(59, 130, 246, 0.1);
+            color: #1d4ed8;
+        }
+
+        .badge-precio {
+            background: rgba(16, 185, 129, 0.1);
+            color: #059669;
+            font-weight: 600;
+        }
+
+        .badge-estatus {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.75rem;
+        }
+
+        .status-publicado {
+            background: rgba(16, 185, 129, 0.1);
+            color: #059669;
+        }
+
+        .status-borrador {
+            background: rgba(245, 158, 11, 0.1);
+            color: #d97706;
+        }
+
+        .status-inactivo {
+            background: rgba(107, 114, 128, 0.1);
+            color: #4b5563;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 0.5rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .stat-modulos {
+            background: rgba(168, 85, 247, 0.1);
+            color: #7c3aed;
+            border-color: rgba(168, 85, 247, 0.2);
+        }
+
+        .stat-videos {
+            background: rgba(59, 130, 246, 0.1);
+            color: #1d4ed8;
+            border-color: rgba(59, 130, 246, 0.2);
+        }
+
+        .stat-valoraciones {
+            background: rgba(245, 158, 11, 0.1);
+            color: #d97706;
+            border-color: rgba(245, 158, 11, 0.2);
+        }
+
+        .stat-compras {
+            background: rgba(16, 185, 129, 0.1);
+            color: #059669;
+            border-color: rgba(16, 185, 129, 0.2);
+        }
+
+        .etiquetas-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.25rem;
+            margin-top: 0.5rem;
+        }
+
+        .etiqueta-badge {
+            background: rgba(234, 88, 12, 0.1);
+            color: var(--primary-color);
+            padding: 0.125rem 0.5rem;
+            border-radius: 12px;
+            font-size: 0.625rem;
+            font-weight: 500;
+            border: 1px solid rgba(234, 88, 12, 0.2);
+        }
+
+        .instructor-info {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .instructor-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 0.75rem;
+        }
+
+        .btn-action {
+            padding: 0.4rem 0.6rem;
+            border-radius: 6px;
+            border: none;
+            font-size: 0.875rem;
+            transition: all 0.2s ease;
+            margin: 0 0.125rem;
+        }
+
+        .btn-view {
+            background: rgba(59, 130, 246, 0.1);
+            color: #1d4ed8;
+        }
+
+        .btn-view:hover {
+            background: rgba(59, 130, 246, 0.2);
+            color: #1e40af;
+        }
+
+        .btn-edit {
+            background: rgba(245, 158, 11, 0.1);
+            color: #d97706;
+        }
+
+        .btn-edit:hover {
+            background: rgba(245, 158, 11, 0.2);
+            color: #b45309;
+        }
+
+        .btn-delete {
+            background: rgba(239, 68, 68, 0.1);
+            color: #dc2626;
+        }
+
+        .btn-delete:hover {
+            background: rgba(239, 68, 68, 0.2);
+            color: #b91c1c;
+        }
+
+        .pagination-section {
+            padding: 1.5rem 2rem;
+            background: var(--bg-light);
+            border-top: 1px solid var(--border-color);
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(234, 88, 12, 0.25);
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
+            color: white;
+            border-bottom: none;
+        }
+
+        .modal-header .btn-close {
+            filter: invert(1);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--text-muted);
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                padding: 1rem;
+            }
+            
+            .page-title {
+                font-size: 2rem;
+            }
+            
+            .table-responsive {
+                font-size: 0.875rem;
+            }
+            
+            .curso-card {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            
+            .curso-miniatura {
+                width: 100%;
+                height: 120px;
+            }
+            
+            .btn-action {
+                padding: 0.3rem 0.5rem;
+                font-size: 0.75rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <!-- Header Section -->
+        <div class="header-section">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="page-title">
+                        <i class="bi bi-mortarboard"></i>
+                        Gestión de Cursos
+                    </h1>
+                    <p class="page-subtitle">Administra tus cursos y su contenido educativo</p>
+                </div>
+                <div>
+                    <a href="/dashboard" class="btn btn-outline-secondary me-2">
+                        <i class="bi bi-arrow-left"></i> Volver al Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Content Section -->
+        <div class="content-section">
+            <!-- Section Header -->
+            <div class="section-header">
+                <h2 class="section-title">
+                    <i class="bi bi-list-ul"></i>
+                    Lista de Cursos
+                </h2>
+                <button type="button" class="btn btn-custom" data-bs-toggle="modal" data-bs-target="#createCursoModal">
+                    <i class="bi bi-plus-circle"></i> Nuevo Curso
+                </button>
+            </div>
+
+            <!-- Filters Section -->
+            <div class="filters-section">
+                <form method="GET" class="row g-3">
+                    <div class="col-md-3">
+                        <label for="search" class="form-label">Buscar curso</label>
+                        <input type="text" class="form-control" id="search" name="search" 
+                               value="{{filters.search}}" placeholder="Buscar por título o descripción...">
+                    </div>
+                    <div class="col-md-2">
+                        <label for="categoria" class="form-label">Categoría</label>
+                        <select class="form-select" id="categoria" name="categoria">
+                            <option value="">Todas las categorías</option>
+                            {{#each categorias}}
+                            <option value="{{id_categoria}}" {{#if (eq ../filters.categoria id_categoria)}}selected{{/if}}>
+                                {{nombre}}
+                            </option>
+                            {{/each}}
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label for="nivel" class="form-label">Nivel</label>
+                        <select class="form-select" id="nivel" name="nivel">
+                            <option value="">Todos los niveles</option>
+                            <option value="básico" {{#if (eq filters.nivel 'básico')}}selected{{/if}}>Básico</option>
+                            <option value="intermedio" {{#if (eq filters.nivel 'intermedio')}}selected{{/if}}>Intermedio</option>
+                            <option value="avanzado" {{#if (eq filters.nivel 'avanzado')}}selected{{/if}}>Avanzado</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label for="estatus" class="form-label">Estado</label>
+                        <select class="form-select" id="estatus" name="estatus">
+                            <option value="">Todos los estados</option>
+                            <option value="publicado" {{#if (eq filters.estatus 'publicado')}}selected{{/if}}>Publicado</option>
+                            <option value="borrador" {{#if (eq filters.estatus 'borrador')}}selected{{/if}}>Borrador</option>
+                            <option value="inactivo" {{#if (eq filters.estatus 'inactivo')}}selected{{/if}}>Inactivo</option>
+                        </select>
+                    </div>
+                    <div class="col-md-1">
+                        <label for="limit" class="form-label">Por página</label>
+                        <select class="form-select" id="limit" name="limit">
+                            <option value="10" {{#if (eq filters.limit 10)}}selected{{/if}}>10</option>
+                            <option value="25" {{#if (eq filters.limit 25)}}selected{{/if}}>25</option>
+                            <option value="50" {{#if (eq filters.limit 50)}}selected{{/if}}>50</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2 d-flex align-items-end gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-search"></i> Buscar
+                        </button>
+                        <a href="/admin/cursos" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-clockwise"></i> Limpiar
+                        </a>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Table Section -->
+            <div class="table-section">
+                {{#if cursos.length}}
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th width="40%">Curso</th>
+                                <th width="15%">Instructor</th>
+                                <th width="10%">Precio</th>
+                                <th width="10%">Estado</th>
+                                <th width="15%">Estadísticas</th>
+                                <th width="10%">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {{#each cursos}}
+                            <tr>
+                                <td>
+                                    <div class="curso-card">
+                                        {{#if miniatura}}
+                                        <img src="{{miniatura}}" alt="{{titulo}}" class="curso-miniatura">
+                                        {{else}}
+                                        <div class="curso-miniatura d-flex align-items-center justify-content-center">
+                                            <i class="bi bi-mortarboard text-muted"></i>
+                                        </div>
+                                        {{/if}}
+                                        <div class="curso-info">
+                                            <div class="curso-titulo">{{titulo}}</div>
+                                            {{#if descripcion}}
+                                            <div class="curso-descripcion">{{descripcion}}</div>
+                                            {{/if}}
+                                            <div class="curso-meta">
+                                                <span><i class="bi bi-tag"></i> {{categoria_nombre}}</span>
+                                                <span><i class="bi bi-calendar"></i> {{fecha_creacion_formateada}}</span>
+                                            </div>
+                                            {{#if etiquetas.length}}
+                                            <div class="etiquetas-container">
+                                                {{#each etiquetas}}
+                                                <span class="etiqueta-badge">{{nombre}}</span>
+                                                {{/each}}
+                                            </div>
+                                            {{/if}}
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="instructor-info">
+                                        <div class="instructor-avatar">
+                                            {{substring instructor_nombre 0 1}}{{substring instructor_apellido 0 1}}
+                                        </div>
+                                        <div>
+                                            <div class="fw-medium">{{instructor_completo}}</div>
+                                            <small class="text-muted">{{instructor_email}}</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="d-flex flex-column gap-1">
+                                        <span class="badge badge-custom badge-precio">{{precio_formateado}}</span>
+                                        <span class="badge badge-custom badge-nivel">{{nivel}}</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge status-{{estatus}}">
+                                        {{#if (eq estatus 'publicado')}}
+                                            <i class="bi bi-check-circle"></i>
+                                        {{else if (eq estatus 'borrador')}}
+                                            <i class="bi bi-clock"></i>
+                                        {{else}}
+                                            <i class="bi bi-pause-circle"></i>
+                                        {{/if}}
+                                        {{estatus}}
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="stats-grid">
+                                        <div class="stat-item stat-modulos" title="Módulos">
+                                            <i class="bi bi-collection"></i><br>
+                                            <strong>{{total_modulos}}</strong><br>
+                                            <small>Módulos</small>
+                                        </div>
+                                        <div class="stat-item stat-videos" title="Videos">
+                                            <i class="bi bi-play-circle"></i><br>
+                                            <strong>{{total_videos}}</strong><br>
+                                            <small>Videos</small>
+                                        </div>
+                                        <div class="stat-item stat-valoraciones" title="Valoración promedio">
+                                            <i class="bi bi-star"></i><br>
+                                            <strong>{{promedio_valoracion_display}}</strong><br>
+                                            <small>Rating</small>
+                                        </div>
+                                        <div class="stat-item stat-compras" title="Compras">
+                                            <i class="bi bi-cart"></i><br>
+                                            <strong>{{total_compras}}</strong><br>
+                                            <small>Ventas</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="d-flex flex-column gap-1">
+                                        <button type="button" class="btn btn-action btn-view" 
+                                                onclick="viewCurso({{id_curso}})" title="Ver detalles">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-action btn-edit" 
+                                                onclick="editCurso({{id_curso}})" title="Editar">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                        <div class="dropdown">
+                                            <button class="btn btn-action btn-view dropdown-toggle" 
+                                                    data-bs-toggle="dropdown" title="Más opciones">
+                                                <i class="bi bi-three-dots"></i>
+                                            </button>
+                                            <ul class="dropdown-menu">
+                                                {{#if (eq estatus 'borrador')}}
+                                                <li><a class="dropdown-item" href="#" onclick="changeStatus({{id_curso}}, 'publicado', '{{titulo}}')">
+                                                    <i class="bi bi-check-circle text-success me-2"></i>Publicar
+                                                </a></li>
+                                                {{/if}}
+                                                {{#if (eq estatus 'publicado')}}
+                                                <li><a class="dropdown-item" href="#" onclick="changeStatus({{id_curso}}, 'inactivo', '{{titulo}}')">
+                                                    <i class="bi bi-pause-circle text-warning me-2"></i>Desactivar
+                                                </a></li>
+                                                {{/if}}
+                                                {{#if (eq estatus 'inactivo')}}
+                                                <li><a class="dropdown-item" href="#" onclick="changeStatus({{id_curso}}, 'publicado', '{{titulo}}')">
+                                                    <i class="bi bi-check-circle text-success me-2"></i>Activar
+                                                </a></li>
+                                                {{/if}}
+                                                <li><hr class="dropdown-divider"></li>
+                                                <li><a class="dropdown-item text-danger" href="#" onclick="deleteCurso({{id_curso}}, '{{titulo}}', {{total_compras}})">
+                                                    <i class="bi bi-trash me-2"></i>Eliminar
+                                                </a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            {{/each}}
+                        </tbody>
+                    </table>
+                </div>
+                {{else}}
+                <div class="empty-state">
+                    <i class="bi bi-mortarboard"></i>
+                    <h4>No hay cursos</h4>
+                    <p>No se encontraron cursos con los criterios de búsqueda especificados.</p>
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createCursoModal">
+                        <i class="bi bi-plus-circle"></i> Crear Primer Curso
+                    </button>
+                </div>
+                {{/if}}
+            </div>
+
+            <!-- Pagination Section -->
+            {{#if pagination.totalPages}}
+            <div class="pagination-section">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <small class="text-muted">
+                            Mostrando {{cursos.length}} de {{pagination.totalRecords}} cursos
+                        </small>
+                    </div>
+                    <nav>
+                        <ul class="pagination mb-0">
+                            <li class="page-item {{#unless pagination.hasPrev}}disabled{{/unless}}">
+                                <a class="page-link" href="/admin/cursos?page={{pagination.prevPage}}&search={{filters.search}}&categoria={{filters.categoria}}&nivel={{filters.nivel}}&estatus={{filters.estatus}}&limit={{filters.limit}}">
+                                    <i class="bi bi-chevron-left"></i>
+                                </a>
+                            </li>
+                            
+                            {{#each (range 1 pagination.totalPages)}}
+                            <li class="page-item {{#if (eq this ../pagination.currentPage)}}active{{/if}}">
+                                <a class="page-link" href="/admin/cursos?page={{this}}&search={{../filters.search}}&categoria={{../filters.categoria}}&nivel={{../filters.nivel}}&estatus={{../filters.estatus}}&limit={{../filters.limit}}">
+                                    {{this}}
+                                </a>
+                            </li>
+                            {{/each}}
+                            
+                            <li class="page-item {{#unless pagination.hasNext}}disabled{{/unless}}">
+                                <a class="page-link" href="/admin/cursos?page={{pagination.nextPage}}&search={{filters.search}}&categoria={{filters.categoria}}&nivel={{filters.nivel}}&estatus={{filters.estatus}}&limit={{filters.limit}}">
+                                    <i class="bi bi-chevron-right"></i>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+            {{/if}}
+        </div>
+    </div>
+
+    <!-- Modal Crear Curso -->
+    <div class="modal fade" id="createCursoModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="bi bi-plus-circle"></i> Crear Nuevo Curso
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="createCursoForm">
+                    <div class="modal-body">
+                        <div class="row g-3">
+                            <div class="col-md-8">
+                                <label for="create_titulo" class="form-label">Título del Curso *</label>
+                                <input type="text" class="form-control" id="create_titulo" name="titulo" required
+                                       placeholder="Ej: Curso completo de JavaScript moderno">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="create_categoria" class="form-label">Categoría *</label>
+                                <select class="form-select" id="create_categoria" name="id_categoria" required>
+                                    <option value="">Seleccionar categoría...</option>
+                                    {{#each categorias}}
+                                    <option value="{{id_categoria}}">{{nombre}}</option>
+                                    {{/each}}
+                                </select>
+                            </div>
+                            <div class="col-12">
+                                <label for="create_descripcion" class="form-label">Descripción</label>
+                                <textarea class="form-control" id="create_descripcion" name="descripcion" rows="3"
+                                          placeholder="Describe de qué trata tu curso..."></textarea>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="create_precio" class="form-label">Precio *</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">$</span>
+                                    <input type="number" class="form-control" id="create_precio" name="precio" 
+                                           min="0" step="0.01" required placeholder="0.00">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="create_nivel" class="form-label">Nivel *</label>
+                                <select class="form-select" id="create_nivel" name="nivel" required>
+                                    <option value="">Seleccionar nivel...</option>
+                                    <option value="básico">Básico</option>
+                                    <option value="intermedio">Intermedio</option>
+                                    <option value="avanzado">Avanzado</option>
+                                </select>
+                            </div>
+                            <div class="col-12">
+                                <label for="create_miniatura" class="form-label">URL de Miniatura</label>
+                                <input type="url" class="form-control" id="create_miniatura" name="miniatura"
+                                       placeholder="https://ejemplo.com/imagen.jpg">
+                                <div class="form-text">URL de la imagen que representará tu curso</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-circle"></i> Crear Curso
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Editar Curso -->
+    <div class="modal fade" id="editCursoModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="bi bi-pencil"></i> Editar Curso
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="editCursoForm">
+                    <input type="hidden" id="edit_id_curso" name="id_curso">
+                    <div class="modal-body">
+                        <div class="row g-3">
+                            <div class="col-md-8">
+                                <label for="edit_titulo" class="form-label">Título del Curso *</label>
+                                <input type="text" class="form-control" id="edit_titulo" name="titulo" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="edit_categoria" class="form-label">Categoría *</label>
+                                <select class="form-select" id="edit_categoria" name="id_categoria" required>
+                                    <option value="">Seleccionar categoría...</option>
+                                    {{#each categorias}}
+                                    <option value="{{id_categoria}}">{{nombre}}</option>
+                                    {{/each}}
+                                </select>
+                            </div>
+                            <div class="col-12">
+                                <label for="edit_descripcion" class="form-label">Descripción</label>
+                                <textarea class="form-control" id="edit_descripcion" name="descripcion" rows="3"></textarea>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="edit_precio" class="form-label">Precio *</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">$</span>
+                                    <input type="number" class="form-control" id="edit_precio" name="precio" 
+                                           min="0" step="0.01" required>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="edit_nivel" class="form-label">Nivel *</label>
+                                <select class="form-select" id="edit_nivel" name="nivel" required>
+                                    <option value="básico">Básico</option>
+                                    <option value="intermedio">Intermedio</option>
+                                    <option value="avanzado">Avanzado</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="edit_estatus" class="form-label">Estado</label>
+                                <select class="form-select" id="edit_estatus" name="estatus">
+                                    <option value="borrador">Borrador</option>
+                                    <option value="publicado">Publicado</option>
+                                    <option value="inactivo">Inactivo</option>
+                                </select>
+                            </div>
+                            <div class="col-12">
+                                <label for="edit_miniatura" class="form-label">URL de Miniatura</label>
+                                <input type="url" class="form-control" id="edit_miniatura" name="miniatura">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-circle"></i> Actualizar Curso
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Ver Curso -->
+    <div class="modal fade" id="viewCursoModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="bi bi-eye"></i> Detalles del Curso
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="viewCursoContent">
+                    <!-- Contenido cargado dinámicamente -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5.3 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // Crear curso
+        document.getElementById('createCursoForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData);
+            
+            try {
+                const response = await fetch('/admin/cursos', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showAlert('success', result.message);
+                    bootstrap.Modal.getInstance(document.getElementById('createCursoModal')).hide();
+                    setTimeout(() => location.reload(), 1500);
+                } else {
+                    showAlert('danger', result.message);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showAlert('danger', 'Error al crear el curso');
+            }
+        });
+
+        // Ver curso
+        async function viewCurso(id) {
+            try {
+                const response = await fetch(`/admin/cursos/${id}`);
+                const result = await response.json();
+                
+                if (result.success) {
+                    const curso = result.curso;
+                    document.getElementById('viewCursoContent').innerHTML = `
+                        <div class="row g-3">
+                            ${curso.miniatura ? `
+                            <div class="col-12 text-center">
+                                <img src="${curso.miniatura}" alt="${curso.titulo}" class="img-fluid rounded" style="max-height: 200px;">
+                            </div>
+                            ` : ''}
+                            <div class="col-md-8">
+                                <h4>${curso.titulo}</h4>
+                                <p class="text-muted">${curso.descripcion || 'Sin descripción'}</p>
+                            </div>
+                            <div class="col-md-4">
+                                <h6>Información Básica</h6>
+                                <p><strong>Categoría:</strong> ${curso.categoria_nombre}</p>
+                                <p><strong>Instructor:</strong> ${curso.instructor_completo}</p>
+                                <p><strong>Precio:</strong> $${curso.precio}</p>
+                                <p><strong>Nivel:</strong> ${curso.nivel}</p>
+                                <p><strong>Estado:</strong> <span class="badge status-${curso.estatus}">${curso.estatus}</span></p>
+                            </div>
+                            <div class="col-12">
+                                <h6>Estadísticas</h6>
+                                <div class="row text-center">
+                                    <div class="col-3">
+                                        <div class="border rounded p-2">
+                                            <h5 class="mb-0 text-primary">${curso.total_modulos}</h5>
+                                            <small>Módulos</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-3">
+                                        <div class="border rounded p-2">
+                                            <h5 class="mb-0 text-info">${curso.total_videos}</h5>
+                                            <small>Videos</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-3">
+                                        <div class="border rounded p-2">
+                                            <h5 class="mb-0 text-warning">${curso.promedio_valoracion_display}</h5>
+                                            <small>Rating</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-3">
+                                        <div class="border rounded p-2">
+                                            <h5 class="mb-0 text-success">${curso.total_compras}</h5>
+                                            <small>Ventas</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    
+                    const modal = new bootstrap.Modal(document.getElementById('viewCursoModal'));
+                    modal.show();
+                } else {
+                    showAlert('danger', result.message);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showAlert('danger', 'Error al obtener los detalles del curso');
+            }
+        }
+
+        // Editar curso
+        async function editCurso(id) {
+            try {
+                const response = await fetch(`/admin/cursos/${id}`);
+                const result = await response.json();
+                
+                if (result.success) {
+                    const curso = result.curso;
+                    
+                    document.getElementById('edit_id_curso').value = curso.id_curso;
+                    document.getElementById('edit_titulo').value = curso.titulo;
+                    document.getElementById('edit_descripcion').value = curso.descripcion || '';
+                    document.getElementById('edit_categoria').value = curso.id_categoria;
+                    document.getElementById('edit_precio').value = curso.precio;
+                    document.getElementById('edit_nivel').value = curso.nivel;
+                    document.getElementById('edit_estatus').value = curso.estatus;
+                    document.getElementById('edit_miniatura').value = curso.miniatura || '';
+                    
+                    const modal = new bootstrap.Modal(document.getElementById('editCursoModal'));
+                    modal.show();
+                } else {
+                    showAlert('danger', result.message);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showAlert('danger', 'Error al obtener los datos del curso');
+            }
+        }
+
+        document.getElementById('editCursoForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData);
+            const id = data.id_curso;
+            
+            try {
+                const response = await fetch(`/admin/cursos/${id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showAlert('success', result.message);
+                    bootstrap.Modal.getInstance(document.getElementById('editCursoModal')).hide();
+                    setTimeout(() => location.reload(), 1500);
+                } else {
+                    showAlert('danger', result.message);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showAlert('danger', 'Error al actualizar el curso');
+            }
+        });
+
+        // Cambiar estado del curso
+        async function changeStatus(id, newStatus, titulo) {
+            const statusNames = {
+                'publicado': 'publicar',
+                'borrador': 'marcar como borrador',
+                'inactivo': 'desactivar'
+            };
+            
+            if (confirm(`¿Estás seguro de que deseas ${statusNames[newStatus]} el curso "${titulo}"?`)) {
+                try {
+                    const response = await fetch(`/admin/cursos/${id}/status`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ estatus: newStatus })
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        showAlert('success', result.message);
+                        setTimeout(() => location.reload(), 1500);
+                    } else {
+                        showAlert('danger', result.message);
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    showAlert('danger', 'Error al cambiar el estado del curso');
+                }
+            }
+        }
+
+        // Eliminar curso
+        function deleteCurso(id, titulo, totalCompras) {
+            if (totalCompras > 0) {
+                showAlert('warning', `No se puede eliminar el curso "${titulo}" porque tiene ${totalCompras} compra(s) asociada(s).`);
+                return;
+            }
+            
+            if (confirm(`¿Estás seguro de que deseas eliminar el curso "${titulo}"?\n\nEsta acción eliminará también todos los módulos y videos asociados y no se puede deshacer.`)) {
+                fetch(`/admin/cursos/${id}`, {
+                    method: 'DELETE'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showAlert('success', data.message);
+                        setTimeout(() => location.reload(), 1500);
+                    } else {
+                        showAlert('danger', data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showAlert('danger', 'Error al eliminar el curso');
+                });
+            }
+        }
+
+        // Función para mostrar alertas
+        function showAlert(type, message) {
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+            alert.style.cssText = 'top: 20px; right: 20px; z-index: 9999; max-width: 400px;';
+            alert.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            
+            document.body.appendChild(alert);
+            
+            setTimeout(() => {
+                if (alert.parentNode) {
+                    alert.remove();
+                }
+            }, 5000);
+        }
+    </script>
+</body>
+</html>
