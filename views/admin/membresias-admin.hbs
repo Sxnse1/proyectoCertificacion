@@ -3,122 +3,243 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestión de Membresías - Admin</title>
+    <title>{{title}} - StartEducation</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/images/favicon.svg">
+    
+    <!-- Bootstrap 5.3 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
     <style>
         :root {
-            --primary-color: #FF6B35;
-            --secondary-color: #004E89;
-            --success-color: #28a745;
-            --danger-color: #dc3545;
+            --primary-color: #ea580c;
+            --primary-hover: #c2410c;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --text-dark: #1f2937;
+            --text-muted: #6b7280;
+            --border-color: #e5e7eb;
+            --bg-light: #f8fafc;
         }
 
-        body {
-            background: #f5f6fa;
+        * {
             font-family: 'Inter', sans-serif;
         }
 
-        .admin-header {
-            background: linear-gradient(135deg, var(--secondary-color), #003366);
-            color: white;
-            padding: 30px 0;
-            margin-bottom: 30px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        body {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            color: var(--text-dark);
+            min-height: 100vh;
         }
 
-        .stats-grid {
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header-section {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border-left: 5px solid var(--primary-color);
+        }
+
+        .header-title {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .header-title h1 {
+            color: var(--text-dark);
+            font-weight: 700;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .stats-row {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
         }
 
         .stat-card {
-            background: white;
-            padding: 25px;
-            border-radius: 15px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-            transition: all 0.3s ease;
+            background: var(--bg-light);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            border: 1px solid var(--border-color);
+            transition: transform 0.2s ease;
         }
 
         .stat-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 5px 20px rgba(0,0,0,0.12);
+            transform: translateY(-2px);
         }
 
-        .stat-icon {
-            width: 60px;
-            height: 60px;
-            background: linear-gradient(135deg, var(--primary-color), #F7931E);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 15px;
-            color: white;
-            font-size: 1.5rem;
-        }
-
-        .stat-value {
+        .stat-number {
             font-size: 2rem;
             font-weight: 700;
-            color: var(--secondary-color);
+            color: var(--primary-color);
+            display: block;
         }
 
         .stat-label {
-            color: #6c757d;
+            color: var(--text-muted);
             font-size: 0.9rem;
+            margin-top: 0.5rem;
         }
 
-        .content-card {
+        .controls-section {
             background: white;
-            border-radius: 15px;
-            padding: 30px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-            margin-bottom: 30px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
         }
 
-        .card-header-custom {
+        .controls-row {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 25px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid #f0f0f0;
+            flex-wrap: wrap;
+            gap: 1rem;
         }
 
-        .card-title {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--secondary-color);
-            margin: 0;
+        .search-group {
+            display: flex;
+            gap: 0.5rem;
+            flex: 1;
+            max-width: 400px;
         }
 
-        .table-custom {
-            margin: 0;
+        .search-input {
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            font-size: 0.95rem;
+            transition: border-color 0.3s ease;
         }
 
-        .table-custom thead {
-            background: #f8f9fa;
+        .search-input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(234, 88, 12, 0.25);
         }
 
-        .table-custom th {
-            font-weight: 600;
-            color: var(--secondary-color);
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
             border: none;
-            padding: 15px;
+            border-radius: 8px;
+            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+            transition: all 0.3s ease;
         }
 
-        .table-custom td {
-            padding: 15px;
+        .btn-primary:hover {
+            background: linear-gradient(135deg, var(--primary-hover) 0%, #9a3412 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(234, 88, 12, 0.4);
+        }
+
+        .btn-success {
+            background: var(--success-color);
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-success:hover {
+            background: #059669;
+            transform: translateY(-2px);
+        }
+
+        .btn-warning {
+            background: var(--warning-color);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            padding: 0.5rem 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-warning:hover {
+            background: #d97706;
+            color: white;
+        }
+
+        .btn-danger {
+            background: var(--danger-color);
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            padding: 0.5rem 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+
+        .table-section {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .table-header {
+            background: var(--bg-light);
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .table {
+            margin: 0;
+        }
+
+        .table th {
+            background: var(--bg-light);
+            border: none;
+            font-weight: 600;
+            color: var(--text-dark);
+            padding: 1rem;
+        }
+
+        .table td {
+            border: none;
+            padding: 1rem;
             vertical-align: middle;
         }
 
-        .badge-custom {
-            padding: 6px 12px;
+        .table tbody tr {
+            border-bottom: 1px solid #f1f5f9;
+            transition: background-color 0.2s ease;
+        }
+
+        .table tbody tr:hover {
+            background-color: rgba(234, 88, 12, 0.05);
+        }
+
+        .badge {
+            padding: 0.35rem 0.75rem;
             border-radius: 20px;
-            font-weight: 600;
+            font-weight: 500;
             font-size: 0.85rem;
         }
 
@@ -137,155 +258,264 @@
             color: #e65100;
         }
 
-        .btn-action {
-            padding: 6px 12px;
-            margin: 0 3px;
-            border-radius: 8px;
-            font-size: 0.85rem;
+        .actions-group {
+            display: flex;
+            gap: 0.5rem;
         }
 
-        .modal-header-custom {
-            background: linear-gradient(135deg, var(--primary-color), #F7931E);
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .pagination-section {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .pagination {
+            margin: 0;
+            justify-content: center;
+        }
+
+        .page-link {
+            border: none;
+            color: var(--text-muted);
+            padding: 0.75rem 1rem;
+            margin: 0 0.25rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .page-link:hover {
+            background: var(--primary-color);
             color: white;
         }
 
-        .form-label {
-            font-weight: 600;
-            color: var(--secondary-color);
-            margin-bottom: 8px;
+        .page-item.active .page-link {
+            background: var(--primary-color);
+            color: white;
         }
 
-        .nav-breadcrumb {
-            background: white;
-            padding: 15px 0;
-            margin-bottom: 20px;
-            border-radius: 10px;
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--text-muted);
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.95);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+
+        .spinner-border {
+            color: var(--primary-color);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--text-muted);
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                padding: 1rem;
+            }
+            
+            .header-section {
+                padding: 1.5rem;
+            }
+            
+            .controls-row {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .search-group {
+                max-width: none;
+            }
+            
+            .actions-group {
+                justify-content: center;
+            }
+            
+            .action-buttons {
+                justify-content: center;
+            }
+            
+            .table-responsive {
+                font-size: 0.9rem;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- Header -->
-    <div class="admin-header">
-        <div class="container-fluid">
-            <div class="d-flex justify-content-between align-items-center">
-                <div>
-                    <h1><i class="fas fa-crown"></i> Gestión de Membresías</h1>
-                    <p class="mb-0">Administración de planes de suscripción</p>
-                </div>
-                <a href="/admin/dashboard" class="btn btn-light btn-lg">
-                    <i class="fas fa-arrow-left"></i> Dashboard
-                </a>
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="text-center">
+            <div class="spinner-border mb-3" role="status">
+                <span class="visually-hidden">Cargando...</span>
             </div>
+            <p>Procesando...</p>
         </div>
     </div>
 
-    <div class="container-fluid">
-        <!-- Breadcrumb -->
-        <nav class="nav-breadcrumb">
-            <div class="container-fluid">
-                <ol class="breadcrumb mb-0">
-                    <li class="breadcrumb-item"><a href="/admin/dashboard">Dashboard</a></li>
-                    <li class="breadcrumb-item active">Membresías</li>
-                </ol>
+    <div class="main-container">
+        <!-- Header Section -->
+        <div class="header-section">
+            <div class="header-title">
+                <h1>
+                    <i class="bi bi-gem"></i>
+                    Gestión de Membresías
+                </h1>
+                <a href="/dashboard" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i> Volver al Dashboard
+                </a>
             </div>
-        </nav>
 
-        <!-- Statistics -->
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-icon">
-                    <i class="fas fa-list"></i>
+            <!-- Statistics -->
+            <div class="stats-row">
+                <div class="stat-card">
+                    <span class="stat-number">{{totalMembresias}}</span>
+                    <div class="stat-label">Total de Planes</div>
                 </div>
-                <div class="stat-value">{{totalMembresias}}</div>
-                <div class="stat-label">Total de Planes</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon">
-                    <i class="fas fa-users"></i>
+                <div class="stat-card">
+                    <span class="stat-number">{{totalSuscriptores}}</span>
+                    <div class="stat-label">Suscriptores Activos</div>
                 </div>
-                <div class="stat-value">{{totalSuscriptores}}</div>
-                <div class="stat-label">Suscriptores Activos</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon">
-                    <i class="fas fa-dollar-sign"></i>
+                <div class="stat-card">
+                    <span class="stat-number">${{ingresosMensuales}}</span>
+                    <div class="stat-label">Ingresos Mensuales</div>
                 </div>
-                <div class="stat-value">${{ingresosMensuales}}</div>
-                <div class="stat-label">Ingresos Mensuales</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon">
-                    <i class="fas fa-chart-line"></i>
+                <div class="stat-card">
+                    <span class="stat-number">+{{crecimiento}}%</span>
+                    <div class="stat-label">Crecimiento</div>
                 </div>
-                <div class="stat-value">+{{crecimiento}}%</div>
-                <div class="stat-label">Crecimiento</div>
             </div>
         </div>
 
-        <!-- Memberships Table -->
-        <div class="content-card">
-            <div class="card-header-custom">
-                <h2 class="card-title">
-                    <i class="fas fa-crown"></i> Planes de Membresía
-                </h2>
-                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalNuevaMembresia">
-                    <i class="fas fa-plus"></i> Nueva Membresía
-                </button>
+        <!-- Controls Section -->
+        <div class="controls-section">
+            <div class="controls-row">
+                <div class="search-group">
+                    <form method="GET" class="d-flex w-100">
+                        <input type="text" 
+                               class="form-control search-input" 
+                               name="search" 
+                               placeholder="Buscar membresías..." 
+                               value="{{search}}">
+                        <button type="submit" class="btn btn-primary ms-2">
+                            <i class="bi bi-search"></i>
+                        </button>
+                    </form>
+                </div>
+                <div class="action-buttons">
+                    <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalNuevaMembresia">
+                        <i class="bi bi-plus-circle me-2"></i>Nueva Membresía
+                    </button>
+                </div>
             </div>
+        </div>
 
+        <!-- Table Section -->
+        <div class="table-section">
+            <div class="table-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-list-ul me-2"></i>
+                    Planes de Membresía
+                    {{#if search}}
+                        <small class="text-muted">- Resultados para "{{search}}"</small>
+                    {{/if}}
+                </h5>
+            </div>
             <div class="table-responsive">
-                <table class="table table-custom table-hover">
+                <table class="table">
                     <thead>
                         <tr>
                             <th>ID</th>
                             <th>Nombre</th>
                             <th>Precio</th>
-                            <th>Tipo de Periodo</th>
+                            <th>Periodo</th>
                             <th>Suscriptores</th>
                             <th>Descripción</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {{#each membresias}}
-                        <tr>
-                            <td><strong>#{{id_membresia}}</strong></td>
-                            <td>
-                                <strong>{{nombre}}</strong>
-                            </td>
-                            <td>
-                                <span class="text-primary fw-bold">${{precio}}</span>
-                            </td>
-                            <td>
-                                <span class="badge-custom badge-{{tipo_periodo}}">
-                                    {{tipo_periodo}}
-                                </span>
-                            </td>
-                            <td>
-                                <span class="badge bg-info">{{total_suscriptores}} activos</span>
-                            </td>
-                            <td>
-                                <small class="text-muted">{{substring descripcion 0 50}}...</small>
-                            </td>
-                            <td>
-                                <button class="btn btn-sm btn-info btn-action" 
-                                        onclick="verDetalles({{id_membresia}})"
-                                        title="Ver detalles">
-                                    <i class="fas fa-eye"></i>
-                                </button>
-                                <button class="btn btn-sm btn-warning btn-action" 
-                                        onclick="editarMembresia({{id_membresia}})"
-                                        title="Editar">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button class="btn btn-sm btn-danger btn-action" 
-                                        onclick="eliminarMembresia({{id_membresia}})"
-                                        title="Eliminar">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </td>
-                        </tr>
-                        {{/each}}
+                        {{#if membresias}}
+                            {{#each membresias}}
+                            <tr>
+                                <td><strong>#{{id_membresia}}</strong></td>
+                                <td><strong>{{nombre}}</strong></td>
+                                <td>
+                                    <span class="text-primary fw-bold">${{precio}}</span>
+                                </td>
+                                <td>
+                                    <span class="badge badge-{{tipo_periodo}}">
+                                        {{tipo_periodo}}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-info">{{total_suscriptores}} activos</span>
+                                </td>
+                                <td>
+                                    <small class="text-muted">{{substring descripcion 0 50}}...</small>
+                                </td>
+                                <td>
+                                    <div class="actions-group">
+                                        <button class="btn btn-sm btn-info" 
+                                                onclick="verDetalles({{id_membresia}})"
+                                                title="Ver detalles">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-warning" 
+                                                onclick="editarMembresia({{id_membresia}})"
+                                                title="Editar">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-danger" 
+                                                onclick="eliminarMembresia({{id_membresia}})"
+                                                title="Eliminar">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            {{/each}}
+                        {{else}}
+                            <tr>
+                                <td colspan="7">
+                                    <div class="empty-state">
+                                        <i class="bi bi-inbox"></i>
+                                        <p>No hay membresías registradas</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        {{/if}}
                     </tbody>
                 </table>
             </div>
@@ -296,8 +526,8 @@
     <div class="modal fade" id="modalNuevaMembresia" tabindex="-1">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
-                <div class="modal-header modal-header-custom">
-                    <h5 class="modal-title"><i class="fas fa-plus"></i> Nueva Membresía</h5>
+                <div class="modal-header" style="background: linear-gradient(135deg, var(--primary-color), #F7931E); color: white;">
+                    <h5 class="modal-title"><i class="bi bi-plus-circle"></i> Nueva Membresía</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
@@ -336,7 +566,7 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                     <button type="button" class="btn btn-primary" onclick="guardarMembresia()">
-                        <i class="fas fa-save"></i> Guardar
+                        <i class="bi bi-save"></i> Guardar
                     </button>
                 </div>
             </div>
@@ -345,15 +575,22 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        // Mostrar/ocultar loading
+        function showLoading(show) {
+            const overlay = document.getElementById('loadingOverlay');
+            overlay.style.display = show ? 'flex' : 'none';
+        }
+
         function verDetalles(id) {
             window.location.href = `/admin/membresias/${id}`;
         }
 
         function editarMembresia(id) {
+            showLoading(true);
             fetch(`/admin/membresias/${id}`)
                 .then(response => response.json())
                 .then(data => {
-                    // Cargar datos en el modal y abrirlo
+                    showLoading(false);
                     document.querySelector('[name="nombre"]').value = data.nombre;
                     document.querySelector('[name="precio"]').value = data.precio;
                     document.querySelector('[name="tipo_periodo"]').value = data.tipo_periodo;
@@ -361,11 +598,17 @@
                     
                     const modal = new bootstrap.Modal(document.getElementById('modalNuevaMembresia'));
                     modal.show();
+                })
+                .catch(error => {
+                    showLoading(false);
+                    console.error('Error:', error);
+                    alert('Error al cargar los datos de la membresía');
                 });
         }
 
         function eliminarMembresia(id) {
             if (confirm('¿Estás seguro de eliminar esta membresía? Se cancelarán todas las suscripciones activas.')) {
+                showLoading(true);
                 fetch(`/admin/membresias/${id}`, {
                     method: 'DELETE',
                     headers: {
@@ -374,12 +617,18 @@
                 })
                 .then(response => response.json())
                 .then(data => {
+                    showLoading(false);
                     if (data.success) {
                         alert('Membresía eliminada exitosamente');
                         location.reload();
                     } else {
                         alert('Error: ' + data.message);
                     }
+                })
+                .catch(error => {
+                    showLoading(false);
+                    console.error('Error:', error);
+                    alert('Error al eliminar la membresía');
                 });
             }
         }
@@ -389,6 +638,7 @@
             const formData = new FormData(form);
             const data = Object.fromEntries(formData);
 
+            showLoading(true);
             fetch('/admin/membresias', {
                 method: 'POST',
                 headers: {
@@ -398,6 +648,7 @@
             })
             .then(response => response.json())
             .then(data => {
+                showLoading(false);
                 if (data.success) {
                     alert('Membresía guardada exitosamente');
                     location.reload();
@@ -406,6 +657,7 @@
                 }
             })
             .catch(error => {
+                showLoading(false);
                 console.error('Error:', error);
                 alert('Error al guardar la membresía');
             });

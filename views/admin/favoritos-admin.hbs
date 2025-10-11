@@ -3,400 +3,649 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestión de Favoritos - Admin</title>
+    <title>{{title}} - StartEducation</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/images/favicon.svg">
+    
+    <!-- Bootstrap 5.3 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
     <style>
         :root {
-            --primary-color: #FF6B35;
-            --secondary-color: #004E89;
+            --primary-color: #ea580c;
+            --primary-hover: #c2410c;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --text-dark: #1f2937;
+            --text-muted: #6b7280;
+            --border-color: #e5e7eb;
+            --bg-light: #f8fafc;
         }
 
-        body {
-            background: #f5f6fa;
+        * {
             font-family: 'Inter', sans-serif;
         }
 
-        .admin-header {
-            background: linear-gradient(135deg, var(--secondary-color), #003366);
-            color: white;
-            padding: 30px 0;
-            margin-bottom: 30px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        body {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            color: var(--text-dark);
+            min-height: 100vh;
         }
 
-        .stats-grid {
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header-section {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border-left: 5px solid var(--primary-color);
+        }
+
+        .header-title {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .header-title h1 {
+            color: var(--text-dark);
+            font-weight: 700;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .stats-row {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
         }
 
         .stat-card {
-            background: white;
-            padding: 25px;
-            border-radius: 15px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-        }
-
-        .stat-icon {
-            width: 60px;
-            height: 60px;
-            background: linear-gradient(135deg, var(--primary-color), #F7931E);
+            background: var(--bg-light);
             border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 15px;
-            color: white;
-            font-size: 1.5rem;
+            padding: 1.5rem;
+            text-align: center;
+            border: 1px solid var(--border-color);
+            transition: transform 0.2s ease;
         }
 
-        .stat-value {
+        .stat-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .stat-number {
             font-size: 2rem;
             font-weight: 700;
-            color: var(--secondary-color);
+            color: var(--primary-color);
+            display: block;
         }
 
         .stat-label {
-            color: #6c757d;
+            color: var(--text-muted);
             font-size: 0.9rem;
+            margin-top: 0.5rem;
         }
 
-        .content-card {
+        .controls-section {
             background: white;
-            border-radius: 15px;
-            padding: 30px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-            margin-bottom: 30px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
         }
 
-        .filter-section {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 25px;
+        .controls-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
         }
 
-        .table-custom thead {
-            background: #f8f9fa;
+        .search-group {
+            display: flex;
+            gap: 0.5rem;
+            flex: 1;
+            max-width: 400px;
         }
 
-        .table-custom th {
+        .search-input {
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            font-size: 0.95rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .search-input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(234, 88, 12, 0.25);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
+            border: none;
+            border-radius: 8px;
             font-weight: 600;
-            color: var(--secondary-color);
-            padding: 15px;
+            padding: 0.75rem 1.5rem;
+            transition: all 0.3s ease;
         }
 
-        .table-custom td {
-            padding: 15px;
+        .btn-primary:hover {
+            background: linear-gradient(135deg, var(--primary-hover) 0%, #9a3412 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(234, 88, 12, 0.4);
+        }
+
+        .btn-success {
+            background: var(--success-color);
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-success:hover {
+            background: #059669;
+            transform: translateY(-2px);
+        }
+
+        .btn-warning {
+            background: var(--warning-color);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            padding: 0.5rem 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-warning:hover {
+            background: #d97706;
+            color: white;
+        }
+
+        .btn-danger {
+            background: var(--danger-color);
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            padding: 0.5rem 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+
+        .table-section {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .table-header {
+            background: var(--bg-light);
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .table {
+            margin: 0;
+        }
+
+        .table th {
+            background: var(--bg-light);
+            border: none;
+            font-weight: 600;
+            color: var(--text-dark);
+            padding: 1rem;
+        }
+
+        .table td {
+            border: none;
+            padding: 1rem;
             vertical-align: middle;
         }
 
-        .curso-preview {
+        .table tbody tr {
+            border-bottom: 1px solid #f1f5f9;
+            transition: background-color 0.2s ease;
+        }
+
+        .table tbody tr:hover {
+            background-color: rgba(234, 88, 12, 0.05);
+        }
+
+        .badge {
+            font-size: 0.75rem;
+            padding: 0.35rem 0.65rem;
+        }
+
+        .actions-group {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .pagination-section {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .pagination {
+            margin: 0;
+            justify-content: center;
+        }
+
+        .page-link {
+            border: none;
+            color: var(--text-muted);
+            padding: 0.75rem 1rem;
+            margin: 0 0.25rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .page-link:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .page-item.active .page-link {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--text-muted);
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.95);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+
+        .spinner-border {
+            color: var(--primary-color);
+        }
+
+        .curso-item {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 0.75rem;
         }
 
-        .curso-preview img {
-            width: 60px;
-            height: 60px;
-            object-fit: cover;
+        .curso-image {
+            width: 40px;
+            height: 40px;
             border-radius: 8px;
+            object-fit: cover;
         }
 
-        .trending-badge {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            padding: 4px 10px;
-            border-radius: 15px;
-            font-size: 0.8rem;
+        .curso-info h6 {
+            margin: 0;
+            font-size: 0.9rem;
             font-weight: 600;
         }
 
-        .chart-box {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 20px;
+        .curso-info small {
+            color: var(--text-muted);
+        }
+
+        .tasa-conversion {
+            font-weight: 600;
+        }
+
+        .tasa-alta {
+            color: var(--success-color);
+        }
+
+        .tasa-media {
+            color: var(--warning-color);
+        }
+
+        .tasa-baja {
+            color: var(--danger-color);
+        }
+
+        .trending-badge {
+            background: linear-gradient(135deg, #ff6b6b, #feca57);
+            color: white;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                padding: 1rem;
+            }
+            
+            .header-section {
+                padding: 1.5rem;
+            }
+            
+            .controls-row {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .search-group {
+                max-width: none;
+            }
+            
+            .actions-group {
+                justify-content: center;
+            }
+            
+            .table-responsive {
+                font-size: 0.9rem;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="admin-header">
-        <div class="container-fluid">
-            <div class="d-flex justify-content-between align-items-center">
-                <div>
-                    <h1><i class="fas fa-heart"></i> Gestión de Favoritos</h1>
-                    <p class="mb-0">Análisis de cursos guardados por usuarios</p>
-                </div>
-                <a href="/admin/dashboard" class="btn btn-light btn-lg">
-                    <i class="fas fa-arrow-left"></i> Dashboard
-                </a>
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="text-center">
+            <div class="spinner-border mb-3" role="status">
+                <span class="visually-hidden">Cargando...</span>
             </div>
+            <p>Procesando...</p>
         </div>
     </div>
 
-    <div class="container-fluid">
-        <!-- Stats -->
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-icon">
-                    <i class="fas fa-heart"></i>
+    <div class="main-container">
+        <!-- Header Section -->
+        <div class="header-section">
+            <div class="header-title">
+                <h1>
+                    <i class="bi bi-heart"></i>
+                    Gestión de Favoritos
+                </h1>
+                <div class="d-flex gap-2">
+                    <a href="/dashboard" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-left me-2"></i>Dashboard
+                    </a>
                 </div>
-                <div class="stat-value">{{totalFavoritos}}</div>
-                <div class="stat-label">Total de Favoritos</div>
             </div>
-            <div class="stat-card">
-                <div class="stat-icon">
-                    <i class="fas fa-users"></i>
+            
+            <!-- Estadísticas -->
+            <div class="stats-row">
+                <div class="stat-card">
+                    <span class="stat-number">{{stats.totalFavoritos}}</span>
+                    <div class="stat-label">Total Favoritos</div>
                 </div>
-                <div class="stat-value">{{usuariosActivos}}</div>
-                <div class="stat-label">Usuarios con Favoritos</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon">
-                    <i class="fas fa-chart-line"></i>
+                <div class="stat-card">
+                    <span class="stat-number">{{stats.usuariosActivos}}</span>
+                    <div class="stat-label">Usuarios Activos</div>
                 </div>
-                <div class="stat-value">{{promedioFavoritos}}</div>
-                <div class="stat-label">Promedio por Usuario</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon">
-                    <i class="fas fa-shopping-cart"></i>
+                <div class="stat-card">
+                    <span class="stat-number">{{stats.promedioFavoritos}}</span>
+                    <div class="stat-label">Promedio por Usuario</div>
                 </div>
-                <div class="stat-value">{{tasaConversion}}%</div>
-                <div class="stat-label">Conversión a Compra</div>
             </div>
         </div>
 
-        <div class="row">
-            <div class="col-lg-8">
-                <div class="content-card">
-                    <h2 class="mb-4"><i class="fas fa-fire"></i> Cursos Más Guardados</h2>
-
-                    <!-- Filtros -->
-                    <div class="filter-section">
-                        <div class="row">
-                            <div class="col-md-4 mb-3">
-                                <label class="form-label">Categoría</label>
-                                <select class="form-select" id="filtroCategoria" onchange="filtrarCursos()">
-                                    <option value="">Todas</option>
-                                    {{#each categorias}}
-                                    <option value="{{id_categoria}}">{{nombre}}</option>
-                                    {{/each}}
-                                </select>
-                            </div>
-                            <div class="col-md-4 mb-3">
-                                <label class="form-label">Periodo</label>
-                                <select class="form-select" id="filtroPeriodo" onchange="filtrarCursos()">
-                                    <option value="todo">Todo el tiempo</option>
-                                    <option value="7">Últimos 7 días</option>
-                                    <option value="30">Últimos 30 días</option>
-                                    <option value="90">Últimos 90 días</option>
-                                </select>
-                            </div>
-                            <div class="col-md-4 mb-3 d-flex align-items-end">
-                                <button class="btn btn-primary w-100" onclick="exportarReporte()">
-                                    <i class="fas fa-file-excel"></i> Exportar
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Table -->
-                    <div class="table-responsive">
-                        <table class="table table-custom table-hover">
-                            <thead>
-                                <tr>
-                                    <th>Curso</th>
-                                    <th>Instructor</th>
-                                    <th>Favoritos</th>
-                                    <th>Comprados</th>
-                                    <th>Conversión</th>
-                                    <th>Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tablaCursos">
-                                {{#each cursosFavoritos}}
-                                <tr data-categoria="{{id_categoria}}">
-                                    <td>
-                                        <div class="curso-preview">
-                                            <img src="{{imagen}}" alt="{{titulo}}">
-                                            <div>
-                                                <strong>{{titulo}}</strong>
-                                                {{#if trending}}
-                                                <br><span class="trending-badge"><i class="fas fa-fire"></i> Trending</span>
-                                                {{/if}}
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>{{instructor_nombre}}</td>
-                                    <td>
-                                        <strong class="text-danger">
-                                            <i class="fas fa-heart"></i> {{cantidad_favoritos}}
-                                        </strong>
-                                    </td>
-                                    <td>
-                                        <span class="badge bg-success">{{cantidad_compras}}</span>
-                                    </td>
-                                    <td>
-                                        <strong class="text-primary">{{tasa_conversion}}%</strong>
-                                    </td>
-                                    <td>
-                                        <button class="btn btn-sm btn-info" onclick="verDetalle({{id_curso}})" 
-                                                title="Ver detalle">
-                                            <i class="fas fa-eye"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-primary" onclick="verUsuarios({{id_curso}})" 
-                                                title="Ver usuarios">
-                                            <i class="fas fa-users"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                                {{/each}}
-                            </tbody>
-                        </table>
-                    </div>
+        <!-- Controls Section -->
+        <div class="controls-section">
+            <div class="controls-row">
+                <div class="search-group">
+                    <form method="GET" class="d-flex w-100">
+                        <input type="text" 
+                               class="form-control search-input" 
+                               name="search" 
+                               placeholder="Buscar cursos favoritos..." 
+                               value="{{search}}">
+                        <button type="submit" class="btn btn-primary ms-2">
+                            <i class="bi bi-search"></i>
+                        </button>
+                    </form>
                 </div>
-
-                <div class="content-card">
-                    <h2 class="mb-4"><i class="fas fa-users"></i> Usuarios con Más Favoritos</h2>
-                    <div class="table-responsive">
-                        <table class="table table-custom">
-                            <thead>
-                                <tr>
-                                    <th>Usuario</th>
-                                    <th>Favoritos</th>
-                                    <th>Comprados</th>
-                                    <th>Último Guardado</th>
-                                    <th>Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {{#each topUsuarios}}
-                                <tr>
-                                    <td>
-                                        <strong>{{nombre}}</strong>
-                                        <br>
-                                        <small class="text-muted">{{email}}</small>
-                                    </td>
-                                    <td><strong class="text-danger">{{cantidad_favoritos}}</strong></td>
-                                    <td><span class="badge bg-success">{{cursos_comprados}}</span></td>
-                                    <td>{{formatDate ultimo_favorito}}</td>
-                                    <td>
-                                        <button class="btn btn-sm btn-info" onclick="verUsuario({{id_usuario}})" 
-                                                title="Ver perfil">
-                                            <i class="fas fa-user"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-warning" onclick="enviarRecomendacion({{id_usuario}})" 
-                                                title="Enviar recomendación">
-                                            <i class="fas fa-envelope"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                                {{/each}}
-                            </tbody>
-                        </table>
-                    </div>
+                <div class="action-buttons">
+                    <button type="button" class="btn btn-success" onclick="exportarFavoritos()">
+                        <i class="bi bi-download me-2"></i>Exportar
+                    </button>
                 </div>
             </div>
+        </div>
 
-            <div class="col-lg-4">
-                <div class="content-card">
-                    <h3 class="mb-4"><i class="fas fa-chart-bar"></i> Estadísticas por Categoría</h3>
-                    {{#each estadisticasCategorias}}
-                    <div class="chart-box">
-                        <div class="d-flex justify-content-between align-items-center mb-2">
-                            <strong>{{nombre}}</strong>
-                            <span class="badge bg-primary">{{cantidad}}</span>
-                        </div>
-                        <div class="progress" style="height: 10px;">
-                            <div class="progress-bar" role="progressbar" 
-                                 style="width: {{porcentaje}}%; background: var(--primary-color);">
-                            </div>
-                        </div>
-                    </div>
-                    {{/each}}
-                </div>
-
-                <div class="content-card">
-                    <h3 class="mb-4"><i class="fas fa-clock"></i> Actividad Reciente</h3>
-                    <div class="list-group">
-                        {{#each actividadReciente}}
-                        <div class="list-group-item">
-                            <div class="d-flex justify-content-between">
-                                <strong>{{usuario_nombre}}</strong>
-                                <small class="text-muted">{{tiempo}}</small>
-                            </div>
-                            <small class="text-muted">
-                                {{#if accion_agregar}}
-                                <i class="fas fa-heart text-danger"></i> Guardó
-                                {{else}}
-                                <i class="fas fa-heart-broken text-secondary"></i> Eliminó
-                                {{/if}}
-                                "{{curso_titulo}}"
-                            </small>
-                        </div>
+        <!-- Top Usuarios -->
+        {{#if topUsuarios.length}}
+        <div class="table-section mb-4">
+            <div class="table-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-people me-2"></i>
+                    Top 10 Usuarios con Más Favoritos
+                </h5>
+            </div>
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Usuario</th>
+                            <th>Email</th>
+                            <th>Favoritos</th>
+                            <th>Cursos Comprados</th>
+                            <th>Último Favorito</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{#each topUsuarios}}
+                        <tr>
+                            <td><strong>{{this.nombre}}</strong></td>
+                            <td>{{this.email}}</td>
+                            <td><span class="badge bg-primary">{{this.cantidad_favoritos}}</span></td>
+                            <td><span class="badge bg-success">{{this.cursos_comprados}}</span></td>
+                            <td>{{formatDate this.ultimo_favorito}}</td>
+                        </tr>
                         {{/each}}
-                    </div>
-                </div>
-
-                <div class="content-card">
-                    <h3 class="mb-4"><i class="fas fa-lightbulb"></i> Insights</h3>
-                    <div class="alert alert-info">
-                        <strong><i class="fas fa-info-circle"></i> Tip:</strong>
-                        Los cursos con más favoritos pero baja conversión pueden necesitar promociones especiales.
-                    </div>
-                    <div class="alert alert-warning">
-                        <strong><i class="fas fa-exclamation-triangle"></i> Alerta:</strong>
-                        {{cursosAltaRotacion}} cursos tienen alta rotación en favoritos.
-                    </div>
-                </div>
+                    </tbody>
+                </table>
             </div>
         </div>
+        {{/if}}
+
+        <!-- Table Section -->
+        <div class="table-section">
+            <div class="table-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-list-ul me-2"></i>
+                    Cursos Más Guardados en Favoritos
+                    {{#if search}}
+                        <small class="text-muted">- Resultados para "{{search}}"</small>
+                    {{/if}}
+                </h5>
+            </div>
+            
+            {{#if cursosFavoritos.length}}
+            <div class="table-responsive">
+                <table class="table" id="favoritosTable">
+                    <thead>
+                        <tr>
+                            <th>Curso</th>
+                            <th>Instructor</th>
+                            <th>Favoritos</th>
+                            <th>Compras</th>
+                            <th>Tasa Conversión</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{#each cursosFavoritos}}
+                        <tr>
+                            <td>
+                                <div class="curso-item">
+                                    {{#if this.miniatura}}
+                                    <img src="{{this.miniatura}}" alt="{{this.titulo}}" class="curso-image">
+                                    {{else}}
+                                    <div class="curso-image bg-light d-flex align-items-center justify-content-center">
+                                        <i class="bi bi-book"></i>
+                                    </div>
+                                    {{/if}}
+                                    <div class="curso-info">
+                                        <h6>{{this.titulo}}</h6>
+                                        <small>ID: {{this.id_curso}}</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>{{this.instructor_nombre}}</td>
+                            <td>
+                                <span class="badge bg-info">
+                                    <i class="bi bi-heart"></i> {{this.cantidad_favoritos}}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="badge bg-success">
+                                    <i class="bi bi-cart-check"></i> {{this.cantidad_compras}}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="tasa-conversion 
+                                    {{#if (gte this.tasa_conversion 30)}}tasa-alta
+                                    {{else if (gte this.tasa_conversion 15)}}tasa-media
+                                    {{else}}tasa-baja{{/if}}">
+                                    {{this.tasa_conversion}}%
+                                </span>
+                            </td>
+                            <td>
+                                {{#if this.trending}}
+                                <span class="badge trending-badge">
+                                    <i class="bi bi-fire"></i> Trending
+                                </span>
+                                {{else}}
+                                <span class="badge bg-secondary">Normal</span>
+                                {{/if}}
+                            </td>
+                        </tr>
+                        {{/each}}
+                    </tbody>
+                </table>
+            </div>
+            {{else}}
+            <div class="empty-state">
+                <i class="bi bi-heart"></i>
+                <h4>No hay favoritos</h4>
+                <p>Cuando los usuarios guarden cursos como favoritos, aparecerán aquí.</p>
+            </div>
+            {{/if}}
+        </div>
+
+        <!-- Estadísticas por Categoría -->
+        {{#if estadisticasCategorias.length}}
+        <div class="table-section mt-4">
+            <div class="table-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-pie-chart me-2"></i>
+                    Favoritos por Categoría
+                </h5>
+            </div>
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Categoría</th>
+                            <th>Cantidad</th>
+                            <th>Porcentaje</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{#each estadisticasCategorias}}
+                        <tr>
+                            <td><strong>{{this.nombre}}</strong></td>
+                            <td><span class="badge bg-primary">{{this.cantidad}}</span></td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="progress flex-grow-1 me-2" style="height: 8px;">
+                                        <div class="progress-bar bg-primary" style="width: {{this.porcentaje}}%"></div>
+                                    </div>
+                                    <small>{{this.porcentaje}}%</small>
+                                </div>
+                            </td>
+                        </tr>
+                        {{/each}}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {{/if}}
     </div>
 
+    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
     <script>
-        function filtrarCursos() {
-            const categoria = document.getElementById('filtroCategoria').value;
-            const periodo = document.getElementById('filtroPeriodo').value;
-
-            // Aquí implementarías el filtrado real con fetch
-            console.log('Filtrando:', {categoria, periodo});
+        // Inicializar cuando carga la página
+        document.addEventListener('DOMContentLoaded', function() {
+            // Configuraciones iniciales si las hay
+        });
+        
+        // Exportar datos de favoritos
+        function exportarFavoritos() {
+            showLoading(true);
+            
+            // Crear un enlace temporal para descargar
+            const link = document.createElement('a');
+            link.href = '/admin/favoritos/export';
+            link.download = 'favoritos_' + new Date().toISOString().split('T')[0] + '.csv';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            showLoading(false);
         }
-
-        function verDetalle(cursoId) {
-            window.location.href = `/admin/cursos/${cursoId}`;
-        }
-
-        function verUsuarios(cursoId) {
-            window.location.href = `/admin/favoritos/curso/${cursoId}/usuarios`;
-        }
-
-        function verUsuario(userId) {
-            window.location.href = `/admin/usuarios/${userId}`;
-        }
-
-        function enviarRecomendacion(userId) {
-            if (confirm('¿Enviar recomendaciones personalizadas a este usuario?')) {
-                fetch(`/admin/favoritos/usuario/${userId}/recomendaciones`, {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'}
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        alert('Recomendaciones enviadas');
-                    }
-                });
-            }
-        }
-
-        function exportarReporte() {
-            window.location.href = '/admin/favoritos/exportar';
+        
+        // Mostrar/ocultar loading
+        function showLoading(show) {
+            const overlay = document.getElementById('loadingOverlay');
+            overlay.style.display = show ? 'flex' : 'none';
         }
     </script>
 </body>

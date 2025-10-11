@@ -1,0 +1,2012 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{title}} - StartEducation</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/images/favicon.svg">
+    
+    <!-- Bootstrap 5.3 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-color: #ea580c;
+            --primary-hover: #c2410c;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --text-dark: #1f2937;
+            --text-muted: #6b7280;
+            --border-color: #e5e7eb;
+            --bg-light: #f8fafc;
+        }
+
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            color: var(--text-dark);
+            min-height: 100vh;
+        }
+
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header-section {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border-left: 5px solid var(--primary-color);
+        }
+
+        .header-title {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .header-title h1 {
+            color: var(--text-dark);
+            font-weight: 700;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .stat-card {
+            background: var(--bg-light);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            border: 1px solid var(--border-color);
+            transition: transform 0.2s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            display: block;
+        }
+
+        .stat-label {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        .controls-section {
+
+            background: white;        }
+
+            border-radius: 16px;
+
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);            --bg-light: #f8fafc;            --bg-light: #f8fafc;
+
+            padding: 1.5rem;
+
+            margin-bottom: 2rem;        .header-title {
+
+        }
+
+            display: flex;        }        }
+
+        .controls-row {
+
+            display: flex;            align-items: center;
+
+            justify-content: space-between;
+
+            align-items: center;            justify-content: space-between;
+
+            flex-wrap: wrap;
+
+            gap: 1rem;            flex-wrap: wrap;
+
+        }
+
+            gap: 1rem;        * {        * {
+
+        .search-group {
+
+            display: flex;        }
+
+            gap: 0.5rem;
+
+            flex: 1;            font-family: 'Inter', sans-serif;            font-family: 'Inter', sans-serif;
+
+            max-width: 400px;
+
+        }
+
+        .header-title h1 {
+            color: var(--text-dark);
+            font-weight: 700;
+        }
+
+        .search-input {
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+
+            padding: 0.75rem 1rem;
+
+            font-size: 0.95rem;            margin: 0;
+
+            transition: border-color 0.3s ease;
+
+        }            display: flex;
+
+
+
+        .search-input:focus {            align-items: center;        body {        body {
+
+            border-color: var(--primary-color);
+
+            box-shadow: 0 0 0 0.2rem rgba(234, 88, 12, 0.25);            gap: 0.75rem;
+
+        }
+
+        }            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+
+        .btn-primary {
+
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
+
+            border: none;
+
+            border-radius: 8px;
+            color: var(--text-dark);
+            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+        }
+
+        .stats-row {
+            display: grid;
+
+            transition: all 0.3s ease;
+
+        }            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));            min-height: 100vh;            min-height: 100vh;
+
+
+
+        .btn-primary:hover {            gap: 1.5rem;
+
+            background: linear-gradient(135deg, var(--primary-hover) 0%, #9a3412 100%);
+
+            transform: translateY(-2px);            margin-top: 1.5rem;        }        }
+
+            box-shadow: 0 8px 20px rgba(234, 88, 12, 0.4);
+
+        }        }
+
+
+
+        .btn-success {
+            background: var(--success-color);
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-success:hover {
+
+            background: #059669;            text-align: center;
+
+            transform: translateY(-2px);
+
+        }            border: 1px solid var(--border-color);            margin: 0 auto;            margin: 0 auto;
+
+
+
+        .btn-warning {            transition: transform 0.2s ease;
+
+            background: var(--warning-color);
+
+            border: none;        }            padding: 2rem;            padding: 2rem;
+
+            border-radius: 8px;
+
+            color: white;
+
+            font-weight: 600;
+
+            padding: 0.5rem 1rem;        .stat-card:hover {        }        }
+
+            transition: all 0.3s ease;
+
+        }            transform: translateY(-2px);
+
+
+
+        .btn-warning:hover {        }
+
+            background: #d97706;
+
+            color: white;
+
+        }
+
+        .stat-number {        .header-section {        .header-section {
+
+        .btn-danger {
+
+            background: var(--danger-color);            font-size: 2rem;
+
+            border: none;
+
+            border-radius: 8px;            font-weight: 700;            background: white;            background: white;
+
+            font-weight: 600;
+
+            padding: 0.5rem 1rem;            color: var(--primary-color);
+
+            transition: all 0.3s ease;
+
+        }            display: block;            border-radius: 16px;            border-radius: 16px;
+
+
+
+        .btn-danger:hover {        }
+
+            background: #dc2626;
+
+        }            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+
+
+
+        .table-section {        .stat-label {
+
+            background: white;
+
+            border-radius: 16px;            color: var(--text-muted);            padding: 2rem;            padding: 2rem;
+
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+
+            overflow: hidden;            font-size: 0.9rem;
+
+        }
+
+            margin-top: 0.5rem;            margin-bottom: 2rem;            margin-bottom: 2rem;
+
+        .table-header {
+
+            background: var(--bg-light);        }
+
+            padding: 1.5rem;
+
+            border-bottom: 1px solid var(--border-color);            border-left: 5px solid var(--primary-color);            border-left: 5px solid var(--primary-color);
+
+        }
+
+        .controls-section {
+
+        .table {
+
+            margin: 0;            background: white;        }        }
+
+        }
+
+            border-radius: 16px;
+
+        .table th {
+
+            background: var(--bg-light);            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+
+            border: none;
+
+            font-weight: 600;            padding: 1.5rem;
+
+            color: var(--text-dark);
+
+            padding: 1rem;            margin-bottom: 2rem;        .header-title {        .header-title {
+
+        }
+
+        }
+
+        .table td {
+
+            border: none;            display: flex;            display: flex;
+
+            padding: 1rem;
+
+            vertical-align: middle;        .controls-row {
+
+        }
+
+            display: flex;            align-items: center;            align-items: center;
+
+        .table tbody tr {
+
+            border-bottom: 1px solid #f1f5f9;            justify-content: space-between;
+
+            transition: background-color 0.2s ease;
+
+        }            align-items: center;            justify-content: space-between;            justify-content: space-between;
+
+
+
+        .table tbody tr:hover {            flex-wrap: wrap;
+
+            background-color: rgba(234, 88, 12, 0.05);
+
+        }            gap: 1rem;            flex-wrap: wrap;            flex-wrap: wrap;
+
+
+
+        .certificado-name {        }
+
+            font-weight: 600;
+
+            color: var(--text-dark);            gap: 1rem;            gap: 1rem;
+
+        }
+
+        .search-group {
+
+        .certificado-description {
+
+            color: var(--text-muted);            display: flex;        }        }
+
+            font-size: 0.9rem;
+
+        }            gap: 0.5rem;
+
+
+
+        .codigo-certificado {            flex: 1;
+
+            font-family: 'Courier New', monospace;
+
+            background: var(--bg-light);            max-width: 400px;
+
+            padding: 0.25rem 0.5rem;
+
+            border-radius: 4px;        }        .header-title h1 {        .header-title h1 {
+
+            font-size: 0.85rem;
+
+        }
+
+
+
+        .badge {        .search-input {            color: var(--text-dark);            color: var(--text-dark);
+
+            font-size: 0.75rem;
+
+            padding: 0.35rem 0.65rem;            border: 2px solid var(--border-color);
+
+        }
+
+            border-radius: 8px;            font-weight: 700;            font-weight: 700;
+
+        .actions-group {
+
+            display: flex;            padding: 0.75rem 1rem;
+
+            gap: 0.5rem;
+
+        }            font-size: 0.95rem;            margin: 0;            margin: 0;
+
+
+
+        .back-btn {            transition: border-color 0.3s ease;
+
+            position: fixed;
+
+            top: 2rem;        }            display: flex;            display: flex;
+
+            left: 2rem;
+
+            background: white;
+
+            border: 2px solid var(--border-color);
+
+            width: 48px;        .search-input:focus {            align-items: center;            align-items: center;
+
+            height: 48px;
+
+            border-radius: 8px;            border-color: var(--primary-color);
+
+            display: flex;
+
+            align-items: center;            box-shadow: 0 0 0 0.2rem rgba(234, 88, 12, 0.25);            gap: 0.75rem;            gap: 0.75rem;
+
+            justify-content: center;
+
+            color: var(--text-dark);        }
+
+            text-decoration: none;
+
+            transition: all 0.2s ease;        }        }
+
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+
+            z-index: 1000;        .btn-primary {
+
+        }
+
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
+
+        .back-btn:hover {
+
+            background: var(--primary-color);            border: none;
+
+            color: white;
+
+            border-color: var(--primary-color);            border-radius: 8px;        .stats-row {        .stats-row {
+
+            transform: translateY(-2px);
+
+        }            font-weight: 600;
+
+
+
+        @media (max-width: 768px) {            padding: 0.75rem 1.5rem;            display: grid;            display: grid;
+
+            .main-container {
+
+                padding: 1rem;            transition: all 0.3s ease;
+
+            }
+
+        }            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+
+            .back-btn {
+
+                top: 1rem;
+
+                left: 1rem;
+
+            }        .btn-primary:hover {            gap: 1.5rem;            gap: 1.5rem;
+
+
+
+            .header-section {            background: linear-gradient(135deg, var(--primary-hover) 0%, #9a3412 100%);
+
+                padding: 1.5rem;
+
+            }            transform: translateY(-2px);            margin-top: 1.5rem;            margin-top: 1.5rem;
+
+
+
+            .header-title {            box-shadow: 0 8px 20px rgba(234, 88, 12, 0.4);
+
+                flex-direction: column;
+
+                text-align: center;        }        }        }
+
+            }
+
+
+
+            .controls-row {
+
+                flex-direction: column;        .btn-success {
+
+                align-items: stretch;
+
+            }            background: var(--success-color);
+
+
+
+            .search-group {            border: none;        .stat-card {        .stat-card {
+
+                max-width: none;
+
+            }            border-radius: 8px;
+
+
+
+            .stats-row {            font-weight: 600;            background: var(--bg-light);            background: var(--bg-light);
+
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+
+                gap: 1rem;            padding: 0.75rem 1.5rem;
+
+            }
+
+        }            transition: all 0.3s ease;            border-radius: 12px;            border-radius: 12px;
+
+    </style>
+</head>
+
+<body>
+    <!-- Back Button -->
+
+    <a href="/dashboard" class="back-btn" title="Volver al Dashboard">
+
+        <i class="bi bi-arrow-left"></i>        .btn-success:hover {
+
+    </a>
+
+            background: #059669;            text-align: center;            text-align: center;
+
+    <div class="main-container">
+
+        <!-- Header Section -->            transform: translateY(-2px);
+
+        <div class="header-section">
+
+            <div class="header-title">        }            border: 1px solid var(--border-color);            border: 1px solid var(--border-color);
+
+                <div>
+
+                    <h1>
+
+                        <i class="bi bi-award"></i>
+
+                        Gestión de Certificados        .btn-warning {            transition: transform 0.2s ease;            transition: transform 0.2s ease;
+
+                    </h1>
+
+                    <p class="mb-0 text-muted">Administra y genera certificados de finalización de cursos</p>            background: var(--warning-color);
+
+                </div>
+
+                <button class="btn btn-primary" onclick="nuevoCertificado()">            border: none;            position: relative;        }
+
+                    <i class="bi bi-plus-lg"></i>
+
+                    Nuevo Certificado            border-radius: 8px;
+
+                </button>
+
+            </div>            color: white;            overflow: hidden;
+
+
+
+            <!-- Statistics Cards -->            font-weight: 600;
+
+            <div class="stats-row">
+
+                <div class="stat-card">            padding: 0.5rem 1rem;        }        .stat-card:hover {
+
+                    <span class="stat-number">{{totalCertificados}}</span>
+
+                    <div class="stat-label">Total Certificados</div>            transition: all 0.3s ease;
+
+                </div>
+
+                <div class="stat-card">        }            transform: translateY(-2px);
+
+                    <span class="stat-number">{{certificadosMes}}</span>
+
+                    <div class="stat-label">Este Mes</div>
+
+                </div>
+
+                <div class="stat-card">        .btn-warning:hover {        .stat-card::before {        }
+
+                    <span class="stat-number">{{progresosCompletados}}</span>
+
+                    <div class="stat-label">Progresos Completados</div>            background: #d97706;
+
+                </div>
+
+                <div class="stat-card">            color: white;            content: '';
+
+                    <span class="stat-number">{{cursos.length}}</span>
+
+                    <div class="stat-label">Cursos Disponibles</div>        }
+
+                </div>
+
+            </div>            position: absolute;        .stat-number {
+
+        </div>
+
+        .btn-danger {
+
+        <!-- Controls Section -->
+
+        <div class="controls-section">            background: var(--danger-color);            top: 0;            font-size: 2rem;
+
+            <div class="controls-row">
+
+                <div class="search-group">            border: none;
+
+                    <input type="text" class="form-control search-input" id="searchInput" 
+
+                           placeholder="Buscar por estudiante, curso o código..." value="{{search}}">            border-radius: 8px;            left: 0;            font-weight: 700;
+
+                    <button class="btn btn-primary" onclick="buscar()">
+
+                        <i class="bi bi-search"></i>            font-weight: 600;
+
+                    </button>
+
+                </div>            padding: 0.5rem 1rem;            right: 0;            color: var(--primary-color);
+
+                <div class="d-flex gap-2">
+
+                    <select class="form-select" id="cursoFilter">            transition: all 0.3s ease;
+
+                        <option value="">Todos los cursos</option>
+
+                        {{#each cursos}}        }            height: 4px;            display: block;
+
+                            <option value="{{id_curso}}">{{titulo}}</option>
+
+                        {{/each}}
+
+                    </select>
+
+                </div>        .btn-danger:hover {            background: linear-gradient(90deg, var(--primary-color), var(--primary-hover));        }
+
+            </div>
+
+        </div>            background: #dc2626;
+
+
+
+        <!-- Certificates Table -->        }        }
+
+        <div class="table-section">
+
+            <div class="table-header">
+
+                <h3><i class="bi bi-list-ul"></i>Lista de Certificados ({{certificados.length}} total)</h3>
+
+            </div>        .table-section {        .stat-label {
+
+
+
+            {{#if certificados.length}}            background: white;
+
+                <div class="table-responsive">
+
+                    <table class="table table-hover">            border-radius: 16px;        .stat-card:hover {            color: var(--text-muted);
+
+                        <thead>
+
+                            <tr>            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+
+                                <th>Estudiante</th>
+
+                                <th>Curso</th>            overflow: hidden;            transform: translateY(-2px);            font-size: 0.9rem;
+
+                                <th>Instructor</th>
+
+                                <th>Fecha Emisión</th>        }
+
+                                <th>Código</th>
+
+                                <th>Estado</th>            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);            margin-top: 0.5rem;
+
+                                <th>Acciones</th>
+
+                            </tr>        .table-header {
+
+                        </thead>
+
+                        <tbody>            background: var(--bg-light);        }        }
+
+                            {{#each certificados}}
+
+                                <tr>            padding: 1.5rem;
+
+                                    <td>
+
+                                        <div class="certificado-name">{{usuario_nombre}}</div>            border-bottom: 1px solid var(--border-color);
+
+                                        <div class="certificado-description">{{usuario_email}}</div>
+
+                                    </td>        }
+
+                                    <td>
+
+                                        <div class="certificado-name">{{curso_titulo}}</div>        .stat-number {        .controls-section {
+
+                                    </td>
+
+                                    <td>        .table {
+
+                                        <div class="certificado-description">{{instructor_nombre}}</div>
+
+                                    </td>            margin: 0;            font-size: 2rem;            background: white;
+
+                                    <td>{{formatDate fecha_emision}}</td>
+
+                                    <td>        }
+
+                                        <span class="codigo-certificado">{{codigo_validacion}}</span>
+
+                                    </td>            font-weight: 700;            border-radius: 16px;
+
+                                    <td>
+
+                                        <span class="badge bg-success">Activo</span>        .table th {
+
+                                    </td>
+
+                                    <td>            background: var(--bg-light);            color: var(--primary-color);            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+
+                                        <div class="actions-group">
+
+                                            <button class="btn btn-warning btn-sm"             border: none;
+
+                                                    onclick="verCertificado('{{id_certificado}}')" 
+
+                                                    title="Ver certificado">            font-weight: 600;            display: block;            padding: 1.5rem;
+
+                                                <i class="bi bi-eye"></i>
+
+                                            </button>            color: var(--text-dark);
+
+                                            <button class="btn btn-success btn-sm" 
+
+                                                    onclick="descargarCertificado('{{id_certificado}}')"             padding: 1rem;        }            margin-bottom: 2rem;
+
+                                                    title="Descargar">
+
+                                                <i class="bi bi-download"></i>        }
+
+                                            </button>
+
+                                            <button class="btn btn-danger btn-sm"         }
+
+                                                    onclick="revocarCertificado('{{id_certificado}}')" 
+
+                                                    title="Revocar">        .table td {
+
+                                                <i class="bi bi-x-circle"></i>
+
+                                            </button>            border: none;        .stat-label {
+
+                                        </div>
+
+                                    </td>            padding: 1rem;
+
+                                </tr>
+
+                            {{/each}}            vertical-align: middle;            color: var(--text-muted);        .controls-row {
+
+                        </tbody>
+
+                    </table>        }
+
+                </div>
+
+            {{else}}            font-size: 0.9rem;            display: flex;
+
+                <div class="text-center p-5">
+
+                    <i class="bi bi-award" style="font-size: 4rem; color: var(--text-muted);"></i>        .table tbody tr {
+
+                    <h4 class="mt-3 text-muted">No hay certificados</h4>
+
+                    <p class="text-muted">No se han emitido certificados aún.</p>            border-bottom: 1px solid #f1f5f9;        }            justify-content: space-between;
+
+                    <button class="btn btn-primary" onclick="nuevoCertificado()">
+
+                        <i class="bi bi-plus-lg"></i>            transition: background-color 0.2s ease;
+
+                        Crear Primer Certificado
+
+                    </button>        }            align-items: center;
+
+                </div>
+
+            {{/if}}
+
+        </div>
+
+    </div>        .table tbody tr:hover {        .controls-section {            flex-wrap: wrap;
+
+
+
+    <!-- Scripts -->            background-color: rgba(234, 88, 12, 0.05);
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+            }            background: white;            gap: 1rem;
+
+    <script>
+
+        function buscar() {
+
+            const searchTerm = document.getElementById('searchInput').value;
+
+            const cursoFilter = document.getElementById('cursoFilter').value;        .certificado-name {            border-radius: 16px;        }
+
+            
+
+            const params = new URLSearchParams();            font-weight: 600;
+
+            if (searchTerm) params.set('search', searchTerm);
+
+            if (cursoFilter) params.set('curso', cursoFilter);            color: var(--text-dark);            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+
+            
+
+            window.location.href = '?' + params.toString();        }
+
+        }
+
+            padding: 1.5rem;        .table-section {
+
+        function nuevoCertificado() {
+
+            window.location.href = '/admin/certificados/nuevo';        .certificado-description {
+
+        }
+
+            color: var(--text-muted);            margin-bottom: 2rem;            background: white;
+
+        function verCertificado(id) {
+
+            window.open(`/admin/certificados/${id}`, '_blank');            font-size: 0.9rem;
+
+        }
+
+        }        }            border-radius: 16px;
+
+        function descargarCertificado(id) {
+
+            window.location.href = `/admin/certificados/${id}/descargar`;
+
+        }
+
+        .codigo-certificado {            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+
+        function revocarCertificado(id) {
+
+            if (confirm('¿Estás seguro de revocar este certificado?')) {            font-family: 'Courier New', monospace;
+
+                fetch(`/admin/certificados/${id}`, {
+
+                    method: 'DELETE'            background: var(--bg-light);        .controls-row {            overflow: hidden;
+
+                })
+
+                .then(response => response.json())            padding: 0.25rem 0.5rem;
+
+                .then(data => {
+
+                    if (data.success) {            border-radius: 4px;            display: flex;        }
+
+                        alert('Certificado revocado exitosamente');
+
+                        location.reload();            font-size: 0.85rem;
+
+                    } else {
+
+                        alert('Error: ' + data.message);        }            justify-content: space-between;
+
+                    }
+
+                })
+
+                .catch(error => {
+
+                    console.error('Error:', error);        .badge {            align-items: center;        .table {
+
+                    alert('Error al revocar certificado');
+
+                });            font-size: 0.75rem;
+
+            }
+
+        }            padding: 0.35rem 0.65rem;            flex-wrap: wrap;            margin: 0;
+
+
+
+        // Event listeners        }
+
+        document.getElementById('searchInput')?.addEventListener('keypress', function(e) {
+
+            if (e.key === 'Enter') {            gap: 1rem;        }
+
+                buscar();
+
+            }        .actions-group {
+
+        });
+
+            display: flex;        }
+
+        document.getElementById('cursoFilter')?.addEventListener('change', buscar);
+
+    </script>
+
+        .back-btn {
+
+            position: fixed;
+
+            top: 2rem;            position: relative;            border: none;
+
+            left: 2rem;
+
+            background: white;            flex: 1;            font-weight: 600;
+
+            border: 2px solid var(--border-color);
+
+            width: 48px;            max-width: 400px;            color: var(--text-dark);
+
+            height: 48px;
+
+            border-radius: 8px;        }            padding: 1rem;
+
+            display: flex;
+
+            align-items: center;        }
+
+            justify-content: center;
+
+            color: var(--text-dark);        .search-box input {
+
+            text-decoration: none;
+
+            transition: all 0.2s ease;            width: 100%;        .table td {
+
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+
+            z-index: 1000;            padding: 0.75rem 1rem 0.75rem 3rem;            border: none;
+
+        }
+
+            border: 2px solid var(--border-color);            padding: 1rem;
+
+        .back-btn:hover {
+
+            background: var(--primary-color);            border-radius: 12px;            vertical-align: middle;
+
+            color: white;
+
+            border-color: var(--primary-color);            font-size: 0.95rem;        }
+
+            transform: translateY(-2px);
+
+        }            transition: all 0.3s ease;
+
+
+
+        @media (max-width: 768px) {        }        .table tbody tr {
+
+            .main-container {
+
+                padding: 1rem;            border-bottom: 1px solid #f1f5f9;
+
+            }
+
+        .search-box input:focus {            transition: background-color 0.2s ease;
+
+            .back-btn {
+
+                top: 1rem;            outline: none;        }
+
+                left: 1rem;
+
+            }            border-color: var(--primary-color);
+
+
+
+            .header-section {            box-shadow: 0 0 0 0.2rem rgba(234, 88, 12, 0.25);        .table tbody tr:hover {
+
+                padding: 1.5rem;
+
+            }        }            background-color: rgba(234, 88, 12, 0.05);
+
+
+
+            .header-title {        }
+
+                flex-direction: column;
+
+                text-align: center;        .search-box i {
+
+            }
+
+            position: absolute;        .btn-primary {
+
+            .controls-row {
+
+                flex-direction: column;            left: 1rem;            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
+
+                align-items: stretch;
+
+            }            top: 50%;            border: none;
+
+
+
+            .search-group {            transform: translateY(-50%);            border-radius: 8px;
+
+                max-width: none;
+
+            }            color: var(--text-muted);            font-weight: 600;
+
+
+
+            .stats-row {        }            padding: 0.75rem 1.5rem;
+
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+
+                gap: 1rem;            transition: all 0.3s ease;
+
+            }
+
+        }
+
+    <a href="/dashboard" class="back-btn" title="Volver al Dashboard">
+        <i class="bi bi-arrow-left"></i>
+    </a>
+
+        }            transform: translateY(-2px);
+
+    <div class="main-container">
+
+        <!-- Header Section -->            box-shadow: 0 8px 20px rgba(234, 88, 12, 0.4);
+
+        <div class="header-section">
+
+            <div class="header-title">        .filter-select {        }
+
+                <div>
+
+                    <h1>            padding: 0.75rem 1rem;
+
+                        <i class="bi bi-award"></i>
+
+                        Gestión de Certificados            border: 2px solid var(--border-color);        .btn-success {
+
+                    </h1>
+
+                    <p class="mb-0 text-muted">Administra y genera certificados de finalización de cursos</p>            border-radius: 8px;            background: var(--success-color);
+
+                </div>
+
+                <button class="btn btn-primary" onclick="nuevoCertificado()">            font-size: 0.9rem;            border: none;
+
+                    <i class="bi bi-plus-lg"></i>
+
+                    Nuevo Certificado            transition: border-color 0.3s ease;            border-radius: 8px;
+
+                </button>
+
+            </div>        }            font-weight: 600;
+
+
+
+            <!-- Statistics Cards -->            padding: 0.5rem 1rem;
+
+            <div class="stats-row">
+
+                <div class="stat-card">        .filter-select:focus {            transition: all 0.3s ease;
+
+                    <span class="stat-number">{{totalCertificados}}</span>
+
+                    <div class="stat-label">Total Certificados</div>            outline: none;        }
+
+                </div>
+
+                <div class="stat-card">            border-color: var(--primary-color);
+
+                    <span class="stat-number">{{certificadosMes}}</span>
+
+                    <div class="stat-label">Este Mes</div>            box-shadow: 0 0 0 0.2rem rgba(234, 88, 12, 0.25);        .btn-success:hover {
+
+                </div>
+
+                <div class="stat-card">        }            background: #059669;
+
+                    <span class="stat-number">{{progresosCompletados}}</span>
+
+                    <div class="stat-label">Progresos Completados</div>        }
+
+                </div>
+
+                <div class="stat-card">        .btn-primary {
+
+                    <span class="stat-number">{{cursos.length}}</span>
+
+                    <div class="stat-label">Cursos Disponibles</div>            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);        .btn-danger {
+
+                </div>
+
+            </div>            border: none;            background: var(--danger-color);
+
+        </div>
+
+            border-radius: 8px;            border: none;
+
+        <!-- Controls Section -->
+
+        <div class="controls-section">            color: white;            border-radius: 8px;
+
+            <div class="controls-row">
+
+                <div class="search-group">            font-weight: 600;            font-weight: 600;
+
+                    <input type="text" class="form-control search-input" id="searchInput" 
+
+                           placeholder="Buscar por estudiante, curso o código..." value="{{search}}">            padding: 0.75rem 1.5rem;            padding: 0.5rem 1rem;
+
+                    <button class="btn btn-primary" onclick="buscar()">
+
+                        <i class="bi bi-search"></i>            transition: all 0.3s ease;            transition: all 0.3s ease;
+
+                    </button>
+
+                </div>            display: flex;        }
+
+                <div class="d-flex gap-2">
+
+                    <select class="form-select" id="cursoFilter">            align-items: center;
+
+                        <option value="">Todos los cursos</option>
+
+                        {{#each cursos}}            gap: 0.5rem;        .btn-danger:hover {
+
+                            <option value="{{id_curso}}">{{titulo}}</option>
+
+                        {{/each}}        }            background: #dc2626;
+
+                    </select>
+
+                </div>        }
+
+            </div>
+
+        </div>        .btn-primary:hover {
+
+
+
+        <!-- Certificates Table -->            background: linear-gradient(135deg, var(--primary-hover) 0%, #9a3412 100%);        .badge {
+
+        <div class="table-section">
+
+            <div class="table-header">            transform: translateY(-2px);            padding: 0.35rem 0.75rem;
+
+                <h3><i class="bi bi-list-ul"></i>Lista de Certificados ({{certificados.length}} total)</h3>
+
+            </div>            box-shadow: 0 8px 20px rgba(234, 88, 12, 0.4);            border-radius: 20px;
+
+
+
+            {{#if certificados.length}}            color: white;            font-weight: 500;
+
+                <div class="table-responsive">
+
+                    <table class="table table-hover">        }            font-size: 0.85rem;
+
+                        <thead>
+
+                            <tr>        }
+
+                                <th>Estudiante</th>
+
+                                <th>Curso</th>        .table-section {
+
+                                <th>Instructor</th>
+
+                                <th>Fecha Emisión</th>            background: white;        .actions-group {
+
+                                <th>Código</th>
+
+                                <th>Estado</th>            border-radius: 16px;            display: flex;
+
+                                <th>Acciones</th>
+
+                            </tr>            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);            gap: 0.5rem;
+
+                        </thead>
+
+                        <tbody>            overflow: hidden;        }
+
+                            {{#each certificados}}
+
+                                <tr>        }
+
+                                    <td>
+
+                                        <div class="certificado-name">{{usuario_nombre}}</div>        .empty-state {
+
+                                        <div class="certificado-description">{{usuario_email}}</div>
+
+                                    </td>        .table-header {            text-align: center;
+
+                                    <td>
+
+                                        <div class="certificado-name">{{curso_titulo}}</div>            background: var(--bg-light);            padding: 4rem 2rem;
+
+                                    </td>
+
+                                    <td>            padding: 1.5rem;            color: var(--text-muted);
+
+                                        <div class="certificado-description">{{instructor_nombre}}</div>
+
+                                    </td>            border-bottom: 1px solid var(--border-color);        }
+
+                                    <td>{{formatDate fecha_emision}}</td>
+
+                                    <td>        }
+
+                                        <span class="codigo-certificado">{{codigo_validacion}}</span>
+
+                                    </td>        .empty-state i {
+
+                                    <td>
+
+                                        <span class="badge bg-success">Activo</span>        .table-header h3 {            font-size: 4rem;
+
+                                    </td>
+
+                                    <td>            font-size: 1.25rem;            margin-bottom: 1rem;
+
+                                        <div class="actions-group">
+
+                                            <button class="btn btn-warning btn-sm"             font-weight: 600;            opacity: 0.5;
+
+                                                    onclick="verCertificado('{{id_certificado}}')" 
+
+                                                    title="Ver certificado">            color: var(--text-dark);        }
+
+                                                <i class="bi bi-eye"></i>
+
+                                            </button>            margin: 0;
+
+                                            <button class="btn btn-success btn-sm" 
+
+                                                    onclick="descargarCertificado('{{id_certificado}}')"             display: flex;        @media (max-width: 768px) {
+
+                                                    title="Descargar">
+
+                                                <i class="bi bi-download"></i>            align-items: center;            .main-container {
+
+                                            </button>
+
+                                            <button class="btn btn-danger btn-sm"             gap: 0.75rem;                padding: 1rem;
+
+                                                    onclick="revocarCertificado('{{id_certificado}}')" 
+
+                                                    title="Revocar">        }            }
+
+                                                <i class="bi bi-x-circle"></i>
+
+                                            </button>            
+
+                                        </div>
+
+                                    </td>        .table {            .header-section {
+
+                                </tr>
+
+                            {{/each}}            margin: 0;                padding: 1.5rem;
+
+                        </tbody>
+
+                    </table>        }            }
+
+                </div>
+
+            {{else}}            
+
+                <div class="text-center p-5">
+
+                    <i class="bi bi-award" style="font-size: 4rem; color: var(--text-muted);"></i>        .table th {            .controls-row {
+
+                    <h4 class="mt-3 text-muted">No hay certificados</h4>
+
+                    <p class="text-muted">No se han emitido certificados aún.</p>            background: var(--bg-light);                flex-direction: column;
+
+                    <button class="btn btn-primary" onclick="nuevoCertificado()">
+
+                        <i class="bi bi-plus-lg"></i>            border: none;                align-items: stretch;
+
+                        Crear Primer Certificado
+
+                    </button>            font-weight: 600;            }
+
+                </div>
+
+            {{/if}}            color: var(--text-dark);            
+
+        </div>
+
+    </div>            padding: 1rem;            .actions-group {
+
+
+
+    <!-- Scripts -->        }                justify-content: center;
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+                }
+
+    <script>
+
+        function buscar() {        .table td {        }
+
+            const searchTerm = document.getElementById('searchInput').value;
+
+            const cursoFilter = document.getElementById('cursoFilter').value;            border: none;    </style>
+
+            
+
+            const params = new URLSearchParams();
+
+            if (searchTerm) params.set('search', searchTerm);
+            if (cursoFilter) params.set('curso', cursoFilter);
+            
+            window.location.href = '?' + params.toString();
+        }
+
+        function nuevoCertificado() {
+            alert('Funcionalidad de nuevo certificado - En desarrollo');
+        }
+
+        function verCertificado(id) {
+
+            window.open(`/admin/certificados/${id}`, '_blank');            transition: background-color 0.2s ease;                <h1>
+
+        }
+
+        }                    <i class="bi bi-award"></i>
+
+        function descargarCertificado(id) {
+
+            window.location.href = `/admin/certificados/${id}/descargar`;                    Gestión de Certificados
+
+        }
+
+        .table tbody tr:hover {                </h1>
+
+        function revocarCertificado(id) {
+
+            if (confirm('¿Estás seguro de revocar este certificado?')) {            background-color: rgba(234, 88, 12, 0.05);                <a href="/admin/dashboard" class="btn btn-outline-secondary">
+
+                fetch(`/admin/certificados/${id}`, {
+
+                    method: 'DELETE'        }                    <i class="bi bi-arrow-left"></i> Volver al Dashboard
+
+                })
+
+                .then(response => response.json())                </a>
+
+                .then(data => {
+
+                    if (data.success) {        .badge {            </div>
+
+                        alert('Certificado revocado exitosamente');
+
+                        location.reload();            font-size: 0.75rem;
+
+                    } else {
+
+                        alert('Error: ' + data.message);            padding: 0.5rem 0.75rem;            <!-- Statistics -->
+
+                    }
+
+                })            border-radius: 6px;            <div class="stats-row">
+
+                .catch(error => {
+
+                    console.error('Error:', error);            font-weight: 600;                <div class="stat-card">
+
+                    alert('Error al revocar certificado');
+
+                });        }                    <span class="stat-number">{{totalCertificados}}</span>
+
+            }
+
+        }                    <div class="stat-label">Total Certificados</div>
+
+
+
+        // Event listeners        .badge.bg-success {                </div>
+
+        document.getElementById('searchInput')?.addEventListener('keypress', function(e) {
+
+            if (e.key === 'Enter') {            background-color: var(--success-color) !important;                <div class="stat-card">
+
+                buscar();
+
+            }        }                    <span class="stat-number">{{certificadosMes}}</span>
+
+        });
+
+                    <div class="stat-label">Emitidos este Mes</div>
+
+        document.getElementById('cursoFilter')?.addEventListener('change', buscar);
+
+    </script>
+
+        .badge.bg-warning {
+            background-color: var(--warning-color) !important;
+            color: white;
+        }
+
+        .badge.bg-danger {
+
+            background-color: var(--danger-color) !important;        </div>
+
+        }
+
+        <!-- Controls Section -->
+
+        .action-buttons {        <div class="controls-section">
+
+            display: flex;            <div class="controls-row">
+
+            gap: 0.5rem;                <h5 class="mb-0">
+
+            justify-content: flex-end;                    <i class="bi bi-list-ul"></i> Certificados Emitidos
+
+        }                </h5>
+
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalNuevoCertificado">
+
+        .btn-sm {                    <i class="bi bi-plus-circle"></i> Emitir Certificado
+
+            padding: 0.375rem 0.75rem;                </button>
+
+            font-size: 0.875rem;            </div>
+
+            border-radius: 6px;        </div>
+
+            font-weight: 500;
+
+        }        <!-- Table Section -->
+
+        <div class="table-section">
+
+        .btn-outline-primary {            <div class="table-responsive">
+
+            color: var(--primary-color);                <table class="table">
+
+            border-color: var(--primary-color);                    <thead>
+
+        }                        <tr>
+
+                            <th>ID</th>
+
+        .btn-outline-primary:hover {                            <th>Usuario</th>
+
+            background-color: var(--primary-color);                            <th>Curso</th>
+
+            border-color: var(--primary-color);                            <th>Instructor</th>
+
+            color: white;                            <th>Código</th>
+
+        }                            <th>Fecha Emisión</th>
+
+                            <th>Acciones</th>
+
+        .btn-outline-success {                        </tr>
+
+            color: var(--success-color);                    </thead>
+
+            border-color: var(--success-color);                    <tbody>
+
+        }                        {{#if certificados}}
+
+                            {{#each certificados}}
+
+        .btn-outline-success:hover {                            <tr>
+
+            background-color: var(--success-color);                                <td><strong>#{{id_certificado}}</strong></td>
+
+            border-color: var(--success-color);                                <td>
+
+            color: white;                                    <strong>{{usuario_nombre}}</strong><br>
+
+        }                                    <small class="text-muted">{{usuario_email}}</small>
+
+                                </td>
+
+        .btn-outline-danger {                                <td><strong>{{curso_titulo}}</strong></td>
+
+            color: var(--danger-color);                                <td>{{instructor_nombre}}</td>
+
+            border-color: var(--danger-color);                                <td>
+
+        }                                    <code class="bg-light p-2 rounded">{{codigo_validacion}}</code>
+
+                                </td>
+
+        .btn-outline-danger:hover {                                <td>{{formatDate fecha_emision}}</td>
+
+            background-color: var(--danger-color);                                <td>
+
+            border-color: var(--danger-color);                                    <div class="actions-group">
+
+            color: white;                                        <button class="btn btn-sm btn-success" 
+
+        }                                                onclick="descargarCertificado({{id_certificado}})"
+
+                                                title="Descargar">
+
+        .pagination {                                            <i class="bi bi-download"></i>
+
+            margin: 0;                                        </button>
+
+            padding: 1.5rem;                                        <button class="btn btn-sm btn-danger" 
+
+            background: var(--bg-light);                                                onclick="revocarCertificado({{id_certificado}})"
+
+        }                                                title="Revocar">
+
+                                            <i class="bi bi-x-circle"></i>
+
+        .page-link {                                        </button>
+
+            border: none;                                    </div>
+
+            color: var(--text-dark);                                </td>
+
+            padding: 0.75rem 1rem;                            </tr>
+
+            margin: 0 0.125rem;                            {{/each}}
+
+            border-radius: 8px;                        {{else}}
+
+            transition: all 0.2s ease;                            <tr>
+
+        }                                <td colspan="7">
+
+                                    <div class="empty-state">
+
+        .page-link:hover {                                        <i class="bi bi-inbox"></i>
+
+            background-color: var(--primary-color);                                        <p>No hay certificados emitidos</p>
+
+            color: white;                                    </div>
+
+        }                                </td>
+
+                            </tr>
+
+        .page-item.active .page-link {                        {{/if}}
+
+            background-color: var(--primary-color);                    </tbody>
+
+            border-color: var(--primary-color);                </table>
+
+        }            </div>
+
+        </div>
+
+        .back-btn {
+
+            position: fixed;        <!-- Top Cursos Section -->
+
+            top: 2rem;        {{#if cursosTop}}
+
+            left: 2rem;        <div class="controls-section mt-4">
+
+            background: white;            <h5 class="mb-3">
+
+            border: 2px solid var(--border-color);                <i class="bi bi-trophy"></i> Top Cursos con Más Certificados
+
+            width: 48px;            </h5>
+
+            height: 48px;            <div class="table-responsive">
+
+            border-radius: 8px;                <table class="table table-sm">
+
+            display: flex;                    <thead>
+
+            align-items: center;                        <tr>
+
+            justify-content: center;                            <th>Curso</th>
+
+            color: var(--text-dark);                            <th>Certificados Emitidos</th>
+
+            text-decoration: none;                        </tr>
+
+            transition: all 0.2s ease;                    </thead>
+
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);                    <tbody>
+
+            z-index: 1000;                        {{#each cursosTop}}
+
+        }                        <tr>
+
+                            <td><strong>{{titulo}}</strong></td>
+
+        .back-btn:hover {                            <td><span class="badge bg-primary">{{cantidad_certificados}}</span></td>
+
+            background: var(--primary-color);                        </tr>
+
+            color: white;                        {{/each}}
+
+            border-color: var(--primary-color);                    </tbody>
+
+            transform: translateY(-2px);                </table>
+
+        }            </div>
+
+        </div>
+
+        .certificate-code {        {{/if}}
+
+            font-family: 'Courier New', monospace;    </div>
+
+            background: var(--bg-light);
+
+            padding: 0.25rem 0.5rem;    <!-- Modal Nuevo Certificado -->
+
+            border-radius: 4px;    <div class="modal fade" id="modalNuevoCertificado" tabindex="-1">
+
+            font-size: 0.85rem;        <div class="modal-dialog">
+
+        }            <div class="modal-content">
+
+                <div class="modal-header" style="background: linear-gradient(135deg, var(--primary-color), #F7931E); color: white;">
+
+        @media (max-width: 768px) {                    <h5 class="modal-title"><i class="bi bi-plus-circle"></i> Emitir Certificado</h5>
+
+            .main-container {                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+
+                padding: 1rem;                </div>
+
+            }                <div class="modal-body">
+
+                    <form id="formNuevoCertificado">
+
+            .back-btn {                        <div class="mb-3">
+
+                top: 1rem;                            <label class="form-label">Usuario *</label>
+
+                left: 1rem;                            <input type="number" class="form-control" name="id_usuario" required 
+
+            }                                   placeholder="ID del usuario">
+
+                        </div>
+
+            .header-section {                        <div class="mb-3">
+
+                padding: 1.5rem;                            <label class="form-label">Curso *</label>
+
+            }                            <select class="form-select" name="id_curso" required>
+
+                                <option value="">Seleccionar curso...</option>
+
+            .header-title {                                {{#each cursos}}
+
+                flex-direction: column;                                <option value="{{id_curso}}">{{titulo}}</option>
+
+                text-align: center;                                {{/each}}
+
+            }                            </select>
+
+                        </div>
+
+            .controls-row {                    </form>
+
+                flex-direction: column;                </div>
+
+                align-items: stretch;                <div class="modal-footer">
+
+            }                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+
+                    <button type="button" class="btn btn-primary" onclick="emitirCertificado()">
+
+            .search-box {                        <i class="bi bi-check-circle"></i> Emitir
+
+                max-width: none;                    </button>
+
+            }                </div>
+
+            </div>
+
+            .stats-row {        </div>
+
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));    </div>
+
+                gap: 1rem;
+
+            }    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+
+            .filters {        function emitirCertificado() {
+
+                flex-direction: column;            const form = document.getElementById('formNuevoCertificado');
+
+                gap: 0.5rem;            const formData = new FormData(form);
+
+            }            const data = Object.fromEntries(formData);
+
+
+
+            .action-buttons {            fetch('/admin/certificados', {
+
+                justify-content: center;                method: 'POST',
+
+            }                headers: {
+
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+
+        <i class="bi bi-arrow-left"></i>                if (data.success) {
+
+                    alert(`Certificado emitido exitosamente\nCódigo: ${data.codigo}`);
+                    location.reload();
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error al emitir certificado');
+            });
+        }
+
+        function descargarCertificado(id) {
+            window.open(`/certificados/${id}/pdf`, '_blank');
+        }
+
+                </button>        function revocarCertificado(id) {
+
+            </div>            if (confirm('¿Estás seguro de revocar este certificado?')) {
+
+                fetch(`/admin/certificados/${id}`, {
+
+            <!-- Statistics Cards -->                    method: 'DELETE',
+
+            <div class="stats-row">                    headers: {
+
+                <div class="stat-card">                        'Content-Type': 'application/json',
+
+                    <span class="stat-number">{{totalCertificados}}</span>                    }
+
+                    <div class="stat-label">Certificados Emitidos</div>                })
+
+                </div>                .then(response => response.json())
+
+                <div class="stat-card">                .then(data => {
+
+                    <span class="stat-number">{{certificadosMes}}</span>                    if (data.success) {
+
+                    <div class="stat-label">Este Mes</div>                        alert('Certificado revocado exitosamente');
+
+                </div>                        location.reload();
+
+                <div class="stat-card">                    } else {
+
+                    <span class="stat-number">{{progresosCompletados}}</span>                        alert('Error: ' + data.message);
+
+                    <div class="stat-label">Videos Completados</div>                    }
+
+                </div>                })
+
+                <div class="stat-card">                .catch(error => {
+
+                    <span class="stat-number">{{cursos.length}}</span>                    console.error('Error:', error);
+
+                    <div class="stat-label">Cursos Disponibles</div>                    alert('Error al revocar certificado');
+
+                </div>                });
+
+            </div>            }
+
+        </div>        }
+
+    </script>
+
+        <!-- Controls Section -->
+        <div class="controls-section">
+
+            <div class="controls-row">
+                <div class="search-box">
+                    <i class="bi bi-search"></i>
+                    <input type="text" id="searchInput" placeholder="Buscar por estudiante, curso o código..." value="{{search}}">
+                </div>
+                <div class="filters">
+                    <select class="filter-select" id="cursoFilter">
+                        <option value="">Todos los cursos</option>
+                        {{#each cursos}}
+                            <option value="{{id_curso}}">{{titulo}}</option>
+                        {{/each}}
+                    </select>
+                    <select class="filter-select" id="estadoFilter">
+                        <option value="">Todos los estados</option>
+                        <option value="activo">Activo</option>
+                        <option value="revocado">Revocado</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Certificates Table -->
+        <div class="table-section">
+            <div class="table-header">
+                <h3><i class="bi bi-list-ul"></i>Certificados Emitidos ({{certificados.length}} total)</h3>
+            </div>
+
+            {{#if certificados.length}}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Estudiante</th>
+                                <th>Curso</th>
+                                <th>Instructor</th>
+                                <th>Fecha Emisión</th>
+                                <th>Código</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {{#each certificados}}
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="me-3">
+                                                <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center" 
+                                                     style="width: 40px; height: 40px; color: white; font-weight: bold;">
+                                                    {{initials usuario_nombre}}
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <strong>{{usuario_nombre}}</strong>
+                                                <br>
+                                                <small class="text-muted">{{usuario_email}}</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <strong>{{curso_titulo}}</strong>
+                                    </td>
+                                    <td>
+                                        <small class="text-muted">{{instructor_nombre}}</small>
+                                    </td>
+                                    <td>{{formatDate fecha_emision}}</td>
+                                    <td>
+                                        <span class="certificate-code">{{codigo_validacion}}</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-success">Activo</span>
+                                    </td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="btn btn-outline-primary btn-sm" 
+                                                    onclick="verCertificado('{{id_certificado}}')" 
+                                                    title="Ver certificado">
+                                                <i class="bi bi-eye"></i>
+                                            </button>
+                                            <button class="btn btn-outline-success btn-sm" 
+                                                    onclick="descargarCertificado('{{id_certificado}}')" 
+                                                    title="Descargar PDF">
+                                                <i class="bi bi-download"></i>
+                                            </button>
+                                            <button class="btn btn-outline-danger btn-sm" 
+                                                    onclick="revocarCertificado('{{id_certificado}}')" 
+                                                    title="Revocar certificado">
+                                                <i class="bi bi-x-circle"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {{/each}}
+                        </tbody>
+                    </table>
+                </div>
+            {{else}}
+                <div class="text-center py-5">
+                    <i class="bi bi-award" style="font-size: 4rem; color: var(--text-muted);"></i>
+                    <h4 class="mt-3 text-muted">No hay certificados</h4>
+                    <p class="text-muted">No se han emitido certificados aún.</p>
+                    <button class="btn btn-primary mt-3" onclick="mostrarModalCertificado()">
+                        <i class="bi bi-plus-lg"></i>
+                        Generar Primer Certificado
+                    </button>
+                </div>
+            {{/if}}
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Funciones principales
+        document.addEventListener('DOMContentLoaded', function() {
+            // Configurar búsqueda en tiempo real
+            const searchInput = document.getElementById('searchInput');
+            if (searchInput) {
+                let searchTimeout;
+                searchInput.addEventListener('input', function() {
+                    clearTimeout(searchTimeout);
+                    searchTimeout = setTimeout(() => {
+                        aplicarFiltros();
+                    }, 500);
+                });
+            }
+
+            // Configurar filtros
+            document.getElementById('cursoFilter')?.addEventListener('change', aplicarFiltros);
+            document.getElementById('estadoFilter')?.addEventListener('change', aplicarFiltros);
+        });
+
+        function aplicarFiltros() {
+            const search = document.getElementById('searchInput').value;
+            const curso = document.getElementById('cursoFilter').value;
+            const estado = document.getElementById('estadoFilter').value;
+            
+            const params = new URLSearchParams(window.location.search);
+            params.set('search', search);
+            params.set('curso', curso);
+            params.set('estado', estado);
+            
+            window.location.href = '?' + params.toString();
+        }
+
+        function mostrarModalCertificado() {
+            alert('Modal para generar certificado - Funcionalidad en desarrollo');
+        }
+
+        function verCertificado(id) {
+            window.open(`/admin/certificados/${id}`, '_blank');
+        }
+
+        function descargarCertificado(id) {
+            window.location.href = `/admin/certificados/${id}/descargar`;
+        }
+
+        async function revocarCertificado(id) {
+            if (!confirm('¿Estás seguro de que deseas revocar este certificado?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/admin/certificados/${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    alert('Certificado revocado exitosamente');
+                    window.location.reload();
+                } else {
+                    alert('Error: ' + result.message);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error al revocar el certificado');
+            }
+        }
+    </script>
+</body>
+</html>

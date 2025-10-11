@@ -1,92 +1,372 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
-    <title>{{title}}</title>
-    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{title}} - StartEducation</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/images/favicon.svg">
+    
+    <!-- Bootstrap 5.3 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        .student-platform {
+        :root {
+            --primary-color: #ea580c;
+            --primary-hover: #c2410c;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --info-color: #3b82f6;
+            --text-dark: #1f2937;
+            --text-muted: #6b7280;
+            --border-color: #e5e7eb;
+            --bg-light: #f8fafc;
+        }
+
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            color: var(--text-dark);
             min-height: 100vh;
-            background: linear-gradient(135deg, var(--bg-light) 0%, #fff 100%);
         }
-        
-        .top-bar {
+
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header-section {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border-left: 5px solid var(--primary-color);
+        }
+
+        .header-title {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .header-title h1 {
+            color: var(--text-dark);
+            font-weight: 700;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .stat-card {
+            background: var(--bg-light);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            border: 1px solid var(--border-color);
+            transition: transform 0.2s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            display: block;
+        }
+
+        .stat-label {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        .controls-section {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .controls-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .search-group {
+            display: flex;
+            gap: 0.5rem;
+            flex: 1;
+            max-width: 400px;
+        }
+
+        .search-input {
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            font-size: 0.95rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .search-input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(234, 88, 12, 0.25);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, var(--primary-hover) 0%, #9a3412 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(234, 88, 12, 0.4);
+        }
+
+        .btn-outline-primary {
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+            border-radius: 8px;
+            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-outline-primary:hover {
             background: var(--primary-color);
-            color: white;
-            padding: 15px 0;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
         }
-        
-        .top-bar .container {
+
+        .courses-section {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .section-header {
+            background: var(--bg-light);
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
-        
-        .logo {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: var(--accent-color);
-        }
-        
-        .user-info {
+
+        .section-title {
+            font-weight: 600;
+            color: var(--text-dark);
+            margin: 0;
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 0.5rem;
         }
-        
-        .user-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: var(--accent-color);
+
+        .courses-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 2rem;
+            padding: 2rem;
+        }
+
+        .course-card {
+            background: white;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .course-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .course-image {
+            height: 200px;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: bold;
+            color: white;
+            font-size: 3rem;
+        }
+
+        .course-content {
+            padding: 1.5rem;
+        }
+
+        .course-title {
+            font-weight: 600;
+            font-size: 1.25rem;
+            color: var(--text-dark);
+            margin-bottom: 0.75rem;
+            line-height: 1.4;
+        }
+
+        .course-description {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .course-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .course-price {
+            font-weight: 700;
+            font-size: 1.25rem;
             color: var(--primary-color);
         }
-        
-        .main-content {
-            padding: 40px 0;
+
+        .course-level {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
         }
-        
-        .welcome-section {
+
+        .level-básico {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success-color);
+        }
+
+        .level-intermedio {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning-color);
+        }
+
+        .level-avanzado {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger-color);
+        }
+
+        .course-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .course-instructor {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .course-rating {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            color: var(--warning-color);
+        }
+
+        .empty-state {
             text-align: center;
-            margin-bottom: 50px;
+            padding: 4rem 2rem;
+            color: var(--text-muted);
         }
-        
-        .welcome-section h1 {
-            font-size: 2.5rem;
-            color: var(--primary-color);
-            margin-bottom: 15px;
+
+        .empty-state .icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.3;
         }
-        
-        .welcome-section p {
-            font-size: 1.2rem;
-            color: var(--text-light);
-            max-width: 600px;
-            margin: 0 auto;
+
+        .filter-tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
         }
-        
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 50px;
-        }
-        
-        .stat-card {
+
+        .filter-tab {
+            padding: 0.5rem 1rem;
+            border: 2px solid var(--border-color);
+            border-radius: 20px;
             background: white;
-            padding: 25px;
-            border-radius: 12px;
-            text-align: center;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            transition: transform 0.3s ease;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
         }
-        
-        .stat-card:hover {
-            transform: translateY(-5px);
+
+        .filter-tab:hover, .filter-tab.active {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+            background: rgba(234, 88, 12, 0.05);
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                padding: 1rem;
+            }
+            
+            .courses-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+                padding: 1.5rem;
+            }
+            
+            .stats-row {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1rem;
+            }
+            
+            .controls-row {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .search-group {
+                max-width: none;
+            }
         }
         
         .stat-icon {
@@ -265,170 +545,154 @@
     </style>
 </head>
 <body>
-    <div class="student-platform">
-        <!-- Top Bar -->
-        <div class="top-bar">
-            <div class="container">
-                <div class="logo">🎯 StartEducation</div>
-                <div class="nav-links">
-                    <a href="/cursos/mis-cursos?user={{userName}}&email={{userEmail}}&rol={{userRole}}&id={{userId}}">📚 Mis Cursos</a>
-                    <a href="#perfil">👤 Perfil</a>
+    <div class="main-container">
+        <!-- Header Section -->
+        <div class="header-section">
+            <div class="header-title">
+                <div>
+                    <h1>
+                        <i class="bi bi-journal-bookmark"></i>
+                        Catálogo de Cursos
+                    </h1>
+                    <p class="text-muted mb-0">Descubre y explora nuestros cursos disponibles</p>
                 </div>
-                <div class="user-info">
-                    <div class="user-avatar">{{userName.[0]}}</div>
-                    <div>
-                        <div style="font-weight: bold;">{{userName}}</div>
-                        <div style="font-size: 0.9rem; opacity: 0.8;">Estudiante</div>
-                    </div>
-                    <form method="POST" action="/auth/logout" style="display: inline;">
-                        <button type="submit" class="logout-btn">Salir</button>
-                    </form>
+                <div class="d-flex gap-2">
+                    <a href="/user-dashboard" class="btn btn-outline-primary">
+                        <i class="bi bi-arrow-left me-2"></i>Mi Dashboard
+                    </a>
+                    <a href="/perfil" class="btn btn-outline-primary">
+                        <i class="bi bi-person me-2"></i>Mi Perfil
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Estadísticas -->
+            <div class="stats-row">
+                <div class="stat-card">
+                    <span class="stat-number">{{stats.totalCursos}}</span>
+                    <div class="stat-label">Total Cursos</div>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">{{stats.cursosBasicos}}</span>
+                    <div class="stat-label">Nivel Básico</div>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">{{stats.cursosIntermedios}}</span>
+                    <div class="stat-label">Nivel Intermedio</div>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">{{stats.cursosAvanzados}}</span>
+                    <div class="stat-label">Nivel Avanzado</div>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">{{stats.cursosPublicados}}</span>
+                    <div class="stat-label">Cursos Publicados</div>
                 </div>
             </div>
         </div>
 
-        <!-- Main Content -->
-        <div class="main-content">
-            <div class="container">
-                <!-- Welcome Section -->
-                <div class="welcome-section">
-                    <h1>¡Bienvenido, {{userName}}! 🎓</h1>
-                    <p>Descubre los mejores cursos de barbería y lleva tus habilidades al siguiente nivel</p>
+        <!-- Controls Section -->
+        <div class="controls-section">
+            <div class="controls-row">
+                <div class="search-group">
+                    <form method="GET" class="d-flex w-100">
+                        <input type="text" 
+                               class="form-control search-input" 
+                               name="search" 
+                               placeholder="Buscar cursos..." 
+                               value="{{search}}">
+                        <button type="submit" class="btn btn-primary ms-2">
+                            <i class="bi bi-search"></i>
+                        </button>
+                    </form>
                 </div>
-
-                <!-- Stats Grid -->
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-icon">📚</div>
-                        <div class="stat-number">12</div>
-                        <div class="stat-label">Cursos Disponibles</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon">🎓</div>
-                        <div class="stat-number">0</div>
-                        <div class="stat-label">Cursos Completados</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon">⭐</div>
-                        <div class="stat-number">4.8</div>
-                        <div class="stat-label">Calificación Promedio</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon">👥</div>
-                        <div class="stat-number">2,450</div>
-                        <div class="stat-label">Estudiantes Activos</div>
-                    </div>
-                </div>
-
-                <!-- Cursos Destacados -->
-                <h2 class="section-title">🔥 Cursos Destacados</h2>
-                <div class="cursos-grid">
-                    <div class="curso-card">
-                        <div class="curso-image">✂️</div>
-                        <div class="curso-content">
-                            <div class="curso-title">Corte Básico de Cabello</div>
-                            <div class="curso-description">Aprende las técnicas fundamentales del corte de cabello masculino con nuestros expertos.</div>
-                            <div class="curso-meta">
-                                <div class="curso-precio">$2,500 MXN</div>
-                                <div class="curso-nivel">Principiante</div>
-                            </div>
-                            <div style="display: flex; gap: 10px; margin-top: 15px;">
-                                <a href="/cursos/corte-basico?user={{userName}}&email={{userEmail}}&rol={{userRole}}&id={{userId}}" class="btn-curso" style="flex: 1;">
-                                    📚 Ver Curso
-                                </a>
-                                <a href="/video?videoId=1122531979&title=Corte Básico de Cabello&description=Aprende las técnicas fundamentales del corte de cabello masculino&user={{userName}}&email={{userEmail}}&rol={{userRole}}" class="btn-curso" style="flex: 1; background: #e74c3c;">
-                                    🎬 Ver Video
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="curso-card">
-                        <div class="curso-image">🧔</div>
-                        <div class="curso-content">
-                            <div class="curso-title">Técnicas Avanzadas de Barba</div>
-                            <div class="curso-description">Domina el arte del arreglo y diseño de barba profesional con técnicas avanzadas.</div>
-                            <div class="curso-meta">
-                                <div class="curso-precio">$3,200 MXN</div>
-                                <div class="curso-nivel">Intermedio</div>
-                            </div>
-                            <div style="display: flex; gap: 10px; margin-top: 15px;">
-                                <a href="/cursos/barba-avanzado?user={{userName}}&email={{userEmail}}&rol={{userRole}}&id={{userId}}" class="btn-curso" style="flex: 1;">
-                                    📚 Ver Curso
-                                </a>
-                                <a href="/video?videoId=1122531979&title=Técnicas Avanzadas de Barba&description=Domina el arte del arreglo y diseño de barba profesional&user={{userName}}&email={{userEmail}}&rol={{userRole}}" class="btn-curso" style="flex: 1; background: #e74c3c;">
-                                    🎬 Ver Video
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="curso-card">
-                        <div class="curso-image">🎨</div>
-                        <div class="curso-content">
-                            <div class="curso-title">Fade Profesional</div>
-                            <div class="curso-description">Perfecciona la técnica del fade en todos sus estilos y conviértete en un experto.</div>
-                            <div class="curso-meta">
-                                <div class="curso-precio">$4,000 MXN</div>
-                                <div class="curso-nivel">Avanzado</div>
-                            </div>
-                            <div style="display: flex; gap: 10px; margin-top: 15px;">
-                                <a href="/cursos/fade-profesional?user={{userName}}&email={{userEmail}}&rol={{userRole}}&id={{userId}}" class="btn-curso" style="flex: 1;">
-                                    📚 Ver Curso
-                                </a>
-                                <a href="/video?videoId=1122531979&title=Fade Profesional&description=Perfecciona la técnica del fade en todos sus estilos&user={{userName}}&email={{userEmail}}&rol={{userRole}}" class="btn-curso" style="flex: 1; background: #e74c3c;">
-                                    🎬 Ver Video
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Recommendations Section -->
-                <div class="recommendations-section">
-                    <h3 class="section-title">💡 Recomendaciones Personalizadas</h3>
-                    
-                    <div class="recommendation-item">
-                        <div class="recommendation-icon">🚀</div>
-                        <div>
-                            <strong>¡Comienza tu viaje!</strong><br>
-                            Te recomendamos empezar con el "Corte Básico de Cabello" para construir una base sólida.
-                        </div>
-                    </div>
-                    
-                    <div class="recommendation-item">
-                        <div class="recommendation-icon">📖</div>
-                        <div>
-                            <strong>Aprende paso a paso</strong><br>
-                            Nuestros cursos están diseñados progresivamente. Sigue el orden recomendado para mejores resultados.
-                        </div>
-                    </div>
-                    
-                    <div class="recommendation-item">
-                        <div class="recommendation-icon">🎯</div>
-                        <div>
-                            <strong>Practica regularmente</strong><br>
-                            Dedica al menos 2 horas semanales a la práctica para dominar las técnicas enseñadas.
-                        </div>
-                    </div>
-                    
-                    <div class="recommendation-item">
-                        <div class="recommendation-icon">👥</div>
-                        <div>
-                            <strong>Únete a la comunidad</strong><br>
-                            Participa en los foros de discusión y conecta con otros estudiantes y profesionales.
-                        </div>
-                    </div>
+                
+                <!-- Filtros por nivel -->
+                <div class="filter-tabs">
+                    <a href="/cursos" class="filter-tab {{#unless filtro}}active{{/unless}}">Todos</a>
+                    <a href="/cursos?nivel=básico" class="filter-tab {{#if (eq filtro 'básico')}}active{{/if}}">Básico</a>
+                    <a href="/cursos?nivel=intermedio" class="filter-tab {{#if (eq filtro 'intermedio')}}active{{/if}}">Intermedio</a>
+                    <a href="/cursos?nivel=avanzado" class="filter-tab {{#if (eq filtro 'avanzado')}}active{{/if}}">Avanzado</a>
                 </div>
             </div>
+        </div>
+
+        <!-- Courses Section -->
+        <div class="courses-section">
+            <div class="section-header">
+                <h5 class="section-title">
+                    <i class="bi bi-grid"></i>
+                    Cursos Disponibles
+                </h5>
+                <span class="badge bg-primary">{{cursos.length}} curso{{#if (gt cursos.length 1)}}s{{/if}}</span>
+            </div>
+            
+            {{#if cursos.length}}
+                <div class="courses-grid">
+                    {{#each cursos}}
+                    <div class="course-card">
+                        <div class="course-image">
+                            {{#if miniatura}}
+                                <img src="{{miniatura}}" alt="{{titulo}}" style="width: 100%; height: 100%; object-fit: cover;">
+                            {{else}}
+                                <i class="bi bi-play-circle"></i>
+                            {{/if}}
+                        </div>
+                        <div class="course-content">
+                            <h6 class="course-title">{{titulo}}</h6>
+                            <p class="course-description">{{descripcion}}</p>
+                            
+                            <div class="course-meta">
+                                <span class="course-price">{{precio_formato}}</span>
+                                <span class="course-level level-{{nivel}}">{{nivel}}</span>
+                            </div>
+                            
+                            <div class="course-footer">
+                                <small class="course-instructor">
+                                    <i class="bi bi-person me-1"></i>{{instructor_nombre}}
+                                </small>
+                                {{#if total_valoraciones}}
+                                <div class="course-rating">
+                                    <i class="bi bi-star-fill"></i>
+                                    <span>{{calificacion_promedio}}</span>
+                                    <small class="text-muted">({{total_valoraciones}})</small>
+                                </div>
+                                {{/if}}
+                            </div>
+                            
+                            <div class="mt-3">
+                                <a href="/cursos/{{id_curso}}" class="btn btn-primary w-100">
+                                    <i class="bi bi-eye me-2"></i>Ver Curso
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    {{/each}}
+                </div>
+            {{else}}
+                <div class="empty-state">
+                    <i class="bi bi-journal-x icon"></i>
+                    <h5>No hay cursos disponibles</h5>
+                    <p>Actualmente no tenemos cursos que coincidan con tu búsqueda.</p>
+                    {{#if search}}
+                        <a href="/cursos" class="btn btn-primary">
+                            <i class="bi bi-arrow-clockwise me-2"></i>Ver Todos los Cursos
+                        </a>
+                    {{/if}}
+                </div>
+            {{/if}}
         </div>
     </div>
 
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
     <script>
         // Animaciones de entrada
         document.addEventListener('DOMContentLoaded', function() {
-            const cards = document.querySelectorAll('.curso-card, .stat-card');
-            cards.forEach((card, index) => {
+            // Animar las tarjetas de curso
+            const courseCards = document.querySelectorAll('.course-card');
+            courseCards.forEach((card, index) => {
                 card.style.opacity = '0';
                 card.style.transform = 'translateY(20px)';
                 setTimeout(() => {
@@ -437,13 +701,35 @@
                     card.style.transform = 'translateY(0)';
                 }, index * 100);
             });
+
+            // Animar las estadísticas
+            const statCards = document.querySelectorAll('.stat-card');
+            statCards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    card.style.transition = 'all 0.6s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 80);
+            });
         });
 
-        // Confirmación de logout
-        document.querySelector('form[action="/auth/logout"]').addEventListener('submit', function(e) {
-            if (!confirm('¿Estás seguro de que quieres cerrar sesión?')) {
-                e.preventDefault();
-            }
+        // Filtros en tiempo real
+        document.querySelector('.search-input')?.addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const courseCards = document.querySelectorAll('.course-card');
+            
+            courseCards.forEach(card => {
+                const title = card.querySelector('.course-title').textContent.toLowerCase();
+                const description = card.querySelector('.course-description').textContent.toLowerCase();
+                
+                if (title.includes(searchTerm) || description.includes(searchTerm)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
         });
     </script>
 </body>

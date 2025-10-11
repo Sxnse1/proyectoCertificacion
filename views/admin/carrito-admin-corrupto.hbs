@@ -1,0 +1,1052 @@
+<!DOCTYPE html><!DOCTYPE html>
+
+<html lang="es"><html lang="es">
+
+<head><head>
+
+    <meta charset="UTF-8">    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Gestión de Carritos - StartEducation</title>    <title>Gestión de Carritos - Admin</title>
+
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Favicon -->    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link rel="icon" type="image/svg+xml" href="/images/favicon.svg">    <style>
+
+            :root {
+
+    <!-- Bootstrap 5.3 CSS -->            --primary-color: #FF6B35;
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">            --secondary-color: #004E89;
+
+    <!-- Bootstrap Icons -->        }
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Google Fonts -->        body {
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">            background: #f5f6fa;
+
+                font-family: 'Inter', sans-serif;
+
+    <style>        }
+
+        :root {
+
+            --primary-color: #ea580c;        .admin-header {
+
+            --primary-hover: #c2410c;            background: linear-gradient(135deg, var(--secondary-color), #003366);
+
+            --success-color: #10b981;            color: white;
+
+            --warning-color: #f59e0b;            padding: 30px 0;
+
+            --danger-color: #ef4444;            margin-bottom: 30px;
+
+            --text-dark: #1f2937;            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+
+            --text-muted: #6b7280;        }
+
+            --border-color: #e5e7eb;
+
+            --bg-light: #f8fafc;        .stats-grid {
+
+        }            display: grid;
+
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+
+        * {            gap: 20px;
+
+            font-family: 'Inter', sans-serif;            margin-bottom: 30px;
+
+        }        }
+
+
+
+        body {        .stat-card {
+
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);            background: white;
+
+            color: var(--text-dark);            padding: 25px;
+
+            min-height: 100vh;            border-radius: 15px;
+
+        }            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+
+        }
+
+        .main-container {
+
+            max-width: 1400px;        .stat-icon {
+
+            margin: 0 auto;            width: 60px;
+
+            padding: 2rem;            height: 60px;
+
+        }            background: linear-gradient(135deg, var(--primary-color), #F7931E);
+
+            border-radius: 12px;
+
+        .header-section {            display: flex;
+
+            background: white;            align-items: center;
+
+            border-radius: 16px;            justify-content: center;
+
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);            margin-bottom: 15px;
+
+            padding: 2rem;            color: white;
+
+            margin-bottom: 2rem;            font-size: 1.5rem;
+
+            border-left: 5px solid var(--primary-color);        }
+
+        }
+
+        .stat-value {
+
+        .header-title {            font-size: 2rem;
+
+            display: flex;            font-weight: 700;
+
+            align-items: center;            color: var(--secondary-color);
+
+            justify-content: space-between;        }
+
+            flex-wrap: wrap;
+
+            gap: 1rem;        .stat-label {
+
+        }            color: #6c757d;
+
+            font-size: 0.9rem;
+
+        .header-title h1 {        }
+
+            color: var(--text-dark);
+
+            font-weight: 700;        .content-card {
+
+            margin: 0;            background: white;
+
+            display: flex;            border-radius: 15px;
+
+            align-items: center;            padding: 30px;
+
+            gap: 0.75rem;            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+
+        }            margin-bottom: 30px;
+
+        }
+
+        .stats-row {
+
+            display: grid;        .filter-section {
+
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));            background: #f8f9fa;
+
+            gap: 1.5rem;            padding: 20px;
+
+            margin-top: 1.5rem;            border-radius: 10px;
+
+        }            margin-bottom: 25px;
+
+        }
+
+        .stat-card {
+
+            background: var(--bg-light);        .table-custom thead {
+
+            border-radius: 12px;            background: #f8f9fa;
+
+            padding: 1.5rem;        }
+
+            text-align: center;
+
+            border: 1px solid var(--border-color);        .table-custom th {
+
+            transition: transform 0.2s ease;            font-weight: 600;
+
+        }            color: var(--secondary-color);
+
+            padding: 15px;
+
+        .stat-card:hover {        }
+
+            transform: translateY(-2px);
+
+        }        .table-custom td {
+
+            padding: 15px;
+
+        .stat-number {            vertical-align: middle;
+
+            font-size: 2rem;        }
+
+            font-weight: 700;
+
+            color: var(--primary-color);        .curso-preview {
+
+            display: block;            display: flex;
+
+        }            align-items: center;
+
+            gap: 10px;
+
+        .stat-label {        }
+
+            color: var(--text-muted);
+
+            font-size: 0.9rem;        .curso-preview img {
+
+            margin-top: 0.5rem;            width: 50px;
+
+        }            height: 50px;
+
+            object-fit: cover;
+
+        .controls-section {            border-radius: 8px;
+
+            background: white;        }
+
+            border-radius: 16px;
+
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);        .abandoned-badge {
+
+            padding: 1.5rem;            background: #ffeaa7;
+
+            margin-bottom: 2rem;            color: #d63031;
+
+        }            padding: 4px 10px;
+
+            border-radius: 15px;
+
+        .controls-row {            font-size: 0.8rem;
+
+            display: flex;            font-weight: 600;
+
+            justify-content: space-between;        }
+
+            align-items: center;
+
+            flex-wrap: wrap;        .chart-container {
+
+            gap: 1rem;            position: relative;
+
+        }            height: 300px;
+
+        }
+
+        .search-group {    </style>
+
+            display: flex;</head>
+
+            gap: 0.5rem;<body>
+
+            flex: 1;    <div class="admin-header">
+
+            max-width: 400px;        <div class="container-fluid">
+
+        }            <div class="d-flex justify-content-between align-items-center">
+
+                <div>
+
+        .search-input {                    <h1><i class="fas fa-shopping-cart"></i> Gestión de Carritos</h1>
+
+            border: 2px solid var(--border-color);                    <p class="mb-0">Análisis de carritos activos y abandonados</p>
+
+            border-radius: 8px;                </div>
+
+            padding: 0.75rem 1rem;                <a href="/admin/dashboard" class="btn btn-light btn-lg">
+
+            font-size: 0.95rem;                    <i class="fas fa-arrow-left"></i> Dashboard
+
+            transition: border-color 0.3s ease;                </a>
+
+        }            </div>
+
+        </div>
+
+        .search-input:focus {    </div>
+
+            border-color: var(--primary-color);
+
+            box-shadow: 0 0 0 0.2rem rgba(234, 88, 12, 0.25);    <div class="container-fluid">
+
+        }        <!-- Stats -->
+
+        <div class="stats-grid">
+
+        .btn-primary {            <div class="stat-card">
+
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);                <div class="stat-icon">
+
+            border: none;                    <i class="fas fa-shopping-basket"></i>
+
+            border-radius: 8px;                </div>
+
+            font-weight: 600;                <div class="stat-value">{{carritosActivos}}</div>
+
+            padding: 0.75rem 1.5rem;                <div class="stat-label">Carritos Activos</div>
+
+            transition: all 0.3s ease;            </div>
+
+        }            <div class="stat-card">
+
+                <div class="stat-icon">
+
+        .btn-primary:hover {                    <i class="fas fa-ban"></i>
+
+            background: linear-gradient(135deg, var(--primary-hover) 0%, #9a3412 100%);                </div>
+
+            transform: translateY(-2px);                <div class="stat-value">{{carritosAbandonados}}</div>
+
+            box-shadow: 0 8px 20px rgba(234, 88, 12, 0.4);                <div class="stat-label">Carritos Abandonados</div>
+
+        }            </div>
+
+            <div class="stat-card">
+
+        .btn-success {                <div class="stat-icon">
+
+            background: var(--success-color);                    <i class="fas fa-dollar-sign"></i>
+
+            border: none;                </div>
+
+            border-radius: 8px;                <div class="stat-value">${{valorTotal}}</div>
+
+            font-weight: 600;                <div class="stat-label">Valor Total en Carritos</div>
+
+            padding: 0.75rem 1.5rem;            </div>
+
+            transition: all 0.3s ease;            <div class="stat-card">
+
+        }                <div class="stat-icon">
+
+                    <i class="fas fa-chart-line"></i>
+
+        .btn-success:hover {                </div>
+
+            background: #059669;                <div class="stat-value">{{tasaConversion}}%</div>
+
+            transform: translateY(-2px);                <div class="stat-label">Tasa de Conversión</div>
+
+        }            </div>
+
+        </div>
+
+        .btn-warning {
+
+            background: var(--warning-color);        <div class="row">
+
+            border: none;            <div class="col-lg-8">
+
+            border-radius: 8px;                <div class="content-card">
+
+            color: white;                    <h2 class="mb-4"><i class="fas fa-list"></i> Carritos Activos</h2>
+
+            font-weight: 600;
+
+            padding: 0.5rem 1rem;                    <!-- Filtros -->
+
+            transition: all 0.3s ease;                    <div class="filter-section">
+
+        }                        <div class="row">
+
+                            <div class="col-md-4 mb-3">
+
+        .btn-warning:hover {                                <label class="form-label">Estado</label>
+
+            background: #d97706;                                <select class="form-select" id="filtroEstado" onchange="filtrarCarritos()">
+
+            color: white;                                    <option value="">Todos</option>
+
+        }                                    <option value="activo">Activos</option>
+
+                                    <option value="abandonado">Abandonados</option>
+
+        .btn-danger {                                </select>
+
+            background: var(--danger-color);                            </div>
+
+            border: none;                            <div class="col-md-4 mb-3">
+
+            border-radius: 8px;                                <label class="form-label">Buscar Usuario</label>
+
+            font-weight: 600;                                <input type="text" class="form-control" id="buscarUsuario" 
+
+            padding: 0.5rem 1rem;                                       placeholder="Nombre o email..." onkeyup="buscarUsuario()">
+
+            transition: all 0.3s ease;                            </div>
+
+        }                            <div class="col-md-4 mb-3 d-flex align-items-end">
+
+                                <button class="btn btn-warning w-100" onclick="enviarRecordatorios()">
+
+        .btn-danger:hover {                                    <i class="fas fa-envelope"></i> Recordatorios a Abandonados
+
+            background: #dc2626;                                </button>
+
+        }                            </div>
+
+                        </div>
+
+        .table-section {                    </div>
+
+            background: white;
+
+            border-radius: 16px;                    <!-- Table -->
+
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);                    <div class="table-responsive">
+
+            overflow: hidden;                        <table class="table table-custom table-hover">
+
+        }                            <thead>
+
+                                <tr>
+
+        .table-header {                                    <th>Usuario</th>
+
+            background: var(--bg-light);                                    <th>Cursos</th>
+
+            padding: 1.5rem;                                    <th>Total</th>
+
+            border-bottom: 1px solid var(--border-color);                                    <th>Última Actividad</th>
+
+        }                                    <th>Estado</th>
+
+                                    <th>Acciones</th>
+
+        .table {                                </tr>
+
+            margin: 0;                            </thead>
+
+        }                            <tbody id="tablaCarritos">
+
+                                {{#each carritos}}
+
+        .table th {                                <tr data-estado="{{estado}}">
+
+            background: var(--bg-light);                                    <td>
+
+            border: none;                                        <div>
+
+            font-weight: 600;                                            <strong>{{usuario_nombre}}</strong>
+
+            color: var(--text-dark);                                            <br>
+
+            padding: 1rem;                                            <small class="text-muted">{{usuario_email}}</small>
+
+        }                                        </div>
+
+                                    </td>
+
+        .table td {                                    <td>
+
+            border: none;                                        <span class="badge bg-primary">{{cantidad_items}} curso(s)</span>
+
+            padding: 1rem;                                    </td>
+
+            vertical-align: middle;                                    <td><strong class="text-success">${{total}}</strong></td>
+
+        }                                    <td>
+
+                                        {{formatDate fecha_agregado}}
+
+        .table tbody tr {                                        {{#if dias_inactivo}}
+
+            border-bottom: 1px solid #f1f5f9;                                        <br><small class="text-muted">{{dias_inactivo}} días</small>
+
+            transition: background-color 0.2s ease;                                        {{/if}}
+
+        }                                    </td>
+
+                                    <td>
+
+        .table tbody tr:hover {                                        {{#if abandonado}}
+
+            background-color: rgba(234, 88, 12, 0.05);                                        <span class="abandoned-badge">Abandonado</span>
+
+        }                                        {{else}}
+
+                                        <span class="badge bg-success">Activo</span>
+
+        .badge {                                        {{/if}}
+
+            font-size: 0.75rem;                                    </td>
+
+            padding: 0.35rem 0.65rem;                                    <td>
+
+        }                                        <button class="btn btn-sm btn-info" onclick="verDetalle({{id_usuario}})" 
+
+                                                title="Ver detalle">
+
+        .actions-group {                                            <i class="fas fa-eye"></i>
+
+            display: flex;                                        </button>
+
+            gap: 0.5rem;                                        {{#if abandonado}}
+
+        }                                        <button class="btn btn-sm btn-warning" onclick="enviarRecordatorio({{id_usuario}})" 
+
+                                                title="Enviar recordatorio">
+
+        .pagination-section {                                            <i class="fas fa-envelope"></i>
+
+            background: white;                                        </button>
+
+            border-radius: 16px;                                        {{/if}}
+
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);                                        <button class="btn btn-sm btn-danger" onclick="limpiarCarrito({{id_usuario}})" 
+
+            padding: 1.5rem;                                                title="Limpiar carrito">
+
+            margin-top: 2rem;                                            <i class="fas fa-trash"></i>
+
+        }                                        </button>
+
+                                    </td>
+
+        .pagination {                                </tr>
+
+            margin: 0;                                {{/each}}
+
+            justify-content: center;                            </tbody>
+
+        }                        </table>
+
+                    </div>
+
+        .page-link {                </div>
+
+            border: none;            </div>
+
+            color: var(--text-muted);
+
+            padding: 0.75rem 1rem;            <div class="col-lg-4">
+
+            margin: 0 0.25rem;                <div class="content-card">
+
+            border-radius: 8px;                    <h3 class="mb-4"><i class="fas fa-chart-pie"></i> Cursos Más Agregados</h3>
+
+            transition: all 0.3s ease;                    <div class="list-group">
+
+        }                        {{#each cursosPopulares}}
+
+                        <div class="list-group-item">
+
+        .page-link:hover {                            <div class="curso-preview">
+
+            background: var(--primary-color);                                <img src="{{imagen}}" alt="{{titulo}}">
+
+            color: white;                                <div class="flex-grow-1">
+
+        }                                    <strong>{{titulo}}</strong>
+
+                                    <br>
+
+        .page-item.active .page-link {                                    <small class="text-muted">{{cantidad}} veces en carrito</small>
+
+            background: var(--primary-color);                                </div>
+
+            color: white;                            </div>
+
+        }                        </div>
+
+                        {{/each}}
+
+        .empty-state {                    </div>
+
+            text-align: center;                </div>
+
+            padding: 4rem 2rem;
+
+            color: var(--text-muted);                <div class="content-card mt-4">
+
+        }                    <h3 class="mb-4"><i class="fas fa-clock"></i> Actividad Reciente</h3>
+
+                    <div class="list-group">
+
+        .empty-state i {                        {{#each actividadReciente}}
+
+            font-size: 4rem;                        <div class="list-group-item">
+
+            margin-bottom: 1rem;                            <div class="d-flex justify-content-between">
+
+            opacity: 0.5;                                <strong>{{usuario_nombre}}</strong>
+
+        }                                <small class="text-muted">{{tiempo}}</small>
+
+                            </div>
+
+        .loading-overlay {                            <small class="text-muted">{{accion}}: {{curso_titulo}}</small>
+
+            position: fixed;                        </div>
+
+            top: 0;                        {{/each}}
+
+            left: 0;                    </div>
+
+            right: 0;                </div>
+
+            bottom: 0;            </div>
+
+            background: rgba(255, 255, 255, 0.95);        </div>
+
+            display: none;    </div>
+
+            align-items: center;
+
+            justify-content: center;    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+            z-index: 9999;    <script>
+
+        }        function filtrarCarritos() {
+
+            const estado = document.getElementById('filtroEstado').value;
+
+        .spinner-border {            const filas = document.querySelectorAll('#tablaCarritos tr');
+
+            color: var(--primary-color);
+
+        }            filas.forEach(fila => {
+
+                const matchEstado = !estado || fila.dataset.estado === estado;
+
+        .curso-item {                fila.style.display = matchEstado ? '' : 'none';
+
+            display: flex;            });
+
+            align-items: center;        }
+
+            gap: 0.75rem;
+
+        }        function buscarUsuario() {
+
+            const busqueda = document.getElementById('buscarUsuario').value.toLowerCase();
+
+        .curso-image {            const filas = document.querySelectorAll('#tablaCarritos tr');
+
+            width: 40px;
+
+            height: 40px;            filas.forEach(fila => {
+
+            border-radius: 8px;                const texto = fila.textContent.toLowerCase();
+
+            object-fit: cover;                fila.style.display = texto.includes(busqueda) ? '' : 'none';
+
+        }            });
+
+        }
+
+        .curso-info h6 {
+
+            margin: 0;        function verDetalle(userId) {
+
+            font-size: 0.9rem;            window.location.href = `/admin/carritos/${userId}`;
+
+            font-weight: 600;        }
+
+        }
+
+        function enviarRecordatorio(userId) {
+
+        .curso-info small {            if (confirm('¿Enviar recordatorio a este usuario?')) {
+
+            color: var(--text-muted);                fetch(`/admin/carritos/${userId}/recordatorio`, {
+
+        }                    method: 'POST',
+
+                    headers: {'Content-Type': 'application/json'}
+
+        @media (max-width: 768px) {                })
+
+            .main-container {                .then(response => response.json())
+
+                padding: 1rem;                .then(data => {
+
+            }                    if (data.success) {
+
+                                    alert('Recordatorio enviado');
+
+            .header-section {                    }
+
+                padding: 1.5rem;                });
+
+            }            }
+
+                    }
+
+            .controls-row {
+
+                flex-direction: column;        function enviarRecordatorios() {
+
+                align-items: stretch;            if (confirm('¿Enviar recordatorios a todos los carritos abandonados?')) {
+
+            }                fetch('/admin/carritos/recordatorios-masivos', {
+
+                                method: 'POST',
+
+            .search-group {                    headers: {'Content-Type': 'application/json'}
+
+                max-width: none;                })
+
+            }                .then(response => response.json())
+
+                            .then(data => {
+
+            .actions-group {                    if (data.success) {
+
+                justify-content: center;                        alert(`${data.enviados} recordatorios enviados`);
+
+            }                    }
+
+                            });
+
+            .table-responsive {            }
+
+                font-size: 0.9rem;        }
+
+            }
+
+        }        function limpiarCarrito(userId) {
+
+    </style>            if (confirm('¿Limpiar este carrito?')) {
+
+</head>                fetch(`/admin/carritos/${userId}/limpiar`, {
+
+<body>                    method: 'DELETE',
+
+    <!-- Loading Overlay -->                    headers: {'Content-Type': 'application/json'}
+
+    <div class="loading-overlay" id="loadingOverlay">                })
+
+        <div class="text-center">                .then(response => response.json())
+
+            <div class="spinner-border mb-3" role="status">                .then(data => {
+
+                <span class="visually-hidden">Cargando...</span>                    if (data.success) {
+
+            </div>                        alert('Carrito limpiado');
+
+            <p>Procesando...</p>                        location.reload();
+
+        </div>                    }
+
+    </div>                });
+
+            }
+
+    <div class="main-container">        }
+
+        <!-- Header Section -->    </script>
+
+        <div class="header-section"></body>
+
+            <div class="header-title"></html>
+                <h1>
+                    <i class="bi bi-cart3"></i>
+                    Gestión de Carritos
+                </h1>
+                <div class="d-flex gap-2">
+                    <a href="/dashboard" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-left me-2"></i>Dashboard
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Estadísticas -->
+            <div class="stats-row">
+                <div class="stat-card">
+                    <span class="stat-number">{{stats.carritosActivos}}</span>
+                    <div class="stat-label">Carritos Activos</div>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">{{stats.carritosAbandonados}}</span>
+                    <div class="stat-label">Carritos Abandonados</div>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">${{stats.valorTotal}}</span>
+                    <div class="stat-label">Valor Total</div>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">{{tasaConversion}}%</span>
+                    <div class="stat-label">Tasa de Conversión</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Controls Section -->
+        <div class="controls-section">
+            <div class="controls-row">
+                <div class="search-group">
+                    <input type="text" 
+                           class="form-control search-input" 
+                           id="searchInput"
+                           placeholder="Buscar carritos...">
+                    <button type="button" class="btn btn-primary" onclick="filtrarTabla()">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cursos Más Agregados -->
+        {{#if cursosPopulares.length}}
+        <div class="table-section mb-4">
+            <div class="table-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-star me-2"></i>
+                    Cursos Más Agregados al Carrito
+                </h5>
+            </div>
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Curso</th>
+                            <th>Veces Agregado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{#each cursosPopulares}}
+                        <tr>
+                            <td>
+                                <div class="curso-item">
+                                    {{#if this.miniatura}}
+                                    <img src="{{this.miniatura}}" alt="{{this.titulo}}" class="curso-image">
+                                    {{else}}
+                                    <div class="curso-image bg-light d-flex align-items-center justify-content-center">
+                                        <i class="bi bi-book"></i>
+                                    </div>
+                                    {{/if}}
+                                    <div class="curso-info">
+                                        <h6>{{this.titulo}}</h6>
+                                        <small>ID: {{this.id_curso}}</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td><span class="badge bg-primary">{{this.cantidad}}</span></td>
+                        </tr>
+                        {{/each}}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {{/if}}
+
+        <!-- Table Section -->
+        <div class="table-section">
+            <div class="table-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-list-ul me-2"></i>
+                    Carritos por Usuario
+                </h5>
+            </div>
+            
+            {{#if carritos.length}}
+            <div class="table-responsive">
+                <table class="table" id="carritosTable">
+                    <thead>
+                        <tr>
+                            <th>Usuario</th>
+                            <th>Email</th>
+                            <th>Items</th>
+                            <th>Valor Total</th>
+                            <th>Última Actividad</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{#each carritos}}
+                        <tr>
+                            <td><strong>{{this.usuario_nombre}}</strong></td>
+                            <td>{{this.usuario_email}}</td>
+                            <td>
+                                <span class="badge bg-info">{{this.cantidad_items}} items</span>
+                            </td>
+                            <td><strong>${{this.total}}</strong></td>
+                            <td>{{formatDate this.fecha_agregado}}</td>
+                            <td>
+                                {{#if this.abandonado}}
+                                <span class="badge bg-warning">
+                                    <i class="bi bi-clock"></i> Abandonado ({{this.dias_inactivo}} días)
+                                </span>
+                                {{else}}
+                                <span class="badge bg-success">
+                                    <i class="bi bi-check-circle"></i> Activo
+                                </span>
+                                {{/if}}
+                            </td>
+                            <td>
+                                <div class="actions-group">
+                                    <button type="button" class="btn btn-warning btn-sm" 
+                                            onclick="verDetalleCarrito({{this.id_usuario}})">
+                                        <i class="bi bi-eye"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {{/each}}
+                    </tbody>
+                </table>
+            </div>
+            {{else}}
+            <div class="empty-state">
+                <i class="bi bi-cart3"></i>
+                <h4>No hay carritos</h4>
+                <p>Cuando los usuarios agreguen cursos a sus carritos, aparecerán aquí.</p>
+            </div>
+            {{/if}}
+        </div>
+
+        <!-- Actividad Reciente -->
+        {{#if actividad.length}}
+        <div class="table-section mt-4">
+            <div class="table-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-clock-history me-2"></i>
+                    Actividad Reciente
+                </h5>
+            </div>
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Usuario</th>
+                            <th>Curso</th>
+                            <th>Acción</th>
+                            <th>Hace</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{#each actividad}}
+                        <tr>
+                            <td><strong>{{this.usuario_nombre}}</strong></td>
+                            <td>{{this.curso_titulo}}</td>
+                            <td>
+                                <span class="badge bg-info">{{this.accion}}</span>
+                            </td>
+                            <td>
+                                {{#if (lt this.minutos_transcurridos 60)}}
+                                {{this.minutos_transcurridos}} minutos
+                                {{else}}
+                                {{formatDate this.fecha_agregado}}
+                                {{/if}}
+                            </td>
+                        </tr>
+                        {{/each}}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {{/if}}
+    </div>
+
+    <!-- Modal Detalle de Carrito -->
+    <div class="modal fade" id="detalleModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Detalle del Carrito</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="detalleContent">
+                    <div class="text-center">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Cargando...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Variables globales
+        let detalleModal;
+        
+        // Inicializar cuando carga la página
+        document.addEventListener('DOMContentLoaded', function() {
+            detalleModal = new bootstrap.Modal(document.getElementById('detalleModal'));
+        });
+        
+        // Filtrar tabla
+        function filtrarTabla() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const rows = document.querySelectorAll('#carritosTable tbody tr');
+            
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchTerm) ? '' : 'none';
+            });
+        }
+        
+        // Ver detalle del carrito
+        async function verDetalleCarrito(idUsuario) {
+            detalleModal.show();
+            
+            try {
+                showLoading(true);
+                
+                const response = await fetch(`/admin/carritos/${idUsuario}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    let html = '<div class="row g-3">';
+                    
+                    data.items.forEach(item => {
+                        html += `
+                            <div class="col-12">
+                                <div class="d-flex align-items-center gap-3 p-3 border rounded">
+                                    ${item.miniatura ? 
+                                        `<img src="${item.miniatura}" alt="${item.titulo}" class="curso-image">` :
+                                        '<div class="curso-image bg-light d-flex align-items-center justify-content-center"><i class="bi bi-book"></i></div>'
+                                    }
+                                    <div class="flex-grow-1">
+                                        <h6>${item.titulo}</h6>
+                                        <p class="mb-0 text-muted">Agregado: ${new Date(item.fecha_agregado).toLocaleString()}</p>
+                                    </div>
+                                    <div class="text-end">
+                                        <strong>$${item.precio}</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    
+                    html += '</div>';
+                    document.getElementById('detalleContent').innerHTML = html;
+                } else {
+                    document.getElementById('detalleContent').innerHTML = `
+                        <div class="alert alert-warning">
+                            ${data.message}
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                document.getElementById('detalleContent').innerHTML = `
+                    <div class="alert alert-danger">
+                        Error al cargar los detalles del carrito
+                    </div>
+                `;
+            } finally {
+                showLoading(false);
+            }
+        }
+        
+        // Mostrar/ocultar loading
+        function showLoading(show) {
+            const overlay = document.getElementById('loadingOverlay');
+            overlay.style.display = show ? 'flex' : 'none';
+        }
+    </script>
+</body>
+</html>

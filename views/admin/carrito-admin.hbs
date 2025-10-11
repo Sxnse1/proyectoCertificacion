@@ -3,256 +3,337 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestión de Carritos - Admin</title>
+    <title>Gestión de Carritos - StartEducation</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/images/favicon.svg">
+    
+    <!-- Bootstrap 5.3 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
     <style>
         :root {
-            --primary-color: #FF6B35;
-            --secondary-color: #004E89;
+            --primary-color: #ea580c;
+            --primary-hover: #c2410c;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --text-dark: #1f2937;
+            --text-muted: #6b7280;
+            --border-color: #e5e7eb;
+            --bg-light: #f8fafc;
         }
 
-        body {
-            background: #f5f6fa;
+        * {
             font-family: 'Inter', sans-serif;
         }
 
-        .admin-header {
-            background: linear-gradient(135deg, var(--secondary-color), #003366);
-            color: white;
-            padding: 30px 0;
-            margin-bottom: 30px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        body {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            color: var(--text-dark);
+            min-height: 100vh;
         }
 
-        .stats-grid {
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header-section {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border-left: 5px solid var(--primary-color);
+        }
+
+        .header-title {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .header-title h1 {
+            color: var(--text-dark);
+            font-weight: 700;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .stats-row {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
         }
 
         .stat-card {
-            background: white;
-            padding: 25px;
-            border-radius: 15px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-        }
-
-        .stat-icon {
-            width: 60px;
-            height: 60px;
-            background: linear-gradient(135deg, var(--primary-color), #F7931E);
+            background: var(--bg-light);
             border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 15px;
-            color: white;
-            font-size: 1.5rem;
+            padding: 1.5rem;
+            text-align: center;
+            border: 1px solid var(--border-color);
+            transition: transform 0.2s ease;
         }
 
-        .stat-value {
+        .stat-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .stat-number {
             font-size: 2rem;
             font-weight: 700;
-            color: var(--secondary-color);
+            color: var(--primary-color);
+            display: block;
         }
 
         .stat-label {
-            color: #6c757d;
-            font-size: 0.9rem;
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-top: 0.5rem;
         }
 
-        .content-card {
+        .controls-section {
             background: white;
-            border-radius: 15px;
-            padding: 30px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-            margin-bottom: 30px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
         }
 
-        .filter-section {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 25px;
+        .table-section {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
         }
 
-        .table-custom thead {
-            background: #f8f9fa;
+        .table-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
+            color: white;
+            padding: 1.5rem;
+            border: none;
         }
 
-        .table-custom th {
+        .table-responsive {
+            border-radius: 0 0 16px 16px;
+        }
+
+        .table {
+            margin: 0;
+        }
+
+        .table th {
+            background: var(--bg-light);
+            border: 1px solid var(--border-color);
+            padding: 1rem;
             font-weight: 600;
-            color: var(--secondary-color);
-            padding: 15px;
+            color: var(--text-dark);
         }
 
-        .table-custom td {
-            padding: 15px;
+        .table td {
+            padding: 1rem;
+            border: 1px solid var(--border-color);
             vertical-align: middle;
         }
 
-        .curso-preview {
-            display: flex;
+        .btn-primary {
+            background: var(--primary-color);
+            border-color: var(--primary-color);
+            font-weight: 500;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-hover);
+            border-color: var(--primary-hover);
+        }
+
+        .badge {
+            font-weight: 500;
+            padding: 0.5rem 0.75rem;
+        }
+
+        .badge.bg-success {
+            background-color: var(--success-color) !important;
+        }
+
+        .badge.bg-warning {
+            background-color: var(--warning-color) !important;
+        }
+
+        .badge.bg-danger {
+            background-color: var(--danger-color) !important;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(234, 88, 12, 0.25);
+        }
+
+        .back-button {
+            display: inline-flex;
             align-items: center;
-            gap: 10px;
+            gap: 0.5rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s ease;
         }
 
-        .curso-preview img {
-            width: 50px;
-            height: 50px;
-            object-fit: cover;
-            border-radius: 8px;
-        }
-
-        .abandoned-badge {
-            background: #ffeaa7;
-            color: #d63031;
-            padding: 4px 10px;
-            border-radius: 15px;
-            font-size: 0.8rem;
-            font-weight: 600;
+        .back-button:hover {
+            color: var(--primary-color);
         }
 
         .chart-container {
-            position: relative;
-            height: 300px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .activity-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.875rem;
+        }
+
+        .course-image {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            object-fit: cover;
+        }
+
+        .placeholder-image {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            background: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                padding: 1rem;
+            }
+            
+            .header-title {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .stats-row {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="admin-header">
-        <div class="container-fluid">
-            <div class="d-flex justify-content-between align-items-center">
+    <div class="main-container">
+        <!-- Header Section -->
+        <div class="header-section">
+            <div class="header-title">
                 <div>
-                    <h1><i class="fas fa-shopping-cart"></i> Gestión de Carritos</h1>
-                    <p class="mb-0">Análisis de carritos activos y abandonados</p>
+                    <a href="/dashboard" class="back-button">
+                        <i class="bi bi-arrow-left"></i>
+                        Volver al Dashboard
+                    </a>
+                    <h1>
+                        <i class="bi bi-cart"></i>
+                        Gestión de Carritos
+                    </h1>
                 </div>
-                <a href="/admin/dashboard" class="btn btn-light btn-lg">
-                    <i class="fas fa-arrow-left"></i> Dashboard
-                </a>
             </div>
-        </div>
-    </div>
-
-    <div class="container-fluid">
-        <!-- Stats -->
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-icon">
-                    <i class="fas fa-shopping-basket"></i>
+            
+            <!-- Statistics Cards -->
+            <div class="stats-row">
+                <div class="stat-card">
+                    <span class="stat-number">{{carritosActivos}}</span>
+                    <div class="stat-label">Carritos Activos</div>
                 </div>
-                <div class="stat-value">{{carritosActivos}}</div>
-                <div class="stat-label">Carritos Activos</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon">
-                    <i class="fas fa-ban"></i>
+                <div class="stat-card">
+                    <span class="stat-number">{{carritosAbandonados}}</span>
+                    <div class="stat-label">Carritos Abandonados</div>
                 </div>
-                <div class="stat-value">{{carritosAbandonados}}</div>
-                <div class="stat-label">Carritos Abandonados</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon">
-                    <i class="fas fa-dollar-sign"></i>
+                <div class="stat-card">
+                    <span class="stat-number">${{valorTotal}}</span>
+                    <div class="stat-label">Valor Total</div>
                 </div>
-                <div class="stat-value">${{valorTotal}}</div>
-                <div class="stat-label">Valor Total en Carritos</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon">
-                    <i class="fas fa-chart-line"></i>
+                <div class="stat-card">
+                    <span class="stat-number">{{tasaConversion}}%</span>
+                    <div class="stat-label">Tasa de Conversión</div>
                 </div>
-                <div class="stat-value">{{tasaConversion}}%</div>
-                <div class="stat-label">Tasa de Conversión</div>
             </div>
         </div>
 
         <div class="row">
-            <div class="col-lg-8">
-                <div class="content-card">
-                    <h2 class="mb-4"><i class="fas fa-list"></i> Carritos Activos</h2>
-
-                    <!-- Filtros -->
-                    <div class="filter-section">
-                        <div class="row">
-                            <div class="col-md-4 mb-3">
-                                <label class="form-label">Estado</label>
-                                <select class="form-select" id="filtroEstado" onchange="filtrarCarritos()">
-                                    <option value="">Todos</option>
-                                    <option value="activo">Activos</option>
-                                    <option value="abandonado">Abandonados</option>
-                                </select>
-                            </div>
-                            <div class="col-md-4 mb-3">
-                                <label class="form-label">Buscar Usuario</label>
-                                <input type="text" class="form-control" id="buscarUsuario" 
-                                       placeholder="Nombre o email..." onkeyup="buscarUsuario()">
-                            </div>
-                            <div class="col-md-4 mb-3 d-flex align-items-end">
-                                <button class="btn btn-warning w-100" onclick="enviarRecordatorios()">
-                                    <i class="fas fa-envelope"></i> Recordatorios a Abandonados
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Table -->
+            <!-- Cursos Populares en Carritos -->
+            <div class="col-lg-6 mb-4">
+                <div class="chart-container">
+                    <h5 class="mb-3">
+                        <i class="bi bi-star-fill text-warning me-2"></i>
+                        Cursos Más Agregados
+                    </h5>
                     <div class="table-responsive">
-                        <table class="table table-custom table-hover">
+                        <table class="table table-sm">
                             <thead>
                                 <tr>
-                                    <th>Usuario</th>
-                                    <th>Cursos</th>
-                                    <th>Total</th>
-                                    <th>Última Actividad</th>
-                                    <th>Estado</th>
-                                    <th>Acciones</th>
+                                    <th>Curso</th>
+                                    <th>Cantidad</th>
                                 </tr>
                             </thead>
-                            <tbody id="tablaCarritos">
-                                {{#each carritos}}
-                                <tr data-estado="{{estado}}">
+                            <tbody>
+                                {{#each cursosPopulares}}
+                                <tr>
                                     <td>
-                                        <div>
-                                            <strong>{{usuario_nombre}}</strong>
-                                            <br>
-                                            <small class="text-muted">{{usuario_email}}</small>
+                                        <div class="d-flex align-items-center gap-2">
+                                            {{#if miniatura}}
+                                                <img src="{{miniatura}}" alt="{{titulo}}" class="course-image">
+                                            {{else}}
+                                                <div class="placeholder-image">IMG</div>
+                                            {{/if}}
+                                            <div>
+                                                <div class="fw-semibold">{{titulo}}</div>
+                                            </div>
                                         </div>
                                     </td>
                                     <td>
-                                        <span class="badge bg-primary">{{cantidad_items}} curso(s)</span>
-                                    </td>
-                                    <td><strong class="text-success">${{total}}</strong></td>
-                                    <td>
-                                        {{formatDate fecha_agregado}}
-                                        {{#if dias_inactivo}}
-                                        <br><small class="text-muted">{{dias_inactivo}} días</small>
-                                        {{/if}}
-                                    </td>
-                                    <td>
-                                        {{#if abandonado}}
-                                        <span class="abandoned-badge">Abandonado</span>
-                                        {{else}}
-                                        <span class="badge bg-success">Activo</span>
-                                        {{/if}}
-                                    </td>
-                                    <td>
-                                        <button class="btn btn-sm btn-info" onclick="verDetalle({{id_usuario}})" 
-                                                title="Ver detalle">
-                                            <i class="fas fa-eye"></i>
-                                        </button>
-                                        {{#if abandonado}}
-                                        <button class="btn btn-sm btn-warning" onclick="enviarRecordatorio({{id_usuario}})" 
-                                                title="Enviar recordatorio">
-                                            <i class="fas fa-envelope"></i>
-                                        </button>
-                                        {{/if}}
-                                        <button class="btn btn-sm btn-danger" onclick="limpiarCarrito({{id_usuario}})" 
-                                                title="Limpiar carrito">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
+                                        <span class="badge bg-primary">{{cantidad}}</span>
                                     </td>
                                 </tr>
                                 {{/each}}
@@ -262,113 +343,266 @@
                 </div>
             </div>
 
-            <div class="col-lg-4">
-                <div class="content-card">
-                    <h3 class="mb-4"><i class="fas fa-chart-pie"></i> Cursos Más Agregados</h3>
-                    <div class="list-group">
-                        {{#each cursosPopulares}}
-                        <div class="list-group-item">
-                            <div class="curso-preview">
-                                <img src="{{imagen}}" alt="{{titulo}}">
-                                <div class="flex-grow-1">
-                                    <strong>{{titulo}}</strong>
-                                    <br>
-                                    <small class="text-muted">{{cantidad}} veces en carrito</small>
-                                </div>
-                            </div>
-                        </div>
-                        {{/each}}
-                    </div>
-                </div>
-
-                <div class="content-card mt-4">
-                    <h3 class="mb-4"><i class="fas fa-clock"></i> Actividad Reciente</h3>
-                    <div class="list-group">
+            <!-- Actividad Reciente -->
+            <div class="col-lg-6 mb-4">
+                <div class="chart-container">
+                    <h5 class="mb-3">
+                        <i class="bi bi-clock text-info me-2"></i>
+                        Actividad Reciente
+                    </h5>
+                    <div style="max-height: 300px; overflow-y: auto;">
                         {{#each actividadReciente}}
-                        <div class="list-group-item">
-                            <div class="d-flex justify-content-between">
-                                <strong>{{usuario_nombre}}</strong>
-                                <small class="text-muted">{{tiempo}}</small>
+                        <div class="activity-item">
+                            <div class="activity-icon">
+                                <i class="bi bi-cart-plus"></i>
                             </div>
-                            <small class="text-muted">{{accion}}: {{curso_titulo}}</small>
+                            <div class="flex-grow-1">
+                                <div class="fw-semibold">{{usuario_nombre}}</div>
+                                <div class="small text-muted">Agregó "{{curso_titulo}}" al carrito</div>
+                            </div>
+                            <div class="small text-muted">{{tiempo}}</div>
                         </div>
                         {{/each}}
                     </div>
                 </div>
             </div>
         </div>
+
+        <!-- Carritos por Usuario -->
+        <div class="table-section">
+            <div class="table-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-people-fill me-2"></i>
+                    Carritos por Usuario
+                </h5>
+            </div>
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Usuario</th>
+                            <th>Email</th>
+                            <th>Items</th>
+                            <th>Total</th>
+                            <th>Última Actividad</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{#each carritos}}
+                        <tr>
+                            <td>
+                                <div class="fw-semibold">{{usuario_nombre}}</div>
+                            </td>
+                            <td>{{usuario_email}}</td>
+                            <td>
+                                <span class="badge bg-info">{{cantidad_items}}</span>
+                            </td>
+                            <td class="fw-semibold">${{total}}</td>
+                            <td>{{fecha_agregado}}</td>
+                            <td>
+                                {{#if abandonado}}
+                                    <span class="badge bg-warning">Abandonado ({{dias_inactivo}} días)</span>
+                                {{else}}
+                                    <span class="badge bg-success">Activo</span>
+                                {{/if}}
+                            </td>
+                            <td>
+                                <div class="btn-group btn-group-sm">
+                                    <button class="btn btn-outline-primary" onclick="verDetalles({{id_usuario}})">
+                                        <i class="bi bi-eye"></i>
+                                    </button>
+                                    {{#if abandonado}}
+                                    <button class="btn btn-outline-warning" onclick="enviarRecordatorio({{id_usuario}})">
+                                        <i class="bi bi-envelope"></i>
+                                    </button>
+                                    {{/if}}
+                                    <button class="btn btn-outline-danger" onclick="limpiarCarrito({{id_usuario}})">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {{/each}}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Actions Section -->
+        <div class="controls-section mt-4">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <button class="btn btn-warning me-2" onclick="enviarRecordatoriosMasivos()">
+                        <i class="bi bi-envelope-fill me-1"></i>
+                        Enviar Recordatorios Masivos
+                    </button>
+                </div>
+                <div class="col-md-6 text-end">
+                    <small class="text-muted">
+                        Total de carritos: {{carritos.length}}
+                    </small>
+                </div>
+            </div>
+        </div>
     </div>
 
+    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
     <script>
-        function filtrarCarritos() {
-            const estado = document.getElementById('filtroEstado').value;
-            const filas = document.querySelectorAll('#tablaCarritos tr');
-
-            filas.forEach(fila => {
-                const matchEstado = !estado || fila.dataset.estado === estado;
-                fila.style.display = matchEstado ? '' : 'none';
-            });
+        // Ver detalles del carrito
+        function verDetalles(userId) {
+            fetch(`/admin/carritos/${userId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        mostrarModalDetalles(data.data);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error al obtener detalles del carrito');
+                });
         }
 
-        function buscarUsuario() {
-            const busqueda = document.getElementById('buscarUsuario').value.toLowerCase();
-            const filas = document.querySelectorAll('#tablaCarritos tr');
-
-            filas.forEach(fila => {
-                const texto = fila.textContent.toLowerCase();
-                fila.style.display = texto.includes(busqueda) ? '' : 'none';
-            });
-        }
-
-        function verDetalle(userId) {
-            window.location.href = `/admin/carritos/${userId}`;
-        }
-
+        // Enviar recordatorio
         function enviarRecordatorio(userId) {
             if (confirm('¿Enviar recordatorio a este usuario?')) {
                 fetch(`/admin/carritos/${userId}/recordatorio`, {
                     method: 'POST',
-                    headers: {'Content-Type': 'application/json'}
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
                 })
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        alert('Recordatorio enviado');
+                        alert('Recordatorio enviado exitosamente');
+                    } else {
+                        alert('Error al enviar recordatorio');
                     }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error al enviar recordatorio');
                 });
             }
         }
 
-        function enviarRecordatorios() {
-            if (confirm('¿Enviar recordatorios a todos los carritos abandonados?')) {
+        // Limpiar carrito
+        function limpiarCarrito(userId) {
+            if (confirm('¿Está seguro de que desea limpiar este carrito? Esta acción no se puede deshacer.')) {
+                fetch(`/admin/carritos/${userId}/limpiar`, {
+                    method: 'DELETE'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Carrito limpiado exitosamente');
+                        location.reload();
+                    } else {
+                        alert('Error al limpiar carrito');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error al limpiar carrito');
+                });
+            }
+        }
+
+        // Enviar recordatorios masivos
+        function enviarRecordatoriosMasivos() {
+            if (confirm('¿Enviar recordatorios a todos los usuarios con carritos abandonados?')) {
                 fetch('/admin/carritos/recordatorios-masivos', {
                     method: 'POST',
-                    headers: {'Content-Type': 'application/json'}
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
                 })
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        alert(`${data.enviados} recordatorios enviados`);
+                        alert(`${data.enviados} recordatorios enviados exitosamente`);
+                    } else {
+                        alert('Error al enviar recordatorios');
                     }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error al enviar recordatorios');
                 });
             }
         }
 
-        function limpiarCarrito(userId) {
-            if (confirm('¿Limpiar este carrito?')) {
-                fetch(`/admin/carritos/${userId}/limpiar`, {
-                    method: 'DELETE',
-                    headers: {'Content-Type': 'application/json'}
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        alert('Carrito limpiado');
-                        location.reload();
-                    }
-                });
+        // Modal para mostrar detalles
+        function mostrarModalDetalles(datos) {
+            // Crear modal dinámicamente
+            const modalHtml = `
+                <div class="modal fade" id="detallesModal" tabindex="-1">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Detalles del Carrito</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="table-responsive">
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th>Curso</th>
+                                                <th>Precio</th>
+                                                <th>Instructor</th>
+                                                <th>Fecha Agregado</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            ${datos.map(item => `
+                                                <tr>
+                                                    <td>
+                                                        <div class="d-flex align-items-center gap-2">
+                                                            ${item.miniatura ? 
+                                                                `<img src="${item.miniatura}" alt="${item.titulo}" class="course-image">` :
+                                                                `<div class="placeholder-image">IMG</div>`
+                                                            }
+                                                            <div>
+                                                                <div class="fw-semibold">${item.titulo}</div>
+                                                                <div class="small text-muted">${item.descripcion || ''}</div>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td class="fw-semibold">$${item.precio}</td>
+                                                    <td>${item.instructor_nombre}</td>
+                                                    <td>${new Date(item.fecha_agregado).toLocaleDateString()}</td>
+                                                </tr>
+                                            `).join('')}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Eliminar modal anterior si existe
+            const existingModal = document.getElementById('detallesModal');
+            if (existingModal) {
+                existingModal.remove();
             }
+            
+            // Agregar nuevo modal
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
+            
+            // Mostrar modal
+            const modal = new bootstrap.Modal(document.getElementById('detallesModal'));
+            modal.show();
         }
     </script>
 </body>

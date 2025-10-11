@@ -63,6 +63,16 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Fallback route for browsers that request /favicon.ico directly.
+// Some browsers still request /favicon.ico even when an <link rel="icon"> is present.
+// Serve the SVG favicon from the public/images folder as a fallback.
+// Mejor fallback para favicon: servir un SVG optimizado y pequeño como /favicon.ico
+app.get('/favicon.ico', function (req, res) {
+  const faviconPath = path.join(__dirname, 'public', 'images', 'favicon-32.svg');
+  res.type('image/svg+xml');
+  res.sendFile(faviconPath);
+});
+
 // Conectar a la base de datos al iniciar la aplicación
 if (process.env.DB_SERVER && process.env.DB_SERVER !== 'localhost') {
   // Solo conectar a base de datos si está configurada (producción)

@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{title}} - StartEducation</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/images/favicon.svg">
+    
+    <!-- Bootstrap 5.3 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chart.js para gráficos -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <style>
+        :root {
+            --primary-color: #ea580c;
+            --primary-hover: #c2410c;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --text-dark: #1f2937;
+            --text-muted: #6b7280;
+            --border-color: #e5e7eb;
+            --bg-light: #f8fafc;
+        }
+
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            color: var(--text-dark);
+            min-height: 100vh;
+        }
+
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header-section {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border-left: 5px solid var(--primary-color);
+        }
+
+        .header-title {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .header-title h1 {
+            color: var(--text-dark);
+            font-weight: 700;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .realtime-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: var(--success-color);
+            color: white;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .stat-card {
+            background: var(--bg-light);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            border: 1px solid var(--border-color);
+            transition: transform 0.2s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), var(--primary-hover));
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-change {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 12px;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .stat-change.positive {
+            background: #d1fae5;
+            color: var(--success-color);
+        }
+
+        .stat-change.negative {
+            background: #fee2e2;
+            color: var(--danger-color);
+        }
+
+        .controls-section {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .controls-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .date-filter {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .date-filter select {
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .date-filter select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(234, 88, 12, 0.25);
+        }
+
+        .refresh-btn {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .refresh-btn:hover {
+            background: linear-gradient(135deg, var(--primary-hover) 0%, #9a3412 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(234, 88, 12, 0.4);
+        }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .chart-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .chart-header {
+            background: var(--bg-light);
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .chart-header h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .chart-body {
+            padding: 1.5rem;
+            position: relative;
+            height: 300px;
+        }
+
+        .table-section {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+
+        .table-header {
+            background: var(--bg-light);
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .table-header h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .table {
+            margin: 0;
+        }
+
+        .table th {
+            background: var(--bg-light);
+            border: none;
+            font-weight: 600;
+            color: var(--text-dark);
+            padding: 1rem;
+        }
+
+        .table td {
+            border: none;
+            padding: 1rem;
+            vertical-align: middle;
+        }
+
+        .table tbody tr {
+            border-bottom: 1px solid #f1f5f9;
+            transition: background-color 0.2s ease;
+        }
+
+        .table tbody tr:hover {
+            background-color: rgba(234, 88, 12, 0.05);
+        }
+
+        .progress-bar-custom {
+            background: var(--bg-light);
+            border-radius: 10px;
+            height: 8px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-bar-custom .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-color), var(--primary-hover));
+            border-radius: 10px;
+            transition: width 0.3s ease;
+        }
+
+        .metric-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
+            color: white;
+        }
+
+        .back-btn {
+            position: fixed;
+            top: 2rem;
+            left: 2rem;
+            background: white;
+            border: 2px solid var(--border-color);
+            width: 48px;
+            height: 48px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-dark);
+            text-decoration: none;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+
+        .back-btn:hover {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+        }
+
+        .loading-spinner {
+            display: none;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                padding: 1rem;
+            }
+
+            .back-btn {
+                top: 1rem;
+                left: 1rem;
+            }
+
+            .header-section {
+                padding: 1.5rem;
+            }
+
+            .header-title {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .stats-row {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+                gap: 1rem;
+            }
+
+            .controls-row {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .charts-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .chart-body {
+                height: 250px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Back Button -->
+    <a href="/dashboard" class="back-btn" title="Volver al Dashboard">
+        <i class="bi bi-arrow-left"></i>
+    </a>
+
+    <div class="main-container">
+        <!-- Header Section -->
+        <div class="header-section">
+            <div class="header-title">
+                <div>
+                    <h1>
+                        <i class="bi bi-graph-up-arrow"></i>
+                        Analytics Dashboard
+                    </h1>
+                    <p class="mb-0 text-muted">
+                        {{#if isInstructor}}
+                            Panel de métricas para instructor: {{analytics.userName}}
+                        {{else}}
+                            Panel de métricas generales de la plataforma
+                        {{/if}}
+                    </p>
+                </div>
+                <div class="realtime-badge" id="realtimeBadge">
+                    <i class="bi bi-broadcast"></i>
+                    En tiempo real
+                </div>
+            </div>
+
+            <!-- KPIs principales -->
+            <div class="stats-row">
+                {{#if isInstructor}}
+                    <!-- KPIs para instructores -->
+                    <div class="stat-card">
+                        <div class="metric-icon">
+                            <i class="bi bi-book"></i>
+                        </div>
+                        <span class="stat-number">{{analytics.kpis.total_cursos}}</span>
+                        <div class="stat-label">Cursos Totales</div>
+                        <div class="stat-change positive">
+                            <i class="bi bi-arrow-up"></i>
+                            {{analytics.kpis.cursos_publicados}} publicados
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="metric-icon">
+                            <i class="bi bi-people"></i>
+                        </div>
+                        <span class="stat-number">{{analytics.kpis.total_estudiantes}}</span>
+                        <div class="stat-label">Estudiantes Totales</div>
+                        <div class="stat-change positive">
+                            <i class="bi bi-arrow-up"></i>
+                            {{analytics.kpis.estudiantes_mes}} este mes
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="metric-icon">
+                            <i class="bi bi-currency-dollar"></i>
+                        </div>
+                        <span class="stat-number">${{analytics.kpis.ingresos_totales}}</span>
+                        <div class="stat-label">Ingresos Totales</div>
+                        <div class="stat-change positive">
+                            <i class="bi bi-arrow-up"></i>
+                            ${{analytics.kpis.ingresos_mes}} este mes
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="metric-icon">
+                            <i class="bi bi-star"></i>
+                        </div>
+                        <span class="stat-number">{{analytics.kpis.calificacion_promedio}}</span>
+                        <div class="stat-label">Calificación Promedio</div>
+                        <div class="stat-change positive">
+                            <i class="bi bi-arrow-up"></i>
+                            {{analytics.kpis.total_valoraciones}} valoraciones
+                        </div>
+                    </div>
+                {{else}}
+                    <!-- KPIs para administradores -->
+                    <div class="stat-card">
+                        <div class="metric-icon">
+                            <i class="bi bi-people"></i>
+                        </div>
+                        <span class="stat-number">{{analytics.kpis.total_usuarios}}</span>
+                        <div class="stat-label">Usuarios Totales</div>
+                        <div class="stat-change positive">
+                            <i class="bi bi-arrow-up"></i>
+                            {{analytics.kpis.usuarios_mes}} este mes
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="metric-icon">
+                            <i class="bi bi-mortarboard"></i>
+                        </div>
+                        <span class="stat-number">{{analytics.kpis.total_instructores}}</span>
+                        <div class="stat-label">Instructores</div>
+                        <div class="stat-change positive">
+                            <i class="bi bi-arrow-up"></i>
+                            {{analytics.kpis.total_estudiantes}} estudiantes
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="metric-icon">
+                            <i class="bi bi-book"></i>
+                        </div>
+                        <span class="stat-number">{{analytics.kpis.total_cursos}}</span>
+                        <div class="stat-label">Cursos Totales</div>
+                        <div class="stat-change positive">
+                            <i class="bi bi-arrow-up"></i>
+                            {{analytics.kpis.cursos_publicados}} publicados
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="metric-icon">
+                            <i class="bi bi-currency-dollar"></i>
+                        </div>
+                        <span class="stat-number">${{analytics.kpis.ingresos_totales}}</span>
+                        <div class="stat-label">Ingresos Totales</div>
+                        <div class="stat-change positive">
+                            <i class="bi bi-arrow-up"></i>
+                            ${{analytics.kpis.ingresos_mes}} este mes
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="metric-icon">
+                            <i class="bi bi-cart-check"></i>
+                        </div>
+                        <span class="stat-number">{{analytics.kpis.total_compras}}</span>
+                        <div class="stat-label">Compras Totales</div>
+                        <div class="stat-change positive">
+                            <i class="bi bi-arrow-up"></i>
+                            {{analytics.kpis.calificacion_promedio_plataforma}} rating
+                        </div>
+                    </div>
+                {{/if}}
+            </div>
+        </div>
+
+        <!-- Controls Section -->
+        <div class="controls-section">
+            <div class="controls-row">
+                <div class="date-filter">
+                    <label for="dateRange"><strong>Período:</strong></label>
+                    <select id="dateRange" class="form-select">
+                        <option value="30">Últimos 30 días</option>
+                        <option value="90">Últimos 3 meses</option>
+                        <option value="180">Últimos 6 meses</option>
+                        <option value="365">Último año</option>
+                    </select>
+                </div>
+                <button class="refresh-btn" onclick="refreshData()">
+                    <i class="bi bi-arrow-clockwise loading-spinner"></i>
+                    <span>Actualizar Datos</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Charts Section -->
+        <div class="charts-grid">
+            {{#if isInstructor}}
+                <!-- Gráfico de ingresos mensuales -->
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3><i class="bi bi-graph-up"></i>Ingresos por Mes</h3>
+                    </div>
+                    <div class="chart-body">
+                        <canvas id="revenueChart"></canvas>
+                    </div>
+                </div>
+                
+                <!-- Gráfico de progreso de estudiantes -->
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3><i class="bi bi-people"></i>Progreso de Estudiantes</h3>
+                    </div>
+                    <div class="chart-body">
+                        <canvas id="progressChart"></canvas>
+                    </div>
+                </div>
+            {{else}}
+                <!-- Gráfico de crecimiento de usuarios -->
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3><i class="bi bi-people"></i>Crecimiento de Usuarios</h3>
+                    </div>
+                    <div class="chart-body">
+                        <canvas id="userGrowthChart"></canvas>
+                    </div>
+                </div>
+                
+                <!-- Gráfico de ingresos por categoría -->
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3><i class="bi bi-pie-chart"></i>Top Categorías</h3>
+                    </div>
+                    <div class="chart-body">
+                        <canvas id="categoriesChart"></canvas>
+                    </div>
+                </div>
+            {{/if}}
+        </div>
+
+        <!-- Tables Section -->
+        {{#if isInstructor}}
+            <!-- Top Cursos del Instructor -->
+            <div class="table-section">
+                <div class="table-header">
+                    <h3><i class="bi bi-trophy"></i>Cursos Más Populares</h3>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Curso</th>
+                                <th>Precio</th>
+                                <th>Ventas</th>
+                                <th>Ingresos</th>
+                                <th>Rating</th>
+                                <th>Valoraciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {{#each analytics.topCourses}}
+                                <tr>
+                                    <td>
+                                        <strong>{{titulo}}</strong>
+                                    </td>
+                                    <td>${{precio}}</td>
+                                    <td>{{total_ventas}}</td>
+                                    <td><strong>${{ingresos_curso}}</strong></td>
+                                    <td>
+                                        <div class="d-flex align-items-center gap-1">
+                                            <i class="bi bi-star-fill text-warning"></i>
+                                            {{calificacion_promedio}}
+                                        </div>
+                                    </td>
+                                    <td>{{total_valoraciones}}</td>
+                                </tr>
+                            {{/each}}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Progreso por Curso -->
+            <div class="table-section">
+                <div class="table-header">
+                    <h3><i class="bi bi-bar-chart"></i>Progreso por Curso</h3>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Curso</th>
+                                <th>Estudiantes</th>
+                                <th>Videos Totales</th>
+                                <th>Completados</th>
+                                <th>Progreso</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {{#each analytics.studentProgress}}
+                                <tr>
+                                    <td><strong>{{curso}}</strong></td>
+                                    <td>{{estudiantes_inscritos}}</td>
+                                    <td>{{total_videos}}</td>
+                                    <td>{{videos_completados}}</td>
+                                    <td>
+                                        <div class="progress-bar-custom">
+                                            <div class="progress-fill" style="width: {{porcentaje_completado}}%"></div>
+                                        </div>
+                                        <small class="text-muted">{{porcentaje_completado}}%</small>
+                                    </td>
+                                </tr>
+                            {{/each}}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        {{else}}
+            <!-- Top Instructores -->
+            <div class="table-section">
+                <div class="table-header">
+                    <h3><i class="bi bi-people"></i>Top Instructores</h3>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Instructor</th>
+                                <th>Cursos</th>
+                                <th>Ventas</th>
+                                <th>Ingresos</th>
+                                <th>Rating</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {{#each analytics.topInstructors}}
+                                <tr>
+                                    <td><strong>{{instructor}}</strong></td>
+                                    <td>{{total_cursos}}</td>
+                                    <td>{{total_ventas}}</td>
+                                    <td><strong>${{ingresos_totales}}</strong></td>
+                                    <td>
+                                        <div class="d-flex align-items-center gap-1">
+                                            <i class="bi bi-star-fill text-warning"></i>
+                                            {{calificacion_promedio}}
+                                        </div>
+                                    </td>
+                                </tr>
+                            {{/each}}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Top Categorías -->
+            <div class="table-section">
+                <div class="table-header">
+                    <h3><i class="bi bi-tags"></i>Categorías Más Populares</h3>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Categoría</th>
+                                <th>Cursos</th>
+                                <th>Ventas</th>
+                                <th>Ingresos</th>
+                                <th>Rating</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {{#each analytics.topCategories}}
+                                <tr>
+                                    <td><strong>{{categoria}}</strong></td>
+                                    <td>{{total_cursos}}</td>
+                                    <td>{{total_ventas}}</td>
+                                    <td><strong>${{ingresos_categoria}}</strong></td>
+                                    <td>
+                                        <div class="d-flex align-items-center gap-1">
+                                            <i class="bi bi-star-fill text-warning"></i>
+                                            {{calificacion_promedio}}
+                                        </div>
+                                    </td>
+                                </tr>
+                            {{/each}}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        {{/if}}
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Configuración de Chart.js
+        Chart.defaults.font.family = 'Inter';
+        Chart.defaults.color = '#6b7280';
+        
+        const primaryColor = '#ea580c';
+        const primaryHover = '#c2410c';
+        const successColor = '#10b981';
+        const warningColor = '#f59e0b';
+
+        {{#if isInstructor}}
+            // Gráfico de ingresos mensuales para instructor
+            const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+            const revenueData = {{{json analytics.monthlyRevenue}}};
+            
+            new Chart(revenueCtx, {
+                type: 'line',
+                data: {
+                    labels: revenueData.map(item => item.mes),
+                    datasets: [{
+                        label: 'Ingresos ($)',
+                        data: revenueData.map(item => item.ingresos),
+                        borderColor: primaryColor,
+                        backgroundColor: primaryColor + '20',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return '$' + value;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Gráfico de progreso de estudiantes
+            const progressCtx = document.getElementById('progressChart').getContext('2d');
+            const progressData = {{{json analytics.studentProgress}}};
+            
+            new Chart(progressCtx, {
+                type: 'bar',
+                data: {
+                    labels: progressData.map(item => item.curso.substring(0, 20) + '...'),
+                    datasets: [{
+                        label: 'Progreso (%)',
+                        data: progressData.map(item => item.porcentaje_completado),
+                        backgroundColor: primaryColor,
+                        borderColor: primaryHover,
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            ticks: {
+                                callback: function(value) {
+                                    return value + '%';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        {{else}}
+            // Gráfico de crecimiento de usuarios para admin
+            const userGrowthCtx = document.getElementById('userGrowthChart').getContext('2d');
+            const userGrowthData = {{{json analytics.userGrowth}}};
+            
+            new Chart(userGrowthCtx, {
+                type: 'line',
+                data: {
+                    labels: userGrowthData.map(item => item.mes),
+                    datasets: [{
+                        label: 'Nuevos Usuarios',
+                        data: userGrowthData.map(item => item.nuevos_usuarios),
+                        borderColor: primaryColor,
+                        backgroundColor: primaryColor + '20',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: { beginAtZero: true }
+                    }
+                }
+            });
+
+            // Gráfico de categorías (dona)
+            const categoriesCtx = document.getElementById('categoriesChart').getContext('2d');
+            const categoriesData = {{{json analytics.topCategories}}};
+            
+            new Chart(categoriesCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: categoriesData.map(item => item.categoria),
+                    datasets: [{
+                        data: categoriesData.map(item => item.ingresos_categoria),
+                        backgroundColor: [
+                            primaryColor,
+                            primaryHover,
+                            successColor,
+                            warningColor,
+                            '#8b5cf6'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 20,
+                                usePointStyle: true
+                            }
+                        }
+                    }
+                }
+            });
+        {{/if}}
+
+        // Función para refrescar datos
+        async function refreshData() {
+            const refreshBtn = document.querySelector('.refresh-btn');
+            const spinner = refreshBtn.querySelector('.loading-spinner');
+            const badge = document.getElementById('realtimeBadge');
+            
+            // Mostrar loading
+            refreshBtn.disabled = true;
+            spinner.style.display = 'inline-block';
+            
+            try {
+                const response = await fetch('/admin/analytics/api/realtime');
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Actualizar badge con timestamp
+                    badge.innerHTML = `
+                        <i class="bi bi-broadcast"></i>
+                        Actualizado: ${new Date(data.timestamp).toLocaleTimeString()}
+                    `;
+                    
+                    // Aquí podrías actualizar los KPIs en tiempo real
+                    console.log('Datos actualizados:', data.data);
+                }
+            } catch (error) {
+                console.error('Error al actualizar datos:', error);
+            } finally {
+                // Ocultar loading
+                refreshBtn.disabled = false;
+                spinner.style.display = 'none';
+            }
+        }
+
+        // Auto-refresh cada 5 minutos
+        setInterval(refreshData, 300000);
+
+        // Filtro de fecha
+        document.getElementById('dateRange').addEventListener('change', function() {
+            // Aquí podrías recargar los datos con el nuevo rango
+            console.log('Rango cambiado a:', this.value, 'días');
+        });
+    </script>
+</body>
+</html>

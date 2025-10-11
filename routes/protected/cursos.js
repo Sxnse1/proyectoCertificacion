@@ -91,27 +91,138 @@ const misCursosEjemplo = [
 ];
 
 /* GET cursos page - Plataforma de cursos para estudiantes */
-router.get('/', function(req, res, next) {
-  // La autenticación ya se verifica en el middleware
-  const user = req.session.user;
-  
-  console.log('[CURSOS] 📚 Acceso a cursos:', user.email, '- Rol:', user.rol);
-  
-  // Solo permitir acceso a usuarios (estudiantes) - Los instructores también pueden ver cursos
-  if (user.rol !== 'user' && user.rol !== 'estudiante' && user.rol !== 'instructor') {
-    console.log('[CURSOS] 🚫 Rol no autorizado:', user.rol);
-    return res.redirect('/auth/login?error=acceso_denegado');
+router.get('/', async function(req, res, next) {
+  try {
+    // La autenticación ya se verifica en el middleware
+    const user = req.session.user;
+    
+    console.log('[CURSOS] 📚 Acceso a cursos:', user.email, '- Rol:', user.rol);
+    
+    // Solo permitir acceso a usuarios (estudiantes) - Los instructores también pueden ver cursos
+    if (user.rol !== 'user' && user.rol !== 'estudiante' && user.rol !== 'instructor') {
+      console.log('[CURSOS] 🚫 Rol no autorizado:', user.rol);
+      return res.redirect('/auth/login?error=acceso_denegado');
+    }
+
+    const db = req.app.locals.db;
+    
+    if (!db) {
+      console.log('[CURSOS] ⚠️ No hay conexión a base de datos');
+      return res.render('error', {
+        title: 'Error del Sistema',
+        message: 'Sistema en mantenimiento. Intenta más tarde.',
+        error: { status: 503, stack: '' }
+      });
+    }
+
+    // Obtener estadísticas
+    let totalCursos = 0;
+    let cursosBasicos = 0;
+    let cursosIntermedios = 0;
+    let cursosAvanzados = 0;
+    let cursosPublicados = 0;
+    let cursos = [];
+    let categorias = [];
+
+    try {
+      // Obtener estadísticas de cursos
+      const statsResult = await db.executeQuery(`
+        SELECT 
+          COUNT(*) as total_cursos,
+          SUM(CASE WHEN nivel = 'básico' THEN 1 ELSE 0 END) as cursos_basicos,
+          SUM(CASE WHEN nivel = 'intermedio' THEN 1 ELSE 0 END) as cursos_intermedios,
+          SUM(CASE WHEN nivel = 'avanzado' THEN 1 ELSE 0 END) as cursos_avanzados,
+          SUM(CASE WHEN estatus = 'publicado' THEN 1 ELSE 0 END) as cursos_publicados
+        FROM Cursos
+      `);
+
+      if (statsResult && statsResult.recordset && statsResult.recordset.length > 0) {
+        const stats = statsResult.recordset[0];
+        totalCursos = stats.total_cursos || 0;
+        cursosBasicos = stats.cursos_basicos || 0;
+        cursosIntermedios = stats.cursos_intermedios || 0;
+        cursosAvanzados = stats.cursos_avanzados || 0;
+        cursosPublicados = stats.cursos_publicados || 0;
+      }
+
+      // Obtener cursos con información del instructor y categoría
+      const cursosResult = await db.executeQuery(`
+        SELECT 
+          c.id_curso,
+          c.titulo,
+          c.descripcion,
+          c.precio,
+          c.nivel,
+          c.miniatura,
+          c.fecha_creacion,
+          c.estatus,
+          u.nombre + ' ' + u.apellido as instructor_nombre,
+          cat.nombre as categoria_nombre,
+          ISNULL((SELECT AVG(CAST(calificacion AS FLOAT)) FROM Valoraciones v WHERE v.id_curso = c.id_curso), 0) as calificacion_promedio,
+          ISNULL((SELECT COUNT(*) FROM Valoraciones v WHERE v.id_curso = c.id_curso), 0) as total_valoraciones
+        FROM Cursos c
+        INNER JOIN Usuarios u ON c.id_usuario = u.id_usuario
+        INNER JOIN Categorias cat ON c.id_categoria = cat.id_categoria
+        WHERE c.estatus = 'publicado'
+        ORDER BY c.fecha_creacion DESC
+      `);
+
+      if (cursosResult && cursosResult.recordset) {
+        cursos = cursosResult.recordset.map(curso => ({
+          ...curso,
+          precio_formato: curso.precio ? `$${curso.precio.toLocaleString('es-MX')} MXN` : 'Gratis',
+          calificacion_promedio: Math.round(curso.calificacion_promedio * 10) / 10,
+          fecha_creacion_formato: new Date(curso.fecha_creacion).toLocaleDateString('es-MX')
+        }));
+      }
+
+      // Obtener categorías
+      const categoriasResult = await db.executeQuery(`
+        SELECT id_categoria, nombre, descripcion 
+        FROM Categorias 
+        ORDER BY nombre
+      `);
+
+      if (categoriasResult && categoriasResult.recordset) {
+        categorias = categoriasResult.recordset;
+      }
+
+    } catch (dbError) {
+      console.error('[CURSOS] ❌ Error consultando datos:', dbError.message);
+      // Continuar con datos por defecto
+    }
+
+    console.log('[CURSOS] 📊 Estadísticas:', {
+      totalCursos,
+      cursosBasicos,
+      cursosIntermedios,
+      cursosAvanzados,
+      cursosPublicados
+    });
+
+    res.render('estudiante/cursos-estudiante', {
+      title: 'Catálogo de Cursos - StartEducation',
+      user: user,
+      cursos: cursos,
+      categorias: categorias,
+      stats: {
+        totalCursos,
+        cursosBasicos,
+        cursosIntermedios,
+        cursosAvanzados,
+        cursosPublicados
+      },
+      layout: false
+    });
+
+  } catch (error) {
+    console.error('[CURSOS] ❌ Error general:', error);
+    res.render('error', {
+      title: 'Error',
+      message: 'Error al cargar el catálogo de cursos',
+      error: error
+    });
   }
-  
-  res.render('estudiante/cursos-estudiante', {
-    title: 'Plataforma de Cursos - StartEducation',
-    userName: user.nombre,
-    userEmail: user.email,
-    userRole: user.rol,
-    userId: user.id,
-    cursos: cursosEjemplo,
-    cursosDestacados: cursosEjemplo.slice(0, 2)
-  });
 });
 
 /* GET curso específico */

@@ -3,480 +3,452 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestión de Compras - Admin</title>
+    <title>Gestión de Compras - StartEducation</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/images/favicon.svg">
+    
+    <!-- Bootstrap 5.3 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
     <style>
         :root {
-            --primary-color: #FF6B35;
-            --secondary-color: #004E89;
+            --primary-color: #ea580c;
+            --primary-hover: #c2410c;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --info-color: #3b82f6;
+            --text-dark: #1f2937;
+            --text-muted: #6b7280;
+            --border-color: #e5e7eb;
+            --bg-light: #f8fafc;
         }
 
-        body {
-            background: #f5f6fa;
+        * {
             font-family: 'Inter', sans-serif;
         }
 
-        .admin-header {
-            background: linear-gradient(135deg, var(--secondary-color), #003366);
-            color: white;
-            padding: 30px 0;
-            margin-bottom: 30px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        body {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            color: var(--text-dark);
+            min-height: 100vh;
         }
 
-        .stats-grid {
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header-section {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border-left: 5px solid var(--primary-color);
+        }
+
+        .header-title {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .header-title h1 {
+            color: var(--text-dark);
+            font-weight: 700;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .stats-row {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
         }
 
         .stat-card {
-            background: white;
-            padding: 25px;
-            border-radius: 15px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-        }
-
-        .stat-icon {
-            width: 60px;
-            height: 60px;
-            background: linear-gradient(135deg, var(--primary-color), #F7931E);
+            background: var(--bg-light);
             border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 15px;
-            color: white;
-            font-size: 1.5rem;
+            padding: 1.5rem;
+            text-align: center;
+            border: 1px solid var(--border-color);
+            transition: transform 0.2s ease;
         }
 
-        .stat-value {
+        .stat-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .stat-number {
             font-size: 2rem;
             font-weight: 700;
-            color: var(--secondary-color);
+            color: var(--primary-color);
+            display: block;
         }
 
         .stat-label {
-            color: #6c757d;
+            color: var(--text-muted);
             font-size: 0.9rem;
+            margin-top: 0.5rem;
         }
 
-        .content-card {
+        .controls-section {
             background: white;
-            border-radius: 15px;
-            padding: 30px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-            margin-bottom: 30px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
         }
 
-        .filter-section {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 25px;
+        .controls-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
         }
 
-        .table-custom thead {
-            background: #f8f9fa;
+        .table-section {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
         }
 
-        .table-custom th {
+        .table {
+            margin: 0;
+        }
+
+        .table th {
+            background: var(--bg-light);
+            border: none;
             font-weight: 600;
-            color: var(--secondary-color);
-            padding: 15px;
+            color: var(--text-dark);
+            padding: 1rem;
         }
 
-        .table-custom td {
-            padding: 15px;
+        .table td {
+            border: none;
+            padding: 1rem;
             vertical-align: middle;
         }
 
-        .curso-preview {
-            display: flex;
-            align-items: center;
-            gap: 10px;
+        .table tbody tr {
+            border-bottom: 1px solid #f1f5f9;
+            transition: background-color 0.2s ease;
         }
 
-        .curso-preview img {
-            width: 50px;
-            height: 50px;
-            object-fit: cover;
+        .table tbody tr:hover {
+            background-color: rgba(234, 88, 12, 0.05);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
+            border: none;
             border-radius: 8px;
-        }
-
-        .tipo-badge {
-            padding: 4px 10px;
-            border-radius: 15px;
-            font-size: 0.85rem;
             font-weight: 600;
+            padding: 0.75rem 1.5rem;
+            transition: all 0.3s ease;
         }
 
-        .tipo-curso {
-            background: #3498db;
+        .btn-primary:hover {
+            background: linear-gradient(135deg, var(--primary-hover) 0%, #9a3412 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(234, 88, 12, 0.4);
+        }
+
+        .btn-info {
+            background: var(--info-color);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            padding: 0.5rem 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-info:hover {
+            background: #2563eb;
             color: white;
         }
 
-        .tipo-suscripcion {
-            background: #9b59b6;
-            color: white;
+        .btn-danger {
+            background: var(--danger-color);
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            padding: 0.5rem 1rem;
+            transition: all 0.3s ease;
         }
 
-        .chart-container {
-            height: 300px;
-            margin-bottom: 20px;
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+
+        .badge {
+            padding: 0.35rem 0.75rem;
+            border-radius: 20px;
+            font-weight: 500;
+            font-size: 0.85rem;
+        }
+
+        .actions-group {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--text-muted);
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                padding: 1rem;
+            }
+            
+            .header-section {
+                padding: 1.5rem;
+            }
+            
+            .controls-row {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .actions-group {
+                justify-content: center;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="admin-header">
-        <div class="container-fluid">
-            <div class="d-flex justify-content-between align-items-center">
-                <div>
-                    <h1><i class="fas fa-shopping-bag"></i> Gestión de Compras</h1>
-                    <p class="mb-0">Análisis completo de compras y ventas</p>
-                </div>
-                <a href="/admin/dashboard" class="btn btn-light btn-lg">
-                    <i class="fas fa-arrow-left"></i> Dashboard
+    <div class="main-container">
+        <!-- Header Section -->
+        <div class="header-section">
+            <div class="header-title">
+                <h1>
+                    <i class="bi bi-cart-check"></i>
+                    Gestión de Compras
+                </h1>
+                <a href="/dashboard" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i> Volver al Dashboard
                 </a>
             </div>
-        </div>
-    </div>
 
-    <div class="container-fluid">
-        <!-- Stats -->
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-icon">
-                    <i class="fas fa-shopping-bag"></i>
+            <!-- Statistics -->
+            <div class="stats-row">
+                <div class="stat-card">
+                    <span class="stat-number">{{totalCompras}}</span>
+                    <div class="stat-label">Total Compras</div>
                 </div>
-                <div class="stat-value">{{totalCompras}}</div>
-                <div class="stat-label">Total de Compras</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon">
-                    <i class="fas fa-dollar-sign"></i>
+                <div class="stat-card">
+                    <span class="stat-number">${{ingresosTotales}}</span>
+                    <div class="stat-label">Ingresos Totales</div>
                 </div>
-                <div class="stat-value">${{ingresosTotales}}</div>
-                <div class="stat-label">Ingresos Totales</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon">
-                    <i class="fas fa-calendar-day"></i>
+                <div class="stat-card">
+                    <span class="stat-number">{{comprasMes}}</span>
+                    <div class="stat-label">Compras del Mes</div>
                 </div>
-                <div class="stat-value">{{comprasMes}}</div>
-                <div class="stat-label">Compras Este Mes</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon">
-                    <i class="fas fa-chart-line"></i>
+                <div class="stat-card">
+                    <span class="stat-number">${{ticketPromedio}}</span>
+                    <div class="stat-label">Ticket Promedio</div>
                 </div>
-                <div class="stat-value">${{ticketPromedio}}</div>
-                <div class="stat-label">Ticket Promedio</div>
             </div>
         </div>
 
-        <div class="row">
-            <div class="col-lg-8">
-                <div class="content-card">
-                    <h2 class="mb-4"><i class="fas fa-list"></i> Todas las Compras</h2>
-
-                    <!-- Filtros -->
-                    <div class="filter-section">
-                        <div class="row">
-                            <div class="col-md-3 mb-3">
-                                <label class="form-label">Tipo</label>
-                                <select class="form-select" id="filtroTipo" onchange="filtrar()">
-                                    <option value="">Todos</option>
-                                    <option value="curso">Curso Individual</option>
-                                    <option value="suscripcion">Suscripción</option>
-                                </select>
-                            </div>
-                            <div class="col-md-3 mb-3">
-                                <label class="form-label">Fecha Desde</label>
-                                <input type="date" class="form-control" id="fechaDesde" onchange="filtrar()">
-                            </div>
-                            <div class="col-md-3 mb-3">
-                                <label class="form-label">Fecha Hasta</label>
-                                <input type="date" class="form-control" id="fechaHasta" onchange="filtrar()">
-                            </div>
-                            <div class="col-md-3 mb-3">
-                                <label class="form-label">Buscar</label>
-                                <input type="text" class="form-control" id="buscar" 
-                                       placeholder="Usuario, curso..." onkeyup="buscar()">
-                            </div>
-                        </div>
-                        <div class="d-flex gap-2">
-                            <button class="btn btn-primary" onclick="exportarExcel()">
-                                <i class="fas fa-file-excel"></i> Exportar Excel
-                            </button>
-                            <button class="btn btn-secondary" onclick="exportarPDF()">
-                                <i class="fas fa-file-pdf"></i> Exportar PDF
-                            </button>
-                            <button class="btn btn-info" onclick="generarReporte()">
-                                <i class="fas fa-chart-bar"></i> Generar Reporte
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Table -->
-                    <div class="table-responsive">
-                        <table class="table table-custom table-hover">
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Usuario</th>
-                                    <th>Tipo / Producto</th>
-                                    <th>Precio</th>
-                                    <th>Descuento</th>
-                                    <th>Total</th>
-                                    <th>Fecha</th>
-                                    <th>Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tablaCompras">
-                                {{#each compras}}
-                                <tr data-tipo="{{tipo_compra}}">
-                                    <td><strong>#{{id_compra}}</strong></td>
-                                    <td>
-                                        <div>
-                                            <strong>{{usuario_nombre}}</strong>
-                                            <br>
-                                            <small class="text-muted">{{usuario_email}}</small>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        {{#if (eq tipo_compra 'curso')}}
-                                        <div class="curso-preview">
-                                            <img src="{{producto_imagen}}" alt="{{producto_nombre}}">
-                                            <div>
-                                                <span class="tipo-badge tipo-curso">Curso</span>
-                                                <br>
-                                                <small>{{producto_nombre}}</small>
-                                            </div>
-                                        </div>
-                                        {{else}}
-                                        <div>
-                                            <span class="tipo-badge tipo-suscripcion">Suscripción</span>
-                                            <br>
-                                            <small>{{producto_nombre}}</small>
-                                        </div>
-                                        {{/if}}
-                                    </td>
-                                    <td><strong>${{precio}}</strong></td>
-                                    <td>
-                                        {{#if descuento}}
-                                        <span class="badge bg-success">-${{descuento}}</span>
-                                        {{else}}
-                                        <span class="text-muted">N/A</span>
-                                        {{/if}}
-                                    </td>
-                                    <td><strong class="text-success">${{total}}</strong></td>
-                                    <td>{{formatDate fecha_compra}}</td>
-                                    <td>
-                                        <button class="btn btn-sm btn-info" onclick="verDetalle({{id_compra}})" 
-                                                title="Ver detalle">
-                                            <i class="fas fa-eye"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-primary" onclick="descargarFactura({{id_compra}})" 
-                                                title="Descargar factura">
-                                            <i class="fas fa-file-invoice"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-danger" onclick="procesarReembolso({{id_compra}})" 
-                                                title="Procesar reembolso">
-                                            <i class="fas fa-undo"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                                {{/each}}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <div class="content-card">
-                    <h2 class="mb-4"><i class="fas fa-trophy"></i> Top Ventas</h2>
-                    <div class="table-responsive">
-                        <table class="table table-custom">
-                            <thead>
-                                <tr>
-                                    <th>Curso</th>
-                                    <th>Instructor</th>
-                                    <th>Ventas</th>
-                                    <th>Ingresos</th>
-                                    <th>Rating Promedio</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {{#each topVentas}}
-                                <tr>
-                                    <td>
-                                        <div class="curso-preview">
-                                            <img src="{{imagen}}" alt="{{titulo}}">
-                                            <strong>{{titulo}}</strong>
-                                        </div>
-                                    </td>
-                                    <td>{{instructor_nombre}}</td>
-                                    <td><span class="badge bg-primary">{{cantidad_ventas}}</span></td>
-                                    <td><strong class="text-success">${{ingresos}}</strong></td>
-                                    <td>
-                                        <i class="fas fa-star text-warning"></i> {{rating}}
-                                    </td>
-                                </tr>
-                                {{/each}}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+        <!-- Controls Section -->
+        <div class="controls-section">
+            <div class="controls-row">
+                <h5 class="mb-0">
+                    <i class="bi bi-list-ul"></i> Historial de Compras
+                </h5>
             </div>
+        </div>
 
-            <div class="col-lg-4">
-                <div class="content-card">
-                    <h3 class="mb-4"><i class="fas fa-chart-line"></i> Ventas por Mes</h3>
-                    <div class="chart-container">
-                        <canvas id="ventasMensualesChart"></canvas>
-                    </div>
-                </div>
+        <!-- Table Section -->
+        <div class="table-section">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Usuario</th>
+                            <th>Curso</th>
+                            <th>Monto</th>
+                            <th>Método de Pago</th>
+                            <th>Fecha</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{#if compras}}
+                            {{#each compras}}
+                            <tr>
+                                <td><strong>#{{id_compra}}</strong></td>
+                                <td>
+                                    <strong>{{usuario_nombre}}</strong><br>
+                                    <small class="text-muted">{{usuario_email}}</small>
+                                </td>
+                                <td><strong>{{curso_titulo}}</strong></td>
+                                <td>
+                                    <span class="text-primary fw-bold">${{monto}}</span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-info">{{metodo_pago}}</span>
+                                </td>
+                                <td>{{formatDate fecha_compra}}</td>
+                                <td>
+                                    <div class="actions-group">
+                                        <button class="btn btn-sm btn-info" 
+                                                onclick="verDetalles({{id_compra}})"
+                                                title="Ver detalles">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-danger" 
+                                                onclick="reembolsar({{id_compra}})"
+                                                title="Reembolsar">
+                                            <i class="bi bi-arrow-counterclockwise"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            {{/each}}
+                        {{else}}
+                            <tr>
+                                <td colspan="7">
+                                    <div class="empty-state">
+                                        <i class="bi bi-inbox"></i>
+                                        <p>No hay compras registradas</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        {{/if}}
+                    </tbody>
+                </table>
+            </div>
+        </div>
 
-                <div class="content-card">
-                    <h3 class="mb-4"><i class="fas fa-chart-pie"></i> Distribución de Compras</h3>
-                    <div class="chart-container">
-                        <canvas id="distribucionChart"></canvas>
-                    </div>
-                    <div class="d-flex justify-content-between mb-2">
-                        <span>Cursos Individuales:</span>
-                        <strong>{{porcentajeCursos}}%</strong>
-                    </div>
-                    <div class="d-flex justify-content-between">
-                        <span>Suscripciones:</span>
-                        <strong>{{porcentajeSuscripciones}}%</strong>
-                    </div>
-                </div>
+        <!-- Top Ventas Section -->
+        {{#if topVentas}}
+        <div class="controls-section mt-4">
+            <h5 class="mb-3">
+                <i class="bi bi-trophy"></i> Top 10 Cursos Más Vendidos
+            </h5>
+            <div class="table-responsive">
+                <table class="table table-sm">
+                    <thead>
+                        <tr>
+                            <th>Curso</th>
+                            <th>Instructor</th>
+                            <th>Ventas</th>
+                            <th>Ingresos</th>
+                            <th>Rating</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{#each topVentas}}
+                        <tr>
+                            <td><strong>{{titulo}}</strong></td>
+                            <td>{{instructor_nombre}}</td>
+                            <td><span class="badge bg-primary">{{cantidad_ventas}}</span></td>
+                            <td><strong>${{ingresos}}</strong></td>
+                            <td>⭐ {{rating}}</td>
+                        </tr>
+                        {{/each}}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {{/if}}
 
-                <div class="content-card">
-                    <h3 class="mb-4"><i class="fas fa-users"></i> Top Compradores</h3>
-                    <div class="list-group">
+        <!-- Top Compradores Section -->
+        {{#if topCompradores}}
+        <div class="controls-section mt-4">
+            <h5 class="mb-3">
+                <i class="bi bi-people"></i> Top 10 Compradores
+            </h5>
+            <div class="table-responsive">
+                <table class="table table-sm">
+                    <thead>
+                        <tr>
+                            <th>Usuario</th>
+                            <th>Email</th>
+                            <th>Compras</th>
+                            <th>Total Gastado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
                         {{#each topCompradores}}
-                        <div class="list-group-item">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <strong>{{nombre}}</strong>
-                                    <br>
-                                    <small class="text-muted">{{cantidad_compras}} compras</small>
-                                </div>
-                                <div class="text-end">
-                                    <strong class="text-success">${{total_gastado}}</strong>
-                                    <br>
-                                    <button class="btn btn-sm btn-info" onclick="verUsuario({{id_usuario}})">
-                                        <i class="fas fa-user"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
+                        <tr>
+                            <td><strong>{{nombre}}</strong></td>
+                            <td>{{email}}</td>
+                            <td><span class="badge bg-success">{{cantidad_compras}}</span></td>
+                            <td><strong>${{total_gastado}}</strong></td>
+                        </tr>
                         {{/each}}
-                    </div>
-                </div>
-
-                <div class="content-card">
-                    <h3 class="mb-4"><i class="fas fa-clock"></i> Actividad Reciente</h3>
-                    <div class="list-group">
-                        {{#each actividadReciente}}
-                        <div class="list-group-item">
-                            <div class="d-flex justify-content-between">
-                                <strong>{{usuario_nombre}}</strong>
-                                <small class="text-muted">{{tiempo}}</small>
-                            </div>
-                            <small class="text-muted">
-                                Compró: {{producto_nombre}}
-                                <br>
-                                <strong class="text-success">${{monto}}</strong>
-                            </small>
-                        </div>
-                        {{/each}}
-                    </div>
-                </div>
-
-                <div class="content-card">
-                    <h3 class="mb-4"><i class="fas fa-lightbulb"></i> Insights</h3>
-                    <div class="alert alert-success">
-                        <strong><i class="fas fa-arrow-up"></i> Tendencia Positiva</strong>
-                        <br>
-                        Las ventas aumentaron {{crecimiento}}% este mes
-                    </div>
-                    <div class="alert alert-info">
-                        <strong><i class="fas fa-clock"></i> Horario Pico</strong>
-                        <br>
-                        La mayoría de compras ocurren: {{horarioPico}}
-                    </div>
-                </div>
+                    </tbody>
+                </table>
             </div>
         </div>
+        {{/if}}
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        function filtrar() {
-            const tipo = document.getElementById('filtroTipo').value;
-            const filas = document.querySelectorAll('#tablaCompras tr');
-
-            filas.forEach(fila => {
-                const matchTipo = !tipo || fila.dataset.tipo === tipo;
-                fila.style.display = matchTipo ? '' : 'none';
-            });
+        function verDetalles(id) {
+            fetch(`/admin/compras/${id}`)
+                .then(response => response.json())
+                .then(data => {
+                    alert(`Compra #${id}\nUsuario: ${data.usuario_nombre}\nCurso: ${data.curso_titulo}\nMonto: $${data.monto}`);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error al obtener detalles de la compra');
+                });
         }
 
-        function buscar() {
-            const busqueda = document.getElementById('buscar').value.toLowerCase();
-            const filas = document.querySelectorAll('#tablaCompras tr');
-
-            filas.forEach(fila => {
-                const texto = fila.textContent.toLowerCase();
-                fila.style.display = texto.includes(busqueda) ? '' : 'none';
-            });
-        }
-
-        function verDetalle(id) {
-            window.location.href = `/admin/compras/${id}`;
-        }
-
-        function descargarFactura(id) {
-            window.location.href = `/admin/compras/${id}/factura`;
-        }
-
-        function procesarReembolso(id) {
-            const motivo = prompt('Motivo del reembolso:');
-            if (motivo && confirm('¿Procesar reembolso? Esta acción no se puede deshacer.')) {
-                fetch(`/admin/compras/${id}/reembolso`, {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({motivo})
+        function reembolsar(id) {
+            if (confirm('¿Estás seguro de procesar el reembolso? Esta acción no se puede deshacer.')) {
+                fetch(`/admin/compras/${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
                 })
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        alert('Reembolso procesado');
+                        alert('Reembolso procesado exitosamente');
                         location.reload();
+                    } else {
+                        alert('Error: ' + data.message);
                     }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error al procesar el reembolso');
                 });
             }
-        }
-
-        function verUsuario(id) {
-            window.location.href = `/admin/usuarios/${id}`;
-        }
-
-        function exportarExcel() {
-            window.location.href = '/admin/compras/exportar/excel';
-        }
-
-        function exportarPDF() {
-            window.location.href = '/admin/compras/exportar/pdf';
-        }
-
-        function generarReporte() {
-            window.location.href = '/admin/compras/reporte';
         }
     </script>
 </body>

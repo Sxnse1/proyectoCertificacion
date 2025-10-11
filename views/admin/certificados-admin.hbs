@@ -1,546 +1,1694 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestión de Certificados - Admin</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        :root {
-            --primary-color: #FF6B35;
-            --secondary-color: #004E89;
+<!DOCTYPE html><!DOCTYPE html>
+
+<html lang="es"><html lang="es">
+
+<head><head>
+
+    <meta charset="UTF-8">    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>{{title}} - StartEducation</title>    <title>{{title}} - StartEducation</title>
+
+        
+
+    <!-- Favicon -->    <!-- Favicon -->
+
+    <link rel="icon" type="image/svg+xml" href="/images/favicon.svg">    <link rel="icon" type="image/svg+xml" href="/images/favicon.svg">
+
+        
+
+    <!-- Bootstrap 5.3 CSS -->    <!-- Bootstrap 5.3 CSS -->
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Bootstrap Icons -->    <!-- Bootstrap Icons -->
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Google Fonts -->    <!-- Google Fonts -->
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+        
+
+    <style>    <style>
+
+        :root {        :root {
+
+            --primary-color: #ea580c;            --primary-color: #ea580c;
+
+            --primary-hover: #c2410c;            --primary-hover: #c2410c;
+
+            --success-color: #10b981;            --success-color: #10b981;
+
+            --warning-color: #f59e0b;            --warning-color: #f59e0b;
+
+            --danger-color: #ef4444;            --danger-color: #ef4444;
+
+            --text-dark: #1f2937;            --text-dark: #1f2937;
+
+            --text-muted: #6b7280;            --text-muted: #6b7280;
+
+            --border-color: #e5e7eb;            --border-color: #e5e7eb;
+
+            --bg-light: #f8fafc;            --bg-light: #f8fafc;
+
+        }        }
+
+
+
+        * {        * {
+
+            font-family: 'Inter', sans-serif;            font-family: 'Inter', sans-serif;
+
+        }        }
+
+
+
+        body {        body {
+
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+
+            color: var(--text-dark);            color: var(--text-dark);
+
+            min-height: 100vh;            min-height: 100vh;
+
+        }        }
+
+
+
+        .main-container {        .main-container {
+
+            max-width: 1400px;            max-width: 1400px;
+
+            margin: 0 auto;            margin: 0 auto;
+
+            padding: 2rem;            padding: 2rem;
+
+        }        }
+
+
+
+        .header-section {        .header-section {
+
+            background: white;            background: white;
+
+            border-radius: 16px;            border-radius: 16px;
+
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+
+            padding: 2rem;            border: 1px solid var(--border-color);
+
+            margin-bottom: 2rem;            padding: 2rem;
+
+            border-left: 5px solid var(--primary-color);            margin-bottom: 2rem;
+
+        }        }
+
+
+
+        .header-title {        .page-title {
+
+            display: flex;            color: var(--primary-color);
+
+            align-items: center;            font-weight: 700;
+
+            justify-content: space-between;            font-size: 2.5rem;
+
+            flex-wrap: wrap;            margin-bottom: 0.5rem;
+
+            gap: 1rem;            display: flex;
+
+        }            align-items: center;
+
+            gap: 1rem;
+
+        .header-title h1 {        }
+
+            color: var(--text-dark);
+
+            font-weight: 700;        .page-subtitle {
+
+            margin: 0;            color: var(--text-muted);
+
+            display: flex;            font-size: 1.1rem;
+
+            align-items: center;            margin-bottom: 0;
+
+            gap: 0.75rem;        }
+
         }
 
-        body {
-            background: #f5f6fa;
-            font-family: 'Inter', sans-serif;
-        }
+        .stats-row {
 
-        .admin-header {
-            background: linear-gradient(135deg, var(--secondary-color), #003366);
-            color: white;
-            padding: 30px 0;
-            margin-bottom: 30px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
+        .stats-row {            display: grid;
 
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
+            display: grid;            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));            gap: 1.5rem;
+
+            gap: 1.5rem;            margin-bottom: 2rem;
+
+            margin-top: 1.5rem;        }
+
         }
 
         .stat-card {
-            background: white;
-            padding: 25px;
-            border-radius: 15px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-        }
 
-        .stat-icon {
-            width: 60px;
-            height: 60px;
-            background: linear-gradient(135deg, var(--primary-color), #F7931E);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
+        .stat-card {            background: white;
+
+            background: var(--bg-light);            border-radius: 12px;
+
+            border-radius: 12px;            padding: 1.5rem;
+
+            padding: 1.5rem;            text-align: center;
+
+            text-align: center;            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+
+            border: 1px solid var(--border-color);            border: 1px solid var(--border-color);
+
+            transition: transform 0.2s ease;            transition: transform 0.2s ease;
+
+        }        }
+
+
+
+        .stat-card:hover {        .stat-card:hover {
+
+            transform: translateY(-2px);            transform: translateY(-2px);
+
+        }        }
+
+
+
+        .stat-number {        .stat-icon {
+
+            font-size: 2rem;            width: 48px;
+
+            font-weight: 700;            height: 48px;
+
+            color: var(--primary-color);            border-radius: 12px;
+
+            display: block;            display: flex;
+
+        }            align-items: center;
+
             justify-content: center;
-            margin-bottom: 15px;
-            color: white;
-            font-size: 1.5rem;
+
+        .stat-label {            margin: 0 auto 1rem;
+
+            color: var(--text-muted);            font-size: 1.5rem;
+
+            font-size: 0.9rem;            color: white;
+
+            margin-top: 0.5rem;        }
+
         }
 
-        .stat-value {
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--secondary-color);
+        .stat-icon.primary { background: var(--primary-color); }
+
+        .controls-section {        .stat-icon.success { background: var(--success-color); }
+
+            background: white;        .stat-icon.warning { background: var(--warning-color); }
+
+            border-radius: 16px;        .stat-icon.info { background: #3b82f6; }
+
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+
+            padding: 1.5rem;        .stat-number {
+
+            margin-bottom: 2rem;            font-size: 2rem;
+
+        }            font-weight: 700;
+
+            color: var(--primary-color);
+
+        .controls-row {            margin-bottom: 0.5rem;
+
+            display: flex;        }
+
+            justify-content: space-between;
+
+            align-items: center;        .stat-label {
+
+            flex-wrap: wrap;            color: var(--text-muted);
+
+            gap: 1rem;            font-size: 0.9rem;
+
+        }            font-weight: 500;
+
         }
 
-        .stat-label {
-            color: #6c757d;
-            font-size: 0.9rem;
+        .search-group {
+
+            display: flex;        .content-section {
+
+            gap: 0.5rem;            background: white;
+
+            flex: 1;            border-radius: 16px;
+
+            max-width: 400px;            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+
+        }            border: 1px solid var(--border-color);
+
+            overflow: hidden;
+
+        .search-input {        }
+
+            border: 2px solid var(--border-color);
+
+            border-radius: 8px;        .section-header {
+
+            padding: 0.75rem 1rem;            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
+
+            font-size: 0.95rem;            color: white;
+
+            transition: border-color 0.3s ease;            padding: 1.5rem 2rem;
+
+        }            display: flex;
+
+            justify-content: space-between;
+
+        .search-input:focus {            align-items: center;
+
+            border-color: var(--primary-color);        }
+
+            box-shadow: 0 0 0 0.2rem rgba(234, 88, 12, 0.25);
+
+        }        .section-title {
+
+            font-weight: 600;
+
+        .btn-primary {            font-size: 1.25rem;
+
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);            margin: 0;
+
+            border: none;            display: flex;
+
+            border-radius: 8px;            align-items: center;
+
+            font-weight: 600;            gap: 0.5rem;
+
+            padding: 0.75rem 1.5rem;        }
+
+            transition: all 0.3s ease;
+
+        }        .btn-custom {
+
+            background: rgba(255, 255, 255, 0.2);
+
+        .btn-primary:hover {            border: 1px solid rgba(255, 255, 255, 0.3);
+
+            background: linear-gradient(135deg, var(--primary-hover) 0%, #9a3412 100%);            color: white;
+
+            transform: translateY(-2px);            padding: 0.5rem 1rem;
+
+            box-shadow: 0 8px 20px rgba(234, 88, 12, 0.4);            border-radius: 8px;
+
+        }            text-decoration: none;
+
+            transition: all 0.2s ease;
+
+        .btn-success {        }
+
+            background: var(--success-color);
+
+            border: none;        .btn-custom:hover {
+
+            border-radius: 8px;            background: rgba(255, 255, 255, 0.3);
+
+            font-weight: 600;            color: white;
+
+            padding: 0.75rem 1.5rem;            text-decoration: none;
+
+            transition: all 0.3s ease;        }
+
         }
 
-        .content-card {
+        .controls-section {
+
+        .btn-success:hover {            background: var(--bg-light);
+
+            background: #059669;            padding: 1.5rem 2rem;
+
+            transform: translateY(-2px);            border-bottom: 1px solid var(--border-color);
+
+        }        }
+
+
+
+        .btn-warning {        .search-box {
+
+            background: var(--warning-color);            position: relative;
+
+            border: none;            max-width: 400px;
+
+            border-radius: 8px;            margin-bottom: 1rem;
+
+            color: white;        }
+
+            font-weight: 600;
+
+            padding: 0.5rem 1rem;        .search-box i {
+
+            transition: all 0.3s ease;            position: absolute;
+
+        }            left: 1rem;
+
+            top: 50%;
+
+        .btn-warning:hover {            transform: translateY(-50%);
+
+            background: #d97706;            color: var(--text-muted);
+
+            color: white;        }
+
+        }
+
+        .search-box input {
+
+        .btn-danger {            width: 100%;
+
+            background: var(--danger-color);            padding: 0.75rem 1rem 0.75rem 2.5rem;
+
+            border: none;            border: 1px solid var(--border-color);
+
+            border-radius: 8px;            border-radius: 8px;
+
+            font-weight: 600;            font-size: 0.95rem;
+
+            padding: 0.5rem 1rem;        }
+
+            transition: all 0.3s ease;
+
+        }        .search-box input:focus {
+
+            outline: none;
+
+        .btn-danger:hover {            border-color: var(--primary-color);
+
+            background: #dc2626;            box-shadow: 0 0 0 3px rgba(234, 88, 12, 0.1);
+
+        }        }
+
+
+
+        .btn-info {        .filters {
+
+            background: #3b82f6;            display: flex;
+
+            border: none;            gap: 1rem;
+
+            border-radius: 8px;            flex-wrap: wrap;
+
+            font-weight: 600;        }
+
+            padding: 0.5rem 1rem;
+
+            transition: all 0.3s ease;        .filter-select {
+
+        }            padding: 0.75rem 1rem;
+
+            border: 1px solid var(--border-color);
+
+        .btn-info:hover {            border-radius: 8px;
+
+            background: #2563eb;            background: white;
+
+        }            font-size: 0.95rem;
+
+            min-width: 180px;
+
+        .table-section {        }
+
             background: white;
-            border-radius: 15px;
-            padding: 30px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-            margin-bottom: 30px;
+
+            border-radius: 16px;        .filter-select:focus {
+
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);            outline: none;
+
+            overflow: hidden;            border-color: var(--primary-color);
+
+        }            box-shadow: 0 0 0 3px rgba(234, 88, 12, 0.1);
+
         }
 
-        .filter-section {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 25px;
+        .table-header {
+
+            background: var(--bg-light);        .btn-primary {
+
+            padding: 1.5rem;            background: var(--primary-color);
+
+            border-bottom: 1px solid var(--border-color);            border: 1px solid var(--primary-color);
+
+        }            color: white;
+
+            padding: 0.75rem 1.5rem;
+
+        .table {            border-radius: 8px;
+
+            margin: 0;            font-weight: 500;
+
+        }            text-decoration: none;
+
+            display: inline-flex;
+
+        .table th {            align-items: center;
+
+            background: var(--bg-light);            gap: 0.5rem;
+
+            border: none;            transition: all 0.2s ease;
+
+            font-weight: 600;        }
+
+            color: var(--text-dark);
+
+            padding: 1rem;        .btn-primary:hover {
+
+        }            background: var(--primary-hover);
+
+            border-color: var(--primary-hover);
+
+        .table td {            color: white;
+
+            border: none;            text-decoration: none;
+
+            padding: 1rem;            transform: translateY(-1px);
+
+            vertical-align: middle;        }
+
         }
 
-        .table-custom thead {
-            background: #f8f9fa;
-        }
+        .table {
 
-        .table-custom th {
-            font-weight: 600;
-            color: var(--secondary-color);
-            padding: 15px;
-        }
+        .table tbody tr {            margin: 0;
 
-        .table-custom td {
-            padding: 15px;
-            vertical-align: middle;
-        }
+            border-bottom: 1px solid #f1f5f9;        }
 
-        .certificado-preview {
-            width: 80px;
-            height: 50px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 1.5rem;
-        }
+            transition: background-color 0.2s ease;
 
-        .status-activo {
-            background: #d4edda;
-            color: #155724;
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-weight: 600;
-            font-size: 0.85rem;
-        }
+        }        .table thead th {
 
-        .status-revocado {
-            background: #f8d7da;
-            color: #721c24;
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-weight: 600;
-            font-size: 0.85rem;
-        }
+            background: var(--bg-light);
 
-        .verification-code {
-            font-family: 'Courier New', monospace;
-            background: #f8f9fa;
-            padding: 4px 8px;
+        .table tbody tr:hover {            border-color: var(--border-color);
+
+            background-color: rgba(234, 88, 12, 0.05);            color: var(--text-dark);
+
+        }            font-weight: 600;
+
+            padding: 1rem;
+
+        .certificado-codigo {            font-size: 0.9rem;
+
+            font-family: 'Courier New', monospace;            text-transform: uppercase;
+
+            background: #f1f5f9;            letter-spacing: 0.5px;
+
+            padding: 0.25rem 0.5rem;        }
+
             border-radius: 4px;
-            font-size: 0.9rem;
-        }
-    </style>
-</head>
-<body>
-    <div class="admin-header">
-        <div class="container-fluid">
-            <div class="d-flex justify-content-between align-items-center">
-                <div>
-                    <h1><i class="fas fa-certificate"></i> Gestión de Certificados</h1>
-                    <p class="mb-0">Administración y emisión de certificados de cursos</p>
-                </div>
-                <div>
-                    <button class="btn btn-success btn-lg me-2" onclick="emitirMasivo()">
-                        <i class="fas fa-file-export"></i> Emitir Masivo
-                    </button>
-                    <a href="/admin/dashboard" class="btn btn-light btn-lg">
-                        <i class="fas fa-arrow-left"></i> Dashboard
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
 
-    <div class="container-fluid">
-        <!-- Stats -->
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-icon">
-                    <i class="fas fa-award"></i>
-                </div>
-                <div class="stat-value">{{totalCertificados}}</div>
-                <div class="stat-label">Certificados Emitidos</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon">
-                    <i class="fas fa-calendar-day"></i>
-                </div>
-                <div class="stat-value">{{certificadosMes}}</div>
-                <div class="stat-label">Emitidos Este Mes</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon">
-                    <i class="fas fa-clock"></i>
-                </div>
-                <div class="stat-value">{{pendientes}}</div>
-                <div class="stat-label">Pendientes de Emisión</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon">
-                    <i class="fas fa-check-circle"></i>
-                </div>
-                <div class="stat-value">{{verificaciones}}</div>
-                <div class="stat-label">Verificaciones Este Mes</div>
-            </div>
-        </div>
+            font-size: 0.85rem;        .table tbody td {
 
-        <div class="row">
-            <div class="col-lg-8">
-                <div class="content-card">
-                    <h2 class="mb-4"><i class="fas fa-list"></i> Todos los Certificados</h2>
+            color: var(--primary-color);            padding: 1rem;
 
-                    <!-- Filtros -->
-                    <div class="filter-section">
-                        <div class="row">
-                            <div class="col-md-3 mb-3">
-                                <label class="form-label">Estado</label>
-                                <select class="form-select" id="filtroEstado" onchange="filtrar()">
-                                    <option value="">Todos</option>
-                                    <option value="activo">Activo</option>
-                                    <option value="revocado">Revocado</option>
-                                </select>
-                            </div>
-                            <div class="col-md-3 mb-3">
-                                <label class="form-label">Curso</label>
-                                <select class="form-select" id="filtroCurso" onchange="filtrar()">
-                                    <option value="">Todos</option>
-                                    {{#each cursos}}
-                                    <option value="{{id_curso}}">{{titulo}}</option>
-                                    {{/each}}
-                                </select>
-                            </div>
-                            <div class="col-md-3 mb-3">
-                                <label class="form-label">Fecha Desde</label>
-                                <input type="date" class="form-control" id="fechaDesde" onchange="filtrar()">
-                            </div>
-                            <div class="col-md-3 mb-3">
-                                <label class="form-label">Buscar</label>
-                                <input type="text" class="form-control" id="buscar" 
-                                       placeholder="Usuario, código..." onkeyup="buscar()">
-                            </div>
-                        </div>
-                        <div class="d-flex gap-2">
-                            <button class="btn btn-primary" onclick="exportarExcel()">
-                                <i class="fas fa-file-excel"></i> Exportar
-                            </button>
-                            <button class="btn btn-secondary" onclick="verificarCertificado()">
-                                <i class="fas fa-search"></i> Verificar Certificado
-                            </button>
-                        </div>
-                    </div>
+            font-weight: 600;            border-color: var(--border-color);
 
-                    <!-- Table -->
-                    <div class="table-responsive">
-                        <table class="table table-custom table-hover">
-                            <thead>
-                                <tr>
-                                    <th>Preview</th>
-                                    <th>Usuario</th>
-                                    <th>Curso</th>
-                                    <th>Código</th>
-                                    <th>Fecha Emisión</th>
-                                    <th>Estado</th>
-                                    <th>Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tablaCertificados">
-                                {{#each certificados}}
-                                <tr data-estado="{{estatus}}" data-curso="{{id_curso}}">
-                                    <td>
-                                        <div class="certificado-preview">
-                                            <i class="fas fa-certificate"></i>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div>
-                                            <strong>{{usuario_nombre}}</strong>
-                                            <br>
-                                            <small class="text-muted">{{usuario_email}}</small>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <strong>{{curso_titulo}}</strong>
-                                        <br>
-                                        <small class="text-muted">{{instructor_nombre}}</small>
-                                    </td>
-                                    <td>
-                                        <span class="verification-code">{{codigo_verificacion}}</span>
-                                    </td>
-                                    <td>{{formatDate fecha_emision}}</td>
-                                    <td>
-                                        <span class="status-{{estatus}}">{{estatus}}</span>
-                                    </td>
-                                    <td>
-                                        <button class="btn btn-sm btn-info" onclick="verCertificado({{id_certificado}})" 
-                                                title="Ver certificado">
-                                            <i class="fas fa-eye"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-primary" onclick="descargar({{id_certificado}})" 
-                                                title="Descargar PDF">
-                                            <i class="fas fa-download"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-success" onclick="enviarEmail({{id_certificado}})" 
-                                                title="Enviar por email">
-                                            <i class="fas fa-envelope"></i>
-                                        </button>
-                                        {{#if (eq estatus 'activo')}}
-                                        <button class="btn btn-sm btn-danger" onclick="revocar({{id_certificado}})" 
-                                                title="Revocar">
-                                            <i class="fas fa-ban"></i>
-                                        </button>
-                                        {{else}}
-                                        <button class="btn btn-sm btn-warning" onclick="reactivar({{id_certificado}})" 
-                                                title="Reactivar">
-                                            <i class="fas fa-check"></i>
-                                        </button>
-                                        {{/if}}
-                                    </td>
-                                </tr>
-                                {{/each}}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+            cursor: pointer;            vertical-align: middle;
 
-                <div class="content-card">
-                    <h2 class="mb-4"><i class="fas fa-clock"></i> Pendientes de Emisión</h2>
-                    <p class="text-muted">Estudiantes que han completado cursos pero no tienen certificado</p>
-                    
-                    <div class="table-responsive">
-                        <table class="table table-custom">
-                            <thead>
-                                <tr>
-                                    <th>Usuario</th>
-                                    <th>Curso</th>
-                                    <th>Fecha Completado</th>
-                                    <th>Progreso</th>
-                                    <th>Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {{#each pendientesEmision}}
-                                <tr>
-                                    <td>
-                                        <strong>{{usuario_nombre}}</strong>
-                                        <br>
-                                        <small class="text-muted">{{usuario_email}}</small>
-                                    </td>
-                                    <td>{{curso_titulo}}</td>
-                                    <td>{{formatDate fecha_completado}}</td>
-                                    <td>
-                                        <span class="badge bg-success">100%</span>
-                                    </td>
-                                    <td>
-                                        <button class="btn btn-sm btn-success" 
-                                                onclick="emitirCertificado({{id_usuario}}, {{id_curso}})" 
-                                                title="Emitir certificado">
-                                            <i class="fas fa-certificate"></i> Emitir
-                                        </button>
-                                    </td>
-                                </tr>
-                                {{/each}}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
+            transition: all 0.2s ease;        }
 
-            <div class="col-lg-4">
-                <div class="content-card">
-                    <h3 class="mb-4"><i class="fas fa-trophy"></i> Cursos con Más Certificados</h3>
-                    <div class="list-group">
-                        {{#each cursosTop}}
-                        <div class="list-group-item">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <strong>{{titulo}}</strong>
-                                    <br>
-                                    <small class="text-muted">{{instructor}}</small>
-                                </div>
-                                <span class="badge bg-primary">{{cantidad}}</span>
-                            </div>
-                        </div>
-                        {{/each}}
-                    </div>
-                </div>
-
-                <div class="content-card">
-                    <h3 class="mb-4"><i class="fas fa-chart-line"></i> Emisiones por Mes</h3>
-                    <div class="chart-container">
-                        <canvas id="emisionesMensualesChart"></canvas>
-                    </div>
-                </div>
-
-                <div class="content-card">
-                    <h3 class="mb-4"><i class="fas fa-search"></i> Verificaciones Recientes</h3>
-                    <div class="list-group">
-                        {{#each verificacionesRecientes}}
-                        <div class="list-group-item">
-                            <div class="d-flex justify-content-between">
-                                <small><code>{{codigo}}</code></small>
-                                <small class="text-muted">{{tiempo}}</small>
-                            </div>
-                            <small class="text-muted">{{resultado}}</small>
-                        </div>
-                        {{/each}}
-                    </div>
-                </div>
-
-                <div class="content-card">
-                    <h3 class="mb-4"><i class="fas fa-cog"></i> Configuración</h3>
-                    <button class="btn btn-primary w-100 mb-2" onclick="configurarPlantilla()">
-                        <i class="fas fa-file-alt"></i> Plantilla de Certificados
-                    </button>
-                    <button class="btn btn-secondary w-100 mb-2" onclick="configurarFirmas()">
-                        <i class="fas fa-signature"></i> Gestionar Firmas
-                    </button>
-                    <button class="btn btn-info w-100" onclick="configurarEmails()">
-                        <i class="fas fa-envelope-open-text"></i> Emails Automáticos
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script>
-        function filtrar() {
-            const estado = document.getElementById('filtroEstado').value;
-            const curso = document.getElementById('filtroCurso').value;
-            const filas = document.querySelectorAll('#tablaCertificados tr');
-
-            filas.forEach(fila => {
-                const matchEstado = !estado || fila.dataset.estado === estado;
-                const matchCurso = !curso || fila.dataset.curso === curso;
-                fila.style.display = (matchEstado && matchCurso) ? '' : 'none';
-            });
         }
 
-        function buscar() {
-            const busqueda = document.getElementById('buscar').value.toLowerCase();
-            const filas = document.querySelectorAll('#tablaCertificados tr');
+        .table tbody tr:hover {
 
-            filas.forEach(fila => {
-                const texto = fila.textContent.toLowerCase();
-                fila.style.display = texto.includes(busqueda) ? '' : 'none';
-            });
+        .certificado-codigo:hover {            background: rgba(234, 88, 12, 0.05);
+
+            background: var(--primary-color);        }
+
+            color: white;
+
+        }        .badge {
+
+            padding: 0.4rem 0.8rem;
+
+        .user-info {            font-weight: 500;
+
+            display: flex;            font-size: 0.75rem;
+
+            flex-direction: column;            border-radius: 6px;
+
+            gap: 0.25rem;        }
+
         }
 
-        function verCertificado(id) {
-            window.location.href = `/admin/certificados/${id}/preview`;
+        .badge.bg-success {
+
+        .user-name {            background: var(--success-color) !important;
+
+            font-weight: 600;        }
+
+            color: var(--text-dark);
+
+        }        .badge.bg-warning {
+
+            background: var(--warning-color) !important;
+
+        .user-email {            color: white;
+
+            color: var(--text-muted);        }
+
+            font-size: 0.85rem;
+
+        }        .badge.bg-danger {
+
+            background: var(--danger-color) !important;
+
+        .curso-info {        }
+
+            max-width: 250px;
+
+        }        .action-buttons {
+
+            display: flex;
+
+        .curso-title {            gap: 0.5rem;
+
+            font-weight: 600;            align-items: center;
+
+            color: var(--text-dark);        }
+
+            display: block;
+
+            margin-bottom: 0.25rem;        .btn-sm {
+
+        }            padding: 0.375rem 0.75rem;
+
+            font-size: 0.8rem;
+
+        .instructor-name {            border-radius: 6px;
+
+            color: var(--text-muted);            border: 1px solid;
+
+            font-size: 0.85rem;            background: transparent;
+
+        }            transition: all 0.2s ease;
+
+            cursor: pointer;
+
+        .fecha-emision {        }
+
+            color: var(--text-muted);
+
+            font-size: 0.9rem;        .btn-outline-primary {
+
+        }            border-color: var(--primary-color);
+
+            color: var(--primary-color);
+
+        .actions-group {        }
+
+            display: flex;
+
+            gap: 0.5rem;        .btn-outline-primary:hover {
+
+        }            background: var(--primary-color);
+
+            color: white;
+
+        .pagination-section {        }
+
+            background: white;
+
+            border-radius: 16px;        .btn-outline-success {
+
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);            border-color: var(--success-color);
+
+            padding: 1.5rem;            color: var(--success-color);
+
+            margin-top: 2rem;        }
+
         }
 
-        function descargar(id) {
-            window.location.href = `/admin/certificados/${id}/pdf`;
+        .btn-outline-success:hover {
+
+        .pagination {            background: var(--success-color);
+
+            margin: 0;            color: white;
+
+            justify-content: center;        }
+
         }
 
-        function enviarEmail(id) {
-            if (confirm('¿Enviar certificado por email?')) {
-                fetch(`/admin/certificados/${id}/enviar`, {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'}
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        alert('Certificado enviado');
-                    }
-                });
+        .btn-outline-danger {
+
+        .page-link {            border-color: var(--danger-color);
+
+            border: none;            color: var(--danger-color);
+
+            color: var(--text-muted);        }
+
+            padding: 0.75rem 1rem;
+
+            margin: 0 0.25rem;        .btn-outline-danger:hover {
+
+            border-radius: 8px;            background: var(--danger-color);
+
+            transition: all 0.3s ease;            color: white;
+
+        }        }
+
+
+
+        .page-link:hover {        .empty-state {
+
+            background: var(--primary-color);            text-align: center;
+
+            color: white;            padding: 3rem 2rem;
+
+        }            color: var(--text-muted);
+
+        }
+
+        .page-item.active .page-link {
+
+            background: var(--primary-color);        .empty-state i {
+
+            color: white;            font-size: 3rem;
+
+        }            margin-bottom: 1rem;
+
+            opacity: 0.5;
+
+        .empty-state {        }
+
+            text-align: center;
+
+            padding: 4rem 2rem;        .back-btn {
+
+            color: var(--text-muted);            position: fixed;
+
+        }            top: 2rem;
+
+            left: 2rem;
+
+        .empty-state i {            background: var(--primary-color);
+
+            font-size: 4rem;            color: white;
+
+            margin-bottom: 1rem;            width: 48px;
+
+            opacity: 0.5;            height: 48px;
+
+        }            border-radius: 12px;
+
+            display: flex;
+
+        .loading-overlay {            align-items: center;
+
+            position: fixed;            justify-content: center;
+
+            top: 0;            text-decoration: none;
+
+            left: 0;            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+
+            right: 0;            transition: all 0.2s ease;
+
+            bottom: 0;            z-index: 1000;
+
+            background: rgba(255, 255, 255, 0.95);        }
+
+            display: none;
+
+            align-items: center;        .back-btn:hover {
+
+            justify-content: center;            background: var(--primary-hover);
+
+            z-index: 9999;            color: white;
+
+        }            transform: translateY(-2px);
+
+            text-decoration: none;
+
+        .spinner-border {        }
+
+            color: var(--primary-color);
+
+        }        /* Responsive */
+
+        @media (max-width: 768px) {
+
+        .filter-select {            .main-container {
+
+            border: 2px solid var(--border-color);                padding: 1rem;
+
+            border-radius: 8px;            }
+
+            padding: 0.75rem 1rem;
+
+            font-size: 0.95rem;            .header-section {
+
+            transition: border-color 0.3s ease;                padding: 1.5rem;
+
+        }            }
+
+
+
+        .filter-select:focus {            .page-title {
+
+            border-color: var(--primary-color);                font-size: 2rem;
+
+            box-shadow: 0 0 0 0.2rem rgba(234, 88, 12, 0.25);            }
+
+        }
+
+            .stats-row {
+
+        .alert {                grid-template-columns: 1fr;
+
+            border-radius: 12px;                gap: 1rem;
+
+            border: none;            }
+
+            padding: 1rem 1.5rem;
+
+        }            .section-header {
+
+                padding: 1rem;
+
+        .alert-info {                flex-direction: column;
+
+            background: rgba(59, 130, 246, 0.1);                align-items: flex-start;
+
+            color: #1e40af;                gap: 1rem;
+
+        }            }
+
+
+
+        .cursos-top-section {            .controls-section {
+
+            background: white;                padding: 1rem;
+
+            border-radius: 16px;            }
+
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+
+            padding: 1.5rem;            .filters {
+
+            margin-bottom: 2rem;                flex-direction: column;
+
+        }            }
+
+
+
+        .curso-top-card {            .filter-select {
+
+            background: var(--bg-light);                min-width: auto;
+
+            border-radius: 8px;            }
+
+            padding: 1rem;
+
+            border: 1px solid var(--border-color);            .action-buttons {
+
+            transition: transform 0.2s ease;                flex-direction: column;
+
+        }                gap: 0.25rem;
+
             }
-        }
 
-        function revocar(id) {
-            if (confirm('¿Revocar este certificado? Esta acción es seria.')) {
-                const motivo = prompt('Motivo de la revocación:');
-                if (motivo) {
-                    fetch(`/admin/certificados/${id}/revocar`, {
-                        method: 'POST',
-                        headers: {'Content-Type': 'application/json'},
-                        body: JSON.stringify({motivo})
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            alert('Certificado revocado');
-                            location.reload();
-                        }
+        .curso-top-card:hover {
+
+            transform: translateY(-2px);            .back-btn {
+
+        }                top: 1rem;
+
+                left: 1rem;
+
+        @media (max-width: 768px) {            }
+
+            .main-container {        }
+
+                padding: 1rem;    </style>
+
+            }</head>
+
+            
+
+            .header-section {<body>
+
+                padding: 1.5rem;    <!-- Back Button -->
+
+            }    <a href="/dashboard" class="back-btn" title="Volver al Dashboard">
+
+                    <i class="bi bi-arrow-left"></i>
+
+            .controls-row {    </a>
+
+                flex-direction: column;
+
+                align-items: stretch;    <div class="main-container">
+
+            }        <!-- Header Section -->
+
+                    <div class="header-section">
+
+            .search-group {            <div class="d-flex justify-content-between align-items-center">
+
+                max-width: none;                <div>
+
+            }                    <h1 class="page-title">
+
+                                    <i class="bi bi-award"></i>
+
+            .actions-group {                        Gestión de Certificados
+
+                justify-content: center;                    </h1>
+
+            }                    <p class="page-subtitle">Administra y supervisa todos los certificados emitidos</p>
+
+                            </div>
+
+            .table-responsive {                <div>
+
+                font-size: 0.9rem;                    <button type="button" class="btn btn-primary" onclick="mostrarModalCertificado()">
+
+            }                        <i class="bi bi-plus-circle"></i>
+
+                        Nuevo Certificado
+
+            .curso-info {                    </button>
+
+                max-width: none;                </div>
+
+            }            </div>
+
+        }        </div>
+
+    </style>
+
+</head>        <!-- Statistics Section -->
+
+<body>        <div class="stats-row">
+
+    <!-- Loading Overlay -->            <div class="stat-card">
+
+    <div class="loading-overlay" id="loadingOverlay">                <div class="stat-icon primary">
+
+        <div class="text-center">                    <i class="bi bi-award"></i>
+
+            <div class="spinner-border mb-3" role="status">                </div>
+
+                <span class="visually-hidden">Cargando...</span>                <div class="stat-number">{{stats.totalCertificados}}</div>
+
+            </div>                <div class="stat-label">Total Certificados</div>
+
+            <p>Procesando...</p>            </div>
+
+        </div>            <div class="stat-card">
+
+    </div>                <div class="stat-icon success">
+
+                    <i class="bi bi-calendar-check"></i>
+
+    <div class="main-container">                </div>
+
+        <!-- Header Section -->                <div class="stat-number">{{stats.certificadosMes}}</div>
+
+        <div class="header-section">                <div class="stat-label">Este Mes</div>
+
+            <div class="header-title">            </div>
+
+                <h1>            <div class="stat-card">
+
+                    <i class="bi bi-award"></i>                <div class="stat-icon warning">
+
+                    Gestión de Certificados                    <i class="bi bi-graph-up"></i>
+
+                </h1>                </div>
+
+                <div class="d-flex gap-2">                <div class="stat-number">{{stats.progresosCompletados}}</div>
+
+                    <a href="/admin/dashboard" class="btn btn-outline-secondary">                <div class="stat-label">Progresos Completados</div>
+
+                        <i class="bi bi-arrow-left me-2"></i>Dashboard            </div>
+
+                    </a>            <div class="stat-card">
+
+                </div>                <div class="stat-icon info">
+
+            </div>                    <i class="bi bi-people"></i>
+
+                            </div>
+
+            <!-- Estadísticas -->                <div class="stat-number">{{cursosTop.length}}</div>
+
+            <div class="stats-row">                <div class="stat-label">Cursos Activos</div>
+
+                <div class="stat-card">            </div>
+
+                    <span class="stat-number">{{totalCertificados}}</span>        </div>
+
+                    <div class="stat-label">Total Certificados</div>
+
+                </div>        <!-- Main Content -->
+
+                <div class="stat-card">        <div class="content-section">
+
+                    <span class="stat-number">{{certificadosMes}}</span>            <!-- Section Header -->
+
+                    <div class="stat-label">Este Mes</div>            <div class="section-header">
+
+                </div>                <h2 class="section-title">
+
+                <div class="stat-card">                    <i class="bi bi-list-ul"></i>
+
+                    <span class="stat-number">{{progresosCompletados}}</span>                    Lista de Certificados
+
+                    <div class="stat-label">Progresos Completados</div>                </h2>
+
+                </div>                <div class="d-flex gap-2">
+
+                <div class="stat-card">                    <a href="#" class="btn-custom">
+
+                    <span class="stat-number">{{cursosTop.length}}</span>                        <i class="bi bi-download"></i>
+
+                    <div class="stat-label">Cursos con Certificados</div>                        Exportar
+
+                </div>                    </a>
+
+            </div>                    <a href="#" class="btn-custom" onclick="location.reload()">
+
+        </div>                        <i class="bi bi-arrow-clockwise"></i>
+
+                        Actualizar
+
+        <!-- Controls Section -->                    </a>
+
+        <div class="controls-section">                </div>
+
+            <div class="controls-row">            </div>
+
+                <div class="search-group">
+
+                    <form method="GET" class="d-flex w-100">            <!-- Controls Section -->
+
+                        <input type="text"             <div class="controls-section">
+
+                               class="form-control search-input"                 <div class="search-box">
+
+                               name="search"                     <i class="bi bi-search"></i>
+
+                               placeholder="Buscar por usuario, curso o código..."                     <input type="text" id="searchInput" placeholder="Buscar por estudiante, curso o código..." value="{{search}}">
+
+                               value="{{search}}">                </div>
+
+                        <select name="curso" class="form-select filter-select ms-2" style="width: auto;">                <div class="filters">
+
+                            <option value="">Todos los cursos</option>                    <select class="filter-select" id="cursoFilter">
+
+                            {{#each cursos}}                        <option value="">Todos los cursos</option>
+
+                            <option value="{{id_curso}}" {{#if (eq ../filtro_curso id_curso)}}selected{{/if}}>                        {{#each cursos}}
+
+                                {{titulo}}                            <option value="{{id_curso}}" {{#if (eq ../cursoFilter id_curso)}}selected{{/if}}>{{titulo}}</option>
+
+                            </option>                        {{/each}}
+
+                            {{/each}}                    </select>
+
+                        </select>                    <select class="filter-select" id="estadoFilter">
+
+                        <button type="submit" class="btn btn-primary ms-2">                        <option value="">Todos los estados</option>
+
+                            <i class="bi bi-search"></i>                        <option value="activo" {{#if (eq estadoFilter 'activo')}}selected{{/if}}>Activo</option>
+
+                        </button>                        <option value="revocado" {{#if (eq estadoFilter 'revocado')}}selected{{/if}}>Revocado</option>
+
+                    </form>                    </select>
+
+                </div>                </div>
+
+                <div class="action-buttons">            </div>
+
+                    <button type="button" class="btn btn-success" onclick="showEmitirModal()">
+
+                        <i class="bi bi-plus-circle me-2"></i>Emitir Certificado            <!-- Table Section -->
+
+                    </button>            <div class="table-responsive">
+
+                    <button type="button" class="btn btn-info" onclick="showVerificarModal()">                {{#if certificados.length}}
+
+                        <i class="bi bi-shield-check me-2"></i>Verificar Certificado                <table class="table table-hover">
+
+                    </button>                    <thead>
+
+                </div>                        <tr>
+
+            </div>                            <th>Código</th>
+
+        </div>                            <th>Usuario</th>
+
+                            <th>Curso</th>
+
+        <!-- Top Cursos Section -->                            <th>Instructor</th>
+
+        {{#if cursosTop.length}}                            <th>Fecha Emisión</th>
+
+        <div class="cursos-top-section">                            <th>Estado</th>
+
+            <h5 class="mb-3">                            <th>Acciones</th>
+
+                <i class="bi bi-trophy me-2"></i>Cursos con Más Certificados                        </tr>
+
+            </h5>                    </thead>
+
+            <div class="row">                    <tbody>
+
+                {{#each cursosTop}}                        {{#each certificados}}
+
+                <div class="col-md-6 col-lg-4 mb-3">                        <tr>
+
+                    <div class="curso-top-card">                            <td>
+
+                        <h6 class="mb-2 text-truncate">{{titulo}}</h6>                                <code class="text-primary">{{codigo_validacion}}</code>
+
+                        <span class="badge bg-primary">                            </td>
+
+                            <i class="bi bi-award me-1"></i>{{cantidad_certificados}} certificados                            <td>
+
+                        </span>                                <div>
+
+                    </div>                                    <strong>{{usuario_nombre}}</strong>
+
+                </div>                                    <div class="text-muted small">{{usuario_email}}</div>
+
+                {{/each}}                                </div>
+
+            </div>                            </td>
+
+        </div>                            <td>
+
+        {{/if}}                                <span class="fw-medium">{{curso_titulo}}</span>
+
+                            </td>
+
+        <!-- Table Section -->                            <td>
+
+        <div class="table-section">                                <span class="text-muted">{{instructor_nombre}}</span>
+
+            <div class="table-header">                            </td>
+
+                <h5 class="mb-0">                            <td>
+
+                    <i class="bi bi-list-ul me-2"></i>                                <span class="text-muted">
+
+                    Lista de Certificados                                    {{formatDate fecha_emision}}
+
+                    {{#if search}}                                </span>
+
+                        <small class="text-muted">- Resultados para "{{search}}"</small>                            </td>
+
+                    {{/if}}                            <td>
+
+                </h5>                                <span class="badge bg-success">Activo</span>
+
+            </div>                            </td>
+
+                                        <td>
+
+            {{#if certificados.length}}                                <div class="action-buttons">
+
+            <div class="table-responsive">                                    <button type="button"
+
+                <table class="table">                                            class="btn btn-outline-primary btn-sm"
+
+                    <thead>                                            onclick="verCertificado({{id_certificado}})"
+
+                        <tr>                                            title="Ver certificado">
+
+                            <th>ID</th>                                        <i class="bi bi-eye"></i>
+
+                            <th>Código de Validación</th>                                    </button>
+
+                            <th>Usuario</th>                                    <button type="button"
+
+                            <th>Curso</th>                                            class="btn btn-outline-success btn-sm"
+
+                            <th>Fecha de Emisión</th>                                            onclick="descargarCertificado({{id_certificado}})"
+
+                            <th>Acciones</th>                                            title="Descargar">
+
+                        </tr>                                        <i class="bi bi-download"></i>
+
+                    </thead>                                    </button>
+
+                    <tbody>                                    <button type="button"
+
+                        {{#each certificados}}                                            class="btn btn-outline-danger btn-sm"
+
+                        <tr>                                            onclick="revocarCertificado({{id_certificado}})"
+
+                            <td>                                            title="Revocar">
+
+                                <span class="badge bg-secondary">#{{id_certificado}}</span>                                        <i class="bi bi-x-circle"></i>
+
+                            </td>                                    </button>
+
+                            <td>                                </div>
+
+                                <div class="certificado-codigo" onclick="copyToClipboard('{{codigo_validacion}}')"                             </td>
+
+                                     title="Clic para copiar">                        </tr>
+
+                                    {{codigo_validacion}}                        {{/each}}
+
+                                </div>                    </tbody>
+
+                            </td>                </table>
+
+                            <td>                {{else}}
+
+                                <div class="user-info">                <div class="empty-state">
+
+                                    <span class="user-name">{{usuario_nombre}}</span>                    <i class="bi bi-award"></i>
+
+                                    <span class="user-email">{{usuario_email}}</span>                    <h5>No hay certificados disponibles</h5>
+
+                                </div>                    <p class="mb-0">No se encontraron certificados que coincidan con los criterios de búsqueda.</p>
+
+                            </td>                </div>
+
+                            <td>                {{/if}}
+
+                                <div class="curso-info">            </div>
+
+                                    <span class="curso-title">{{curso_titulo}}</span>        </div>
+
+                                    <span class="instructor-name">Por: {{instructor_nombre}}</span>
+
+                                </div>        <!-- Top Courses Section -->
+
+                            </td>        {{#if cursosTop.length}}
+
+                            <td>        <div class="content-section mt-4">
+
+                                <div class="fecha-emision">            <div class="section-header">
+
+                                    {{formatDate fecha_emision}}                <h2 class="section-title">
+
+                                </div>                    <i class="bi bi-trophy"></i>
+
+                            </td>                    Cursos con Más Certificados
+
+                            <td>                </h2>
+
+                                <div class="actions-group">            </div>
+
+                                    <button type="button" class="btn btn-info btn-sm" 
+
+                                            onclick="verCertificado({{id_certificado}})">            <div class="table-responsive">
+
+                                        <i class="bi bi-eye"></i>                <table class="table">
+
+                                    </button>                    <thead>
+
+                                    <button type="button" class="btn btn-warning btn-sm"                         <tr>
+
+                                            onclick="descargarCertificado({{id_certificado}})">                            <th>Curso</th>
+
+                                        <i class="bi bi-download"></i>                            <th>Instructor</th>
+
+                                    </button>                            <th>Certificados Emitidos</th>
+
+                                    <button type="button" class="btn btn-danger btn-sm"                         </tr>
+
+                                            onclick="revocarCertificado({{id_certificado}}, '{{usuario_nombre}}', '{{curso_titulo}}')">                    </thead>
+
+                                        <i class="bi bi-trash"></i>                    <tbody>
+
+                                    </button>                        {{#each cursosTop}}
+
+                                </div>                        <tr>
+
+                            </td>                            <td>
+
+                        </tr>                                <strong>{{titulo}}</strong>
+
+                        {{/each}}                            </td>
+
+                    </tbody>                            <td>
+
+                </table>                                <span class="text-muted">{{instructor_nombre}}</span>
+
+            </div>                            </td>
+
+            {{else}}                            <td>
+
+            <div class="empty-state">                                <span class="badge bg-primary">{{total_certificados}}</span>
+
+                <i class="bi bi-award"></i>                            </td>
+
+                <h4>No hay certificados</h4>                        </tr>
+
+                <p>                        {{/each}}
+
+                    {{#if search}}                    </tbody>
+
+                        No se encontraron certificados que coincidan con "{{search}}"                </table>
+
+                    {{else}}            </div>
+
+                        Aún no se han emitido certificados        </div>
+
+                    {{/if}}        {{/if}}
+
+                </p>    </div>
+
+                <button type="button" class="btn btn-primary" onclick="showEmitirModal()">
+
+                    <i class="bi bi-plus-circle me-2"></i>Emitir Primer Certificado    <!-- Scripts -->
+
+                </button>    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+            </div>
+
+            {{/if}}    <script>
+
+        </div>        // Funciones principales
+
+    </div>        document.addEventListener('DOMContentLoaded', function() {
+
+            // Configurar búsqueda en tiempo real
+
+    <!-- Modal para Emitir Certificado -->            const searchInput = document.getElementById('searchInput');
+
+    <div class="modal fade" id="emitirModal" tabindex="-1">            if (searchInput) {
+
+        <div class="modal-dialog">                let searchTimeout;
+
+            <div class="modal-content">                searchInput.addEventListener('input', function() {
+
+                <div class="modal-header">                    clearTimeout(searchTimeout);
+
+                    <h5 class="modal-title">Emitir Nuevo Certificado</h5>                    searchTimeout = setTimeout(() => {
+
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>                        buscar();
+
+                </div>                    }, 500);
+
+                <form id="emitirForm">                });
+
+                    <div class="modal-body">            }
+
+                        <div class="alert alert-info">
+
+                            <i class="bi bi-info-circle me-2"></i>            // Configurar filtros
+
+                            El certificado se emitirá automáticamente con un código único de validación.            document.getElementById('cursoFilter')?.addEventListener('change', buscar);
+
+                        </div>            document.getElementById('estadoFilter')?.addEventListener('change', buscar);
+
+                                });
+
+                        <div class="mb-3">
+
+                            <label for="usuario_select" class="form-label">Usuario *</label>        function buscar() {
+
+                            <select class="form-select" id="usuario_select" required>            const searchTerm = document.getElementById('searchInput').value;
+
+                                <option value="">Selecciona un usuario...</option>            const cursoFilter = document.getElementById('cursoFilter').value;
+
+                                <!-- Se cargará dinámicamente -->            const estadoFilter = document.getElementById('estadoFilter').value;
+
+                            </select>
+
+                        </div>            const params = new URLSearchParams();
+
+                                    if (searchTerm) params.set('search', searchTerm);
+
+                        <div class="mb-3">            if (cursoFilter) params.set('curso', cursoFilter);
+
+                            <label for="curso_select" class="form-label">Curso *</label>            if (estadoFilter) params.set('estado', estadoFilter);
+
+                            <select class="form-select" id="curso_select" required>
+
+                                <option value="">Selecciona un curso...</option>            window.location.href = '?' + params.toString();
+
+                                {{#each cursos}}        }
+
+                                <option value="{{id_curso}}">{{titulo}}</option>
+
+                                {{/each}}        function mostrarModalCertificado() {
+
+                            </select>            alert('Funcionalidad para generar nuevo certificado - En desarrollo');
+
+                        </div>        }
+
+                        
+
+                        <div id="certificado_preview" class="alert alert-success" style="display: none;">        function verCertificado(id) {
+
+                            <strong>Vista previa:</strong>            window.open(`/admin/certificados/${id}`, '_blank');
+
+                            <div id="preview_text"></div>        }
+
+                        </div>
+
+                    </div>        function descargarCertificado(id) {
+
+                    <div class="modal-footer">            window.open(`/certificados/${id}/pdf`, '_blank');
+
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>        }
+
+                        <button type="submit" class="btn btn-success">
+
+                            <i class="bi bi-award me-2"></i>Emitir Certificado        async function revocarCertificado(id) {
+
+                        </button>            if (!confirm('¿Estás seguro de que deseas revocar este certificado?')) {
+
+                    </div>                return;
+
+                </form>            }
+
+            </div>
+
+        </div>            try {
+
+    </div>                const response = await fetch(`/admin/certificados/${id}`, {
+
+                    method: 'DELETE',
+
+    <!-- Modal para Verificar Certificado -->                    headers: {
+
+    <div class="modal fade" id="verificarModal" tabindex="-1">                        'Content-Type': 'application/json',
+
+        <div class="modal-dialog">                    }
+
+            <div class="modal-content">                });
+
+                <div class="modal-header">
+
+                    <h5 class="modal-title">Verificar Certificado</h5>                const result = await response.json();
+
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+
+                </div>                if (result.success) {
+
+                <form id="verificarForm">                    alert('Certificado revocado exitosamente');
+
+                    <div class="modal-body">                    window.location.reload();
+
+                        <div class="mb-3">                } else {
+
+                            <label for="codigo_verificacion" class="form-label">Código de Validación *</label>                    alert('Error: ' + result.message);
+
+                            <input type="text" class="form-control" id="codigo_verificacion"                 }
+
+                                   placeholder="Ingresa el código de validación" required            } catch (error) {
+
+                                   style="font-family: 'Courier New', monospace;">                console.error('Error:', error);
+
+                            <div class="form-text">El código debe tener 32 caracteres</div>                alert('Error al revocar el certificado');
+
+                        </div>            }
+
+                                }
+
+                        <div id="verificacion_resultado" style="display: none;"></div>    </script>
+
+                    </div></body>
+
+                    <div class="modal-footer"></html>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                        <button type="submit" class="btn btn-info">
+                            <i class="bi bi-shield-check me-2"></i>Verificar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Variables globales
+        let emitirModal, verificarModal;
+        
+        // Inicializar cuando carga la página
+        document.addEventListener('DOMContentLoaded', function() {
+            emitirModal = new bootstrap.Modal(document.getElementById('emitirModal'));
+            verificarModal = new bootstrap.Modal(document.getElementById('verificarModal'));
+            
+            // Configurar formularios
+            document.getElementById('emitirForm').addEventListener('submit', handleEmitirSubmit);
+            document.getElementById('verificarForm').addEventListener('submit', handleVerificarSubmit);
+            
+            // Cargar usuarios al abrir modal
+            document.getElementById('emitirModal').addEventListener('show.bs.modal', cargarUsuarios);
+        });
+        
+        // Mostrar modal para emitir certificado
+        function showEmitirModal() {
+            document.getElementById('emitirForm').reset();
+            document.getElementById('certificado_preview').style.display = 'none';
+            emitirModal.show();
+        }
+        
+        // Mostrar modal para verificar certificado
+        function showVerificarModal() {
+            document.getElementById('verificarForm').reset();
+            document.getElementById('verificacion_resultado').style.display = 'none';
+            verificarModal.show();
+        }
+        
+        // Cargar usuarios
+        async function cargarUsuarios() {
+            try {
+                const response = await fetch('/admin/certificados/api/usuarios');
+                const data = await response.json();
+                
+                const select = document.getElementById('usuario_select');
+                select.innerHTML = '<option value="">Selecciona un usuario...</option>';
+                
+                if (data.success) {
+                    data.usuarios.forEach(usuario => {
+                        const option = document.createElement('option');
+                        option.value = usuario.id_usuario;
+                        option.textContent = `${usuario.nombre} ${usuario.apellido} (${usuario.email})`;
+                        select.appendChild(option);
                     });
                 }
+            } catch (error) {
+                console.error('Error cargando usuarios:', error);
+                // Fallback: crear opciones de ejemplo
+                const select = document.getElementById('usuario_select');
+                select.innerHTML = `
+                    <option value="">Selecciona un usuario...</option>
+                    <option value="1">Juan Pérez (juan@example.com)</option>
+                    <option value="2">María García (maria@example.com)</option>
+                    <option value="3">Carlos López (carlos@example.com)</option>
+                `;
             }
         }
-
-        function reactivar(id) {
-            if (confirm('¿Reactivar este certificado?')) {
-                fetch(`/admin/certificados/${id}/reactivar`, {
+        
+        // Manejar envío del formulario de emisión
+        async function handleEmitirSubmit(e) {
+            e.preventDefault();
+            
+            const id_usuario = document.getElementById('usuario_select').value;
+            const id_curso = document.getElementById('curso_select').value;
+            
+            if (!id_usuario || !id_curso) {
+                alert('❌ Todos los campos son obligatorios');
+                return;
+            }
+            
+            try {
+                showLoading(true);
+                
+                const response = await fetch('/admin/certificados', {
                     method: 'POST',
-                    headers: {'Content-Type': 'application/json'}
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        alert('Certificado reactivado');
-                        location.reload();
-                    }
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        id_usuario: parseInt(id_usuario),
+                        id_curso: parseInt(id_curso)
+                    })
                 });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    alert(`✅ ${data.message}\n\nCódigo de validación: ${data.codigo}`);
+                    emitirModal.hide();
+                    window.location.reload();
+                } else {
+                    alert('❌ Error: ' + data.error);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('❌ Error emitiendo el certificado');
+            } finally {
+                showLoading(false);
             }
         }
+        
+        // Manejar envío del formulario de verificación
+        async function handleVerificarSubmit(e) {
+            e.preventDefault();
+            
+            const codigo = document.getElementById('codigo_verificacion').value.trim().toUpperCase();
+            
+            if (!codigo) {
+                alert('❌ El código de validación es obligatorio');
+                return;
+            }
+            
+            try {
+                showLoading(true);
+                
+                const response = await fetch(`/admin/certificados/verificar/${codigo}`);
+                const data = await response.json();
+                
+                const resultadoDiv = document.getElementById('verificacion_resultado');
+                
+                if (data.valid) {
+                    const cert = data.certificado;
+                    resultadoDiv.innerHTML = `
+                        <div class="alert alert-success">
+                            <h6><i class="bi bi-check-circle me-2"></i>Certificado Válido</h6>
+                            <p><strong>Usuario:</strong> ${cert.usuario_nombre}</p>
+                            <p><strong>Curso:</strong> ${cert.curso_titulo}</p>
+                            <p><strong>Instructor:</strong> ${cert.instructor_nombre}</p>
+                            <p><strong>Fecha de Emisión:</strong> ${new Date(cert.fecha_emision).toLocaleDateString()}</p>
+                        </div>
+                    `;
+                } else {
+                    resultadoDiv.innerHTML = `
+                        <div class="alert alert-danger">
+                            <h6><i class="bi bi-x-circle me-2"></i>Certificado No Válido</h6>
+                            <p>${data.message}</p>
+                        </div>
+                    `;
+                }
+                
+                resultadoDiv.style.display = 'block';
+            } catch (error) {
+                console.error('Error:', error);
+                alert('❌ Error verificando el certificado');
+            } finally {
+                showLoading(false);
+            }
+        }
+        
+        // Ver detalles del certificado
+        async function verCertificado(id) {
+            try {
+                showLoading(true);
+                
+                const response = await fetch(`/admin/certificados/${id}`);
+                const data = await response.json();
+                
+                if (data.error) {
+                    alert('❌ Error: ' + data.error);
+                    return;
+                }
+                
+                const info = `
+Detalles del Certificado
 
-        function emitirCertificado(userId, cursoId) {
-            if (confirm('¿Emitir certificado?')) {
-                fetch('/admin/certificados/emitir', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({id_usuario: userId, id_curso: cursoId})
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        alert('Certificado emitido');
-                        location.reload();
-                    }
+ID: ${data.id_certificado}
+Código: ${data.codigo_validacion}
+Usuario: ${data.usuario_nombre}
+Email: ${data.usuario_email}
+Curso: ${data.curso_titulo}
+Instructor: ${data.instructor_nombre}
+Fecha de Emisión: ${new Date(data.fecha_emision).toLocaleDateString()}
+                `;
+                
+                alert(info);
+            } catch (error) {
+                console.error('Error:', error);
+                alert('❌ Error cargando los detalles del certificado');
+            } finally {
+                showLoading(false);
+            }
+        }
+        
+        // Descargar certificado (placeholder)
+        function descargarCertificado(id) {
+            alert('🚧 Función de descarga en desarrollo...\n\nEsta función permitirá descargar el certificado en formato PDF.');
+        }
+        
+        // Revocar certificado
+        async function revocarCertificado(id, usuario, curso) {
+            if (!confirm(`⚠️ ¿Estás seguro de que quieres revocar el certificado?\n\nUsuario: ${usuario}\nCurso: ${curso}\n\nEsta acción no se puede deshacer.`)) {
+                return;
+            }
+            
+            try {
+                showLoading(true);
+                
+                const response = await fetch(`/admin/certificados/${id}`, {
+                    method: 'DELETE'
                 });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    alert('✅ ' + data.message);
+                    window.location.reload();
+                } else {
+                    alert('❌ Error: ' + data.error);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('❌ Error revocando el certificado');
+            } finally {
+                showLoading(false);
             }
         }
-
-        function emitirMasivo() {
-            if (confirm('¿Emitir certificados a todos los pendientes?')) {
-                fetch('/admin/certificados/emitir-masivo', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'}
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        alert(`${data.emitidos} certificados emitidos`);
-                        location.reload();
-                    }
-                });
-            }
+        
+        // Copiar código al portapapeles
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                // Mostrar feedback visual temporal
+                const element = event.target;
+                const originalText = element.textContent;
+                const originalStyle = element.style.cssText;
+                
+                element.textContent = 'Copiado!';
+                element.style.background = 'var(--success-color)';
+                element.style.color = 'white';
+                
+                setTimeout(() => {
+                    element.textContent = originalText;
+                    element.style.cssText = originalStyle;
+                }, 1000);
+            }).catch(() => {
+                // Fallback para navegadores que no soportan clipboard API
+                const textArea = document.createElement('textarea');
+                textArea.value = text;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                
+                alert('Código copiado al portapapeles: ' + text);
+            });
         }
-
-        function verificarCertificado() {
-            const codigo = prompt('Ingrese el código de verificación:');
-            if (codigo) {
-                window.location.href = `/admin/certificados/verificar/${codigo}`;
-            }
-        }
-
-        function exportarExcel() {
-            window.location.href = '/admin/certificados/exportar';
-        }
-
-        function configurarPlantilla() {
-            window.location.href = '/admin/certificados/plantilla';
-        }
-
-        function configurarFirmas() {
-            window.location.href = '/admin/certificados/firmas';
-        }
-
-        function configurarEmails() {
-            window.location.href = '/admin/certificados/emails';
+        
+        // Mostrar/ocultar loading
+        function showLoading(show) {
+            const overlay = document.getElementById('loadingOverlay');
+            overlay.style.display = show ? 'flex' : 'none';
         }
     </script>
 </body>

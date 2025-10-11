@@ -51,11 +51,11 @@ router.get('/', async (req, res) => {
       SELECT TOP 10
         c.id_curso,
         c.titulo,
-        c.imagen,
+        c.miniatura,
         COUNT(cc.id_carrito) as cantidad
       FROM Carrito_Compras cc
       INNER JOIN Cursos c ON cc.id_curso = c.id_curso
-      GROUP BY c.id_curso, c.titulo, c.imagen
+      GROUP BY c.id_curso, c.titulo, c.miniatura
       ORDER BY cantidad DESC
     `);
     
@@ -115,11 +115,11 @@ router.get('/:userId', async (req, res) => {
           c.titulo,
           c.descripcion,
           c.precio,
-          c.imagen,
+          c.miniatura,
           u.nombre as instructor_nombre
         FROM Carrito_Compras cc
         INNER JOIN Cursos c ON cc.id_curso = c.id_curso
-        INNER JOIN Usuarios u ON c.id_instructor = u.id_usuario
+        INNER JOIN Usuarios u ON c.id_usuario = u.id_usuario
         WHERE cc.id_usuario = @userId
         ORDER BY cc.fecha_agregado DESC
       `);

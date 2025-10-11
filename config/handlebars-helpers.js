@@ -179,6 +179,38 @@ function registerHandlebarsHelpers() {
     return '';
   });
   
+  // ============================================================
+  // 👤 HELPERS DE USUARIO
+  // ============================================================
+  
+  hbs.registerHelper('initials', function(nombre, apellido) {
+    let result = '';
+    if (nombre && typeof nombre === 'string' && nombre.length > 0) {
+      result += nombre.charAt(0).toUpperCase();
+    }
+    if (apellido && typeof apellido === 'string' && apellido.length > 0) {
+      result += apellido.charAt(0).toUpperCase();
+    }
+    return result || '?';
+  });
+
+  // ============================================================
+  // 🔧 HELPERS ADICIONALES PARA SUSCRIPCIONES
+  // ============================================================
+  
+  hbs.registerHelper('split', function(str, delimiter) {
+    if (!str || typeof str !== 'string') return [];
+    return str.split(delimiter);
+  });
+
+  hbs.registerHelper('eq', function(a, b) {
+    return a === b;
+  });
+
+  hbs.registerHelper('===', function(a, b) {
+    return a === b;
+  });
+  
   console.log('✅ [HANDLEBARS] Helpers registrados exitosamente');
 }
 

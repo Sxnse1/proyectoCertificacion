@@ -58,7 +58,9 @@ router.get('/', async function(req, res, next) {
       LEFT JOIN Compras comp ON u.id_usuario = comp.id_usuario
       ${whereClause}
       GROUP BY u.id_usuario, u.nombre, u.apellido, u.nombre_usuario, u.email, u.rol, u.estatus, u.fecha_registro
-      ORDER BY u.fecha_registro DESC
+      ORDER BY 
+        CASE WHEN u.rol = 'instructor' THEN 1 ELSE 2 END,
+        u.fecha_registro DESC
       OFFSET @offset ROWS FETCH NEXT @limit ROWS ONLY
     `;
 

@@ -16,7 +16,7 @@ router.get('/login', function(req, res, next) {
 /* POST login - Procesar login */
 router.post('/login', async function(req, res, next) {
   try {
-    const { email, password } = req.body;
+    const { email, password, redirectTo } = req.body;
     
     // Validación básica
     if (!email || !password) {
@@ -197,7 +197,7 @@ router.post('/login', async function(req, res, next) {
         if (user.rol === 'instructor' || user.rol === 'admin') {
           return res.redirect('/dashboard');
         } else {
-          return res.redirect('/cursos');
+          return res.redirect('/user-dashboard');
         }
       }
       
@@ -294,18 +294,16 @@ router.post('/login', async function(req, res, next) {
       }
       
       console.log('[AUTH] 💾 Sesión creada exitosamente para:', email);
-      
-      // Verificar si hay una URL de redirección guardada
-      const redirectTo = req.session.redirectTo || null;
-      delete req.session.redirectTo;
+      console.log('[AUTH] 👤 Usuario en sesión:', req.session.user);
+      console.log('[AUTH] 🎯 Redirigiendo a:', redirectTo || '/user-dashboard');
       
       // Redirigir según el rol del usuario
       if (user.rol === 'instructor') {
         console.log('[AUTH] 📚 Redirigiendo instructor al dashboard');
         res.redirect(redirectTo || '/dashboard');
       } else if (user.rol === 'user' || user.rol === 'estudiante') {
-        console.log('[AUTH] 👨‍🎓 Redirigiendo estudiante a plataforma de cursos');
-        res.redirect(redirectTo || '/cursos');
+        console.log('[AUTH] 👨‍🎓 Redirigiendo estudiante al dashboard de usuario');
+        res.redirect(redirectTo || '/user-dashboard');
       } else {
         console.log('[AUTH] ⚠️ Rol no reconocido:', user.rol);
         return res.render('auth/login-bootstrap', {

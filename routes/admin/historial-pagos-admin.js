@@ -1,30 +1,21 @@
 const express = require('express');
 const router = express.Router();
 const sql = require('mssql');
-const config = require('../../config/database');
+const { connect } = require('../../config/database');
 
-// Middleware para verificar si el usuario es administrador
-function verificarAdmin(req, res, next) {
-  if (req.session.user && req.session.user.id_rol === 1) {
-    next();
-  } else {
-    res.status(403).send('Acceso denegado. Se requieren permisos de administrador.');
-  }
-}
-
-// GET - Vista principal de pagos
+// GET - Vista principal de historial de pagos
 router.get('/', async (req, res) => {
   try {
-    const pool = await sql.connect(config);
+    const pool = await connect();
     
     // Obtener estadísticas
     const statsQuery = await pool.request().query(`
       SELECT 
-        SUM(monto) as totalIngresos,
-        (SELECT SUM(monto) FROM Historial_Pagos 
-         WHERE MONTH(fecha) = MONTH(GETDATE()) AND YEAR(fecha) = YEAR(GETDATE())) as ingresosMes,
+        ISNULL(SUM(monto), 0) as totalIngresos,
+        (SELECT ISNULL(SUM(monto), 0) FROM Historial_Pagos 
+         WHERE MONTH(fecha_pago) = MONTH(GETDATE()) AND YEAR(fecha_pago) = YEAR(GETDATE())) as ingresosMes,
         COUNT(*) as totalTransacciones,
-        (COUNT(CASE WHEN estatus = 'completado' THEN 1 END) * 100.0 / COUNT(*)) as tasaExito
+        (COUNT(CASE WHEN estatus = 'exitoso' THEN 1 END) * 100.0 / NULLIF(COUNT(*), 0)) as tasaExito
       FROM Historial_Pagos
     `);
     
@@ -34,61 +25,57 @@ router.get('/', async (req, res) => {
         hp.id_pago,
         hp.id_usuario,
         hp.id_compra,
+        hp.id_suscripcion,
         hp.monto,
-        hp.metodo_pago,
         hp.estatus,
-        hp.fecha,
-        u.nombre as usuario_nombre,
+        hp.fecha_pago,
+        u.nombre + ' ' + u.apellido as usuario_nombre,
         u.email as usuario_email,
         CASE 
-          WHEN c.id_curso IS NOT NULL THEN 'Curso: ' + cur.titulo
-          WHEN s.id_membresia IS NOT NULL THEN 'Membresía: ' + m.nombre
-          ELSE 'Compra general'
+          WHEN hp.id_compra IS NOT NULL THEN 'Compra de Curso'
+          WHEN hp.id_suscripcion IS NOT NULL THEN 'Suscripción'
+          ELSE 'Otro'
+        END as tipo_pago,
+        CASE 
+          WHEN c.id_curso IS NOT NULL THEN cur.titulo
+          WHEN s.id_membresia IS NOT NULL THEN m.nombre
+          ELSE 'N/A'
         END as concepto
       FROM Historial_Pagos hp
       INNER JOIN Usuarios u ON hp.id_usuario = u.id_usuario
       LEFT JOIN Compras c ON hp.id_compra = c.id_compra
       LEFT JOIN Cursos cur ON c.id_curso = cur.id_curso
-      LEFT JOIN Suscripciones s ON c.id_suscripcion = s.id_suscripcion
+      LEFT JOIN Suscripciones s ON hp.id_suscripcion = s.id_suscripcion
       LEFT JOIN Membresias m ON s.id_membresia = m.id_membresia
-      ORDER BY hp.fecha DESC
+      ORDER BY hp.fecha_pago DESC
     `);
     
-    // Obtener distribución por método de pago
-    const metodosPagoQuery = await pool.request().query(`
+    // Obtener distribución por estatus
+    const distribucionEstatusQuery = await pool.request().query(`
       SELECT 
-        metodo_pago as metodo,
+        estatus,
+        COUNT(*) as cantidad,
         SUM(monto) as total
       FROM Historial_Pagos
-      WHERE estatus = 'completado'
-      GROUP BY metodo_pago
+      GROUP BY estatus
     `);
     
     // Obtener top compradores
     const topCompradoresQuery = await pool.request().query(`
       SELECT TOP 10
         u.id_usuario,
-        u.nombre,
-        COUNT(hp.id_pago) as cantidad_compras,
-        SUM(hp.monto) as total
+        u.nombre + ' ' + u.apellido as nombre,
+        u.email,
+        COUNT(hp.id_pago) as cantidad_transacciones,
+        SUM(hp.monto) as total_gastado
       FROM Historial_Pagos hp
       INNER JOIN Usuarios u ON hp.id_usuario = u.id_usuario
-      WHERE hp.estatus = 'completado'
-      GROUP BY u.id_usuario, u.nombre
-      ORDER BY total DESC
-    `);
-    
-    // Obtener pagos pendientes
-    const pendientesQuery = await pool.request().query(`
-      SELECT 
-        COUNT(*) as cantidad,
-        SUM(monto) as total
-      FROM Historial_Pagos
-      WHERE estatus = 'pendiente'
+      WHERE hp.estatus = 'exitoso'
+      GROUP BY u.id_usuario, u.nombre, u.apellido, u.email
+      ORDER BY total_gastado DESC
     `);
     
     const stats = statsQuery.recordset[0];
-    const pendientes = pendientesQuery.recordset[0];
     
     res.render('admin/historial-pagos-admin', {
       totalIngresos: (stats.totalIngresos || 0).toFixed(2),
@@ -96,123 +83,80 @@ router.get('/', async (req, res) => {
       totalTransacciones: stats.totalTransacciones || 0,
       tasaExito: (stats.tasaExito || 0).toFixed(1),
       pagos: pagosQuery.recordset,
-      metodosPago: metodosPagoQuery.recordset,
+      distribucionEstatus: distribucionEstatusQuery.recordset,
       topCompradores: topCompradoresQuery.recordset,
-      pagosPendientes: pendientes.cantidad || 0,
-      totalPendiente: (pendientes.total || 0).toFixed(2),
       user: req.session.user
     });
   } catch (err) {
     console.error('Error al cargar historial de pagos:', err);
-    res.status(500).send('Error al cargar historial de pagos');
+    res.status(500).send('Error al cargar historial de pagos: ' + err.message);
   }
 });
 
 // GET - Detalles de un pago
-router.get('/:pagoId', async (req, res) => {
-  const { pagoId } = req.params;
-  
+router.get('/:id', async (req, res) => {
   try {
-    const pool = await sql.connect(config);
-    const result = await pool.request()
-      .input('pagoId', sql.NVarChar, pagoId)
+    const pool = await connect();
+    const { id } = req.params;
+    
+    const pagoQuery = await pool.request()
+      .input('id', sql.Int, id)
       .query(`
         SELECT 
           hp.*,
-          u.nombre as usuario_nombre,
+          u.nombre + ' ' + u.apellido as usuario_nombre,
           u.email as usuario_email,
-          u.telefono as usuario_telefono
+          CASE 
+            WHEN c.id_curso IS NOT NULL THEN cur.titulo
+            WHEN s.id_membresia IS NOT NULL THEN m.nombre
+            ELSE 'N/A'
+          END as concepto
         FROM Historial_Pagos hp
         INNER JOIN Usuarios u ON hp.id_usuario = u.id_usuario
-        WHERE hp.id_pago = @pagoId
+        LEFT JOIN Compras c ON hp.id_compra = c.id_compra
+        LEFT JOIN Cursos cur ON c.id_curso = cur.id_curso
+        LEFT JOIN Suscripciones s ON hp.id_suscripcion = s.id_suscripcion
+        LEFT JOIN Membresias m ON s.id_membresia = m.id_membresia
+        WHERE hp.id_pago = @id
       `);
     
-    if (result.recordset.length === 0) {
-      return res.status(404).json({ success: false, error: 'Pago no encontrado' });
+    if (pagoQuery.recordset.length === 0) {
+      return res.status(404).json({ error: 'Pago no encontrado' });
     }
     
-    res.json({ success: true, data: result.recordset[0] });
+    res.json(pagoQuery.recordset[0]);
   } catch (err) {
     console.error('Error al obtener pago:', err);
-    res.status(500).json({ success: false, error: err.message });
+    res.status(500).json({ error: err.message });
   }
 });
 
-// GET - Descargar recibo de pago
-router.get('/:pagoId/recibo', async (req, res) => {
-  const { pagoId } = req.params;
-  
+// PUT - Actualizar estatus de pago (por ejemplo, procesar reembolso)
+router.put('/:id', async (req, res) => {
   try {
-    // Aquí implementarías la generación del PDF del recibo
-    res.json({ 
-      success: true, 
-      message: 'Generación de recibo en desarrollo',
-      pagoId: pagoId
-    });
-  } catch (err) {
-    console.error('Error al generar recibo:', err);
-    res.status(500).json({ success: false, error: err.message });
-  }
-});
-
-// POST - Confirmar pago pendiente
-router.post('/:pagoId/confirmar', async (req, res) => {
-  const { pagoId } = req.params;
-  
-  try {
-    const pool = await sql.connect(config);
+    const pool = await connect();
+    const { id } = req.params;
+    const { estatus } = req.body;
+    
+    // Validar estatus
+    const estatusValidos = ['exitoso', 'fallido', 'reembolsado'];
+    if (!estatusValidos.includes(estatus)) {
+      return res.status(400).json({ error: 'Estatus inválido' });
+    }
+    
     await pool.request()
-      .input('pagoId', sql.NVarChar, pagoId)
+      .input('id', sql.Int, id)
+      .input('estatus', sql.NVarChar, estatus)
       .query(`
         UPDATE Historial_Pagos 
-        SET estatus = 'completado'
-        WHERE id_pago = @pagoId
+        SET estatus = @estatus
+        WHERE id_pago = @id
       `);
     
-    res.json({ success: true, message: 'Pago confirmado exitosamente' });
+    res.json({ success: true, message: 'Estatus actualizado exitosamente' });
   } catch (err) {
-    console.error('Error al confirmar pago:', err);
-    res.status(500).json({ success: false, error: err.message });
-  }
-});
-
-// GET - Exportar a Excel
-router.get('/exportar/excel', async (req, res) => {
-  try {
-    const pool = await sql.connect(config);
-    const result = await pool.request().query(`
-      SELECT 
-        hp.id_pago,
-        u.nombre as usuario,
-        u.email,
-        hp.monto,
-        hp.metodo_pago,
-        hp.estatus,
-        hp.fecha
-      FROM Historial_Pagos hp
-      INNER JOIN Usuarios u ON hp.id_usuario = u.id_usuario
-      ORDER BY hp.fecha DESC
-    `);
-    
-    // Aquí implementarías la exportación a Excel
-    res.json({ success: true, data: result.recordset });
-  } catch (err) {
-    console.error('Error al exportar:', err);
-    res.status(500).json({ success: false, error: err.message });
-  }
-});
-
-// GET - Exportar a PDF
-router.get('/exportar/pdf', async (req, res) => {
-  try {
-    // Aquí implementarías la exportación a PDF
-    res.json({ 
-      success: true, 
-      message: 'Exportación a PDF en desarrollo'
-    });
-  } catch (err) {
-    console.error('Error al exportar:', err);
-    res.status(500).json({ success: false, error: err.message });
+    console.error('Error al actualizar pago:', err);
+    res.status(500).json({ error: err.message });
   }
 });
 

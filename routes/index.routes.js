@@ -34,15 +34,23 @@ function configureRoutes(app) {
   const cursosRouter = require('./protected/cursos');
   const cursosDbRouter = require('./protected/cursos-db');
   const dashboardRouter = require('./protected/dashboard');
+  const userDashboardRouter = require('./protected/user-dashboard');
+  const favoritosRouter = require('./protected/favoritos');
   const videoRouter = require('./protected/video');
   const usuariosRouter = require('./protected/usuarios');
+  const perfilRouter = require('./perfil');
+  const suscripcionesRouter = require('./protected/suscripciones');
   
   app.use('/users', requireAuth, usersRouter);
   app.use('/cursos', requireAuth, cursosRouter);
   app.use('/cursos-db', requireAuth, cursosDbRouter);
   app.use('/dashboard', requireAuth, dashboardRouter);
+  app.use('/user-dashboard', requireAuth, userDashboardRouter);
+  app.use('/favoritos', requireAuth, favoritosRouter);
   app.use('/video', requireAuth, videoRouter);
   app.use('/usuarios', requireRole(['instructor', 'admin']), usuariosRouter);
+  app.use('/perfil', requireAuth, perfilRouter);
+  app.use('/suscripciones', requireAuth, suscripcionesRouter);
   
   // ============================================================
   // 👨‍🏫 RUTAS DE ADMINISTRADOR
@@ -62,6 +70,10 @@ function configureRoutes(app) {
   app.use('/admin/cursos', requireRole(['admin', 'instructor']), cursosAdminRouter);
   app.use('/admin/videos', requireRole(['admin', 'instructor']), videosAdminRouter);
   app.use('/admin/usuarios', requireRole(['admin', 'instructor']), usuariosAdminRouter);
+  
+  // Analytics y Reportes
+  const analyticsAdminRouter = require('./admin/analytics-admin');
+  app.use('/admin/analytics', requireRole(['admin', 'instructor']), analyticsAdminRouter);
   
   // Monetización y Comercio
   const membresiaAdminRouter = require('./admin/membresias-admin');
@@ -86,7 +98,13 @@ function configureRoutes(app) {
   const valoracionesAdminRouter = require('./admin/valoraciones-admin');
   
   app.use('/admin/certificados', requireRole(['admin', 'instructor']), certificadosAdminRouter);
+  app.use('/certificados', requireAuth, certificadosAdminRouter); // Acceso para todos los usuarios autenticados
   app.use('/admin/valoraciones', requireRole(['admin', 'instructor']), valoracionesAdminRouter);
+  
+  // Configuración del Sistema
+  const configuracionAdminRouter = require('./admin/configuracion-admin');
+  
+  app.use('/admin/configuracion', requireRole(['admin', 'instructor']), configuracionAdminRouter);
   
   // ============================================================
   // 🔧 RUTA DE SISTEMA (legacy)

@@ -17,36 +17,38 @@ router.get('/', async (req, res) => {
   try {
     const pool = await sql.connect(config);
     
-    // Obtener estadísticas básicas
+    // Obtener estadísticas
     const statsQuery = await pool.request().query(`
       SELECT 
         COUNT(*) as totalFavoritos,
         COUNT(DISTINCT id_usuario) as usuariosActivos,
-        CASE 
-          WHEN COUNT(DISTINCT id_usuario) > 0 
-          THEN COUNT(*) / COUNT(DISTINCT id_usuario)
-          ELSE 0 
-        END as promedioFavoritos
+        (SELECT COUNT(*) FROM Favoritos) / NULLIF(COUNT(DISTINCT id_usuario), 0) as promedioFavoritos
       FROM Favoritos
     `);
     
-    // Obtener cursos más guardados (SIN referencia a instructor por ahora)
+    // Obtener cursos más guardados con info de compras
     const cursosFavoritosQuery = await pool.request().query(`
       SELECT 
         c.id_curso,
         c.titulo,
         c.miniatura,
         c.id_categoria,
+        u.nombre as instructor_nombre,
         COUNT(DISTINCT f.id_usuario) as cantidad_favoritos,
         (SELECT COUNT(*) FROM Compras WHERE id_curso = c.id_curso) as cantidad_compras,
         CASE 
           WHEN COUNT(DISTINCT f.id_usuario) > 0 
           THEN ((SELECT COUNT(*) FROM Compras WHERE id_curso = c.id_curso) * 100.0 / COUNT(DISTINCT f.id_usuario))
           ELSE 0 
-        END as tasa_conversion
+        END as tasa_conversion,
+        CASE 
+          WHEN COUNT(DISTINCT f.id_usuario) > 20 AND DATEDIFF(day, MAX(f.fecha_agregado), GETDATE()) < 7 
+          THEN 1 ELSE 0 
+        END as trending
       FROM Favoritos f
       INNER JOIN Cursos c ON f.id_curso = c.id_curso
-      GROUP BY c.id_curso, c.titulo, c.miniatura, c.id_categoria
+      INNER JOIN Usuarios u ON c.id_usuario = u.id_usuario
+      GROUP BY c.id_curso, c.titulo, c.miniatura, c.id_categoria, u.nombre
       ORDER BY cantidad_favoritos DESC
     `);
     
@@ -109,8 +111,7 @@ router.get('/', async (req, res) => {
       tasaConversion: tasaConversion,
       cursosFavoritos: cursosFavoritosQuery.recordset.map(c => ({
         ...c,
-        tasa_conversion: c.tasa_conversion.toFixed(1),
-        instructor_nombre: 'Instructor' // Placeholder temporal
+        tasa_conversion: c.tasa_conversion.toFixed(1)
       })),
       categorias: categoriasQuery.recordset,
       topUsuarios: topUsuariosQuery.recordset,
@@ -130,6 +131,78 @@ router.get('/', async (req, res) => {
   } catch (err) {
     console.error('Error al cargar favoritos:', err);
     res.status(500).send('Error al cargar favoritos');
+  }
+});
+
+// GET - Usuarios que guardaron un curso específico
+router.get('/curso/:cursoId/usuarios', async (req, res) => {
+  const { cursoId } = req.params;
+  
+  try {
+    const pool = await sql.connect(config);
+    const result = await pool.request()
+      .input('cursoId', sql.Int, cursoId)
+      .query(`
+        SELECT 
+          u.id_usuario,
+          u.nombre,
+          u.email,
+          f.fecha_agregado,
+          CASE WHEN EXISTS (SELECT 1 FROM Compras WHERE id_usuario = u.id_usuario AND id_curso = @cursoId) 
+               THEN 1 ELSE 0 END as comprado
+        FROM Favoritos f
+        INNER JOIN Usuarios u ON f.id_usuario = u.id_usuario
+        WHERE f.id_curso = @cursoId
+        ORDER BY f.fecha_agregado DESC
+      `);
+    
+    res.json({ success: true, data: result.recordset });
+  } catch (err) {
+    console.error('Error al obtener usuarios:', err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// POST - Enviar recomendaciones a un usuario
+router.post('/usuario/:userId/recomendaciones', async (req, res) => {
+  const { userId } = req.params;
+  
+  try {
+    // Aquí implementarías la lógica de recomendaciones personalizadas
+    // y el envío de email
+    
+    res.json({ 
+      success: true, 
+      message: 'Recomendaciones enviadas exitosamente' 
+    });
+  } catch (err) {
+    console.error('Error al enviar recomendaciones:', err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// GET - Exportar reporte de favoritos
+router.get('/exportar', async (req, res) => {
+  try {
+    const pool = await sql.connect(config);
+    const result = await pool.request().query(`
+      SELECT 
+        c.titulo as curso,
+        u.nombre as usuario,
+        u.email,
+        f.fecha_agregado,
+        CASE WHEN EXISTS (SELECT 1 FROM Compras WHERE id_usuario = f.id_usuario AND id_curso = f.id_curso) 
+             THEN 'Sí' ELSE 'No' END as comprado
+      FROM Favoritos f
+      INNER JOIN Cursos c ON f.id_curso = c.id_curso
+      INNER JOIN Usuarios u ON f.id_usuario = u.id_usuario
+      ORDER BY f.fecha_agregado DESC
+    `);
+    
+    res.json({ success: true, data: result.recordset });
+  } catch (err) {
+    console.error('Error al exportar favoritos:', err);
+    res.status(500).json({ success: false, error: err.message });
   }
 });
 
