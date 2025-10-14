@@ -1,31 +1,202 @@
 var express = require('express');
 var router = express.Router();
 
-/* GET video player page */
+/* GET video player by ID (database ID or bunny ID) */
+router.get('/:videoId', async function(req, res, next) {
+  try {
+    const { videoId } = req.params;
+    const user = req.session.user;
+    const db = req.app.locals.db;
+    
+    console.log('[VIDEO] 🎬 Acceso a video:', user.email, '- ID solicitado:', videoId);
+    
+    // Buscar video en la base de datos
+    // Determinar si videoId es numérico (id_video) o es un UUID (bunny_video_id)
+    const isNumeric = /^\d+$/.test(videoId);
+    
+    let query, params;
+    
+    if (isNumeric) {
+      // Si es numérico, buscar por id_video y bunny_video_id
+      query = `
+        SELECT 
+          v.id_video,
+          v.titulo,
+          v.descripcion,
+          v.url,
+          v.bunny_video_id,
+          v.bunny_library_id,
+          v.bunny_embed_url,
+          v.bunny_thumbnail_url,
+          v.video_provider,
+          v.duracion_segundos,
+          v.estatus,
+          v.fecha_creacion,
+          m.titulo as modulo_titulo,
+          c.titulo as curso_titulo
+        FROM Video v
+        LEFT JOIN Modulos m ON v.id_modulo = m.id_modulo
+        LEFT JOIN Cursos c ON m.id_curso = c.id_curso
+        WHERE v.id_video = @videoIdInt OR v.bunny_video_id = @videoIdStr
+      `;
+      params = { videoIdInt: parseInt(videoId), videoIdStr: videoId };
+    } else {
+      // Si no es numérico (UUID), buscar por bunny_video_id y URL
+      query = `
+        SELECT 
+          v.id_video,
+          v.titulo,
+          v.descripcion,
+          v.url,
+          v.bunny_video_id,
+          v.bunny_library_id,
+          v.bunny_embed_url,
+          v.bunny_thumbnail_url,
+          v.video_provider,
+          v.duracion_segundos,
+          v.estatus,
+          v.fecha_creacion,
+          m.titulo as modulo_titulo,
+          c.titulo as curso_titulo
+        FROM Video v
+        LEFT JOIN Modulos m ON v.id_modulo = m.id_modulo
+        LEFT JOIN Cursos c ON m.id_curso = c.id_curso
+        WHERE v.bunny_video_id = @videoId OR v.url LIKE '%' + @videoId + '%'
+      `;
+      params = { videoId: videoId };
+    }
+    
+    console.log('[VIDEO] 🔍 Buscando video - Tipo:', isNumeric ? 'Numérico' : 'UUID', '- ID:', videoId);
+    const result = await db.executeQuery(query, params);
+    
+    if (!result.recordset || result.recordset.length === 0) {
+      console.log('[VIDEO] ❌ Video no encontrado:', videoId);
+      return res.render('shared/error', {
+        title: 'Video No Encontrado',
+        message: 'Lo sentimos',
+        error: { message: 'Este video no existe.' },
+        userName: user.nombre,
+        userRole: user.rol
+      });
+    }
+    
+    const video = result.recordset[0];
+    console.log('[VIDEO] ✅ Video encontrado:', video.titulo, '- Provider:', video.video_provider, '- Estado:', video.estatus);
+    
+    // VALIDACIONES DE PERMISOS SEGÚN ESTADO DEL VIDEO
+    const userRole = user.rol;
+    const videoEstatus = video.estatus;
+    
+    console.log('[VIDEO] 🔐 Validando permisos - Usuario:', user.email, 'Rol:', userRole, 'Video estado:', videoEstatus);
+    
+    // Reglas de acceso:
+    // 1. Videos PÚBLICOS: Todos los usuarios autenticados pueden verlos
+    // 2. Videos BORRADOR: Solo instructores y admins pueden verlos
+    // 3. Videos ARCHIVADOS: Solo el instructor que lo creó puede verlo (por ahora solo instructores/admins)
+    
+    if (videoEstatus === 'borrador') {
+      if (userRole !== 'instructor' && userRole !== 'admin') {
+        console.log('[VIDEO] ❌ Acceso denegado - Video en borrador, usuario no es instructor/admin');
+        return res.status(403).render('shared/error', {
+          title: 'Acceso Denegado',
+          message: 'Video no disponible',
+          error: { message: 'Este video está en desarrollo y no está disponible para estudiantes.' },
+          userName: user.nombre,
+          userRole: user.rol
+        });
+      }
+    }
+    
+    if (videoEstatus === 'archivado') {
+      if (userRole !== 'instructor' && userRole !== 'admin') {
+        console.log('[VIDEO] ❌ Acceso denegado - Video archivado, usuario no es instructor/admin');
+        return res.status(403).render('shared/error', {
+          title: 'Contenido Archivado',
+          message: 'Video no disponible', 
+          error: { message: 'Este video ha sido archivado y ya no está disponible.' },
+          userName: user.nombre,
+          userRole: user.rol
+        });
+      }
+    }
+    
+    // Solo videos con estado 'publicado' son accesibles para todos los usuarios
+    if (videoEstatus !== 'publicado' && videoEstatus !== 'borrador' && videoEstatus !== 'archivado') {
+      console.log('[VIDEO] ❌ Video con estado desconocido:', videoEstatus);
+      return res.status(404).render('shared/error', {
+        title: 'Video No Disponible',
+        message: 'Estado inválido',
+        error: { message: 'Este video no está disponible en este momento.' },
+        userName: user.nombre,
+        userRole: user.rol
+      });
+    }
+    
+    console.log('[VIDEO] ✅ Permisos validados - Acceso concedido');
+    
+    // Determinar el videoId correcto para el reproductor
+    let playerId;
+    if (video.video_provider === 'bunny' && video.bunny_video_id) {
+      playerId = video.bunny_video_id;
+    } else if (video.url) {
+      // Extraer ID de URL legacy de Vimeo o Bunny
+      const urlMatch = video.url.match(/(?:vimeo\.com\/|embed\/\d+\/)([a-f0-9-]+)/);
+      playerId = urlMatch ? urlMatch[1] : videoId;
+    } else {
+      playerId = videoId;
+    }
+    
+    res.render('estudiante/video-player', {
+      title: `Video: ${video.titulo}`,
+      videoTitle: video.titulo,
+      videoDescription: video.descripcion || 'Contenido educativo del curso',
+      userName: user.nombre,
+      userEmail: user.email,
+      userRole: user.rol,
+      videoId: playerId,
+      bunnyVideoId: video.bunny_video_id,
+      bunnyEmbedUrl: video.bunny_embed_url,
+      videoProvider: video.video_provider || 'bunny',
+      videoDuration: video.duracion_segundos,
+      videoStatus: video.estatus,
+      moduleTitle: video.modulo_titulo,
+      courseTitle: video.curso_titulo,
+      bunnyLibraryId: video.bunny_library_id || process.env.BUNNY_LIBRARY_ID
+    });
+    
+  } catch (error) {
+    console.error('[VIDEO] ❌ Error cargando video:', error);
+    res.status(500).render('shared/error', {
+      title: 'Error del Servidor',
+      message: 'Error al cargar el video',
+      error: error,
+      userName: req.session.user?.nombre,
+      userRole: req.session.user?.rol
+    });
+  }
+});
+
+/* GET video player page (legacy route with query params) */
 router.get('/', function(req, res, next) {
   const { videoId, title, description, simple, duration, order, status, module, createdAt } = req.query;
   
-  // La autenticación ya se verifica en el middleware
+  // Si hay videoId en query, redirigir a la nueva ruta
+  if (videoId) {
+    const queryParams = new URLSearchParams(req.query);
+    queryParams.delete('videoId');
+    const remainingParams = queryParams.toString();
+    const redirectUrl = `/video/${videoId}${remainingParams ? '?' + remainingParams : ''}`;
+    return res.redirect(redirectUrl);
+  }
+  
+  // Si no hay videoId, mostrar error
   const user = req.session.user;
-  
-  console.log('[VIDEO] 🎬 Acceso a video:', user.email, '- Video ID:', videoId);
-  
-  // Usar la vista de video-player disponible
-  let template = 'video-player';
-  
-  res.render(template, {
-    title: title || 'Reproducción de Video',
-    videoTitle: title || 'Video del Curso',
-    videoDescription: description || 'Contenido educativo del curso de barbería',
-    userName: user.nombre,
-    userEmail: user.email,
-    userRole: user.rol,
-    videoId: videoId || '1122531979', // ID por defecto del video de Vimeo
-    videoDuration: duration || null,
-    videoOrder: order || 1,
-    videoStatus: status || 'publicado',
-    moduleId: module || null,
-    videoCreatedAt: createdAt || new Date().toISOString()
+  res.render('shared/error', {
+    title: 'Video No Especificado',
+    message: 'Lo sentimos',
+    error: { message: 'No se especificó qué video reproducir.' },
+    userName: user?.nombre,
+    userRole: user?.rol
   });
 });
 
@@ -45,7 +216,8 @@ router.get('/simple', function(req, res, next) {
     userName: user,
     userEmail: email,
     userRole: rol,
-    videoId: videoId || '1122531979' // ID por defecto del video de Vimeo
+    videoId: videoId || '1122531979', // ID por defecto
+    bunnyLibraryId: process.env.BUNNY_LIBRARY_ID || null
   });
 });
 

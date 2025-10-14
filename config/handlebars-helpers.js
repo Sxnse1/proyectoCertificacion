@@ -46,6 +46,40 @@ function registerHandlebarsHelpers() {
     return a - b;
   });
   
+  hbs.registerHelper('math', function(a, operator, b, precision) {
+    a = parseFloat(a);
+    b = parseFloat(b);
+    
+    let result;
+    switch (operator) {
+      case '+':
+        result = a + b;
+        break;
+      case '-':
+        result = a - b;
+        break;
+      case '*':
+        result = a * b;
+        break;
+      case '/':
+        result = b !== 0 ? a / b : 0;
+        break;
+      case '%':
+        result = a % b;
+        break;
+      default:
+        result = 0;
+    }
+    
+    if (precision === 'round') {
+      return Math.round(result);
+    } else if (typeof precision === 'number') {
+      return parseFloat(result.toFixed(precision));
+    }
+    
+    return result;
+  });
+  
   // ============================================================
   // 🔀 HELPERS LÓGICOS
   // ============================================================

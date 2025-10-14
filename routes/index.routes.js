@@ -40,6 +40,8 @@ function configureRoutes(app) {
   const usuariosRouter = require('./protected/usuarios');
   const perfilRouter = require('./perfil');
   const suscripcionesRouter = require('./protected/suscripciones');
+  const carritoRouter = require('./protected/carrito');
+  const cursoDetalleRouter = require('./protected/curso-detalle');
   
   app.use('/users', requireAuth, usersRouter);
   app.use('/cursos', requireAuth, cursosRouter);
@@ -51,6 +53,8 @@ function configureRoutes(app) {
   app.use('/usuarios', requireRole(['instructor', 'admin']), usuariosRouter);
   app.use('/perfil', requireAuth, perfilRouter);
   app.use('/suscripciones', requireAuth, suscripcionesRouter);
+  app.use('/carrito', requireAuth, carritoRouter);
+  app.use('/curso', requireAuth, cursoDetalleRouter);
   
   // ============================================================
   // 👨‍🏫 RUTAS DE ADMINISTRADOR

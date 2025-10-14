@@ -375,6 +375,34 @@
             font-weight: 600;
             color: var(--primary-color);
             margin-bottom: 3px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        
+        .video-estado-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .video-estado-badge.borrador {
+            background: rgba(245, 158, 11, 0.1);
+            color: #d97706;
+            border: 1px solid rgba(245, 158, 11, 0.2);
+        }
+        
+        .video-estado-badge.archivado {
+            background: rgba(107, 114, 128, 0.1);
+            color: #4b5563;
+            border: 1px solid rgba(107, 114, 128, 0.2);
         }
         
         .video-duracion {
@@ -703,16 +731,30 @@
                                             {{#if completado}}✓{{else}}▶{{/if}}
                                         </div>
                                         <div class="video-info">
-                                            <div class="video-titulo">{{titulo}}</div>
+                                            <div class="video-titulo">
+                                                {{titulo}}
+                                                {{!-- Mostrar estado para instructores y admins --}}
+                                                {{#if (or (eq ../../userRole 'instructor') (eq ../../userRole 'admin'))}}
+                                                    {{#if (eq estatus 'borrador')}}
+                                                        <span class="video-estado-badge borrador" title="Video en borrador - No visible para estudiantes">
+                                                            📝 Borrador
+                                                        </span>
+                                                    {{else if (eq estatus 'archivado')}}
+                                                        <span class="video-estado-badge archivado" title="Video archivado - No visible para estudiantes">
+                                                            📦 Archivado
+                                                        </span>
+                                                    {{/if}}
+                                                {{/if}}
+                                            </div>
                                             <div class="video-duracion">⏱️ {{duracion}} min</div>
                                         </div>
                                         {{#if ../../comprado}}
-                                        <button class="video-play" onclick="reproducirVideo('{{vimeo_id}}', '{{titulo}}')">
+                                        <button class="video-play" onclick="reproducirVideo('{{id_video}}', '{{titulo}}')">
                                             {{#if completado}}Ver Nuevamente{{else}}Reproducir{{/if}}
                                         </button>
                                         {{else}}
                                         {{#if es_preview}}
-                                        <button class="video-play" onclick="reproducirVideo('{{vimeo_id}}', '{{titulo}}')">
+                                        <button class="video-play" onclick="reproducirVideo('{{id_video}}', '{{titulo}}')">
                                             Preview Gratis
                                         </button>
                                         {{else}}
@@ -822,8 +864,10 @@
         }
         
         // Función para reproducir video
-        function reproducirVideo(vimeoId, titulo) {
-            const videoUrl = `/video?videoId=${vimeoId}&title=${encodeURIComponent(titulo)}&user={{userName}}&email={{userEmail}}&rol={{userRole}}`;
+        function reproducirVideo(videoId, titulo) {
+            console.log('🎬 Reproduciendo video ID:', videoId, '- Título:', titulo);
+            // Usar la nueva ruta protegida que valida permisos
+            const videoUrl = `/video/${videoId}`;
             window.open(videoUrl, '_blank');
         }
         

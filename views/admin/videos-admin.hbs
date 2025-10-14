@@ -1,20 +1,21 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{title}} - StartEducation</title>
-    
+
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="/images/favicon.svg">
-    
+
     <!-- Bootstrap 5.3 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
+
     <style>
         :root {
             --primary-color: #ea580c;
@@ -146,7 +147,8 @@
             min-width: 300px;
         }
 
-        .form-control, .form-select {
+        .form-control,
+        .form-select {
             border: 2px solid var(--border-color);
             border-radius: 12px;
             padding: 0.875rem 1.25rem;
@@ -155,7 +157,8 @@
             font-weight: 500;
         }
 
-        .form-control:focus, .form-select:focus {
+        .form-control:focus,
+        .form-select:focus {
             border-color: var(--primary-color);
             box-shadow: 0 0 0 0.25rem rgba(234, 88, 12, 0.1);
             background: white;
@@ -321,7 +324,7 @@
             margin-top: 0.5rem;
         }
 
-        .status-activo {
+        .status-publicado {
             background: rgba(16, 185, 129, 0.1);
             color: var(--success-color);
             border: 1px solid rgba(16, 185, 129, 0.2);
@@ -391,27 +394,28 @@
             .main-container {
                 padding: 1rem;
             }
-            
+
             .header-title {
                 flex-direction: column;
                 align-items: flex-start;
             }
-            
+
             .search-controls {
                 flex-direction: column;
                 align-items: stretch;
             }
-            
+
             .search-input {
                 min-width: 100%;
             }
-            
+
             .videos-grid {
                 grid-template-columns: 1fr;
             }
         }
     </style>
 </head>
+
 <body>
     <div class="main-container">
         <!-- Header Section -->
@@ -422,12 +426,14 @@
                         <i class="bi bi-play-circle text-primary"></i>
                         {{title}}
                     </h1>
-                    <p class="header-subtitle">Gestiona y administra todos los videos de tu plataforma educativa de barbería</p>
-                    
+                    <p class="header-subtitle">Gestiona y administra todos los videos de tu plataforma educativa de
+                        barbería</p>
+
                     <!-- Breadcrumb -->
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="/dashboard"><i class="bi bi-house me-1"></i>Dashboard</a></li>
+                            <li class="breadcrumb-item"><a href="/dashboard"><i
+                                        class="bi bi-house me-1"></i>Dashboard</a></li>
                             <li class="breadcrumb-item active">Gestión de Videos</li>
                         </ol>
                     </nav>
@@ -436,7 +442,8 @@
                     <a href="/dashboard" class="btn btn-outline-secondary">
                         <i class="bi bi-arrow-left me-2"></i>Dashboard
                     </a>
-                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#uploadVideoModal">
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                        data-bs-target="#uploadVideoModal">
                         <i class="bi bi-plus-circle me-2"></i>Subir Video
                     </button>
                 </div>
@@ -471,14 +478,14 @@
                         <span class="input-group-text bg-white border-end-0">
                             <i class="bi bi-search text-muted"></i>
                         </span>
-                        <input type="text" class="form-control border-start-0" 
-                               placeholder="Buscar por título, descripción o módulo..." id="searchInput">
+                        <input type="text" class="form-control border-start-0"
+                            placeholder="Buscar por título, descripción o módulo..." id="searchInput">
                     </div>
                 </div>
                 <div class="d-flex gap-2">
                     <select class="form-select" id="statusFilter" style="min-width: 160px;">
                         <option value="">📋 Todos los estados</option>
-                        <option value="activo">✅ Activos</option>
+                        <option value="publicado">✅ Publicados</option>
                         <option value="borrador">📝 Borradores</option>
                         <option value="archivado">📦 Archivados</option>
                     </select>
@@ -492,127 +499,143 @@
         <!-- Videos Content -->
         <div class="content-section">
             {{#if videos.length}}
-                <div class="videos-grid" id="videosGrid">
-                    {{#each videos}}
-                    <div class="video-card" data-status="{{this.estatus}}" data-module="{{this.id_modulo}}"
-                         data-vimeo-id="{{this.vimeo_id}}"
-                         data-titulo="{{this.titulo}}"
-                         data-descripcion="{{this.descripcion}}"
-                         data-duracion="{{this.duracion_segundos}}"
-                         data-orden="{{this.orden}}"
-                         data-estatus="{{this.estatus}}"
-                         data-modulo-id="{{this.id_modulo}}">
-                        <!-- Video Thumbnail -->
-                        <div class="video-thumbnail">
-                            {{#if this.url_vimeo}}
-                                <iframe src="https://player.vimeo.com/video/{{this.vimeo_id}}?title=0&byline=0&portrait=0&background=1" 
-                                        frameborder="0" allow="autoplay; fullscreen" allowfullscreen>
-                                </iframe>
-                            {{else}}
-                                <div class="d-flex align-items-center justify-content-center h-100 text-muted">
-                                    <i class="bi bi-film" style="font-size: 3rem; opacity: 0.5;"></i>
-                                </div>
-                            {{/if}}
-                            <div class="video-play-overlay">
-                                <i class="bi bi-play-fill"></i>
+            <div class="videos-grid" id="videosGrid">
+                {{#each videos}}
+                <div class="video-card" data-video-id="{{this.id_video}}" data-status="{{this.estatus}}"
+                    data-module="{{this.id_modulo}}" data-bunny-id="{{this.bunny_id}}" data-vimeo-id="{{this.vimeo_id}}"
+                    data-titulo="{{this.titulo}}" data-description="{{this.descripcion}}"
+                    data-duracion="{{this.duracion_segundos}}" data-orden="{{this.orden}}"
+                    data-estatus="{{this.estatus}}" data-modulo-id="{{this.id_modulo}}"
+                    data-provider="{{this.video_provider}}" data-duration="{{this.duracion_segundos}}"
+                    data-fecha="{{this.fecha_formateada}}"
+                    data-fecha-modificacion="{{this.fecha_modificacion_formateada}}">
+                    <!-- Video Thumbnail -->
+                    <div class="video-thumbnail">
+                        {{#if this.bunny_id}}
+                        <iframe
+                            src="https://iframe.mediadelivery.net/embed/{{../bunnyLibraryId}}/{{this.bunny_id}}?autoplay=false&preload=false"
+                            frameborder="0" allow="autoplay; fullscreen" allowfullscreen>
+                        </iframe>
+                        {{else if this.url_vimeo}}
+                        <!-- Fallback para videos migrados -->
+                        <iframe
+                            src="https://iframe.mediadelivery.net/embed/{{../bunnyLibraryId}}/{{this.vimeo_id}}?autoplay=false&preload=false"
+                            frameborder="0" allow="autoplay; fullscreen" allowfullscreen>
+                        </iframe>
+                        {{else}}
+                        <div class="d-flex align-items-center justify-content-center h-100 text-muted">
+                            <i class="bi bi-film" style="font-size: 3rem; opacity: 0.5;"></i>
+                        </div>
+                        {{/if}}
+                        {{!-- <div class="video-play-overlay">
+                            <i class="bi bi-play-fill"></i>
+                        </div> --}}
+                        {{#if this.duracion_minutos}}
+                        <div class="video-duration">
+                            <i class="bi bi-clock me-1"></i>{{this.duracion_minutos}} min
+                        </div>
+                        {{/if}}
+                    </div>
+
+                    <!-- Video Info -->
+                    <div class="video-info">
+                        <h5 class="video-title">{{this.titulo}}</h5>
+
+                        {{#if this.descripcion}}
+                        <p class="video-description">{{this.descripcion}}</p>
+                        {{/if}}
+
+                        <div class="video-meta">
+                            <div class="d-flex align-items-center gap-2 mb-2">
+                                <i class="bi bi-collection text-muted"></i>
+                                <small class="text-muted video-module">{{this.modulo_titulo}}</small>
                             </div>
-                            {{#if this.duracion_minutos}}
-                            <div class="video-duration">
-                                <i class="bi bi-clock me-1"></i>{{this.duracion_minutos}} min
+                            <div class="d-flex align-items-center gap-2 mb-2">
+                                <i class="bi bi-book text-muted"></i>
+                                <small class="text-muted video-course">{{this.curso_titulo}}</small>
                             </div>
-                            {{/if}}
+                            <span class="video-status status-{{this.estatus}}">
+                                {{#if (eq this.estatus 'publicado')}}✅ Publicado{{/if}}
+                                {{#if (eq this.estatus 'borrador')}}📝 Borrador{{/if}}
+                                {{#if (eq this.estatus 'archivado')}}📦 Archivado{{/if}}
+                            </span>
                         </div>
 
-                        <!-- Video Info -->
-                        <div class="video-info">
-                            <h5 class="video-title">{{this.titulo}}</h5>
-                            
-                            {{#if this.descripcion}}
-                            <p class="video-description">{{this.descripcion}}</p>
+                        <div class="video-actions">
+                            {{#if this.vimeo_id}}
+                            <button class="btn btn-primary btn-sm video-play-btn" data-bunny-id="{{this.bunny_id}}"
+                                data-vimeo-id="{{this.vimeo_id}}" data-titulo="{{this.titulo}}"
+                                data-descripcion="{{this.descripcion}}" data-duracion="{{this.duracion_segundos}}"
+                                data-orden="{{this.orden}}" data-estatus="{{this.estatus}}"
+                                data-modulo="{{this.id_modulo}}">
+                                <i class="bi bi-play-circle me-1"></i>Ver
+                            </button>
                             {{/if}}
-                            
-                            <div class="video-meta">
-                                <div class="d-flex align-items-center gap-2 mb-2">
-                                    <i class="bi bi-collection text-muted"></i>
-                                    <small class="text-muted">{{this.modulo_titulo}}</small>
-                                </div>
-                                <div class="d-flex align-items-center gap-2 mb-2">
-                                    <i class="bi bi-book text-muted"></i>
-                                    <small class="text-muted">{{this.curso_titulo}}</small>
-                                </div>
-                                <span class="video-status status-{{this.estatus}}">
-                                    {{#if (eq this.estatus 'activo')}}✅ Activo{{/if}}
-                                    {{#if (eq this.estatus 'borrador')}}📝 Borrador{{/if}}
-                                    {{#if (eq this.estatus 'archivado')}}📦 Archivado{{/if}}
-                                </span>
-                            </div>
 
-                            <div class="video-actions">
-                                {{#if this.vimeo_id}}
-                                <button class="btn btn-primary btn-sm video-play-btn" 
-                                        data-vimeo-id="{{this.vimeo_id}}"
-                                        data-titulo="{{this.titulo}}"
-                                        data-descripcion="{{this.descripcion}}"
-                                        data-duracion="{{this.duracion_segundos}}"
-                                        data-orden="{{this.orden}}"
-                                        data-estatus="{{this.estatus}}"
-                                        data-modulo="{{this.id_modulo}}">
-                                    <i class="bi bi-play-circle me-1"></i>Ver
+                            <div class="btn-group">
+                                <button class="btn btn-outline-secondary btn-sm" onclick="editVideo({{this.id_video}})">
+                                    <i class="bi bi-pencil me-1"></i>Editar
                                 </button>
-                                {{/if}}
-                                
-                                <div class="btn-group">
-                                    <button class="btn btn-outline-secondary btn-sm" onclick="editVideo({{this.id_video}})">
-                                        <i class="bi bi-pencil me-1"></i>Editar
-                                    </button>
-                                    <button type="button" class="btn btn-outline-secondary btn-sm dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown">
-                                        <span class="visually-hidden">Más</span>
-                                    </button>
-                                    <ul class="dropdown-menu">
-                                        {{#if (eq this.estatus 'activo')}}
-                                        <li><a class="dropdown-item" href="#" onclick="changeVideoStatus({{this.id_video}}, 'borrador', '{{this.titulo}}')">
+                                <button type="button"
+                                    class="btn btn-outline-secondary btn-sm dropdown-toggle dropdown-toggle-split"
+                                    data-bs-toggle="dropdown">
+                                    <span class="visually-hidden">Más</span>
+                                </button>
+                                <ul class="dropdown-menu">
+                                    {{#if (eq this.estatus 'publicado')}}
+                                    <li><a class="dropdown-item" href="#"
+                                            onclick="changeVideoStatus({{this.id_video}}, 'borrador', '{{this.titulo}}')">
                                             <i class="bi bi-clock text-warning me-2"></i>Cambiar a Borrador
                                         </a></li>
-                                        <li><a class="dropdown-item" href="#" onclick="changeVideoStatus({{this.id_video}}, 'archivado', '{{this.titulo}}')">
+                                    <li><a class="dropdown-item" href="#"
+                                            onclick="changeVideoStatus({{this.id_video}}, 'archivado', '{{this.titulo}}')">
                                             <i class="bi bi-archive text-muted me-2"></i>Archivar
                                         </a></li>
-                                        {{else if (eq this.estatus 'borrador')}}
-                                        <li><a class="dropdown-item" href="#" onclick="changeVideoStatus({{this.id_video}}, 'activo', '{{this.titulo}}')">
+                                    {{else if (eq this.estatus 'borrador')}}
+                                    <li><a class="dropdown-item" href="#"
+                                            onclick="changeVideoStatus({{this.id_video}}, 'publicado', '{{this.titulo}}')">
                                             <i class="bi bi-check-circle text-success me-2"></i>Publicar
                                         </a></li>
-                                        <li><a class="dropdown-item" href="#" onclick="changeVideoStatus({{this.id_video}}, 'archivado', '{{this.titulo}}')">
+                                    <li><a class="dropdown-item" href="#"
+                                            onclick="changeVideoStatus({{this.id_video}}, 'archivado', '{{this.titulo}}')">
                                             <i class="bi bi-archive text-muted me-2"></i>Archivar
                                         </a></li>
-                                        {{else if (eq this.estatus 'archivado')}}
-                                        <li><a class="dropdown-item" href="#" onclick="changeVideoStatus({{this.id_video}}, 'activo', '{{this.titulo}}')">
+                                    {{else if (eq this.estatus 'archivado')}}
+                                    <li><a class="dropdown-item" href="#"
+                                            onclick="changeVideoStatus({{this.id_video}}, 'publicado', '{{this.titulo}}')">
                                             <i class="bi bi-check-circle text-success me-2"></i>Publicar
                                         </a></li>
-                                        <li><a class="dropdown-item" href="#" onclick="changeVideoStatus({{this.id_video}}, 'borrador', '{{this.titulo}}')">
+                                    <li><a class="dropdown-item" href="#"
+                                            onclick="changeVideoStatus({{this.id_video}}, 'borrador', '{{this.titulo}}')">
                                             <i class="bi bi-clock text-warning me-2"></i>A Borrador
                                         </a></li>
-                                        {{/if}}
-                                        <li><hr class="dropdown-divider"></li>
-                                        <li><a class="dropdown-item text-danger" href="#" onclick="deleteVideo({{this.id_video}}, '{{this.titulo}}')">
+                                    {{/if}}
+                                    <li>
+                                        <hr class="dropdown-divider">
+                                    </li>
+                                    <li><a class="dropdown-item text-danger" href="#"
+                                            onclick="deleteVideo({{this.id_video}}, '{{this.titulo}}')">
                                             <i class="bi bi-trash me-2"></i>Eliminar
                                         </a></li>
-                                    </ul>
-                                </div>
+                                </ul>
                             </div>
                         </div>
                     </div>
-                    {{/each}}
                 </div>
+                {{/each}}
+            </div>
             {{else}}
-                <div class="empty-state">
-                    <div class="empty-state-icon">
-                        <i class="bi bi-camera-video"></i>
-                    </div>
-                    <h3 class="mt-3 mb-2">No hay videos disponibles</h3>
-                    <p class="text-muted mb-4">Empieza subiendo tu primer video educativo para los estudiantes de barbería.</p>
-                    <a href="/video/upload" class="btn btn-primary btn-lg">
-                        <i class="bi bi-plus-circle me-2"></i>Subir Primer Video
-                    </a>
+            <div class="empty-state">
+                <div class="empty-state-icon">
+                    <i class="bi bi-camera-video"></i>
                 </div>
+                <h3 class="mt-3 mb-2">No hay videos disponibles</h3>
+                <p class="text-muted mb-4">Empieza subiendo tu primer video educativo para los estudiantes de barbería.
+                </p>
+                {{!-- <a href="/video/upload" class="btn btn-primary btn-lg">
+                    <i class="bi bi-plus-circle me-2"></i>Subir Primer Video
+                </a> --}}
+            </div>
             {{/if}}
         </div>
     </div>
@@ -630,7 +653,7 @@
 
             videoCards.forEach(card => {
                 const status = card.dataset.status;
-                if (status === 'activo') activosCount++;
+                if (status === 'publicado') activosCount++;
                 else if (status === 'borrador') borradoresCount++;
                 else if (status === 'archivado') archivadosCount++;
             });
@@ -677,64 +700,357 @@
 
         // Video actions functions
         function editVideo(videoId) {
-            window.location.href = `/video/edit/${videoId}`;
+            console.log('✏️ Editando video con ID:', videoId);
+
+            // Encontrar los datos del video en la página
+            const videoCard = document.querySelector(`[data-video-id="${videoId}"]`);
+            if (!videoCard) {
+                console.error('❌ No se encontró el video con ID:', videoId);
+                alert('Error: No se encontró el video');
+                return;
+            }
+
+            // Extraer datos del video desde los atributos data y elementos DOM
+            const videoData = {
+                id: videoId,
+                titulo: videoCard.querySelector('.video-title')?.textContent.trim() || '',
+                descripcion: videoCard.getAttribute('data-description') || '',
+                id_modulo: videoCard.getAttribute('data-modulo-id') || '',
+                orden: videoCard.getAttribute('data-orden') || '1',
+                estatus: videoCard.getAttribute('data-status') || 'borrador',
+                duracion_segundos: videoCard.getAttribute('data-duration') || '0',
+
+                fecha_creacion: videoCard.getAttribute('data-fecha') || ''
+            };
+
+            console.log('📋 Datos del video:', videoData);
+
+            // Llenar el formulario con los datos
+            document.getElementById('editVideoId').value = videoData.id;
+            document.getElementById('editTitulo').value = videoData.titulo;
+            document.getElementById('editDescripcion').value = videoData.descripcion;
+            document.getElementById('editOrden').value = videoData.orden;
+            document.getElementById('editEstatus').value = videoData.estatus;
+            document.getElementById('editDuracion').value = videoData.duracion_segundos;
+
+
+            // Configurar el select de módulo
+            const moduloSelect = document.getElementById('editModulo');
+            if (moduloSelect && videoData.id_modulo) {
+                moduloSelect.value = videoData.id_modulo;
+            }
+
+            // Mostrar fecha de creación
+            const fechaElement = document.getElementById('editFechaCreacion');
+            if (fechaElement) {
+                fechaElement.textContent = videoData.fecha_creacion || 'No disponible';
+            }
+
+            // Verificar que el modal existe
+            const modalElement = document.getElementById('editVideoModal');
+            if (!modalElement) {
+                console.error('❌ No se encontró el elemento del modal');
+                alert('Error: Modal no encontrado');
+                return;
+            }
+
+            // Mostrar el modal
+            try {
+                const editModal = new bootstrap.Modal(modalElement);
+                editModal.show();
+                console.log('✅ Modal de edición mostrado');
+            } catch (error) {
+                console.error('❌ Error al mostrar el modal:', error);
+                alert('Error al abrir el modal: ' + error.message);
+            }
         }
 
+
+
         function changeVideoStatus(videoId, newStatus, videoTitle) {
-            if (confirm(`¿Estás seguro de cambiar el estado del video "${videoTitle}" a ${newStatus}?`)) {
-                fetch(`/video/${videoId}/status`, {
+            // Mapear estados para asegurar compatibilidad con BD
+            const statusMap = {
+                'activo': 'publicado',
+                'publicado': 'publicado',
+                'borrador': 'borrador',
+                'archivado': 'archivado'
+            };
+
+            const finalStatus = statusMap[newStatus] || newStatus;
+            console.log('Cambio de estado:', newStatus, '->', finalStatus);
+
+            if (confirm(`¿Estás seguro de cambiar el estado del video "${videoTitle}" a ${finalStatus}?`)) {
+                fetch(`/admin/videos/${videoId}/status`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ estatus: finalStatus })
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            location.reload();
+                        } else {
+                            alert('Error al cambiar el estado del video');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Error al cambiar el estado del video');
+                    });
+            }
+        }
+
+        function deleteVideo(videoId, videoTitle) {
+            if (confirm(`¿Estás seguro de eliminar permanentemente el video "${videoTitle}"?\n\nEsta acción no se puede deshacer.`)) {
+                fetch(`/admin/videos/${videoId}`, {
+                    method: 'DELETE'
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            location.reload();
+                        } else {
+                            alert('Error al eliminar el video');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Error al eliminar el video');
+                    });
+            }
+        }
+
+        // Funciones para el modal de edición
+        function quickStatusChange(newStatus) {
+            const videoId = document.getElementById('editVideoId').value;
+            const videoTitle = document.getElementById('editTitulo').value;
+
+            if (confirm(`¿Cambiar el estado del video "${videoTitle}" a ${newStatus}?`)) {
+                fetch(`/admin/videos/${videoId}/status`, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({ estatus: newStatus })
                 })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        location.reload();
-                    } else {
-                        alert('Error al cambiar el estado del video');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('Error al cambiar el estado del video');
-                });
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Actualizar el select de estado
+                            document.getElementById('editEstatus').value = newStatus;
+
+                            // Mostrar mensaje de éxito
+                            showToast('Estado actualizado correctamente', 'success');
+
+                            // Actualizar la vista de la página principal
+                            setTimeout(() => {
+                                location.reload();
+                            }, 1500);
+                        } else {
+                            showToast('Error al cambiar el estado', 'error');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        showToast('Error al cambiar el estado', 'error');
+                    });
             }
         }
 
-        function deleteVideo(videoId, videoTitle) {
-            if (confirm(`¿Estás seguro de eliminar permanentemente el video "${videoTitle}"?\n\nEsta acción no se puede deshacer.`)) {
-                fetch(`/video/${videoId}`, {
-                    method: 'DELETE'
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        location.reload();
-                    } else {
-                        alert('Error al eliminar el video');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('Error al eliminar el video');
-                });
+        function openVideoPlayer() {
+            console.log('🎬 Intentando reproducir video...');
+            const bunnyId = document.getElementById('editBunnyId').value;
+            console.log('🔍 Bunny ID encontrado:', bunnyId);
+
+            if (bunnyId && bunnyId !== '') {
+                const videoUrl = `${window.location.origin}/video/${bunnyId}`;
+                console.log('🌐 URL del video:', videoUrl);
+                window.open(videoUrl, '_blank');
+            } else {
+                console.log('❌ No hay Bunny ID válido');
+                showToast('No hay video disponible para reproducir', 'warning');
             }
+        }
+
+
+
+
+
+
+
+        function showToast(message, type = 'info') {
+            // Crear toast dinámicamente
+            const toastContainer = document.getElementById('toastContainer') || createToastContainer();
+
+            const toastId = 'toast-' + Date.now();
+            const toastHtml = `
+                <div id="${toastId}" class="toast align-items-center text-white bg-${type === 'success' ? 'success' : type === 'error' ? 'danger' : 'primary'} border-0" role="alert" aria-live="assertive" aria-atomic="true">
+                    <div class="d-flex">
+                        <div class="toast-body">
+                            <i class="bi bi-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-triangle' : 'info-circle'} me-2"></i>
+                            ${message}
+                        </div>
+                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                    </div>
+                </div>
+            `;
+
+            toastContainer.insertAdjacentHTML('beforeend', toastHtml);
+            const toastElement = document.getElementById(toastId);
+            const toast = new bootstrap.Toast(toastElement);
+            toast.show();
+
+            // Limpiar el toast después de que se oculte
+            toastElement.addEventListener('hidden.bs.toast', () => {
+                toastElement.remove();
+            });
+        }
+
+        function createToastContainer() {
+            const container = document.createElement('div');
+            container.id = 'toastContainer';
+            container.className = 'toast-container position-fixed bottom-0 end-0 p-3';
+            container.style.zIndex = '9999';
+            document.body.appendChild(container);
+            return container;
         }
 
         // Initialize on page load
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             updateCounters();
             initUploadModal();
+            initEditModal();
             console.log('🎥 Gestión de Videos StartEducation cargado');
             console.log(`📊 Total videos encontrados: ${videoCards.length}`);
         });
+
+        // Inicializar eventos del formulario de edición
+        function initEditFormEvents() {
+            console.log('🔧 Inicializando eventos del formulario de edición...');
+            const editForm = document.getElementById('editVideoForm');
+            if (editForm) {
+                console.log('✅ Formulario de edición encontrado');
+
+                // Remover listeners previos si existen
+                editForm.replaceWith(editForm.cloneNode(true));
+                const newForm = document.getElementById('editVideoForm');
+
+                newForm.addEventListener('submit', async function (e) {
+                    e.preventDefault();
+                    console.log('📝 Evento submit del formulario disparado');
+                    await handleFormSubmit();
+                });
+            } else {
+                console.log('❌ Formulario de edición NO encontrado');
+            }
+        }
+
+        // Función para manejar el envío del formulario
+        async function handleFormSubmit() {
+            console.log('💾 Iniciando guardado del formulario...');
+
+            const editForm = document.getElementById('editVideoForm');
+            if (!editForm) {
+                console.error('❌ Formulario no encontrado');
+                showToast('Error: Formulario no encontrado', 'error');
+                return;
+            }
+
+            const formData = new FormData(editForm);
+            const data = Object.fromEntries(formData);
+            const videoId = data.videoId;
+
+            console.log('📊 Datos del formulario:', data);
+
+            if (!videoId) {
+                console.error('❌ ID del video no encontrado');
+                showToast('Error: ID del video no encontrado', 'error');
+                return;
+            }
+
+            try {
+                // Mostrar loading
+                const submitBtn = document.querySelector('#editVideoModal button[type="submit"]');
+                if (submitBtn) {
+                    const originalText = submitBtn.innerHTML;
+                    submitBtn.innerHTML = '<i class="bi bi-hourglass-split me-1"></i>Guardando...';
+                    submitBtn.disabled = true;
+                }
+
+                console.log('🌐 Enviando petición PUT a:', `/admin/videos/${videoId}`);
+
+                const response = await fetch(`/admin/videos/${videoId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        titulo: data.titulo,
+                        descripcion: data.descripcion,
+                        id_modulo: data.id_modulo,
+                        estatus: data.estatus
+                    })
+                });
+
+                console.log('📡 Respuesta recibida:', response.status);
+
+                const result = await response.json();
+                console.log('📋 Resultado:', result);
+
+                if (result.success) {
+                    // Mostrar éxito
+                    if (submitBtn) {
+                        submitBtn.innerHTML = '<i class="bi bi-check-lg me-1"></i>¡Guardado!';
+                        submitBtn.classList.remove('btn-primary');
+                        submitBtn.classList.add('btn-success');
+                    }
+
+                    showToast('Video actualizado correctamente', 'success');
+
+                    // Cerrar modal y recargar después de un momento
+                    setTimeout(() => {
+                        const editModal = bootstrap.Modal.getInstance(document.getElementById('editVideoModal'));
+                        if (editModal) editModal.hide();
+                        location.reload();
+                    }, 1500);
+                } else {
+                    throw new Error(result.error || 'Error desconocido');
+                }
+
+            } catch (error) {
+                console.error('❌ Error guardando:', error);
+
+                // Mostrar error
+                const submitBtn = document.querySelector('#editVideoModal button[type="submit"]');
+                if (submitBtn) {
+                    submitBtn.innerHTML = '<i class="bi bi-exclamation-triangle me-1"></i>Error';
+                    submitBtn.classList.remove('btn-primary');
+                    submitBtn.classList.add('btn-danger');
+
+                    // Restaurar botón después de un momento
+                    setTimeout(() => {
+                        submitBtn.innerHTML = '<i class="bi bi-floppy-fill me-1"></i>Guardar Cambios';
+                        submitBtn.classList.remove('btn-danger');
+                        submitBtn.classList.add('btn-primary');
+                        submitBtn.disabled = false;
+                    }, 3000);
+                }
+
+                showToast('Error al actualizar el video: ' + error.message, 'error');
+            }
+        }
+
+        // Inicializar modal de edición (función legacy, ahora usa initEditFormEvents)
+        function initEditModal() {
+            console.log('🔧 InitEditModal llamado (legacy)');
+        }
     </script>
 
     <!-- Modal de Subida de Video -->
-    <div class="modal fade" id="uploadVideoModal" tabindex="-1" aria-labelledby="uploadVideoModalLabel" aria-hidden="true">
+    <div class="modal fade" id="uploadVideoModal" tabindex="-1" aria-labelledby="uploadVideoModalLabel"
+        aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
@@ -753,19 +1069,19 @@
                                     <i class="bi bi-type"></i>
                                     Título del Video *
                                 </label>
-                                <input type="text" class="form-control" id="titulo" name="titulo" required 
-                                       placeholder="Ej: Técnicas básicas de corte degradado">
+                                <input type="text" class="form-control" id="titulo" name="titulo" required
+                                    placeholder="Ej: Técnicas básicas de corte degradado">
                             </div>
                             <div class="col-md-6">
                                 <label for="duracion_minutos" class="form-label">
                                     <i class="bi bi-clock"></i>
                                     Duración (minutos) *
                                 </label>
-                                <input type="number" class="form-control" id="duracion_minutos" name="duracion_minutos" 
-                                       min="1" max="180" required placeholder="45">
+                                <input type="number" class="form-control" id="duracion_minutos" name="duracion_minutos"
+                                    min="1" max="180" required placeholder="45">
                             </div>
                         </div>
-                        
+
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <label for="id_modulo" class="form-label">
@@ -785,20 +1101,36 @@
                                     Estado del Video *
                                 </label>
                                 <select class="form-select" id="estatus" name="estatus" required>
-                                    <option value="activo">Activo (Visible para estudiantes)</option>
-                                    <option value="borrador">Borrador (Solo visible para instructores)</option>
+                                    <option value="publicado">Publicado (Visible para estudiantes)</option>
+                                    <option value="borrador" selected>Borrador (Solo visible para instructores)</option>
                                     <option value="archivado">Archivado (No visible)</option>
                                 </select>
                             </div>
                         </div>
 
-                        <div class="mb-3">
-                            <label for="descripcion" class="form-label">
-                                <i class="bi bi-card-text"></i>
-                                Descripción
-                            </label>
-                            <textarea class="form-control" id="descripcion" name="descripcion" rows="3" 
-                                      placeholder="Descripción detallada del contenido del video..."></textarea>
+                        <div class="row mb-3">
+                            <div class="col-md-8">
+                                <label for="descripcion" class="form-label">
+                                    <i class="bi bi-card-text"></i>
+                                    Descripción
+                                </label>
+                                <textarea class="form-control" id="descripcion" name="descripcion" rows="3"
+                                    placeholder="Descripción detallada del contenido del video..."></textarea>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="orden" class="form-label">
+                                    <i class="bi bi-list-ol"></i>
+                                    Orden en el Módulo *
+                                </label>
+                                <input type="number" class="form-control" id="orden" name="orden" min="1" max="100" 
+                                    required placeholder="1" value="1" title="Selecciona un módulo para ver el siguiente orden sugerido">
+                                <div class="form-text">
+                                    <small class="text-muted">
+                                        <i class="bi bi-info-circle me-1"></i>
+                                        Posición del video en el módulo (se sugiere automáticamente)
+                                    </small>
+                                </div>
+                            </div>
                         </div>
 
                         <!-- Subida de Archivo -->
@@ -807,19 +1139,22 @@
                                 <i class="bi bi-file-earmark-play text-primary"></i>
                                 Archivo de Video *
                             </label>
-                            
+
                             <div class="file-drop-area" id="fileDropArea">
-                                <input type="file" class="file-input" id="fileInput" name="video" accept="video/*" required>
+                                <input type="file" class="file-input" id="fileInput" name="video" accept="video/*"
+                                    required>
                                 <div class="drop-content">
-                                    <i class="bi bi-cloud-upload" style="font-size: 2.5rem; color: var(--primary-color); margin-bottom: 1rem;"></i>
+                                    <i class="bi bi-cloud-upload"
+                                        style="font-size: 2.5rem; color: var(--primary-color); margin-bottom: 1rem;"></i>
                                     <h5>Arrastra tu video aquí</h5>
                                     <p class="text-muted">o <strong>haz clic para seleccionar</strong></p>
                                     <p class="small text-muted">Formatos: MP4, MOV, AVI, WMV (máx. 500MB)</p>
                                 </div>
                             </div>
-                            
+
                             <div class="file-info" id="fileInfo" style="display: none;">
-                                <div class="d-flex align-items-center justify-content-between mt-2 p-2 bg-light rounded">
+                                <div
+                                    class="d-flex align-items-center justify-content-between mt-2 p-2 bg-light rounded">
                                     <div>
                                         <strong>Archivo:</strong>
                                         <span id="fileName"></span>
@@ -843,15 +1178,126 @@
 
                         <div class="upload-status" id="uploadStatus" style="display: none;"></div>
                     </form>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" form="uploadForm" class="btn btn-primary" id="submitBtn">
+                            <i class="bi bi-cloud-upload me-2"></i>Subir Video
+                        </button>
+                    </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" form="uploadForm" class="btn btn-primary" id="submitBtn">
-                        <i class="bi bi-cloud-upload me-2"></i>Subir Video
-                    </button>
-                </div>
+
             </div>
         </div>
+    </div>
+
+    <!-- Modal de Edición de Video -->
+    <div class="modal fade" id="editVideoModal" tabindex="-1" aria-labelledby="editVideoModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editVideoModalLabel">
+                        <i class="bi bi-camera-reels me-2"></i>Editar Video
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Formulario de Edición -->
+                    <form id="editVideoForm">
+                        <input type="hidden" id="editVideoId" name="videoId">
+
+                        <!-- Título -->
+                        <div class="mb-3">
+                            <label for="editTitulo" class="form-label fw-bold">
+                                <i class="bi bi-type me-1"></i>Título del Video *
+                            </label>
+                            <input type="text" class="form-control" id="editTitulo" name="titulo" required>
+                        </div>
+
+                        <!-- Descripción -->
+                        <div class="mb-3">
+                            <label for="editDescripcion" class="form-label fw-bold">
+                                <i class="bi bi-text-paragraph me-1"></i>Descripción
+                            </label>
+                            <textarea class="form-control" id="editDescripcion" name="descripcion" rows="4"
+                                placeholder="Descripción del video..."></textarea>
+                        </div>
+
+                        <div class="row">
+                            <!-- Módulo -->
+                            <div class="col-md-6 mb-3">
+                                <label for="editModulo" class="form-label fw-bold">
+                                    <i class="bi bi-collection me-1"></i>Módulo *
+                                </label>
+                                <select class="form-select" id="editModulo" name="id_modulo" required>
+                                    <option value="">Seleccionar módulo...</option>
+                                    {{#each modulos}}
+                                    <option value="{{id_modulo}}">{{display_name}}</option>
+                                    {{/each}}
+                                </select>
+                            </div>
+
+                            <!-- Estado -->
+                            <div class="col-md-6 mb-3">
+                                <label for="editEstatus" class="form-label fw-bold">
+                                    <i class="bi bi-flag me-1"></i>Estado
+                                </label>
+                                <select class="form-select" id="editEstatus" name="estatus">
+                                    <option value="borrador">� Borrador</option>
+                                    <option value="publicado">✅ Publicado</>
+                                    <option value="archivado">� Archivado</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Campos adicionales -->
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="editOrden" class="form-label fw-semibold">
+                                    Orden <span class="text-danger">*</span>
+                                </label>
+                                <input type="number" class="form-control" id="editOrden" name="orden" min="1" required
+                                    placeholder="1">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="editDuracion" class="form-label fw-semibold">
+                                    Duración (segundos)
+                                </label>
+                                <input type="number" class="form-control" id="editDuracion" name="duracion_segundos"
+                                    min="0" placeholder="0" readonly>
+                            </div>
+                        </div>
+
+
+
+                        <!-- Campo oculto para Bunny ID (necesario para reproducir) -->
+                        <input type="hidden" id="editBunnyId">
+                    </form>
+
+                    <!-- Botones de Acción -->
+                    <div class="d-flex justify-content-between align-items-center mt-4 pt-3 border-top">
+                        <small class="text-muted">
+                            <i class="bi bi-clock me-1"></i>
+                            Creado: <span id="editFechaCreacion">-</span>
+                        </small>
+                        <div>
+                            <button type="button" class="btn btn-outline-primary me-2" onclick="openVideoPlayer()">
+                                <i class="bi bi-play-circle me-1"></i>Ver Video
+                            </button>
+                            <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">
+                                Cancelar
+                            </button>
+                            <button type="submit" form="editVideoForm" class="btn btn-primary">
+                                <i class="bi bi-check-lg me-1"></i>Guardar Cambios
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+
+        </div>
+    </div>
     </div>
 
     <style>
@@ -900,6 +1346,320 @@
             border-radius: 8px;
             padding: 1rem;
         }
+
+        /* Estilos para el Modal de Edición - Paleta Principal */
+        #editVideoModal .modal-dialog {
+            max-width: 1200px;
+        }
+
+        #editVideoModal .modal-content {
+            border: none;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+        }
+
+        #editVideoModal .modal-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
+            color: white;
+            border-radius: 20px 20px 0 0;
+            border: none;
+            padding: 1.5rem 2rem;
+        }
+
+        #editVideoModal .modal-title {
+            font-weight: 700;
+            font-size: 1.25rem;
+        }
+
+        #editVideoModal .btn-close {
+            filter: invert(1);
+            opacity: 0.8;
+        }
+
+        #editVideoModal .btn-close:hover {
+            opacity: 1;
+        }
+
+        #editVideoModal .modal-body {
+            padding: 2rem;
+        }
+
+        .info-card {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .info-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid rgba(234, 88, 12, 0.1);
+        }
+
+        .info-item:last-child {
+            border-bottom: none;
+        }
+
+        .info-item small {
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .video-preview-container {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            border: 2px dashed var(--primary-color);
+            border-radius: 16px;
+            padding: 1.5rem;
+            min-height: 220px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .video-preview-container:hover {
+            border-color: var(--primary-hover);
+            background: linear-gradient(135deg, #fff7ed 0%, #fed7aa 100%);
+        }
+
+        .video-preview-container iframe {
+            width: 100%;
+            height: 200px;
+            border-radius: 12px;
+            border: 3px solid white;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .action-panel .card {
+            border: none;
+            border-radius: 16px;
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+        }
+
+        .action-panel .card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
+        }
+
+        .action-panel .card-title {
+            color: var(--text-dark);
+            font-weight: 600;
+            font-size: 0.95rem;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .stats-item {
+            margin-bottom: 0.75rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid rgba(234, 88, 12, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .stats-item:hover {
+            background: rgba(234, 88, 12, 0.05);
+            padding: 0.25rem 0.5rem;
+            border-radius: 8px;
+        }
+
+        .stats-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+
+        .modal-body .btn-sm {
+            font-size: 0.875rem;
+            padding: 0.75rem 1.25rem;
+            border-radius: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .modal-body .btn-success {
+            background: linear-gradient(135deg, var(--success-color) 0%, #059669 100%);
+            border-color: var(--success-color);
+        }
+
+        .modal-body .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
+        }
+
+        .modal-body .btn-warning {
+            background: linear-gradient(135deg, var(--warning-color) 0%, #d97706 100%);
+            border-color: var(--warning-color);
+            color: white;
+        }
+
+        .modal-body .btn-warning:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(245, 158, 11, 0.3);
+            color: white;
+        }
+
+        .modal-body .btn-secondary {
+            background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+            border-color: #6b7280;
+        }
+
+        .modal-body .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(107, 114, 128, 0.3);
+        }
+
+        .modal-body .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
+            border-color: var(--primary-color);
+        }
+
+        .modal-body .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(234, 88, 12, 0.3);
+        }
+
+        .modal-body .btn-info {
+            background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+            border-color: #0ea5e9;
+        }
+
+        .modal-body .btn-info:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(14, 165, 233, 0.3);
+        }
+
+        .modal-body .btn-outline-danger {
+            border-color: var(--danger-color);
+            color: var(--danger-color);
+            background: transparent;
+        }
+
+        .modal-body .btn-outline-danger:hover {
+            background: var(--danger-color);
+            border-color: var(--danger-color);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(239, 68, 68, 0.3);
+        }
+
+        .form-label.fw-bold {
+            color: var(--text-dark);
+            font-size: 0.95rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .form-label.fw-bold i {
+            color: var(--primary-color);
+            margin-right: 0.5rem;
+        }
+
+        #editVideoModal .form-control,
+        #editVideoModal .form-select {
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 0.75rem 1rem;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+
+        #editVideoModal .form-control:focus,
+        #editVideoModal .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.25rem rgba(234, 88, 12, 0.15);
+            transform: translateY(-1px);
+        }
+
+        #editVideoModal .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+
+        #editVideoModal .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
+            border: none;
+        }
+
+        #editVideoModal .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(234, 88, 12, 0.4);
+        }
+
+        #editVideoModal .btn-secondary {
+            background: transparent;
+            border: 2px solid #dee2e6;
+            color: var(--text-muted);
+        }
+
+        #editVideoModal .btn-secondary:hover {
+            background: #f8f9fa;
+            border-color: var(--border-color);
+            color: var(--text-dark);
+        }
+
+        #editVideoModal .btn-outline-primary {
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+            background: transparent;
+        }
+
+        #editVideoModal .btn-outline-primary:hover {
+            background: var(--primary-color);
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        /* Iconos y badges mejorados */
+        .badge {
+            padding: 0.5rem 1rem;
+            font-size: 0.85rem;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .bg-info {
+            background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%) !important;
+        }
+
+        .bg-secondary {
+            background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%) !important;
+        }
+
+        /* Animaciones mejoradas */
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        #editVideoModal.show .modal-dialog {
+            animation: modalSlideIn 0.3s ease-out;
+        }
+
+        /* Toast personalizado */
+        .toast {
+            border-radius: 12px;
+            border: none;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
     </style>
 
     <script>
@@ -938,7 +1698,7 @@
             fileDropArea.addEventListener('drop', (e) => {
                 const dt = e.dataTransfer;
                 const files = dt.files;
-                
+
                 if (files.length > 0) {
                     fileInput.files = files;
                     handleFileSelect(files[0]);
@@ -955,14 +1715,27 @@
                 }
             });
 
+            // Handle module selection to suggest next order
+            const moduloSelect = document.getElementById('id_modulo');
+            const ordenInput = document.getElementById('orden');
+            
+            if (moduloSelect && ordenInput) {
+                moduloSelect.addEventListener('change', async (e) => {
+                    const moduloId = e.target.value;
+                    if (moduloId) {
+                        await suggestNextOrder(moduloId, ordenInput);
+                    }
+                });
+            }
+
             function handleFileSelect(file) {
                 console.log('📁 Archivo seleccionado:', file.name, file.size);
-                
+
                 fileName.textContent = file.name;
                 fileSize.textContent = formatFileSize(file.size);
                 fileInfo.style.display = 'block';
                 fileDropArea.classList.add('has-file');
-                
+
                 fileDropArea.innerHTML = `
                     <div class="drop-content">
                         <i class="bi bi-file-earmark-play" style="font-size: 2.5rem; color: #10b981; margin-bottom: 1rem;"></i>
@@ -1016,7 +1789,7 @@
 
                 try {
                     console.log('🚀 Enviando video al servidor...');
-                    const response = await fetch('/videos-admin/upload', {
+                    const response = await fetch('/admin/videos/upload', {
                         method: 'POST',
                         body: formData
                     });
@@ -1026,7 +1799,7 @@
 
                     if (result.success) {
                         showStatus('success', '¡Video subido exitosamente!');
-                        
+
                         // Close modal and refresh page after 2 seconds
                         setTimeout(() => {
                             bootstrap.Modal.getInstance(document.getElementById('uploadVideoModal')).hide();
@@ -1066,18 +1839,68 @@
             });
         }
 
+        // Función para sugerir el siguiente orden en un módulo
+        async function suggestNextOrder(moduloId, ordenInput) {
+            try {
+                console.log('🔍 Obteniendo siguiente orden para módulo:', moduloId);
+                
+                // Buscar los órdenes actuales en los videos del módulo
+                const videoCards = document.querySelectorAll(`[data-modulo-id="${moduloId}"]`);
+                let maxOrden = 0;
+                const ordenesUsados = [];
+                
+                videoCards.forEach(card => {
+                    const orden = parseInt(card.getAttribute('data-orden')) || 0;
+                    if (orden > 0) {
+                        ordenesUsados.push(orden);
+                        if (orden > maxOrden) {
+                            maxOrden = orden;
+                        }
+                    }
+                });
+                
+                const siguienteOrden = maxOrden + 1;
+                console.log('📊 Órdenes usados:', ordenesUsados, '-> Sugerido:', siguienteOrden);
+                
+                ordenInput.value = siguienteOrden;
+                ordenInput.placeholder = `Sugerido: ${siguienteOrden}`;
+                ordenInput.title = `Órdenes en uso: ${ordenesUsados.length > 0 ? ordenesUsados.sort((a,b) => a-b).join(', ') : 'ninguno'}. Sugerido: ${siguienteOrden}`;
+                
+                // Mostrar una pequeña animación visual
+                ordenInput.style.backgroundColor = '#e8f5e8';
+                setTimeout(() => {
+                    ordenInput.style.backgroundColor = '';
+                }, 1000);
+                
+                // Agregar validación en tiempo real
+                ordenInput.oninput = function() {
+                    const valorActual = parseInt(this.value);
+                    if (valorActual && ordenesUsados.includes(valorActual)) {
+                        this.style.borderColor = '#ffc107';
+                        this.title = `⚠️ El orden ${valorActual} ya está en uso. Considera usar ${siguienteOrden}.`;
+                    } else {
+                        this.style.borderColor = '';
+                        this.title = `Órdenes en uso: ${ordenesUsados.length > 0 ? ordenesUsados.sort((a,b) => a-b).join(', ') : 'ninguno'}`;
+                    }
+                };
+                
+            } catch (error) {
+                console.error('Error obteniendo siguiente orden:', error);
+            }
+        }
+
         // Función para abrir el reproductor de video
         function openVideoPlayer(element) {
-            const vimeoId = element.dataset.vimeoId;
-            if (!vimeoId) return;
-            
+            const bunnyId = element.dataset.bunnyId || element.dataset.vimeoId;
+            if (!bunnyId) return;
+
             const titulo = element.dataset.titulo || '';
             const descripcion = element.dataset.descripcion || '';
             const duracion = element.dataset.duracion || 0;
             const orden = element.dataset.orden || 1;
             const estatus = element.dataset.estatus || 'publicado';
             const modulo = element.dataset.modulo || element.dataset.moduloId || '';
-            
+
             // Construir URL con parámetros codificados
             const params = new URLSearchParams({
                 title: titulo,
@@ -1087,28 +1910,28 @@
                 status: estatus,
                 module: modulo
             });
-            
-            const url = `/video/${vimeoId}?${params.toString()}`;
-            
+
+            const url = `/video/${bunnyId}?${params.toString()}`;
+
             // Abrir en nueva pestaña
             window.open(url, '_blank');
         }
 
         // Event listeners para elementos de reproducción
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             // Botones de reproducir
             const playButtons = document.querySelectorAll('.video-play-btn');
             playButtons.forEach(button => {
-                button.addEventListener('click', function(e) {
+                button.addEventListener('click', function (e) {
                     e.stopPropagation();
                     openVideoPlayer(this);
                 });
             });
-            
+
             // Overlays de reproducción
             const playOverlays = document.querySelectorAll('.video-play-overlay');
             playOverlays.forEach(overlay => {
-                overlay.addEventListener('click', function(e) {
+                overlay.addEventListener('click', function (e) {
                     e.stopPropagation();
                     const videoCard = this.closest('.video-card');
                     if (videoCard) {
@@ -1116,15 +1939,15 @@
                     }
                 });
             });
-            
+
             // Thumbnails de video
             const videoThumbnails = document.querySelectorAll('.video-thumbnail');
             videoThumbnails.forEach(thumbnail => {
-                thumbnail.addEventListener('click', function(e) {
+                thumbnail.addEventListener('click', function (e) {
                     // Solo si el clic no fue en botones de acción
                     if (!e.target.closest('.video-actions')) {
                         const videoCard = this.closest('.video-card');
-                        if (videoCard && videoCard.dataset.vimeoId) {
+                        if (videoCard && (videoCard.dataset.bunnyId || videoCard.dataset.vimeoId)) {
                             openVideoPlayer(videoCard);
                         }
                     }
@@ -1133,4 +1956,5 @@
         });
     </script>
 </body>
+
 </html>

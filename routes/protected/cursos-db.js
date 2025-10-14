@@ -187,11 +187,20 @@ router.get('/:cursoId', async function(req, res, next) {
     
     const curso = cursoResult.recordset[0];
     
-    // Obtener módulos y videos del curso
+    // Obtener módulos y videos del curso según permisos
+    let videoCountFilter;
+    if (rol === 'instructor' || rol === 'admin') {
+      // Instructores y admins ven: publicados y borradores
+      videoCountFilter = "AND v.estatus IN ('publicado', 'borrador')";
+    } else {
+      // Estudiantes solo ven videos publicados
+      videoCountFilter = "AND v.estatus = 'publicado'";
+    }
+    
     const modulosQuery = `
       SELECT 
         m.*,
-        (SELECT COUNT(*) FROM Video v WHERE v.id_modulo = m.id_modulo AND v.estatus = 'publicado') as total_videos
+        (SELECT COUNT(*) FROM Video v WHERE v.id_modulo = m.id_modulo ${videoCountFilter}) as total_videos
       FROM Modulos m
       WHERE m.id_curso = @cursoId
       ORDER BY m.orden
@@ -200,8 +209,18 @@ router.get('/:cursoId', async function(req, res, next) {
     const modulosResult = await db.executeQuery(modulosQuery, { cursoId: parseInt(cursoId) });
     const modulos = modulosResult.recordset || [];
     
-    // Obtener videos para cada módulo
+    // Obtener videos para cada módulo según permisos
     for (let modulo of modulos) {
+      // Determinar filtro de estado según el rol del usuario
+      let estatusFilter;
+      if (rol === 'instructor' || rol === 'admin') {
+        // Instructores y admins ven: publicados y borradores (no archivados)
+        estatusFilter = "AND v.estatus IN ('publicado', 'borrador')";
+      } else {
+        // Estudiantes solo ven videos publicados
+        estatusFilter = "AND v.estatus = 'publicado'";
+      }
+      
       const videosQuery = `
         SELECT 
           v.*,
@@ -209,7 +228,7 @@ router.get('/:cursoId', async function(req, res, next) {
           COALESCE(p.minuto_actual, 0) as minuto_actual
         FROM Video v
         LEFT JOIN Progreso p ON v.id_video = p.id_video AND p.id_usuario = @userId
-        WHERE v.id_modulo = @moduloId AND v.estatus = 'publicado'
+        WHERE v.id_modulo = @moduloId ${estatusFilter}
         ORDER BY v.orden
       `;
       

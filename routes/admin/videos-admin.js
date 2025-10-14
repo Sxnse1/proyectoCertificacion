@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const vimeoService = require('../../services/vimeoService');
+const bunnyService = require('../../services/bunnyService');
 const { uploadConfig, handleUploadError, cleanupTempFile, validateVideoData } = require('../../middleware/uploadMiddleware');
 const requireAuth = require('../../middleware/auth').requireAuth;
 const requireRole = require('../../middleware/auth').requireRole;
@@ -14,24 +14,30 @@ router.get('/', async function(req, res, next) {
   try {
     const db = req.app.locals.db;
     
-    // Obtener videos con información de módulos y cursos
-    // Primero probamos con una consulta básica
+    // Obtener videos con información de módulos y cursos, incluyendo campos Bunny
     const result = await db.executeQuery(`
       SELECT 
         v.id_video,
         v.titulo,
         ISNULL(v.descripcion, '') as descripcion,
         ISNULL(v.url, '') as url_vimeo,
+        ISNULL(v.bunny_video_id, '') as bunny_video_id,
+        ISNULL(v.bunny_library_id, '') as bunny_library_id,
+        ISNULL(v.bunny_embed_url, '') as bunny_embed_url,
+        ISNULL(v.bunny_thumbnail_url, '') as bunny_thumbnail_url,
+        ISNULL(v.video_provider, 'bunny') as video_provider,
         CASE 
           WHEN v.duracion_segundos IS NOT NULL THEN v.duracion_segundos / 60
           ELSE 0 
         END as duracion_minutos,
         v.estatus,
         v.fecha_creacion,
+        ISNULL(v.fecha_modificacion, v.fecha_creacion) as fecha_modificacion,
         v.id_modulo,
         ISNULL(m.titulo, 'Sin módulo') as modulo_titulo,
         ISNULL(c.titulo, 'Sin curso') as curso_titulo,
-        FORMAT(v.fecha_creacion, 'dd/MM/yyyy HH:mm') as fecha_formateada
+        FORMAT(v.fecha_creacion, 'dd/MM/yyyy HH:mm') as fecha_formateada,
+        FORMAT(ISNULL(v.fecha_modificacion, v.fecha_creacion), 'dd/MM/yyyy HH:mm') as fecha_modificacion_formateada
       FROM Video v
       LEFT JOIN Modulos m ON v.id_modulo = m.id_modulo
       LEFT JOIN Cursos c ON m.id_curso = c.id_curso
@@ -39,19 +45,41 @@ router.get('/', async function(req, res, next) {
     `);
     
     const videos = result.recordset.map(video => {
-      // Extraer ID de Vimeo de la URL
-      let vimeoId = null;
-      if (video.url_vimeo) {
-        const vimeoIdMatch = video.url_vimeo.match(/vimeo\.com\/(\d+)/) || 
-                            video.url_vimeo.match(/player\.vimeo\.com\/video\/(\d+)/);
-        if (vimeoIdMatch) {
-          vimeoId = vimeoIdMatch[1];
+      // Determinar el ID correcto para el reproductor
+      let bunnyId = null;
+      
+      // 1. Si es un video de Bunny, usar bunny_video_id directamente
+      if (video.video_provider === 'bunny' && video.bunny_video_id) {
+        bunnyId = video.bunny_video_id;
+      }
+      // 2. Si no, intentar extraer de la URL (para videos legacy)
+      else if (video.url_vimeo) {
+        // Formato Bunny: https://iframe.mediadelivery.net/embed/{libraryId}/{videoId}
+        const bunnyIdMatch = video.url_vimeo.match(/embed\/\d+\/([a-f0-9-]+)/) || 
+                            video.url_vimeo.match(/\/([a-f0-9-]+)\/play_/) ||
+                            video.url_vimeo.match(/\/([a-f0-9-]+)\/thumbnail/);
+        if (bunnyIdMatch) {
+          bunnyId = bunnyIdMatch[1];
         }
+        // Formato Vimeo: https://vimeo.com/{videoId} o https://player.vimeo.com/video/{videoId}
+        else {
+          const vimeoIdMatch = video.url_vimeo.match(/(?:vimeo\.com\/|video\/)(\d+)/);
+          if (vimeoIdMatch) {
+            bunnyId = vimeoIdMatch[1];
+          }
+        }
+      }
+      
+      // 3. Fallback al id_video de la base de datos
+      if (!bunnyId) {
+        bunnyId = video.id_video.toString();
       }
       
       return {
         ...video,
-        vimeo_id: vimeoId
+        bunny_id: bunnyId,
+        vimeo_id: bunnyId, // Mantener compatibilidad temporal
+        effective_id: bunnyId // ID efectivo para usar en el reproductor
       };
     });
     
@@ -78,6 +106,7 @@ router.get('/', async function(req, res, next) {
       modulos: modulos,
       userName: req.session.user.nombre,
       userRole: req.session.user.rol,
+      bunnyLibraryId: process.env.BUNNY_LIBRARY_ID || 'TU_LIBRARY_ID_AQUI',
       layout: false
     });
     
@@ -146,6 +175,7 @@ router.get('/nuevo', async function(req, res, next) {
       modulos: modulos,
       userName: req.session.user.nombre,
       userRole: req.session.user.rol,
+      bunnyLibraryId: process.env.BUNNY_LIBRARY_ID || 'TU_LIBRARY_ID_AQUI',
       layout: false
     });
     
@@ -154,6 +184,83 @@ router.get('/nuevo', async function(req, res, next) {
     res.status(500).render('shared/error', {
       message: 'Error al cargar el formulario',
       error: error
+    });
+  }
+});
+
+/* GET - Formulario para editar video */
+router.get('/:id/edit', async function(req, res, next) {
+  try {
+    const { id } = req.params;
+    const db = req.app.locals.db;
+    
+    console.log('[VIDEOS-ADMIN] 📝 Acceso a edición de video ID:', id);
+    
+    // Obtener el video específico
+    const videoResult = await db.executeQuery(`
+      SELECT 
+        v.id_video,
+        v.titulo,
+        ISNULL(v.descripcion, '') as descripcion,
+        ISNULL(v.url, '') as url_vimeo,
+        ISNULL(v.bunny_video_id, '') as bunny_video_id,
+        ISNULL(v.bunny_library_id, '') as bunny_library_id,
+        ISNULL(v.bunny_embed_url, '') as bunny_embed_url,
+        ISNULL(v.bunny_thumbnail_url, '') as bunny_thumbnail_url,
+        ISNULL(v.video_provider, 'bunny') as video_provider,
+        v.duracion_segundos,
+        v.estatus,
+        v.id_modulo,
+        m.titulo as modulo_titulo,
+        c.titulo as curso_titulo
+      FROM Video v
+      LEFT JOIN Modulos m ON v.id_modulo = m.id_modulo
+      LEFT JOIN Cursos c ON m.id_curso = c.id_curso
+      WHERE v.id_video = @videoId
+    `, { videoId: id });
+    
+    if (!videoResult.recordset || videoResult.recordset.length === 0) {
+      return res.status(404).render('shared/error', {
+        title: 'Video No Encontrado',
+        message: 'El video que intentas editar no existe.',
+        userName: req.session.user.nombre,
+        userRole: req.session.user.rol
+      });
+    }
+    
+    // Obtener módulos disponibles
+    const modulosResult = await db.executeQuery(`
+      SELECT 
+        m.id_modulo,
+        m.titulo,
+        c.titulo as curso_titulo,
+        CONCAT(c.titulo, ' - ', m.titulo) as display_name
+      FROM Modulos m
+      INNER JOIN Cursos c ON m.id_curso = c.id_curso
+      WHERE c.estatus = 'publicado'
+      ORDER BY c.titulo, m.orden, m.titulo
+    `);
+    
+    const video = videoResult.recordset[0];
+    const modulos = modulosResult.recordset;
+    
+    res.render('admin/videos-edit', {
+      title: `Editar Video: ${video.titulo}`,
+      video: video,
+      modulos: modulos,
+      userName: req.session.user.nombre,
+      userRole: req.session.user.rol,
+      bunnyLibraryId: process.env.BUNNY_LIBRARY_ID,
+      layout: false
+    });
+    
+  } catch (error) {
+    console.error('[VIDEOS-ADMIN] ❌ Error cargando video para editar:', error);
+    res.status(500).render('shared/error', {
+      message: 'Error al cargar el video para edición',
+      error: error,
+      userName: req.session.user.nombre,
+      userRole: req.session.user.rol
     });
   }
 });
@@ -212,18 +319,31 @@ router.post('/upload',
       }
       
       tempFilePath = req.file.path;
-      const { titulo, descripcion, id_modulo, duracion_minutos = 0, estatus = 'borrador' } = req.body;
+      let { titulo, descripcion, id_modulo, duracion_minutos = 0, estatus = 'borrador', orden } = req.body;
+      
+      // Validar estatus permitidos según constraint de DB
+      const estatusPermitidos = ['borrador', 'publicado', 'archivado'];
+      if (!estatusPermitidos.includes(estatus)) {
+        console.log('[VIDEO-UPLOAD] ❌ Estatus inválido recibido:', estatus, '- Usando borrador por defecto');
+        estatus = 'borrador';
+      }
+      
+      // Mapear 'activo' a 'publicado' para compatibilidad con formularios antiguos
+      if (estatus === 'activo') {
+        estatus = 'publicado';
+        console.log('[VIDEO-UPLOAD] 🔄 Mapeando "activo" a "publicado"');
+      }
       
       console.log('[VIDEO-UPLOAD] 🎬 Iniciando proceso de upload:', titulo);
       console.log('[VIDEO-UPLOAD] 📁 Archivo temporal:', tempFilePath);
+      console.log('[VIDEO-UPLOAD] 📋 Estatus validado:', estatus);
       
-      // SIMULACIÓN TEMPORAL - No subir a Vimeo por ahora para debugging
-      console.log('[VIDEO-UPLOAD] 🧪 MODO DEBUG: Simulando upload a Vimeo...');
-      const vimeoResult = {
-        video_id: 'debug_' + Date.now(),
-        vimeo_url: 'https://vimeo.com/debug_' + Date.now(),
-        embed_url: 'https://player.vimeo.com/video/debug_' + Date.now()
-      };
+      // Subir a Bunny.net
+      console.log('[VIDEO-UPLOAD] ☁️ Subiendo a Bunny.net...');
+      const bunnyResult = await bunnyService.uploadVideo(tempFilePath, {
+        titulo: titulo,
+        descripcion: descripcion
+      });
       
       // Preparar datos para Vimeo (comentado temporalmente)
       // const videoData = {
@@ -239,32 +359,50 @@ router.post('/upload',
       // Guardar en base de datos
       const db = req.app.locals.db;
       
-      // Obtener el próximo orden para este módulo
-      const ordenResult = await db.executeQuery(`
-        SELECT ISNULL(MAX(orden), 0) + 1 as siguiente_orden 
-        FROM Video 
-        WHERE id_modulo = @id_modulo
-      `, { id_modulo: id_modulo });
-      
-      const siguienteOrden = ordenResult.recordset[0].siguiente_orden;
+      // Determinar el orden del video
+      let ordenFinal;
+      if (orden && parseInt(orden) > 0) {
+        ordenFinal = parseInt(orden);
+        console.log('[VIDEO-UPLOAD] 🔢 Usando orden proporcionado:', ordenFinal);
+      } else {
+        // Obtener el próximo orden para este módulo si no se especifica
+        const ordenResult = await db.executeQuery(`
+          SELECT ISNULL(MAX(orden), 0) + 1 as siguiente_orden 
+          FROM Video 
+          WHERE id_modulo = @id_modulo
+        `, { id_modulo: id_modulo });
+        
+        ordenFinal = ordenResult.recordset[0].siguiente_orden;
+        console.log('[VIDEO-UPLOAD] 🔢 Usando siguiente orden automático:', ordenFinal);
+      }
       
       const insertResult = await db.executeQuery(`
         INSERT INTO Video (
           id_modulo, titulo, descripcion, url, 
+          bunny_video_id, bunny_library_id, bunny_embed_url, bunny_thumbnail_url,
+          video_provider, bunny_metadata,
           duracion_segundos, orden, estatus, fecha_creacion
         ) 
         OUTPUT INSERTED.*
         VALUES (
           @id_modulo, @titulo, @descripcion, @url,
+          @bunny_video_id, @bunny_library_id, @bunny_embed_url, @bunny_thumbnail_url,
+          @video_provider, @bunny_metadata,
           @duracion_segundos, @orden, @estatus, GETDATE()
         )
       `, {
         id_modulo: id_modulo,
         titulo: titulo,
         descripcion: descripcion || null,
-        url: vimeoResult.embed_url,
+        url: bunnyResult.embed_url,
+        bunny_video_id: bunnyResult.video_id || null,
+        bunny_library_id: process.env.BUNNY_LIBRARY_ID || null,
+        bunny_embed_url: bunnyResult.embed_url || null,
+        bunny_thumbnail_url: bunnyResult.thumbnail_url || null,
+        video_provider: 'bunny',
+        bunny_metadata: bunnyResult.metadata ? JSON.stringify(bunnyResult.metadata) : null,
         duracion_segundos: (parseInt(duracion_minutos) || 0) * 60,
-        orden: siguienteOrden,
+        orden: ordenFinal,
         estatus: estatus
       });
       
@@ -281,9 +419,10 @@ router.post('/upload',
         video: {
           id: nuevoVideo.id_video,
           titulo: nuevoVideo.titulo,
-          vimeo_id: vimeoResult.video_id,
-          vimeo_url: vimeoResult.vimeo_url,
-          embed_url: vimeoResult.embed_url
+          bunny_id: bunnyResult.video_id,
+          bunny_url: bunnyResult.stream_url,
+          embed_url: bunnyResult.embed_url,
+          thumbnail_url: bunnyResult.thumbnail_url
         }
       });
       
@@ -303,19 +442,112 @@ router.post('/upload',
   }
 );
 
-/* PATCH - Cambiar estado de video */
-router.patch('/:id/status', async function(req, res, next) {
+/* PUT - Actualizar información de video */
+router.put('/:id', async function(req, res, next) {
+  try {
+    const { id } = req.params;
+    const { titulo, descripcion, id_modulo, estatus } = req.body;
+    const db = req.app.locals.db;
+    
+    console.log('[VIDEOS-ADMIN] ✏️ Actualizando video ID:', id);
+    console.log('[VIDEOS-ADMIN] 📝 Datos a actualizar:', { titulo, descripcion, id_modulo, estatus });
+    
+    // Validar que el video existe
+    const existsResult = await db.executeQuery(`
+      SELECT id_video FROM Video WHERE id_video = @videoId
+    `, { videoId: id });
+    
+    if (!existsResult.recordset || existsResult.recordset.length === 0) {
+      return res.status(404).json({
+        success: false,
+        error: 'Video no encontrado'
+      });
+    }
+    
+    // Validar estatus (mapear activo a publicado para compatibilidad)
+    if (estatus === 'activo') {
+      estatus = 'publicado';
+    }
+    
+    const validStatuses = ['publicado', 'borrador', 'archivado'];
+    if (estatus && !validStatuses.includes(estatus)) {
+      return res.status(400).json({
+        success: false,
+        error: 'Estado no válido. Los estados permitidos son: publicado, borrador, archivado'
+      });
+    }
+    
+    // Construir query de actualización
+    let updateFields = [];
+    let params = { videoId: id };
+    
+    if (titulo) {
+      updateFields.push('titulo = @titulo');
+      params.titulo = titulo;
+    }
+    
+    if (descripcion !== undefined) { // Permitir descripción vacía
+      updateFields.push('descripcion = @descripcion');
+      params.descripcion = descripcion;
+    }
+    
+    if (id_modulo) {
+      updateFields.push('id_modulo = @id_modulo');
+      params.id_modulo = id_modulo;
+    }
+    
+    if (estatus) {
+      updateFields.push('estatus = @estatus');
+      params.estatus = estatus;
+    }
+    
+    if (updateFields.length === 0) {
+      return res.status(400).json({
+        success: false,
+        error: 'No hay campos para actualizar'
+      });
+    }
+    
+    // Añadir fecha de modificación
+    updateFields.push('fecha_modificacion = GETDATE()');
+    
+    const updateQuery = `
+      UPDATE Video 
+      SET ${updateFields.join(', ')}
+      WHERE id_video = @videoId
+    `;
+    
+    await db.executeQuery(updateQuery, params);
+    
+    console.log('[VIDEOS-ADMIN] ✅ Video actualizado exitosamente');
+    
+    res.json({
+      success: true,
+      message: 'Video actualizado exitosamente'
+    });
+    
+  } catch (error) {
+    console.error('[VIDEOS-ADMIN] ❌ Error actualizando video:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Error al actualizar el video: ' + error.message
+    });
+  }
+});
+
+/* PUT - Cambiar estado de video */
+router.put('/:id/status', async function(req, res, next) {
   try {
     const videoId = req.params.id;
     const { estatus } = req.body;
     const db = req.app.locals.db;
 
     // Validar que el estatus sea válido
-    const validStatuses = ['activo', 'borrador', 'archivado'];
+    const validStatuses = ['publicado', 'borrador', 'archivado'];
     if (!validStatuses.includes(estatus)) {
       return res.status(400).json({
         success: false,
-        error: 'Estado no válido. Los estados permitidos son: activo, borrador, archivado'
+        error: 'Estado no válido. Los estados permitidos son: publicado, borrador, archivado'
       });
     }
 
@@ -399,12 +631,12 @@ router.delete('/:id', async function(req, res, next) {
     const video = videoResult.recordset[0];
     console.log(`[VIDEO-DELETE] 📹 Video encontrado: "${video.titulo}" (${video.modulo_titulo})`);
     
-    // Verificar permisos adicionales (solo admin puede eliminar videos activos)
-    if (video.estatus === 'activo' && req.session.user.rol !== 'admin') {
-      console.log(`[VIDEO-DELETE] ⚠️ Usuario ${req.session.user.nombre} intentó eliminar video activo sin permisos`);
+    // Verificar permisos adicionales (solo admin puede eliminar videos publicados)
+    if (video.estatus === 'publicado' && req.session.user.rol !== 'admin') {
+      console.log(`[VIDEO-DELETE] ⚠️ Usuario ${req.session.user.nombre} intentó eliminar video publicado sin permisos`);
       return res.status(403).json({
         success: false,
-        error: 'Solo los administradores pueden eliminar videos activos. Cambia el video a borrador primero.'
+        error: 'Solo los administradores pueden eliminar videos publicados. Cambia el video a borrador primero.'
       });
     }
     
@@ -423,37 +655,37 @@ router.delete('/:id', async function(req, res, next) {
     
     console.log('[VIDEO-DELETE] 📝 Registro de auditoría:', auditData);
     
-    // Eliminar de Vimeo si existe
-    let vimeoDeleteSuccess = false;
+    // Eliminar de Bunny.net si existe
+    let bunnyDeleteSuccess = false;
     if (video.url) {
       try {
-        // Extraer ID de Vimeo de diferentes formatos de URL
-        let vimeoId = null;
+        // Extraer ID de Bunny de diferentes formatos de URL
+        let bunnyId = null;
         
-        // Formato: https://vimeo.com/123456789
-        let vimeoIdMatch = video.url.match(/vimeo\.com\/(\d+)/);
-        if (vimeoIdMatch) {
-          vimeoId = vimeoIdMatch[1];
+        // Formato: https://iframe.mediadelivery.net/embed/{libraryId}/{videoId}
+        let bunnyIdMatch = video.url.match(/embed\/\d+\/([a-f0-9-]+)/);
+        if (bunnyIdMatch) {
+          bunnyId = bunnyIdMatch[1];
         } else {
-          // Formato: https://player.vimeo.com/video/123456789
-          vimeoIdMatch = video.url.match(/player\.vimeo\.com\/video\/(\d+)/);
-          if (vimeoIdMatch) {
-            vimeoId = vimeoIdMatch[1];
+          // Formato: https://iframe.mediadelivery.net/{libraryId}/{videoId}/play_720p.mp4
+          bunnyIdMatch = video.url.match(/\/([a-f0-9-]+)\/play_/);
+          if (bunnyIdMatch) {
+            bunnyId = bunnyIdMatch[1];
           }
         }
         
-        if (vimeoId) {
-          console.log(`[VIDEO-DELETE] ☁️ Eliminando de Vimeo: ${vimeoId}`);
-          await vimeoService.deleteVideo(vimeoId);
-          console.log('[VIDEO-DELETE] ✅ Video eliminado de Vimeo exitosamente');
-          vimeoDeleteSuccess = true;
+        if (bunnyId) {
+          console.log(`[VIDEO-DELETE] ☁️ Eliminando de Bunny.net: ${bunnyId}`);
+          await bunnyService.deleteVideo(bunnyId);
+          console.log('[VIDEO-DELETE] ✅ Video eliminado de Bunny.net exitosamente');
+          bunnyDeleteSuccess = true;
         } else {
-          console.log('[VIDEO-DELETE] ⚠️ No se pudo extraer ID de Vimeo de la URL:', video.url);
+          console.log('[VIDEO-DELETE] ⚠️ No se pudo extraer ID de Bunny.net de la URL:', video.url);
         }
-      } catch (vimeoError) {
-        console.error('[VIDEO-DELETE] ❌ Error eliminando de Vimeo:', vimeoError);
-        // Continuar con la eliminación de BD aunque falle Vimeo
-        console.log('[VIDEO-DELETE] ⚠️ Continuando con eliminación de BD a pesar del error de Vimeo');
+      } catch (bunnyError) {
+        console.error('[VIDEO-DELETE] ❌ Error eliminando de Bunny.net:', bunnyError);
+        // Continuar con la eliminación de BD aunque falle Bunny.net
+        console.log('[VIDEO-DELETE] ⚠️ Continuando con eliminación de BD a pesar del error de Bunny.net');
       }
     }
     
@@ -481,7 +713,7 @@ router.delete('/:id', async function(req, res, next) {
           )
         `, {
           ...auditData,
-          vimeo_delete_success: vimeoDeleteSuccess
+          vimeo_delete_success: bunnyDeleteSuccess
         });
         console.log('[VIDEO-DELETE] 📋 Registro de auditoría guardado');
       } catch (auditError) {
@@ -494,7 +726,7 @@ router.delete('/:id', async function(req, res, next) {
         message: 'Video eliminado permanentemente',
         details: {
           video_eliminado: video.titulo,
-          vimeo_eliminado: vimeoDeleteSuccess,
+          vimeo_eliminado: bunnyDeleteSuccess,
           eliminado_por: req.session.user.nombre
         }
       });
@@ -524,7 +756,7 @@ router.get('/:id/status', async function(req, res, next) {
     
     // Obtener video de BD
     const videoResult = await db.executeQuery(
-      'SELECT vimeo_video_id FROM Video WHERE id_video = @id',
+      'SELECT url FROM Video WHERE id_video = @id',
       { id: videoId }
     );
     
@@ -535,22 +767,37 @@ router.get('/:id/status', async function(req, res, next) {
       });
     }
     
-    const vimeoVideoId = videoResult.recordset[0].vimeo_video_id;
+    const videoUrl = videoResult.recordset[0].url;
     
-    if (!vimeoVideoId) {
+    if (!videoUrl) {
       return res.json({
         success: true,
-        status: 'no_vimeo_id'
+        status: 'no_bunny_id'
       });
     }
     
-    // Obtener estado de Vimeo
-    const status = await vimeoService.getVideoStatus(vimeoVideoId);
+    // Extraer Bunny ID de la URL
+    let bunnyId = null;
+    const bunnyIdMatch = videoUrl.match(/embed\/\d+\/([a-f0-9-]+)/) || 
+                        videoUrl.match(/\/([a-f0-9-]+)\/play_/);
+    if (bunnyIdMatch) {
+      bunnyId = bunnyIdMatch[1];
+    }
+    
+    if (!bunnyId) {
+      return res.json({
+        success: true,
+        status: 'invalid_url'
+      });
+    }
+    
+    // Obtener estado de Bunny.net
+    const status = await bunnyService.getVideoStatus(bunnyId);
     
     res.json({
       success: true,
       status: status,
-      processing: status === 'uploading' || status === 'processing'
+      processing: status === 'uploading' || status === 'processing' || status === 'encoding' || status === 'queued'
     });
     
   } catch (error) {

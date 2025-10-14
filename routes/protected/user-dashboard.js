@@ -101,16 +101,16 @@ router.get('/', async function(req, res, next) {
             SELECT TOP 1 
               s.id_suscripcion,
               s.estatus,
-              s.fecha_inicio,
-              s.fecha_fin,
+              s.fecha_compra as fecha_inicio,
+              s.fecha_vencimiento,
               m.nombre as planName,
               m.precio
             FROM Suscripciones s
             INNER JOIN Membresias m ON s.id_membresia = m.id_membresia
             WHERE s.id_usuario = @userId 
             AND s.estatus = 'activa'
-            AND s.fecha_fin > GETDATE()
-            ORDER BY s.fecha_fin DESC
+            AND s.fecha_vencimiento > GETDATE()
+            ORDER BY s.fecha_vencimiento DESC
           `, { userId: user.id });
           
           if (subscriptionResult && subscriptionResult.recordset && subscriptionResult.recordset.length > 0) {
@@ -119,8 +119,8 @@ router.get('/', async function(req, res, next) {
               active: true,
               planName: sub.planName,
               price: sub.precio,
-              startDate: sub.fecha_inicio,
-              endDate: sub.fecha_fin
+              startDate: sub.fecha_compra,
+              endDate: sub.fecha_vencimiento
             };
           }
         } catch (subscriptionError) {

@@ -1,0 +1,160 @@
+<!-- Modal de Edición de Video -->
+<div class="modal fade" id="editVideoModal" tabindex="-1" aria-labelledby="editVideoModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editVideoModalLabel">
+                    <i class="bi bi-pencil-square me-2"></i>Editar Video
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editVideoForm">
+                    <input type="hidden" id="editVideoId" name="videoId">
+
+                    <!-- Información Básica -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h6 class="text-muted mb-3">
+                                <i class="bi bi-info-circle me-1"></i>Información Básica
+                            </h6>
+                        </div>
+
+                        <!-- Título -->
+                        <div class="col-12 mb-3">
+                            <label for="editTitulo" class="form-label fw-semibold">
+                                Título del Video <span class="text-danger">*</span>
+                            </label>
+                            <input type="text" class="form-control" id="editTitulo" name="titulo" required
+                                placeholder="Ingresa el título del video">
+                        </div>
+
+                        <!-- Descripción -->
+                        <div class="col-12 mb-3">
+                            <label for="editDescripcion" class="form-label fw-semibold">
+                                Descripción
+                            </label>
+                            <textarea class="form-control" id="editDescripcion" name="descripcion" rows="3"
+                                placeholder="Descripción opcional del video"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Configuración -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h6 class="text-muted mb-3">
+                                <i class="bi bi-gear me-1"></i>Configuración
+                            </h6>
+                        </div>
+
+                        <!-- Módulo y Orden -->
+                        <div class="col-md-8 mb-3">
+                            <label for="editModulo" class="form-label fw-semibold">
+                                Módulo <span class="text-danger">*</span>
+                            </label>
+                            <select class="form-select" id="editModulo" name="id_modulo" required>
+                                <option value="">Seleccionar módulo...</option>
+                                {{#each modulos}}
+                                <option value="{{id_modulo}}">{{display_name}}</option>
+                                {{/each}}
+                            </select>
+                        </div>
+
+                        <div class="col-md-4 mb-3">
+                            <label for="editOrden" class="form-label fw-semibold">
+                                Orden <span class="text-danger">*</span>
+                            </label>
+                            <input type="number" class="form-control" id="editOrden" name="orden" min="1" required
+                                placeholder="1">
+                        </div>
+
+                        <!-- Estado y Duración -->
+                        <div class="col-md-6 mb-3">
+                            <label for="editEstatus" class="form-label fw-semibold">
+                                Estado
+                            </label>
+                            <select class="form-select" id="editEstatus" name="estatus">
+                                <option value="borrador">📝 Borrador</option>
+                                <option value="publicado">✅ Publicado</option>
+                                <option value="archivado">📦 Archivado</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label for="editDuracion" class="form-label fw-semibold">
+                                Duración (segundos)
+                            </label>
+                            <input type="number" class="form-control" id="editDuracion" name="duracion_segundos" min="0"
+                                placeholder="0" readonly>
+                            <div class="form-text">Se actualiza automáticamente desde el proveedor</div>
+                        </div>
+                    </div>
+
+                    <!-- Información Técnica -->
+                    <div class="row mb-3">
+                        <div class="col-12">
+                            <h6 class="text-muted mb-3">
+                                <i class="bi bi-server me-1"></i>Información Técnica
+                            </h6>
+                        </div>
+
+                        <!-- Proveedor y URL -->
+                        <div class="col-md-6 mb-3">
+                            <label for="editProvider" class="form-label fw-semibold">
+                                Proveedor de Video
+                            </label>
+                            <select class="form-select" id="editProvider" name="video_provider">
+                                <option value="bunny">🐰 Bunny.net</option>
+                                <option value="vimeo">📹 Vimeo</option>
+                                <option value="pending">⏳ Pendiente</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label for="editUrl" class="form-label fw-semibold">
+                                URL del Video
+                            </label>
+                            <input type="url" class="form-control" id="editUrl" name="url" placeholder="https://...">
+                        </div>
+
+                        <!-- IDs de Bunny -->
+                        <div class="col-md-6 mb-3">
+                            <label for="editBunnyVideoId" class="form-label fw-semibold">
+                                Bunny Video ID
+                            </label>
+                            <input type="text" class="form-control" id="editBunnyVideoId" name="bunny_video_id"
+                                placeholder="ID del video en Bunny.net">
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label for="editBunnyLibraryId" class="form-label fw-semibold">
+                                Bunny Library ID
+                            </label>
+                            <input type="text" class="form-control" id="editBunnyLibraryId" name="bunny_library_id"
+                                placeholder="ID de la librería en Bunny.net">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <div class="d-flex justify-content-between w-100 align-items-center">
+                    <small class="text-muted">
+                        <i class="bi bi-clock me-1"></i>
+                        Creado: <span id="editFechaCreacion">-</span>
+                    </small>
+                    <div>
+                        <button type="button" class="btn btn-outline-primary me-2" onclick="openVideoPlayer()">
+                            <i class="bi bi-play-circle me-1"></i>Ver Video
+                        </button>
+                        <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">
+                            Cancelar
+                        </button>
+                        <button type="submit" form="editVideoForm" class="btn btn-primary">
+                            <i class="bi bi-check-lg me-1"></i>Guardar Cambios
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

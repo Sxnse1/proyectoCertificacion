@@ -1,0 +1,164 @@
+var express = require('express');
+var router = express.Router();
+const requireAuth = require('../../middleware/auth').requireAuth;
+
+/* GET detalle de curso específico */
+router.get('/:cursoId', requireAuth, async function(req, res, next) {
+  try {
+    const { cursoId } = req.params;
+    const user = req.session.user;
+    const db = req.app.locals.db;
+    
+    console.log('[CURSO-DETALLE] 📚 Acceso al curso:', cursoId, '- Usuario:', user.email);
+
+    // Obtener información del curso
+    const cursoQuery = `
+      SELECT 
+        c.*,
+        cat.nombre as categoria_nombre,
+        u.nombre + ' ' + u.apellido as instructor_nombre,
+        u.email as instructor_email,
+        -- Verificar si el usuario ya compró el curso
+        CASE WHEN comp.id_compra IS NOT NULL THEN 1 ELSE 0 END as ya_comprado,
+        -- Verificar si tiene suscripción activa
+        CASE WHEN sus.id_suscripcion IS NOT NULL AND sus.estatus = 'activa' AND sus.fecha_vencimiento >= GETDATE() 
+             THEN 1 ELSE 0 END as tiene_suscripcion_activa,
+        -- Contar módulos del curso
+        (SELECT COUNT(*) FROM Modulos m WHERE m.id_curso = c.id_curso) as total_modulos,
+        -- Contar videos publicados del curso
+        (SELECT COUNT(*) FROM Video v 
+         INNER JOIN Modulos m ON v.id_modulo = m.id_modulo 
+         WHERE m.id_curso = c.id_curso AND v.estatus = 'publicado') as total_videos,
+        -- Calcular duración total en minutos
+        (SELECT ISNULL(SUM(v.duracion_segundos), 0) / 60 FROM Video v 
+         INNER JOIN Modulos m ON v.id_modulo = m.id_modulo 
+         WHERE m.id_curso = c.id_curso AND v.estatus = 'publicado') as duracion_total_minutos
+      FROM Cursos c
+      INNER JOIN Categorias cat ON c.id_categoria = cat.id_categoria
+      INNER JOIN Usuarios u ON c.id_usuario = u.id_usuario
+      LEFT JOIN Compras comp ON c.id_curso = comp.id_curso AND comp.id_usuario = @userId
+      LEFT JOIN Suscripciones sus ON sus.id_usuario = @userId
+      WHERE c.id_curso = @cursoId AND c.estatus = 'publicado'
+    `;
+
+    const cursoResult = await db.executeQuery(cursoQuery, { 
+      cursoId: parseInt(cursoId),
+      userId: user.id_usuario
+    });
+
+    if (!cursoResult.recordset || cursoResult.recordset.length === 0) {
+      return res.status(404).render('shared/error', {
+        title: 'Curso No Encontrado',
+        message: 'El curso solicitado no existe o no está disponible',
+        error: { message: 'Verifica que el enlace sea correcto o que el curso esté publicado.' },
+        userName: user.nombre,
+        userRole: user.rol
+      });
+    }
+
+    const curso = cursoResult.recordset[0];
+    const tieneAcceso = curso.ya_comprado || curso.tiene_suscripcion_activa;
+
+    console.log('[CURSO-DETALLE] ✅ Curso encontrado:', curso.titulo);
+    console.log('[CURSO-DETALLE] 👤 Usuario:', user.email, '- Acceso:', tieneAcceso ? 'SÍ' : 'NO');
+
+    // Obtener módulos y videos del curso
+    const modulosQuery = `
+      SELECT 
+        m.id_modulo,
+        m.titulo as modulo_titulo,
+        m.orden as modulo_orden,
+        -- Contar videos del módulo (solo publicados para vista pública)
+        (SELECT COUNT(*) FROM Video v WHERE v.id_modulo = m.id_modulo AND v.estatus = 'publicado') as total_videos,
+        -- Calcular duración del módulo
+        (SELECT ISNULL(SUM(v.duracion_segundos), 0) / 60 FROM Video v WHERE v.id_modulo = m.id_modulo AND v.estatus = 'publicado') as duracion_minutos
+      FROM Modulos m
+      WHERE m.id_curso = @cursoId
+      ORDER BY m.orden
+    `;
+
+    const modulosResult = await db.executeQuery(modulosQuery, { cursoId: parseInt(cursoId) });
+    const modulos = modulosResult.recordset || [];
+
+    // Obtener videos para cada módulo
+    for (let modulo of modulos) {
+      const videosQuery = `
+        SELECT 
+          v.id_video,
+          v.titulo,
+          v.descripcion,
+          v.duracion_segundos,
+          v.orden,
+          v.estatus,
+          -- Verificar si es video de preview (primeros 2 videos de cada módulo son preview)
+          CASE WHEN v.orden <= 2 THEN 1 ELSE 0 END as es_preview,
+          -- Verificar progreso si tiene acceso
+          CASE WHEN @tieneAcceso = 1 THEN COALESCE(p.completado, 0) ELSE 0 END as completado,
+          CASE WHEN @tieneAcceso = 1 THEN COALESCE(p.minuto_actual, 0) ELSE 0 END as minuto_actual
+        FROM Video v
+        LEFT JOIN Progreso p ON v.id_video = p.id_video AND p.id_usuario = @userId AND @tieneAcceso = 1
+        WHERE v.id_modulo = @moduloId AND v.estatus = 'publicado'
+        ORDER BY v.orden
+      `;
+      
+      const videosResult = await db.executeQuery(videosQuery, { 
+        moduloId: modulo.id_modulo,
+        userId: user.id_usuario,
+        tieneAcceso: tieneAcceso ? 1 : 0
+      });
+      
+      modulo.videos = videosResult.recordset || [];
+    }
+
+    // Calcular estadísticas de progreso si tiene acceso
+    let progreso = {
+      videos_completados: 0,
+      total_videos: curso.total_videos,
+      porcentaje_completado: 0
+    };
+
+    if (tieneAcceso) {
+      const progresoQuery = `
+        SELECT COUNT(*) as videos_completados
+        FROM Progreso p 
+        INNER JOIN Video v ON p.id_video = v.id_video
+        INNER JOIN Modulos m ON v.id_modulo = m.id_modulo
+        WHERE m.id_curso = @cursoId AND p.id_usuario = @userId AND p.completado = 1
+      `;
+      
+      const progresoResult = await db.executeQuery(progresoQuery, {
+        cursoId: parseInt(cursoId),
+        userId: user.id_usuario
+      });
+      
+      progreso.videos_completados = progresoResult.recordset[0].videos_completados;
+      progreso.porcentaje_completado = curso.total_videos > 0 ? 
+        Math.round((progreso.videos_completados / curso.total_videos) * 100) : 0;
+    }
+
+    console.log('[CURSO-DETALLE] 📊 Progreso:', progreso);
+
+    res.render('public/curso-detalle', {
+      title: `${curso.titulo} - StartEducation`,
+      curso: curso,
+      modulos: modulos,
+      tieneAcceso: tieneAcceso,
+      progreso: progreso,
+      userName: user.nombre,
+      userEmail: user.email,
+      userRole: user.rol
+    });
+
+  } catch (error) {
+    console.error('[CURSO-DETALLE] ❌ Error:', error);
+    res.status(500).render('shared/error', {
+      title: 'Error del Servidor',
+      message: 'Error al cargar el detalle del curso',
+      error: error,
+      userName: req.session.user?.nombre,
+      userRole: req.session.user?.rol
+    });
+  }
+});
+
+module.exports = router;

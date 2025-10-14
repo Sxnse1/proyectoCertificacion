@@ -1,84 +1,139 @@
--- Script para actualizar la base de datos StartEducationDB
--- Ejecutar en SQL Server Management Studio o similar
+-- Actualización de base de datos para StartEducation
+-- Agregar tabla Carrito si no existe
 
-USE StartEducationDB;
+USE [StartEducationDB]
 GO
 
--- 1. Agregar columna 'activo' a la tabla Usuarios si no existe
-IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID('Usuarios') AND name = 'activo')
+-- Tabla Carrito para manejar items en carrito de usuarios
+IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='Carrito' AND xtype='U')
 BEGIN
-    ALTER TABLE Usuarios ADD activo BIT NOT NULL DEFAULT 1;
+    CREATE TABLE [dbo].[Carrito](
+        [id_carrito] [int] IDENTITY(1,1) NOT NULL,
+        [id_usuario] [int] NOT NULL,
+        [id_curso] [int] NOT NULL,
+        [cantidad] [int] NOT NULL DEFAULT(1),
+        [fecha_agregado] [datetime2](7) NOT NULL DEFAULT(GETDATE()),
+        PRIMARY KEY CLUSTERED ([id_carrito] ASC)
+    )
+
+    -- Agregar restricciones de llave foránea
+    ALTER TABLE [dbo].[Carrito]  
+    WITH CHECK ADD CONSTRAINT [FK_Carrito_Usuario] 
+    FOREIGN KEY([id_usuario]) REFERENCES [dbo].[Usuarios] ([id_usuario])
+    ON DELETE CASCADE
+
+    ALTER TABLE [dbo].[Carrito] CHECK CONSTRAINT [FK_Carrito_Usuario]
+
+    ALTER TABLE [dbo].[Carrito]  
+    WITH CHECK ADD CONSTRAINT [FK_Carrito_Curso] 
+    FOREIGN KEY([id_curso]) REFERENCES [dbo].[Cursos] ([id_curso])
+    ON DELETE CASCADE
+
+    ALTER TABLE [dbo].[Carrito] CHECK CONSTRAINT [FK_Carrito_Curso]
+
+    -- Agregar restricción para evitar duplicados
+    ALTER TABLE [dbo].[Carrito] 
+    ADD CONSTRAINT [UQ_Carrito_Usuario_Curso] UNIQUE ([id_usuario], [id_curso])
+
+    -- Agregar restricción de cantidad positiva
+    ALTER TABLE [dbo].[Carrito] 
+    ADD CONSTRAINT [CK_Carrito_Cantidad_Positiva] CHECK ([cantidad] > 0)
+
+    PRINT 'Tabla Carrito creada exitosamente'
+END
+ELSE
+BEGIN
+    PRINT 'Tabla Carrito ya existe'
 END
 GO
 
--- 2. Actualizar el rol del usuario juanpi@gmail.com a 'admin'
-UPDATE Usuarios
-SET rol = 'admin'
-WHERE email = 'juanpi@gmail.com';
-GO
-
--- 3. Verificar que el cambio se aplicó
-SELECT id_usuario, nombre, apellido, email, rol, activo
-FROM Usuarios
-WHERE email = 'juanpi@gmail.com';
-GO
-
--- 4. Crear algunos datos de prueba si no existen
--- Insertar categorías de prueba
-IF NOT EXISTS (SELECT * FROM Categorias WHERE nombre = 'Desarrollo Web')
+-- Tabla Compras para registrar compras realizadas (si no existe)
+IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='Compras' AND xtype='U')
 BEGIN
-    INSERT INTO Categorias (nombre, descripcion) VALUES
-    ('Desarrollo Web', 'Cursos sobre desarrollo web frontend y backend'),
-    ('Bases de Datos', 'Cursos sobre diseño y administración de bases de datos'),
-    ('Programación', 'Cursos de lenguajes de programación');
+    CREATE TABLE [dbo].[Compras](
+        [id_compra] [int] IDENTITY(1,1) NOT NULL,
+        [id_usuario] [int] NOT NULL,
+        [id_curso] [int] NOT NULL,
+        [precio_pagado] [decimal](10, 2) NOT NULL,
+        [fecha_compra] [datetime2](7) NOT NULL DEFAULT(GETDATE()),
+        [metodo_pago] [nvarchar](50) NULL,
+        [referencia_pago] [nvarchar](255) NULL,
+        [estatus] [nvarchar](20) NOT NULL DEFAULT('completada'),
+        PRIMARY KEY CLUSTERED ([id_compra] ASC)
+    )
+
+    -- Agregar restricciones de llave foránea
+    ALTER TABLE [dbo].[Compras]  
+    WITH CHECK ADD CONSTRAINT [FK_Compras_Usuario] 
+    FOREIGN KEY([id_usuario]) REFERENCES [dbo].[Usuarios] ([id_usuario])
+
+    ALTER TABLE [dbo].[Compras] CHECK CONSTRAINT [FK_Compras_Usuario]
+
+    ALTER TABLE [dbo].[Compras]  
+    WITH CHECK ADD CONSTRAINT [FK_Compras_Curso] 
+    FOREIGN KEY([id_curso]) REFERENCES [dbo].[Cursos] ([id_curso])
+
+    ALTER TABLE [dbo].[Compras] CHECK CONSTRAINT [FK_Compras_Curso]
+
+    -- Agregar restricción de precio positivo
+    ALTER TABLE [dbo].[Compras] 
+    ADD CONSTRAINT [CK_Compras_Precio_Positivo] CHECK ([precio_pagado] >= 0)
+
+    -- Agregar restricción de estatus
+    ALTER TABLE [dbo].[Compras] 
+    ADD CONSTRAINT [CK_Compras_Estatus] 
+    CHECK ([estatus] IN ('pendiente', 'completada', 'cancelada', 'reembolsada'))
+
+    PRINT 'Tabla Compras creada exitosamente'
+END
+ELSE
+BEGIN
+    PRINT 'Tabla Compras ya existe'
 END
 GO
 
--- Insertar usuario instructor si no existe
-IF NOT EXISTS (SELECT * FROM Usuarios WHERE email = 'instructor@starteducation.com')
+-- Tabla Progreso para seguimiento de avance en cursos (si no existe)
+IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='Progreso' AND xtype='U')
 BEGIN
-    INSERT INTO Usuarios (nombre, apellido, nombre_usuario, email, password, rol, estatus, activo)
-    VALUES ('María', 'González', 'instructor1', 'instructor@starteducation.com',
-            '$2b$10$dummy.hash.for.testing.purposes.only', 'instructor', 'activo', 1);
+    CREATE TABLE [dbo].[Progreso](
+        [id_progreso] [int] IDENTITY(1,1) NOT NULL,
+        [id_usuario] [int] NOT NULL,
+        [id_video] [int] NOT NULL,
+        [completado] [bit] NOT NULL DEFAULT(0),
+        [minuto_actual] [int] NOT NULL DEFAULT(0),
+        [fecha_ultima_vista] [datetime2](7) NOT NULL DEFAULT(GETDATE()),
+        PRIMARY KEY CLUSTERED ([id_progreso] ASC)
+    )
+
+    -- Agregar restricciones de llave foránea
+    ALTER TABLE [dbo].[Progreso]  
+    WITH CHECK ADD CONSTRAINT [FK_Progreso_Usuario] 
+    FOREIGN KEY([id_usuario]) REFERENCES [dbo].[Usuarios] ([id_usuario])
+    ON DELETE CASCADE
+
+    ALTER TABLE [dbo].[Progreso] CHECK CONSTRAINT [FK_Progreso_Usuario]
+
+    ALTER TABLE [dbo].[Progreso]  
+    WITH CHECK ADD CONSTRAINT [FK_Progreso_Video] 
+    FOREIGN KEY([id_video]) REFERENCES [dbo].[Video] ([id_video])
+    ON DELETE CASCADE
+
+    ALTER TABLE [dbo].[Progreso] CHECK CONSTRAINT [FK_Progreso_Video]
+
+    -- Agregar restricción para evitar duplicados
+    ALTER TABLE [dbo].[Progreso] 
+    ADD CONSTRAINT [UQ_Progreso_Usuario_Video] UNIQUE ([id_usuario], [id_video])
+
+    -- Agregar restricción de minuto no negativo
+    ALTER TABLE [dbo].[Progreso] 
+    ADD CONSTRAINT [CK_Progreso_Minuto_NoNegativo] CHECK ([minuto_actual] >= 0)
+
+    PRINT 'Tabla Progreso creada exitosamente'
+END
+ELSE
+BEGIN
+    PRINT 'Tabla Progreso ya existe'
 END
 GO
 
--- Insertar cursos de prueba
-IF NOT EXISTS (SELECT * FROM Cursos WHERE titulo = 'JavaScript Avanzado')
-BEGIN
-    DECLARE @id_instructor INT = (SELECT id_usuario FROM Usuarios WHERE email = 'instructor@starteducation.com');
-    DECLARE @id_categoria INT = (SELECT id_categoria FROM Categorias WHERE nombre = 'Desarrollo Web');
-
-    INSERT INTO Cursos (id_usuario, id_categoria, titulo, descripcion, precio, nivel, estatus)
-    VALUES (@id_instructor, @id_categoria, 'JavaScript Avanzado',
-            'Curso completo de JavaScript moderno con ES6+', 49.99, 'avanzado', 'publicado');
-
-    INSERT INTO Cursos (id_usuario, id_categoria, titulo, descripcion, precio, nivel, estatus)
-    VALUES (@id_instructor, @id_categoria, 'React para Principiantes',
-            'Aprende React desde cero', 39.99, 'intermedio', 'publicado');
-END
-GO
-
--- Insertar algunos certificados de prueba
-IF NOT EXISTS (SELECT * FROM Certificados WHERE id_usuario = 4)
-BEGIN
-    DECLARE @id_curso INT = (SELECT TOP 1 id_curso FROM Cursos ORDER BY id_curso);
-
-    INSERT INTO Certificados (id_usuario, id_curso, fecha_emision, codigo_validacion)
-    VALUES (4, @id_curso, GETDATE(), 'CERT' + CAST(ABS(CHECKSUM(NEWID())) % 1000000 AS VARCHAR(6)));
-END
-GO
-
--- Verificar datos insertados
-SELECT 'Usuarios' as tabla, COUNT(*) as cantidad FROM Usuarios
-UNION ALL
-SELECT 'Categorias', COUNT(*) FROM Categorias
-UNION ALL
-SELECT 'Cursos', COUNT(*) FROM Cursos
-UNION ALL
-SELECT 'Certificados', COUNT(*) FROM Certificados;
-GO
-
-PRINT '✅ Base de datos actualizada exitosamente';
-PRINT 'Usuario juanpi@gmail.com ahora tiene rol: admin';
-PRINT 'Datos de prueba insertados';
+PRINT 'Actualización de base de datos completada'

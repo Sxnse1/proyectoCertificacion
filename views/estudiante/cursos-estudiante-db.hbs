@@ -488,12 +488,18 @@
                             </div>
                             
                             <div class="curso-actions">
-                                <a href="/cursos/{{id_curso}}?user={{../userName}}&email={{../userEmail}}&rol={{../userRole}}&id={{../userId}}" class="btn-curso secondary">
-                                    👁️ Ver Detalles
+                                <a href="/curso/{{id_curso}}" class="btn-curso secondary">
+                                    👁️ Ver Curso
                                 </a>
+                                {{#if ya_comprado}}
+                                <a href="/curso/{{id_curso}}" class="btn-curso">
+                                    ▶️ Empezar
+                                </a>
+                                {{else}}
                                 <button class="btn-curso" onclick="comprarCurso({{id_curso}})">
                                     🛒 Comprar
                                 </button>
+                                {{/if}}
                             </div>
                         </div>
                     </div>
@@ -516,9 +522,9 @@
     <script>
         // Función para comprar curso
         function comprarCurso(cursoId) {
-            if (confirm('¿Deseas proceder con la compra de este curso?')) {
-                // Aquí iría la lógica de compra
-                alert('Funcionalidad de compra en desarrollo');
+            if (confirm('¿Deseas agregar este curso al carrito?')) {
+                // Redirigir al carrito con el curso
+                window.location.href = `/carrito/agregar/${cursoId}`;
             }
         }
         

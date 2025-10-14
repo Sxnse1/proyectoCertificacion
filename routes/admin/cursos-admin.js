@@ -183,9 +183,19 @@ router.post('/', async function(req, res, next) {
   try {
     const db = req.app.locals.db;
     const { titulo, descripcion, id_categoria, precio, nivel, miniatura } = req.body;
-    const id_usuario = req.session.user.id_usuario; // Instructor actual
+    
+    // Validar sesión de usuario
+    if (!req.session || !req.session.user || !req.session.user.id) {
+      console.log('[CURSOS] ❌ Error: Usuario no autenticado o sesión inválida');
+      return res.status(401).json({
+        success: false,
+        message: 'Usuario no autenticado'
+      });
+    }
+    
+    const id_usuario = req.session.user.id; // Instructor actual
 
-    console.log('[CURSOS] 📝 Creando nuevo curso:', { titulo, id_categoria, precio, nivel });
+    console.log('[CURSOS] 📝 Creando nuevo curso:', { titulo, id_categoria, precio, nivel, id_usuario });
 
     // Validaciones
     if (!titulo || !id_categoria || precio === undefined || !nivel) {
@@ -271,7 +281,7 @@ router.put('/:id', async function(req, res, next) {
     const db = req.app.locals.db;
     const cursoId = req.params.id;
     const { titulo, descripcion, id_categoria, precio, nivel, miniatura, estatus } = req.body;
-    const usuarioId = req.session.user.id_usuario;
+    const usuarioId = req.session.user.id;
 
     console.log(`[CURSOS] 📝 Actualizando curso ${cursoId}:`, { titulo, id_categoria, precio, nivel, estatus });
 
@@ -392,7 +402,7 @@ router.delete('/:id', async function(req, res, next) {
   try {
     const db = req.app.locals.db;
     const cursoId = req.params.id;
-    const usuarioId = req.session.user.id_usuario;
+    const usuarioId = req.session.user.id;
 
     console.log(`[CURSOS] 🗑️ Eliminando curso ${cursoId}`);
 
@@ -549,7 +559,7 @@ router.post('/:id/status', async function(req, res, next) {
     const db = req.app.locals.db;
     const cursoId = req.params.id;
     const { estatus } = req.body;
-    const usuarioId = req.session.user.id_usuario;
+    const usuarioId = req.session.user.id;
 
     console.log(`[CURSOS] 🔄 Cambiando estatus del curso ${cursoId} a: ${estatus}`);
 

@@ -225,33 +225,12 @@ router.get('/', async function(req, res, next) {
   }
 });
 
-/* GET curso específico */
+/* GET curso específico - REDIRIGIR A NUEVA RUTA */
 router.get('/:cursoId', function(req, res, next) {
   const { cursoId } = req.params;
-  const { user, email, rol, id } = req.query;
   
-  if (!user || !email || !rol) {
-    return res.redirect('/auth/login');
-  }
-  
-  // Buscar el curso por ID
-  const curso = cursosEjemplo.find(c => c.id === parseInt(cursoId));
-  
-  if (!curso) {
-    return res.status(404).render('error', {
-      message: 'Curso no encontrado',
-      error: { status: 404 }
-    });
-  }
-  
-  res.render('estudiante/curso-detalle', {
-    title: `${curso.titulo} - StartEducation`,
-    userName: user,
-    userEmail: email,
-    userRole: rol,
-    userId: id,
-    curso: curso
-  });
+  // Redirigir a la nueva ruta de detalle de curso
+  res.redirect(`/curso/${cursoId}`);
 });
 
 /* POST inscribirse a curso */
