@@ -6,6 +6,9 @@
 const express = require('express');
 const router = express.Router();
 
+// Importamos el servicio de Bunny para construir las URLs de las imágenes
+const bunnyService = require('../../services/bunnyService');
+
 /**
  * GET /user-dashboard - Dashboard principal para estudiantes
  */
@@ -31,170 +34,147 @@ router.get('/', async function(req, res, next) {
       });
     }
 
-    // Obtener estadísticas básicas del estudiante
+    // Definición de variables
     let cursosInscritos = 0;
     let cursosCompletados = 0;
     let horasEstudio = 0;
     let certificados = 0;
     let subscription = { active: false };
-    let categorias = [];
+    let recomendaciones = [];
+    let cursosEnProgreso = [];
 
     try {
-      // Verificar primero qué tablas existen
       const tablesResult = await db.executeQuery(`
-        SELECT TABLE_NAME 
-        FROM INFORMATION_SCHEMA.TABLES 
+        SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES 
         WHERE TABLE_TYPE = 'BASE TABLE' 
-        AND TABLE_NAME IN ('inscripciones', 'certificados', 'Inscripciones', 'Certificados', 'Suscripciones', 'Membresias', 'Categorias')
+        AND TABLE_NAME IN ('inscripciones', 'certificados', 'Suscripciones', 'Membresias', 'Cursos')
       `);
       
       const existingTables = tablesResult.recordset ? tablesResult.recordset.map(row => row.TABLE_NAME) : [];
       console.log('[USER-DASHBOARD] 📋 Tablas disponibles:', existingTables);
 
-      // Solo hacer consultas si las tablas existen
-      if (existingTables.some(table => table.toLowerCase().includes('inscripciones'))) {
+      // --- 1. OBTENER RECOMENDACIONES (1 BÁSICO, 1 INTERMEDIO, 1 AVANZADO) ---
+      if (existingTables.some(table => table.toLowerCase().includes('cursos'))) {
         try {
-          const cursosResult = await db.executeQuery(`
-            SELECT COUNT(*) as total 
-            FROM inscripciones i 
-            WHERE i.id_usuario = @userId
-          `, { userId: user.id });
+          const cursosRecomendadosResult = await db.executeQuery(`
+            WITH RankedCursos AS (
+              SELECT
+                titulo, descripcion, miniatura, nivel,
+                ROW_NUMBER() OVER(PARTITION BY nivel ORDER BY NEWID()) as rn
+              FROM Cursos
+              WHERE estatus = 'publicado'
+            )
+            SELECT
+              titulo AS nombre, descripcion, miniatura, nivel
+            FROM RankedCursos
+            WHERE rn = 1 AND nivel IN ('básico', 'intermedio', 'avanzado');
+          `);
           
-          if (cursosResult && cursosResult.recordset && cursosResult.recordset.length > 0) {
-            cursosInscritos = cursosResult.recordset[0].total || 0;
+          if (cursosRecomendadosResult && cursosRecomendadosResult.recordset) {
+            recomendaciones = cursosRecomendadosResult.recordset;
+            // Construimos la URL completa para cada miniatura
+            recomendaciones.forEach(curso => {
+              if (curso.miniatura) {
+                curso.imagen_url = bunnyService.getBunnyCdnUrl(curso.miniatura);
+              }
+            });
           }
-
-          const completadosResult = await db.executeQuery(`
-            SELECT COUNT(*) as total 
-            FROM inscripciones i 
-            WHERE i.id_usuario = @userId AND i.progreso = 100
-          `, { userId: user.id });
-          
-          if (completadosResult && completadosResult.recordset && completadosResult.recordset.length > 0) {
-            cursosCompletados = completadosResult.recordset[0].total || 0;
-          }
-        } catch (inscripcionesError) {
-          console.log('[USER-DASHBOARD] ⚠️ Error consultando inscripciones (tabla posiblemente vacía)');
+        } catch (cursosError) {
+          console.error('[USER-DASHBOARD] ⚠️ Error consultando recomendaciones por nivel:', cursosError.message);
         }
       }
 
+      // --- 2. OBTENER ESTADÍSTICAS Y CURSOS EN PROGRESO ---
+      if (existingTables.some(table => table.toLowerCase().includes('inscripciones'))) {
+        try {
+          const cursosResult = await db.executeQuery(`SELECT COUNT(*) as total FROM inscripciones WHERE id_usuario = @userId`, { userId: user.id });
+          if (cursosResult && cursosResult.recordset.length > 0) cursosInscritos = cursosResult.recordset[0].total || 0;
+
+          const completadosResult = await db.executeQuery(`SELECT COUNT(*) as total FROM inscripciones WHERE id_usuario = @userId AND progreso = 100`, { userId: user.id });
+          if (completadosResult && completadosResult.recordset.length > 0) cursosCompletados = completadosResult.recordset[0].total || 0;
+          
+          if (existingTables.some(table => table.toLowerCase().includes('cursos'))) {
+            const progresoResult = await db.executeQuery(`
+              SELECT c.titulo AS nombre, c.miniatura, i.progreso
+              FROM inscripciones i
+              INNER JOIN Cursos c ON i.id_curso = c.id_curso
+              WHERE i.id_usuario = @userId AND i.progreso > 0 AND i.progreso < 100
+            `, { userId: user.id });
+            if (progresoResult && progresoResult.recordset) {
+              cursosEnProgreso = progresoResult.recordset;
+              // También corregimos las URLs de las miniaturas para los cursos en progreso
+              cursosEnProgreso.forEach(curso => {
+                if (curso.miniatura) {
+                  curso.imagen_url = bunnyService.getBunnyCdnUrl(curso.miniatura);
+                }
+              });
+            }
+          }
+        } catch (inscripcionesError) {
+          console.error('[USER-DASHBOARD] ⚠️ Error consultando inscripciones:', inscripcionesError.message);
+        }
+      }
+      
+      // --- 3. CONSULTA DE CERTIFICADOS (LÓGICA ORIGINAL RESTAURADA) ---
       if (existingTables.some(table => table.toLowerCase().includes('certificados'))) {
         try {
           const certificadosResult = await db.executeQuery(`
-            SELECT COUNT(*) as total 
-            FROM certificados c 
-            WHERE c.id_usuario = @userId
+            SELECT COUNT(*) as total FROM certificados WHERE id_usuario = @userId
           `, { userId: user.id });
-          
-          if (certificadosResult && certificadosResult.recordset && certificadosResult.recordset.length > 0) {
+          if (certificadosResult && certificadosResult.recordset.length > 0) {
             certificados = certificadosResult.recordset[0].total || 0;
           }
         } catch (certificadosError) {
-          console.log('[USER-DASHBOARD] ⚠️ Error consultando certificados (tabla posiblemente vacía)');
+          console.log('[USER-DASHBOARD] ⚠️ Error consultando certificados.');
         }
       }
 
-      // Verificar suscripción activa
+      // --- 4. VERIFICAR SUSCRIPCIÓN ACTIVA (LÓGICA ORIGINAL RESTAURADA) ---
       if (existingTables.some(table => table.toLowerCase().includes('suscripciones'))) {
         try {
           const subscriptionResult = await db.executeQuery(`
-            SELECT TOP 1 
-              s.id_suscripcion,
-              s.estatus,
-              s.fecha_compra as fecha_inicio,
-              s.fecha_vencimiento,
-              m.nombre as planName,
-              m.precio
+            SELECT TOP 1 s.id_suscripcion, s.estatus, s.fecha_compra as fecha_inicio, s.fecha_vencimiento, m.nombre as planName, m.precio
             FROM Suscripciones s
             INNER JOIN Membresias m ON s.id_membresia = m.id_membresia
-            WHERE s.id_usuario = @userId 
-            AND s.estatus = 'activa'
-            AND s.fecha_vencimiento > GETDATE()
+            WHERE s.id_usuario = @userId AND s.estatus = 'activa' AND s.fecha_vencimiento > GETDATE()
             ORDER BY s.fecha_vencimiento DESC
           `, { userId: user.id });
           
-          if (subscriptionResult && subscriptionResult.recordset && subscriptionResult.recordset.length > 0) {
+          if (subscriptionResult && subscriptionResult.recordset.length > 0) {
             const sub = subscriptionResult.recordset[0];
-            subscription = {
-              active: true,
-              planName: sub.planName,
-              price: sub.precio,
-              startDate: sub.fecha_compra,
-              endDate: sub.fecha_vencimiento
-            };
+            subscription = { active: true, planName: sub.planName, price: sub.precio, startDate: sub.fecha_compra, endDate: sub.fecha_vencimiento };
           }
         } catch (subscriptionError) {
-          console.log('[USER-DASHBOARD] ⚠️ Error consultando suscripción');
-        }
-      }
-
-      // Obtener categorías disponibles si no tiene suscripción activa
-      if (!subscription.active && existingTables.some(table => table.toLowerCase().includes('categorias'))) {
-        try {
-          const categoriasResult = await db.executeQuery(`
-            SELECT 
-              c.id_categoria,
-              c.nombre,
-              c.descripcion,
-              c.imagen_url,
-              COALESCE(curso_count.total, 0) as cursos_count,
-              COALESCE(estudiantes_count.total, 0) as estudiantes_count,
-              COALESCE(m.precio, 29.99) as precio
-            FROM Categorias c
-            LEFT JOIN (
-              SELECT id_categoria, COUNT(*) as total 
-              FROM Cursos 
-              WHERE estatus = 'activo'
-              GROUP BY id_categoria
-            ) curso_count ON c.id_categoria = curso_count.id_categoria
-            LEFT JOIN (
-              SELECT cu.id_categoria, COUNT(DISTINCT i.id_usuario) as total
-              FROM Cursos cu
-              INNER JOIN inscripciones i ON cu.id_curso = i.id_curso
-              GROUP BY cu.id_categoria
-            ) estudiantes_count ON c.id_categoria = estudiantes_count.id_categoria
-            LEFT JOIN Membresias m ON c.nombre = m.categoria
-            ORDER BY c.nombre
-          `);
-          
-          if (categoriasResult && categoriasResult.recordset) {
-            categorias = categoriasResult.recordset;
-          }
-        } catch (categoriasError) {
-          console.log('[USER-DASHBOARD] ⚠️ Error consultando categorías');
+          console.log('[USER-DASHBOARD] ⚠️ Error consultando suscripción.');
         }
       }
       
     } catch (dbError) {
-      console.error('[USER-DASHBOARD] ❌ Error consultando estadísticas:', dbError.message);
-      // Continuar con valores por defecto
+      console.error('[USER-DASHBOARD] ❌ Error consultando la base de datos:', dbError.message);
     }
-
-    console.log('[USER-DASHBOARD] 📊 Estadísticas del usuario:', {
-      cursosInscritos,
-      cursosCompletados,
-      horasEstudio,
-      certificados,
-      subscriptionActive: subscription.active,
-      categoriasCount: categorias.length
-    });
+    
+    // --- LÓGICA DE RESPALDO ---
+    if (recomendaciones.length === 0) {
+      console.log('[USER-DASHBOARD] 💡 No se encontraron cursos publicados. Usando recomendaciones de respaldo.');
+      recomendaciones = [
+        { nombre: 'Curso Básico de Ejemplo', descripcion: 'Ideal para principiantes.', imagen_url: 'https://images.unsplash.com/photo-1542831371-29b0f74f9713?q=80&w=2070&auto=format&fit=crop' },
+        { nombre: 'Curso Intermedio de Ejemplo', descripcion: 'Para llevar tus habilidades al siguiente nivel.', imagen_url: 'https://images.unsplash.com/photo-1557862921-37829c790f19?q=80&w=2071&auto=format&fit=crop' },
+        { nombre: 'Curso Avanzado de Ejemplo', descripcion: 'Conviértete en un experto en el área.', imagen_url: 'https://images.unsplash.com/photo-1504639725590-c4a6c8de41c2?q=80&w=2070&auto=format&fit=crop' }
+      ];
+    }
 
     res.render('estudiante/user-dashboard', {
       title: 'Mi Dashboard - StartEducation',
       user: user,
-      stats: {
-        cursosInscritos,
-        cursosCompletados,
-        horasEstudio,
-        certificados
-      },
+      stats: { cursosInscritos, cursosCompletados, horasEstudio, certificados },
       subscription: subscription,
-      categorias: categorias,
+      categorias: recomendaciones,
+      cursosEnProgreso: cursosEnProgreso,
       layout: false
     });
 
   } catch (error) {
-    console.error('[USER-DASHBOARD] ❌ Error en dashboard:', error);
+    console.error('[USER-DASHBOARD] ❌ Error fatal en dashboard:', error);
     res.render('error', {
       title: 'Error',
       message: 'Error al cargar el dashboard',
