@@ -20,11 +20,13 @@ function configureRoutes(app) {
   const authRouter = require('./public/auth');
   const registerRouter = require('./public/register');
   const twoFactorRouter = require('./public/two-factor');
+  const contactRouter = require('./public/contact');
   
   app.use('/', indexRouter);
   app.use('/auth', authRouter);
   app.use('/register', registerRouter);
   app.use('/two-factor', twoFactorRouter);
+  app.use('/contact', contactRouter);
   
   // ============================================================
   // 🔒 RUTAS PROTEGIDAS (requieren autenticación)

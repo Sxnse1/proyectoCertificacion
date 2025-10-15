@@ -117,6 +117,25 @@
             transform: translateY(-2px);
         }
         
+        .btn-carrito {
+            width: 100%;
+            padding: 12px;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+        
+        .btn-carrito:hover {
+            background: #218838;
+            transform: translateY(-2px);
+        }
+        
         .content-section {
             background: white;
             padding: 40px;
@@ -315,6 +334,9 @@
                         <button class="btn-inscribir" onclick="inscribirse()">
                             🎓 Inscribirse Ahora
                         </button>
+                        <button class="btn-carrito" onclick="agregarAlCarrito()">
+                            🛒 Agregar al Carrito
+                        </button>
                         <p style="font-size: 0.9rem; margin-top: 10px; color: var(--text-light);">
                             ✅ Acceso de por vida<br>
                             ✅ Certificado incluido<br>
@@ -441,6 +463,36 @@
 
         function irAMisCursos() {
             window.location.href = '/cursos/mis-cursos?user={{userName}}&email={{userEmail}}&rol={{userRole}}&id={{userId}}';
+        }
+
+        function agregarAlCarrito() {
+            fetch('/carrito/agregar/{{curso.id}}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('✅ Curso agregado al carrito exitosamente');
+                    // Opcional: cambiar el texto del botón temporalmente
+                    const btn = event.target;
+                    const originalText = btn.innerHTML;
+                    btn.innerHTML = '✅ Agregado';
+                    btn.disabled = true;
+                    setTimeout(() => {
+                        btn.innerHTML = originalText;
+                        btn.disabled = false;
+                    }, 2000);
+                } else {
+                    alert('❌ Error: ' + (data.message || 'No se pudo agregar al carrito'));
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('❌ Error de conexión. Intenta nuevamente.');
+            });
         }
 
         // Cerrar modal al hacer clic fuera

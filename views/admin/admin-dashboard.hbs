@@ -21,7 +21,7 @@
 
     <style>
         :root {
-            --sidebar-width: 280px;
+            --sidebar-width: 220px;
             --primary-color: #ea580c;
             --primary-hover: #c2410c;
             --success-color: #10b981;
@@ -57,18 +57,18 @@
         }
 
         .sidebar-header {
-            padding: 1.5rem;
+            padding: 1.2rem;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .sidebar-brand {
-            font-size: 1.5rem;
+            font-size: 1.2rem;
             font-weight: 700;
             color: white;
             text-decoration: none;
             display: flex;
             align-items: center;
-            gap: 0.75rem;
+            gap: 0.6rem;
         }
 
         .sidebar-brand i {
@@ -82,21 +82,21 @@
         }
 
         .brand-icon img {
-            max-width: 120px;
-            max-height: 40px;
+            max-width: 96px;
+            max-height: 32px;
             width: auto;
             height: auto;
             object-fit: contain;
         }
 
         .user-profile {
-            padding: 1rem 1.5rem;
+            padding: 0.8rem 1.2rem;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .user-avatar {
-            width: 48px;
-            height: 48px;
+            width: 38px;
+            height: 38px;
             border-radius: 50%;
             background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
             display: flex;
@@ -104,8 +104,8 @@
             justify-content: center;
             color: white;
             font-weight: 600;
-            font-size: 1.25rem;
-            margin-bottom: 0.75rem;
+            font-size: 1rem;
+            margin-bottom: 0.6rem;
         }
 
         .user-name {
@@ -119,12 +119,12 @@
         }
 
         .nav-section {
-            padding: 1rem 0;
+            padding: 0.8rem 0;
         }
 
         .nav-section-title {
-            padding: 0 1.5rem 0.5rem;
-            font-size: 0.75rem;
+            padding: 0 1.2rem 0.4rem;
+            font-size: 0.7rem;
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.05em;
@@ -132,19 +132,20 @@
         }
 
         .nav-item {
-            margin: 0.25rem 1rem;
+            margin: 0.2rem 0.8rem;
         }
 
         .nav-link {
             display: flex;
             align-items: center;
-            gap: 0.75rem;
-            padding: 0.75rem 1rem;
+            gap: 0.6rem;
+            padding: 0.6rem 0.8rem;
             color: #e2e8f0;
             text-decoration: none;
-            border-radius: 0.5rem;
+            border-radius: 0.4rem;
             transition: all 0.2s ease;
             font-weight: 500;
+            font-size: 0.85rem;
         }
 
         .nav-link:hover {
@@ -181,25 +182,27 @@
         .top-bar {
             background: white;
             border-bottom: 1px solid var(--border-color);
-            padding: 1rem 2rem;
+            padding: 0.8rem 1.5rem;
             position: sticky;
             top: 0;
             z-index: 100;
         }
 
         .content-area {
-            padding: 2rem;
+            padding: 1.5rem;
+            max-width: 1100px;
+            margin: 0 auto;
         }
 
         .page-header {
-            margin-bottom: 2rem;
+            margin-bottom: 1.5rem;
         }
 
         .page-title {
-            font-size: 2rem;
+            font-size: 1.6rem;
             font-weight: 700;
             color: var(--text-dark);
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.4rem;
         }
 
         .page-subtitle {
@@ -210,16 +213,16 @@
         /* Stats Cards */
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.2rem;
+            margin-bottom: 1.5rem;
         }
 
         .stat-card {
             background: white;
             border: 1px solid var(--border-color);
-            border-radius: 0.75rem;
-            padding: 1.5rem;
+            border-radius: 0.6rem;
+            padding: 1.2rem;
             transition: all 0.2s ease;
         }
 
@@ -229,27 +232,27 @@
         }
 
         .stat-icon {
-            width: 48px;
-            height: 48px;
-            border-radius: 0.75rem;
+            width: 40px;
+            height: 40px;
+            border-radius: 0.6rem;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.5rem;
-            margin-bottom: 1rem;
+            font-size: 1.2rem;
+            margin-bottom: 0.8rem;
         }
 
         .stat-value {
-            font-size: 2rem;
+            font-size: 1.6rem;
             font-weight: 700;
             color: var(--text-dark);
-            margin-bottom: 0.25rem;
+            margin-bottom: 0.2rem;
         }
 
         .stat-label {
             color: var(--text-muted);
-            font-size: 0.875rem;
-            margin-bottom: 0.5rem;
+            font-size: 0.75rem;
+            margin-bottom: 0.4rem;
         }
 
         .stat-change {
@@ -272,35 +275,36 @@
         .quick-actions {
             background: white;
             border: 1px solid var(--border-color);
-            border-radius: 0.75rem;
-            padding: 1.5rem;
-            margin-bottom: 2rem;
+            border-radius: 0.6rem;
+            padding: 1.2rem;
+            margin-bottom: 1.5rem;
         }
 
         .quick-actions-title {
-            font-size: 1.25rem;
+            font-size: 1rem;
             font-weight: 600;
             color: var(--text-dark);
-            margin-bottom: 1rem;
+            margin-bottom: 0.8rem;
         }
 
         .actions-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 0.8rem;
         }
 
         .action-btn {
             display: flex;
             align-items: center;
-            gap: 0.75rem;
-            padding: 1rem;
+            gap: 0.6rem;
+            padding: 0.8rem;
             background: var(--bg-light);
             border: 1px solid var(--border-color);
-            border-radius: 0.5rem;
+            border-radius: 0.4rem;
             text-decoration: none;
             color: var(--text-dark);
             transition: all 0.2s ease;
+            font-size: 0.85rem;
         }
 
         .action-btn:hover {
@@ -324,11 +328,16 @@
             }
 
             .content-area {
-                padding: 1rem;
+                padding: 0.8rem;
             }
 
             .stats-grid {
-                grid-template-columns: 1fr;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.8rem;
+            }
+            
+            .actions-grid {
+                grid-template-columns: repeat(2, 1fr);
             }
         }
 
@@ -363,6 +372,75 @@
 
         .bg-danger-light {
             background-color: rgba(239, 68, 68, 0.1) !important;
+        }
+
+        /* Cards and Content Reduction */
+        .card {
+            border-radius: 0.6rem !important;
+        }
+        
+        .card-header {
+            padding: 0.9rem 1.2rem !important;
+        }
+        
+        .card-body {
+            padding: 1.2rem !important;
+        }
+        
+        .card-title {
+            font-size: 1rem !important;
+            margin-bottom: 0.6rem !important;
+        }
+        
+        /* Activity Items */
+        .activity-item {
+            padding: 0.8rem 0 !important;
+        }
+        
+        .activity-icon {
+            width: 32px !important;
+            height: 32px !important;
+            font-size: 0.9rem !important;
+        }
+        
+        /* Thumbnails and Images */
+        .course-thumbnail, .user-thumbnail {
+            width: 48px !important;
+            height: 48px !important;
+            border-radius: 0.4rem !important;
+        }
+        
+        /* Tables */
+        .table td, .table th {
+            padding: 0.6rem 0.8rem !important;
+            font-size: 0.85rem !important;
+        }
+        
+        /* Buttons */
+        .btn {
+            padding: 0.5rem 1rem !important;
+            font-size: 0.85rem !important;
+            border-radius: 0.4rem !important;
+        }
+        
+        .btn-sm {
+            padding: 0.4rem 0.8rem !important;
+            font-size: 0.75rem !important;
+        }
+        
+        /* Progress bars */
+        .progress {
+            height: 8px !important;
+            border-radius: 0.4rem !important;
+        }
+        
+        /* Box shadows */
+        .shadow-sm {
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08) !important;
+        }
+        
+        .shadow {
+            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.1) !important;
         }
     </style>
 </head>
@@ -456,45 +534,15 @@
                 </a>
             </div>
             <div class="nav-item">
-                <a href="/instructores-admin" class="nav-link">
-                    <i class="bi bi-person-badge"></i>
-                    <span>Instructores</span>
-                </a>
-            </div>
-            <div class="nav-item">
-                <a href="/progreso-admin" class="nav-link">
-                    <i class="bi bi-bar-chart"></i>
-                    <span>Progreso Estudiantes</span>
-                </a>
-            </div>
-            <div class="nav-item">
-                <a href="/admin/valoraciones" class="nav-link">
-                    <i class="bi bi-star"></i>
-                    <span>Valoraciones</span>
-                </a>
-            </div>
-            <div class="nav-item">
-                <a href="/admin/certificados" class="nav-link">
-                    <i class="bi bi-award"></i>
-                    <span>Certificados</span>
-                </a>
-            </div>
-            <div class="nav-item">
                 <a href="/two-factor/manage" class="nav-link">
                     <i class="bi bi-shield-lock"></i>
-                    <span>Gestionar 2FA</span>
+                    <span>Recuperación de cuenta</span>
                 </a>
             </div>
         </div>
 
         <div class="nav-section">
             <div class="nav-section-title">Monetización</div>
-            <div class="nav-item">
-                <a href="/admin/membresias" class="nav-link">
-                    <i class="bi bi-gem"></i>
-                    <span>Membresías</span>
-                </a>
-            </div>
             <div class="nav-item">
                 <a href="/admin/suscripciones" class="nav-link">
                     <i class="bi bi-credit-card"></i>
@@ -513,18 +561,6 @@
                     <span>Historial Pagos</span>
                 </a>
             </div>
-            <div class="nav-item">
-                <a href="/admin/carritos" class="nav-link">
-                    <i class="bi bi-cart"></i>
-                    <span>Carritos</span>
-                </a>
-            </div>
-            <div class="nav-item">
-                <a href="/admin/favoritos" class="nav-link">
-                    <i class="bi bi-heart"></i>
-                    <span>Favoritos</span>
-                </a>
-            </div>
         </div>
 
         <div class="nav-section">
@@ -533,24 +569,6 @@
                 <a href="/admin/configuracion" class="nav-link">
                     <i class="bi bi-gear"></i>
                     <span>Configuración</span>
-                </a>
-            </div>
-            <div class="nav-item">
-                <a href="/logs" class="nav-link">
-                    <i class="bi bi-file-text"></i>
-                    <span>Logs del Sistema</span>
-                </a>
-            </div>
-            <div class="nav-item">
-                <a href="/backup" class="nav-link">
-                    <i class="bi bi-cloud-download"></i>
-                    <span>Respaldos</span>
-                </a>
-            </div>
-            <div class="nav-item">
-                <a href="/perfil" class="nav-link">
-                    <i class="bi bi-person-circle"></i>
-                    <span>Mi Perfil</span>
                 </a>
             </div>
             <div class="nav-item">
@@ -660,7 +678,7 @@
             </div>
 
             <!-- Quick Actions -->
-            <div class="quick-actions">
+            {{!-- <div class="quick-actions">
                 <h3 class="quick-actions-title">Acciones Rápidas</h3>
                 <div class="actions-grid">
                     <a href="/cursos-admin/nuevo" class="action-btn">
@@ -688,7 +706,7 @@
                         <span>Crear Respaldo</span>
                     </a>
                 </div>
-            </div>
+            </div> --}}
 
             <!-- Recent Activity -->
             <div class="row">

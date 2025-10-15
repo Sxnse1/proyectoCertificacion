@@ -8,40 +8,53 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary-color: #FF6B35;
-            --secondary-color: #004E89;
-            --gold-color: #FFD700;
+            --primary-color: #ea580c;
+            --primary-hover: #c2410c;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --info-color: #3b82f6;
+            --text-dark: #1f2937;
+            --text-muted: #6b7280;
+            --border-color: #e5e7eb;
+            --bg-light: #f8fafc;
+            --gold-color: #f59e0b;
         }
 
-        body {
-            background: #f8f9fa;
+        * {
             font-family: 'Inter', sans-serif;
         }
 
+        body {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            color: var(--text-dark);
+        }
+
         .page-header {
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
             color: white;
-            padding: 40px 0;
-            margin-bottom: 40px;
+            padding: 30px 0;
+            margin-bottom: 30px;
         }
 
         .certificate-card {
             background: white;
-            border-radius: 20px;
+            border-radius: 15px;
             overflow: hidden;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+            box-shadow: 0 7px 30px rgba(0,0,0,0.15);
             transition: all 0.3s ease;
             position: relative;
+            border: 1px solid var(--border-color);
         }
 
         .certificate-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+            transform: translateY(-8px);
+            box-shadow: 0 15px 45px rgba(0,0,0,0.25);
         }
 
         .certificate-header {
-            background: linear-gradient(135deg, var(--gold-color), #FFA500);
-            padding: 30px;
+            background: linear-gradient(135deg, var(--gold-color) 0%, #d97706 100%);
+            padding: 24px;
             text-align: center;
             position: relative;
         }
@@ -54,46 +67,47 @@
             right: 0;
             bottom: 0;
             background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="10" cy="10" r="1" fill="white" opacity="0.3"/></svg>');
-            background-size: 20px 20px;
+            background-size: 16px 16px;
         }
 
         .certificate-icon {
-            width: 100px;
-            height: 100px;
+            width: 80px;
+            height: 80px;
             background: white;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0 auto 15px;
-            font-size: 3rem;
+            margin: 0 auto 12px;
+            font-size: 2.4rem;
             color: var(--gold-color);
-            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
             position: relative;
             z-index: 1;
         }
 
         .certificate-body {
-            padding: 30px;
+            padding: 24px;
         }
 
         .course-title {
-            font-size: 1.3rem;
+            font-size: 1.04rem;
             font-weight: 700;
-            color: var(--secondary-color);
-            margin-bottom: 10px;
+            color: var(--text-dark);
+            margin-bottom: 8px;
             text-align: center;
         }
 
         .certificate-details {
-            margin: 20px 0;
+            margin: 16px 0;
         }
 
         .detail-item {
             display: flex;
             justify-content: space-between;
-            padding: 12px 0;
-            border-bottom: 1px solid #eee;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.85rem;
         }
 
         .detail-item:last-child {
@@ -101,39 +115,40 @@
         }
 
         .detail-label {
-            color: #6c757d;
+            color: var(--text-muted);
             font-weight: 500;
         }
 
         .detail-value {
             font-weight: 600;
-            color: var(--secondary-color);
+            color: var(--text-dark);
         }
 
         .validation-code {
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 10px;
+            background: var(--bg-light);
+            padding: 12px;
+            border-radius: 8px;
             text-align: center;
             font-family: 'Courier New', monospace;
             font-weight: 700;
-            font-size: 1.1rem;
+            font-size: 0.9rem;
             color: var(--primary-color);
-            border: 2px dashed #dee2e6;
-            margin: 20px 0;
+            border: 2px dashed var(--border-color);
+            margin: 16px 0;
         }
 
         .certificate-actions {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-top: 20px;
+            gap: 8px;
+            margin-top: 16px;
         }
 
         .btn-certificate {
-            padding: 12px;
-            border-radius: 10px;
+            padding: 10px;
+            border-radius: 8px;
             font-weight: 600;
+            font-size: 0.85rem;
             transition: all 0.3s ease;
         }
 
@@ -144,62 +159,71 @@
         }
 
         .btn-download:hover {
-            background: #e55a2b;
+            background: var(--primary-hover);
             transform: scale(1.05);
         }
 
         .btn-share {
-            background: #3b5998;
+            background: var(--info-color);
             color: white;
             border: none;
         }
 
         .btn-share:hover {
-            background: #2d4373;
+            background: #2563eb;
         }
 
         .btn-verify {
-            background: var(--secondary-color);
+            background: var(--success-color);
             color: white;
             border: none;
         }
 
+        .btn-verify:hover {
+            background: #059669;
+        }
+
         .btn-print {
-            background: #6c757d;
+            background: var(--text-muted);
             color: white;
             border: none;
+        }
+
+        .btn-print:hover {
+            background: #4b5563;
         }
 
         .achievement-badge {
             position: absolute;
-            top: 15px;
-            right: 15px;
-            background: var(--gold-color);
+            top: 12px;
+            right: 12px;
+            background: var(--success-color);
             color: white;
-            padding: 8px 15px;
-            border-radius: 50px;
-            font-size: 0.85rem;
+            padding: 6px 12px;
+            border-radius: 40px;
+            font-size: 0.75rem;
             font-weight: 700;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
         }
 
         .empty-state {
             text-align: center;
-            padding: 80px 20px;
+            padding: 60px 15px;
         }
 
         .empty-state i {
-            font-size: 6rem;
-            color: #dee2e6;
-            margin-bottom: 20px;
+            font-size: 4.5rem;
+            color: var(--border-color);
+            margin-bottom: 15px;
         }
 
         .stats-section {
             background: white;
-            border-radius: 15px;
-            padding: 30px;
-            margin-bottom: 30px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.1);
+            border: 1px solid var(--border-color);
         }
 
         .stat-item {
@@ -207,14 +231,79 @@
         }
 
         .stat-number {
-            font-size: 2.5rem;
+            font-size: 2rem;
             font-weight: 700;
             color: var(--primary-color);
         }
 
         .stat-label {
-            color: #6c757d;
+            color: var(--text-muted);
+            font-size: 0.75rem;
+        }
+        /* Contenedor principal */
+        .container {
+            max-width: 1100px;
+            padding: 0 1.5rem;
+        }
+
+        .page-header h1 {
+            font-size: 1.8rem;
+            margin-bottom: 0.6rem;
+        }
+
+        .page-header p {
             font-size: 0.9rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 0.8rem;
+            }
+            
+            .page-header {
+                padding: 24px 0;
+                margin-bottom: 24px;
+            }
+
+            .page-header h1 {
+                font-size: 1.5rem;
+            }
+
+            .stats-section {
+                padding: 20px;
+                margin-bottom: 20px;
+            }
+
+            .stat-number {
+                font-size: 1.6rem;
+            }
+
+            .certificate-card {
+                margin-bottom: 1.2rem;
+            }
+
+            .certificate-header {
+                padding: 20px;
+            }
+
+            .certificate-body {
+                padding: 20px;
+            }
+
+            .certificate-icon {
+                width: 60px;
+                height: 60px;
+                font-size: 1.8rem;
+            }
+
+            .empty-state {
+                padding: 48px 12px;
+            }
+
+            .empty-state i {
+                font-size: 3.6rem;
+            }
         }
     </style>
 </head>
@@ -247,7 +336,7 @@
             </div>
 
             <!-- Certificates Grid -->
-            <div class="row g-4">
+            <div class="row g-3">
                 {{#each certificados}}
                 <div class="col-lg-6 col-md-12">
                     <div class="certificate-card">
@@ -336,19 +425,19 @@
         {{/if}}
 
         <!-- Verificar Certificado -->
-        <div class="stats-section mt-4">
-            <h4 class="text-center mb-4">
+        <div class="stats-section mt-3">
+            <h5 class="text-center mb-3">
                 <i class="fas fa-shield-alt"></i> Verificar Certificado
-            </h4>
-            <p class="text-center text-muted">
+            </h5>
+            <p class="text-center text-muted mb-3" style="font-size: 0.85rem;">
                 Ingresa un código de validación para verificar la autenticidad de un certificado
             </p>
             <div class="row justify-content-center">
-                <div class="col-md-6">
-                    <div class="input-group input-group-lg">
+                <div class="col-md-8">
+                    <div class="input-group">
                         <input type="text" class="form-control" id="codigoVerificacion" 
-                               placeholder="Ingresa el código de validación">
-                        <button class="btn btn-primary" onclick="verificarCodigo()">
+                               placeholder="Ingresa el código de validación" style="font-size: 0.85rem;">
+                        <button class="btn btn-primary" onclick="verificarCodigo()" style="font-size: 0.85rem;">
                             <i class="fas fa-search"></i> Verificar
                         </button>
                     </div>
@@ -356,8 +445,8 @@
             </div>
         </div>
 
-        <div class="text-center mt-4">
-            <a href="/dashboard" class="btn btn-light btn-lg">
+        <div class="text-center mt-3">
+            <a href="/dashboard" class="btn btn-outline-primary">
                 <i class="fas fa-arrow-left"></i> Volver al Dashboard
             </a>
         </div>

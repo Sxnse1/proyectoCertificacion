@@ -158,10 +158,6 @@ function registerHandlebarsHelpers() {
     return str.substring(start, length || str.length).toUpperCase();
   });
   
-  hbs.registerHelper('json', function(context) {
-    return JSON.stringify(context);
-  });
-  
   // ============================================================
   // 🔁 HELPERS DE ITERACIÓN
   // ============================================================
@@ -243,6 +239,19 @@ function registerHandlebarsHelpers() {
 
   hbs.registerHelper('===', function(a, b) {
     return a === b;
+  });
+
+  // ============================================================
+  // 🎬 HELPERS PARA REPRODUCTOR DE VIDEO
+  // ============================================================
+  
+  hbs.registerHelper('moduleHasCurrentVideo', function(module) {
+    if (!module || !module.videos) return false;
+    return module.videos.some(video => video.isCurrentVideo);
+  });
+
+  hbs.registerHelper('json', function(context) {
+    return JSON.stringify(context);
   });
   
   console.log('✅ [HANDLEBARS] Helpers registrados exitosamente');

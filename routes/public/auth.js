@@ -9,6 +9,7 @@ router.get('/login', function(req, res, next) {
     email: req.query.email || '',
     error: req.query.error ? decodeURIComponent(req.query.error) : null,
     success: req.query.success ? decodeURIComponent(req.query.success) : null,
+    redirectTo: req.query.redirect || '',
     layout: false
   });
 });

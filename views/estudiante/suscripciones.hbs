@@ -1,20 +1,21 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{title}} - StartEducation</title>
-    
+
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="/images/favicon.svg">
-    
+
     <!-- Bootstrap 5.3 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
+
     <style>
         :root {
             --primary-color: #ea580c;
@@ -40,18 +41,18 @@
         }
 
         .main-container {
-            max-width: 1400px;
+            max-width: 1100px;
             margin: 0 auto;
-            padding: 2rem;
+            padding: 1.5rem;
         }
 
         .header-section {
             background: white;
-            border-radius: 16px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-            padding: 2rem;
-            margin-bottom: 2rem;
-            border-left: 5px solid var(--primary-color);
+            border-radius: 12px;
+            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid var(--primary-color);
         }
 
         .header-title {
@@ -59,29 +60,30 @@
             align-items: center;
             justify-content: space-between;
             flex-wrap: wrap;
-            gap: 1rem;
+            gap: 0.8rem;
         }
 
         .header-title h1 {
             color: var(--text-dark);
             font-weight: 700;
+            font-size: 1.8rem;
             margin: 0;
             display: flex;
             align-items: center;
-            gap: 0.75rem;
+            gap: 0.6rem;
         }
 
         .stats-row {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1.5rem;
-            margin-top: 1.5rem;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 1.2rem;
+            margin-top: 1.2rem;
         }
 
         .stat-card {
             background: var(--bg-light);
-            border-radius: 12px;
-            padding: 1.5rem;
+            border-radius: 10px;
+            padding: 1.2rem;
             text-align: center;
             border: 1px solid var(--border-color);
             transition: transform 0.2s ease;
@@ -92,7 +94,7 @@
         }
 
         .stat-number {
-            font-size: 2rem;
+            font-size: 1.6rem;
             font-weight: 700;
             color: var(--primary-color);
             display: block;
@@ -100,16 +102,17 @@
 
         .stat-label {
             color: var(--text-muted);
-            font-size: 0.9rem;
-            margin-top: 0.5rem;
+            font-size: 0.75rem;
+            margin-top: 0.4rem;
         }
 
         .btn-primary {
             background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
             border: none;
-            border-radius: 8px;
+            border-radius: 6px;
             font-weight: 600;
-            padding: 0.75rem 1.5rem;
+            font-size: 0.85rem;
+            padding: 0.6rem 1.2rem;
             transition: all 0.3s ease;
         }
 
@@ -122,9 +125,10 @@
         .btn-success {
             background: var(--success-color);
             border: none;
-            border-radius: 8px;
+            border-radius: 6px;
             font-weight: 600;
-            padding: 0.75rem 1.5rem;
+            font-size: 0.85rem;
+            padding: 0.6rem 1.2rem;
             transition: all 0.3s ease;
         }
 
@@ -136,10 +140,11 @@
         .btn-warning {
             background: var(--warning-color);
             border: none;
-            border-radius: 8px;
+            border-radius: 6px;
             color: white;
             font-weight: 600;
-            padding: 0.75rem 1.5rem;
+            font-size: 0.85rem;
+            padding: 0.6rem 1.2rem;
             transition: all 0.3s ease;
         }
 
@@ -152,9 +157,10 @@
         .btn-outline-secondary {
             border: 2px solid var(--border-color);
             color: var(--text-muted);
-            border-radius: 8px;
+            border-radius: 6px;
             font-weight: 600;
-            padding: 0.75rem 1.5rem;
+            font-size: 0.85rem;
+            padding: 0.6rem 1.2rem;
             transition: all 0.3s ease;
         }
 
@@ -166,30 +172,30 @@
 
         .plans-section {
             background: white;
-            border-radius: 16px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-            margin-bottom: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 1.5rem;
         }
 
         .section-header {
             background: var(--bg-light);
-            padding: 1.5rem;
+            padding: 1.2rem;
             border-bottom: 1px solid var(--border-color);
         }
 
         .plan-card {
             background: white;
             border: 2px solid var(--border-color);
-            border-radius: 16px;
-            padding: 2rem;
-            margin-bottom: 1.5rem;
+            border-radius: 12px;
+            padding: 1.6rem;
+            margin-bottom: 1.2rem;
             transition: all 0.3s ease;
             position: relative;
         }
 
         .plan-card:hover {
             transform: translateY(-4px);
-            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 9px 22px rgba(0, 0, 0, 0.15);
             border-color: var(--primary-color);
         }
 
@@ -201,57 +207,59 @@
         .plan-card.popular::before {
             content: "Más Popular";
             position: absolute;
-            top: -12px;
+            top: -10px;
             left: 50%;
             transform: translateX(-50%);
             background: var(--primary-color);
             color: white;
-            padding: 0.5rem 1.5rem;
-            border-radius: 20px;
-            font-size: 0.85rem;
+            padding: 0.4rem 1.2rem;
+            border-radius: 16px;
+            font-size: 0.75rem;
             font-weight: 600;
         }
 
         .plan-header {
             text-align: center;
-            margin-bottom: 2rem;
+            margin-bottom: 1.6rem;
         }
 
         .plan-name {
-            font-size: 1.5rem;
+            font-size: 1.2rem;
             font-weight: 700;
             color: var(--text-dark);
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.4rem;
         }
 
         .plan-description {
             color: var(--text-muted);
-            margin-bottom: 1rem;
+            font-size: 0.85rem;
+            margin-bottom: 0.8rem;
         }
 
         .plan-price {
-            font-size: 3rem;
+            font-size: 2.4rem;
             font-weight: 900;
             color: var(--primary-color);
-            margin-bottom: 0.25rem;
+            margin-bottom: 0.2rem;
         }
 
         .plan-period {
             color: var(--text-muted);
-            font-size: 1rem;
+            font-size: 0.85rem;
         }
 
         .plan-features {
             list-style: none;
             padding: 0;
-            margin: 2rem 0;
+            margin: 1.6rem 0;
         }
 
         .plan-features li {
             display: flex;
             align-items: center;
-            padding: 0.75rem 0;
+            padding: 0.6rem 0;
             border-bottom: 1px solid #f1f5f9;
+            font-size: 0.85rem;
         }
 
         .plan-features li:last-child {
@@ -260,8 +268,8 @@
 
         .plan-features li i {
             color: var(--success-color);
-            margin-right: 0.75rem;
-            font-size: 1.1rem;
+            margin-right: 0.6rem;
+            font-size: 0.9rem;
         }
 
         .plan-features li.unavailable {
@@ -274,30 +282,30 @@
 
         .current-plan-badge {
             position: absolute;
-            top: 1rem;
-            right: 1rem;
+            top: 0.8rem;
+            right: 0.8rem;
             background: var(--success-color);
             color: white;
-            padding: 0.5rem 1rem;
-            border-radius: 6px;
-            font-size: 0.85rem;
+            padding: 0.4rem 0.8rem;
+            border-radius: 5px;
+            font-size: 0.75rem;
             font-weight: 600;
         }
 
         .subscription-status {
             background: white;
-            border-radius: 16px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-            padding: 2rem;
-            margin-bottom: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.1);
+            padding: 1.6rem;
+            margin-bottom: 1.5rem;
         }
 
         .status-card {
             background: linear-gradient(135deg, var(--success-color) 0%, #059669 100%);
             color: white;
-            border-radius: 12px;
-            padding: 1.5rem;
-            margin-bottom: 1rem;
+            border-radius: 10px;
+            padding: 1.2rem;
+            margin-bottom: 0.8rem;
         }
 
         .status-card.inactive {
@@ -322,23 +330,33 @@
 
         @media (max-width: 768px) {
             .main-container {
-                padding: 1rem;
+                padding: 0.8rem;
             }
-            
+
             .header-section {
-                padding: 1.5rem;
+                padding: 1.2rem;
             }
-            
+
             .plan-card {
-                padding: 1.5rem;
+                padding: 1.2rem;
             }
-            
+
             .plan-price {
-                font-size: 2.5rem;
+                font-size: 2rem;
+            }
+
+            .stats-row {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1rem;
+            }
+
+            .stat-card {
+                padding: 1rem;
             }
         }
     </style>
 </head>
+
 <body>
 
     <div class="main-container">
@@ -355,7 +373,7 @@
                     </a>
                 </div>
             </div>
-            
+
             <!-- Estadísticas -->
             <div class="stats-row">
                 <div class="stat-card">
@@ -386,7 +404,7 @@
                     Estado Actual de Suscripción
                 </h5>
             </div>
-            
+
             <div class="status-card {{#unless currentSubscription.active}}inactive{{/unless}}">
                 <div class="d-flex justify-content-between align-items-start">
                     <div>
@@ -449,7 +467,7 @@
                             <div class="current-plan-badge">Plan Actual</div>
                             {{/if}}
                             {{/if}}
-                            
+
                             <div class="plan-header">
                                 <div class="plan-name">{{nombre}}</div>
                                 <div class="plan-description">{{descripcion}}</div>
@@ -516,12 +534,14 @@
                                     <i class="bi bi-check-circle me-2"></i>Plan Actual
                                 </button>
                                 {{else}}
-                                <button class="btn btn-primary subscribe-btn" data-membership-id="{{id_membresia}}" data-plan-name="{{nombre}}" data-price="{{precio}}">
+                                <button class="btn btn-primary subscribe-btn" data-membership-id="{{id_membresia}}"
+                                    data-plan-name="{{nombre}}" data-price="{{precio}}">
                                     <i class="bi bi-arrow-up-circle me-2"></i>Cambiar Plan
                                 </button>
                                 {{/if}}
                                 {{else}}
-                                <button class="btn btn-primary subscribe-btn" data-membership-id="{{id_membresia}}" data-plan-name="{{nombre}}" data-price="{{precio}}">
+                                <button class="btn btn-primary subscribe-btn" data-membership-id="{{id_membresia}}"
+                                    data-plan-name="{{nombre}}" data-price="{{precio}}">
                                     <i class="bi bi-cart-plus me-2"></i>Suscribirse Ahora
                                 </button>
                                 {{/if}}
@@ -534,7 +554,8 @@
                 <div class="text-center mt-4">
                     <div class="alert alert-info">
                         <i class="bi bi-info-circle me-2"></i>
-                        <strong>¿Tienes dudas?</strong> Contacta nuestro equipo de soporte para ayudarte a elegir el plan perfecto.
+                        <strong>¿Tienes dudas?</strong> Contacta nuestro equipo de soporte para ayudarte a elegir el
+                        plan perfecto.
                         <a href="/contacto" class="alert-link">Contactar Soporte</a>
                     </div>
                 </div>
@@ -550,7 +571,8 @@
     </div>
 
     <!-- Subscription Modal -->
-    <div class="modal fade" id="subscriptionModal" tabindex="-1" aria-labelledby="subscriptionModalLabel" aria-hidden="true">
+    <div class="modal fade" id="subscriptionModal" tabindex="-1" aria-labelledby="subscriptionModalLabel"
+        aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -565,7 +587,7 @@
                         <h4 class="mt-3">¿Confirmar suscripción?</h4>
                         <p class="text-muted">Vas a suscribirte al plan <strong id="planName"></strong></p>
                     </div>
-                    
+
                     <div class="alert alert-info">
                         <div class="d-flex justify-content-between">
                             <span>Plan:</span>
@@ -580,10 +602,11 @@
                             <strong>Mensual</strong>
                         </div>
                     </div>
-                    
+
                     <div class="alert alert-warning">
                         <i class="bi bi-exclamation-triangle me-2"></i>
-                        <small>Esta es una demostración. En un entorno real, aquí se integraría con un procesador de pagos como Stripe o PayPal.</small>
+                        <small>Esta es una demostración. En un entorno real, aquí se integraría con un procesador de
+                            pagos como Stripe o PayPal.</small>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -598,46 +621,46 @@
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    
+
     <script>
         // Subscription functionality
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const subscribeButtons = document.querySelectorAll('.subscribe-btn');
             const subscriptionModal = new bootstrap.Modal(document.getElementById('subscriptionModal'));
             const confirmButton = document.getElementById('confirmSubscription');
-            
+
             let selectedMembershipId = null;
             let selectedPlanName = '';
             let selectedPrice = '';
 
             // Handle subscribe button clicks
             subscribeButtons.forEach(button => {
-                button.addEventListener('click', function() {
+                button.addEventListener('click', function () {
                     const membershipId = this.dataset.membershipId;
                     const planName = this.dataset.planName;
                     const price = this.dataset.price;
-                    
+
                     selectedMembershipId = membershipId;
                     selectedPlanName = planName;
                     selectedPrice = price;
-                    
+
                     // Update modal content
                     document.getElementById('planName').textContent = planName;
                     document.getElementById('modalPlanName').textContent = planName;
                     document.getElementById('modalPrice').textContent = `$${price}/mes`;
-                    
+
                     subscriptionModal.show();
                 });
             });
 
             // Handle subscription confirmation
-            confirmButton.addEventListener('click', function() {
+            confirmButton.addEventListener('click', function () {
                 if (!selectedMembershipId) return;
-                
+
                 // Show loading state
                 this.innerHTML = '<i class="bi bi-hourglass-split me-2"></i>Procesando...';
                 this.disabled = true;
-                
+
                 // Simulate API call
                 fetch('/suscripciones/subscribe', {
                     method: 'POST',
@@ -650,54 +673,54 @@
                         price: selectedPrice
                     })
                 })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        // Show success message
-                        subscriptionModal.hide();
-                        
-                        // Show success alert
-                        const alertDiv = document.createElement('div');
-                        alertDiv.className = 'alert alert-success alert-dismissible fade show';
-                        alertDiv.innerHTML = `
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Show success message
+                            subscriptionModal.hide();
+
+                            // Show success alert
+                            const alertDiv = document.createElement('div');
+                            alertDiv.className = 'alert alert-success alert-dismissible fade show';
+                            alertDiv.innerHTML = `
                             <i class="bi bi-check-circle me-2"></i>
                             <strong>¡Suscripción exitosa!</strong> ${data.message}
                             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                         `;
-                        
-                        document.querySelector('.main-container').insertBefore(alertDiv, document.querySelector('.header-section'));
-                        
-                        // Redirect after 3 seconds
-                        setTimeout(() => {
-                            if (data.redirectUrl) {
-                                window.location.href = data.redirectUrl;
-                            } else {
-                                window.location.reload();
-                            }
-                        }, 3000);
-                    } else {
-                        throw new Error(data.message || 'Error en la suscripción');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    
-                    // Show error alert
-                    const alertDiv = document.createElement('div');
-                    alertDiv.className = 'alert alert-danger alert-dismissible fade show';
-                    alertDiv.innerHTML = `
+
+                            document.querySelector('.main-container').insertBefore(alertDiv, document.querySelector('.header-section'));
+
+                            // Redirect after 3 seconds
+                            setTimeout(() => {
+                                if (data.redirectUrl) {
+                                    window.location.href = data.redirectUrl;
+                                } else {
+                                    window.location.reload();
+                                }
+                            }, 3000);
+                        } else {
+                            throw new Error(data.message || 'Error en la suscripción');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+
+                        // Show error alert
+                        const alertDiv = document.createElement('div');
+                        alertDiv.className = 'alert alert-danger alert-dismissible fade show';
+                        alertDiv.innerHTML = `
                         <i class="bi bi-exclamation-triangle me-2"></i>
                         <strong>Error:</strong> ${error.message}
                         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                     `;
-                    
-                    document.querySelector('.modal-body').insertBefore(alertDiv, document.querySelector('.modal-body').firstChild);
-                })
-                .finally(() => {
-                    // Reset button state
-                    confirmButton.innerHTML = '<i class="bi bi-check-circle me-2"></i>Confirmar Suscripción';
-                    confirmButton.disabled = false;
-                });
+
+                        document.querySelector('.modal-body').insertBefore(alertDiv, document.querySelector('.modal-body').firstChild);
+                    })
+                    .finally(() => {
+                        // Reset button state
+                        confirmButton.innerHTML = '<i class="bi bi-check-circle me-2"></i>Confirmar Suscripción';
+                        confirmButton.disabled = false;
+                    });
             });
 
             // Animate cards on load
@@ -714,4 +737,5 @@
         });
     </script>
 </body>
+
 </html>

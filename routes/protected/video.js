@@ -32,8 +32,14 @@ router.get('/:videoId', async function(req, res, next) {
           v.duracion_segundos,
           v.estatus,
           v.fecha_creacion,
+          v.orden as video_orden,
+          m.id_modulo,
           m.titulo as modulo_titulo,
-          c.titulo as curso_titulo
+          m.orden as modulo_orden,
+          c.id_curso,
+          c.titulo as curso_titulo,
+          c.descripcion as curso_descripcion,
+          c.miniatura as curso_miniatura
         FROM Video v
         LEFT JOIN Modulos m ON v.id_modulo = m.id_modulo
         LEFT JOIN Cursos c ON m.id_curso = c.id_curso
@@ -56,8 +62,14 @@ router.get('/:videoId', async function(req, res, next) {
           v.duracion_segundos,
           v.estatus,
           v.fecha_creacion,
+          v.orden as video_orden,
+          m.id_modulo,
           m.titulo as modulo_titulo,
-          c.titulo as curso_titulo
+          m.orden as modulo_orden,
+          c.id_curso,
+          c.titulo as curso_titulo,
+          c.descripcion as curso_descripcion,
+          c.miniatura as curso_miniatura
         FROM Video v
         LEFT JOIN Modulos m ON v.id_modulo = m.id_modulo
         LEFT JOIN Cursos c ON m.id_curso = c.id_curso
@@ -134,6 +146,62 @@ router.get('/:videoId', async function(req, res, next) {
     
     console.log('[VIDEO] ✅ Permisos validados - Acceso concedido');
     
+    // Obtener todos los módulos y videos del curso para la navegación
+    let courseStructure = [];
+    if (video.id_curso) {
+      const courseQuery = `
+        SELECT 
+          m.id_modulo,
+          m.titulo as modulo_titulo,
+          m.orden as modulo_orden,
+          v.id_video,
+          v.titulo as video_titulo,
+          v.orden as video_orden,
+          v.duracion_segundos,
+          v.estatus as video_estatus,
+          v.bunny_video_id
+        FROM Modulos m
+        LEFT JOIN Video v ON m.id_modulo = v.id_modulo
+        WHERE m.id_curso = @cursoId
+        ORDER BY m.orden ASC, v.orden ASC
+      `;
+      
+      const courseResult = await db.executeQuery(courseQuery, { cursoId: video.id_curso });
+      
+      // Organizar los datos por módulos
+      const modulesMap = new Map();
+      
+      courseResult.recordset.forEach(row => {
+        if (!modulesMap.has(row.id_modulo)) {
+          modulesMap.set(row.id_modulo, {
+            id_modulo: row.id_modulo,
+            titulo: row.modulo_titulo,
+            orden: row.modulo_orden,
+            videos: []
+          });
+        }
+        
+        if (row.id_video) {
+          // Solo mostrar videos publicados a estudiantes
+          const canSeeVideo = userRole === 'instructor' || userRole === 'admin' || row.video_estatus === 'publicado';
+          
+          if (canSeeVideo) {
+            modulesMap.get(row.id_modulo).videos.push({
+              id_video: row.id_video,
+              titulo: row.video_titulo,
+              orden: row.video_orden,
+              duracion_segundos: row.duracion_segundos,
+              estatus: row.video_estatus,
+              bunny_video_id: row.bunny_video_id,
+              isCurrentVideo: row.id_video === video.id_video
+            });
+          }
+        }
+      });
+      
+      courseStructure = Array.from(modulesMap.values()).sort((a, b) => a.orden - b.orden);
+    }
+    
     // Determinar el videoId correcto para el reproductor
     let playerId;
     if (video.video_provider === 'bunny' && video.bunny_video_id) {
@@ -159,8 +227,14 @@ router.get('/:videoId', async function(req, res, next) {
       videoProvider: video.video_provider || 'bunny',
       videoDuration: video.duracion_segundos,
       videoStatus: video.estatus,
+      videoOrder: video.video_orden,
       moduleTitle: video.modulo_titulo,
       courseTitle: video.curso_titulo,
+      courseDescription: video.curso_descripcion,
+      courseThumbnail: video.curso_miniatura,
+      courseId: video.id_curso,
+      moduleId: video.id_modulo,
+      courseStructure: courseStructure,
       bunnyLibraryId: video.bunny_library_id || process.env.BUNNY_LIBRARY_ID
     });
     

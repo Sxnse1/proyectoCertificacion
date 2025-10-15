@@ -14,8 +14,12 @@ const configureRoutes = require('./routes/index.routes');
 var app = express();
 
 // view engine setup
+const hbs = require('hbs');
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'hbs');
+
+// Configurar Handlebars para no usar layout por defecto
+hbs.registerPartials(__dirname + '/views/partials');
 
 // Configurar helpers de Handlebars
 const registerHandlebarsHelpers = require('./config/handlebars-helpers');

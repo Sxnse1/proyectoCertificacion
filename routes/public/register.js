@@ -7,13 +7,14 @@ var bcrypt = require('bcryptjs');
 router.get('/', function(req, res, next) {
   res.render('auth/register-bootstrap', { 
     title: 'Registro de Usuario',
+    redirectTo: req.query.redirect || '',
     layout: false 
   });
 });
 
 /* POST crear cuenta pública */
 router.post('/', async function(req, res, next) {
-  const { nombre, apellido, email, password } = req.body;
+  const { nombre, apellido, email, password, redirectTo } = req.body;
 
   // Validaciones básicas
   if (!nombre || !apellido || !email || !password) {
@@ -23,6 +24,7 @@ router.post('/', async function(req, res, next) {
       nombre, 
       apellido,
       email,
+      redirectTo,
       layout: false 
     });
   }
@@ -42,6 +44,7 @@ router.post('/', async function(req, res, next) {
         nombre, 
         apellido,
         email,
+        redirectTo,
         layout: false 
       });
     }
@@ -70,18 +73,18 @@ router.post('/', async function(req, res, next) {
       `);
 
     // Redirigir al login con mensaje de éxito
-    return res.render('login-bootstrap', { 
-      title: 'Iniciar Sesión', 
-      success: 'Registro exitoso. Puedes iniciar sesión ahora.', 
-      email: email,
-      layout: false 
-    });
+    const loginUrl = redirectTo ? `/login?redirect=${encodeURIComponent(redirectTo)}` : '/login';
+    return res.redirect(`${loginUrl}&success=${encodeURIComponent('Registro exitoso. Puedes iniciar sesión ahora.')}&email=${encodeURIComponent(email)}`);
 
   } catch (err) {
     console.error('[REGISTER] Error al registrar usuario:', err);
     return res.render('auth/register-bootstrap', { 
       title: 'Registro de Usuario', 
       error: 'Error interno del servidor',
+      nombre,
+      apellido,
+      email,
+      redirectTo,
       layout: false 
     });
   }

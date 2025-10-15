@@ -1,13 +1,14 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{title}} - StartEducation</title>
-    
+
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="/images/favicon.svg">
-    
+
     <!-- Bootstrap 5.3 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
@@ -39,18 +40,18 @@
         }
 
         .main-container {
-            max-width: 1400px;
+            max-width: 1100px;
             margin: 0 auto;
-            padding: 2rem;
+            padding: 1.5rem;
         }
 
         .header-section {
             background: white;
-            border-radius: 16px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-            padding: 2rem;
-            margin-bottom: 2rem;
-            border-left: 5px solid var(--primary-color);
+            border-radius: 12px;
+            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid var(--primary-color);
         }
 
         .header-title {
@@ -58,29 +59,30 @@
             align-items: center;
             justify-content: space-between;
             flex-wrap: wrap;
-            gap: 1rem;
+            gap: 0.8rem;
         }
 
         .header-title h1 {
             color: var(--text-dark);
             font-weight: 700;
+            font-size: 1.8rem;
             margin: 0;
             display: flex;
             align-items: center;
-            gap: 0.75rem;
+            gap: 0.6rem;
         }
 
         .stats-row {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1.5rem;
-            margin-top: 1.5rem;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 1.2rem;
+            margin-top: 1.2rem;
         }
 
         .stat-card {
             background: var(--bg-light);
-            border-radius: 12px;
-            padding: 1.5rem;
+            border-radius: 10px;
+            padding: 1.2rem;
             text-align: center;
             border: 1px solid var(--border-color);
             transition: transform 0.2s ease;
@@ -91,7 +93,7 @@
         }
 
         .stat-number {
-            font-size: 2rem;
+            font-size: 1.6rem;
             font-weight: 700;
             color: var(--primary-color);
             display: block;
@@ -99,16 +101,16 @@
 
         .stat-label {
             color: var(--text-muted);
-            font-size: 0.9rem;
-            margin-top: 0.5rem;
+            font-size: 0.75rem;
+            margin-top: 0.4rem;
         }
 
         .controls-section {
             background: white;
-            border-radius: 16px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-            padding: 1.5rem;
-            margin-bottom: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.1);
+            padding: 1.2rem;
+            margin-bottom: 1.5rem;
         }
 
         .controls-row {
@@ -116,21 +118,21 @@
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
-            gap: 1rem;
+            gap: 0.8rem;
         }
 
         .search-group {
             display: flex;
-            gap: 0.5rem;
+            gap: 0.4rem;
             flex: 1;
-            max-width: 400px;
+            max-width: 320px;
         }
 
         .search-input {
             border: 2px solid var(--border-color);
-            border-radius: 8px;
-            padding: 0.75rem 1rem;
-            font-size: 0.95rem;
+            border-radius: 6px;
+            padding: 0.6rem 0.8rem;
+            font-size: 0.85rem;
             transition: border-color 0.3s ease;
         }
 
@@ -142,9 +144,10 @@
         .btn-primary {
             background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
             border: none;
-            border-radius: 8px;
+            border-radius: 6px;
             font-weight: 600;
-            padding: 0.75rem 1.5rem;
+            font-size: 0.85rem;
+            padding: 0.6rem 1.2rem;
             transition: all 0.3s ease;
         }
 
@@ -157,9 +160,10 @@
         .btn-outline-primary {
             border: 2px solid var(--primary-color);
             color: var(--primary-color);
-            border-radius: 8px;
+            border-radius: 6px;
             font-weight: 600;
-            padding: 0.75rem 1.5rem;
+            font-size: 0.85rem;
+            padding: 0.6rem 1.2rem;
             transition: all 0.3s ease;
         }
 
@@ -171,14 +175,14 @@
 
         .courses-section {
             background: white;
-            border-radius: 16px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.1);
             overflow: hidden;
         }
 
         .section-header {
             background: var(--bg-light);
-            padding: 1.5rem;
+            padding: 1.2rem;
             border-bottom: 1px solid var(--border-color);
             display: flex;
             justify-content: space-between;
@@ -191,57 +195,57 @@
             margin: 0;
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 0.4rem;
         }
 
         .courses-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-            gap: 2rem;
-            padding: 2rem;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.6rem;
+            padding: 1.6rem;
         }
 
         .course-card {
             background: white;
-            border-radius: 12px;
+            border-radius: 10px;
             border: 1px solid var(--border-color);
             overflow: hidden;
             transition: all 0.3s ease;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
         }
 
         .course-card:hover {
             transform: translateY(-4px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
         }
 
         .course-image {
-            height: 200px;
+            height: 160px;
             background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: 3rem;
+            font-size: 2.4rem;
         }
 
         .course-content {
-            padding: 1.5rem;
+            padding: 1.2rem;
         }
 
         .course-title {
             font-weight: 600;
-            font-size: 1.25rem;
+            font-size: 1rem;
             color: var(--text-dark);
-            margin-bottom: 0.75rem;
+            margin-bottom: 0.6rem;
             line-height: 1.4;
         }
 
         .course-description {
             color: var(--text-muted);
-            font-size: 0.95rem;
-            line-height: 1.6;
-            margin-bottom: 1rem;
+            font-size: 0.8rem;
+            line-height: 1.5;
+            margin-bottom: 0.8rem;
             display: -webkit-box;
             -webkit-line-clamp: 3;
             -webkit-box-orient: vertical;
@@ -252,21 +256,21 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 1rem;
+            margin-bottom: 0.8rem;
             flex-wrap: wrap;
-            gap: 0.5rem;
+            gap: 0.4rem;
         }
 
         .course-price {
             font-weight: 700;
-            font-size: 1.25rem;
+            font-size: 1rem;
             color: var(--primary-color);
         }
 
         .course-level {
-            padding: 0.25rem 0.75rem;
-            border-radius: 20px;
-            font-size: 0.8rem;
+            padding: 0.2rem 0.6rem;
+            border-radius: 16px;
+            font-size: 0.7rem;
             font-weight: 600;
             text-transform: uppercase;
         }
@@ -290,54 +294,56 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding-top: 1rem;
+            padding-top: 0.8rem;
             border-top: 1px solid var(--border-color);
         }
 
         .course-instructor {
             color: var(--text-muted);
-            font-size: 0.9rem;
+            font-size: 0.75rem;
         }
 
         .course-rating {
             display: flex;
             align-items: center;
-            gap: 0.25rem;
+            gap: 0.2rem;
             color: var(--warning-color);
+            font-size: 0.75rem;
         }
 
         .empty-state {
             text-align: center;
-            padding: 4rem 2rem;
+            padding: 3rem 1.5rem;
             color: var(--text-muted);
         }
 
         .empty-state .icon {
-            font-size: 4rem;
-            margin-bottom: 1rem;
+            font-size: 3rem;
+            margin-bottom: 0.8rem;
             opacity: 0.3;
         }
 
         .filter-tabs {
             display: flex;
-            gap: 0.5rem;
-            margin-bottom: 1rem;
+            gap: 0.4rem;
+            margin-bottom: 0.8rem;
             flex-wrap: wrap;
         }
 
         .filter-tab {
-            padding: 0.5rem 1rem;
+            padding: 0.4rem 0.8rem;
             border: 2px solid var(--border-color);
-            border-radius: 20px;
+            border-radius: 16px;
             background: white;
             color: var(--text-muted);
             text-decoration: none;
             font-weight: 500;
             transition: all 0.3s ease;
-            font-size: 0.9rem;
+            font-size: 0.75rem;
         }
 
-        .filter-tab:hover, .filter-tab.active {
+        .filter-tab:hover,
+        .filter-tab.active {
             border-color: var(--primary-color);
             color: var(--primary-color);
             background: rgba(234, 88, 12, 0.05);
@@ -345,75 +351,88 @@
 
         @media (max-width: 768px) {
             .main-container {
-                padding: 1rem;
+                padding: 0.8rem;
             }
-            
+
             .courses-grid {
                 grid-template-columns: 1fr;
-                gap: 1.5rem;
-                padding: 1.5rem;
+                gap: 1.2rem;
+                padding: 1.2rem;
             }
-            
+
             .stats-row {
                 grid-template-columns: repeat(2, 1fr);
-                gap: 1rem;
+                gap: 0.8rem;
             }
-            
+
+            .stat-card {
+                padding: 1rem;
+            }
+
             .controls-row {
                 flex-direction: column;
                 align-items: stretch;
             }
-            
+
             .search-group {
                 max-width: none;
             }
+
+            .header-section {
+                padding: 1.2rem;
+            }
+
+            .course-image {
+                height: 120px;
+                font-size: 2rem;
+            }
         }
-        
+
         .stat-icon {
             font-size: 2.5rem;
             margin-bottom: 15px;
             display: block;
         }
-        
+
         .stat-number {
             font-size: 2rem;
             font-weight: bold;
             color: var(--accent-color);
             margin-bottom: 5px;
         }
-        
+
         .stat-label {
             color: var(--text-light);
             font-size: 0.9rem;
         }
-        
+
         .section-title {
             font-size: 2rem;
             color: var(--primary-color);
             margin-bottom: 30px;
             text-align: center;
         }
-        
+
         .cursos-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
             gap: 30px;
             margin-bottom: 50px;
         }
-        
+
         .curso-card {
             background: white;
             border-radius: 15px;
             overflow: hidden;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
             transition: all 0.3s ease;
         }
-        
+
         .curso-card:hover {
             transform: translateY(-8px);
-            box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
         }
-        
+
         .curso-image {
             height: 200px;
             background: linear-gradient(135deg, var(--secondary-color), var(--accent-color));
@@ -423,24 +442,24 @@
             font-size: 3rem;
             color: white;
         }
-        
+
         .curso-content {
             padding: 25px;
         }
-        
+
         .curso-title {
             font-size: 1.3rem;
             font-weight: bold;
             color: var(--primary-color);
             margin-bottom: 10px;
         }
-        
+
         .curso-description {
             color: var(--text-light);
             margin-bottom: 15px;
             line-height: 1.6;
         }
-        
+
         .curso-meta {
             display: flex;
             justify-content: space-between;
@@ -448,20 +467,20 @@
             margin-bottom: 20px;
             font-size: 0.9rem;
         }
-        
+
         .curso-precio {
             font-weight: bold;
             color: var(--accent-color);
             font-size: 1.1rem;
         }
-        
+
         .curso-nivel {
             background: var(--bg-light);
             padding: 4px 12px;
             border-radius: 20px;
             color: var(--text-dark);
         }
-        
+
         .btn-curso {
             width: 100%;
             padding: 12px;
@@ -476,20 +495,20 @@
             display: inline-block;
             text-align: center;
         }
-        
+
         .btn-curso:hover {
             background: var(--secondary-color);
             transform: translateY(-2px);
         }
-        
+
         .recommendations-section {
             background: white;
             padding: 40px;
             border-radius: 15px;
             margin-bottom: 40px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
-        
+
         .recommendation-item {
             display: flex;
             align-items: center;
@@ -500,17 +519,17 @@
             border-radius: 10px;
             transition: all 0.3s ease;
         }
-        
+
         .recommendation-item:hover {
             background: var(--accent-color);
             color: white;
             transform: translateX(10px);
         }
-        
+
         .recommendation-icon {
             font-size: 1.5rem;
         }
-        
+
         .logout-btn {
             background: #dc3545;
             color: white;
@@ -520,17 +539,17 @@
             cursor: pointer;
             transition: background 0.3s ease;
         }
-        
+
         .logout-btn:hover {
             background: #c82333;
         }
-        
+
         .nav-links {
             display: flex;
             gap: 20px;
             align-items: center;
         }
-        
+
         .nav-links a {
             color: white;
             text-decoration: none;
@@ -538,12 +557,13 @@
             border-radius: 6px;
             transition: background 0.3s ease;
         }
-        
+
         .nav-links a:hover {
-            background: rgba(255,255,255,0.1);
+            background: rgba(255, 255, 255, 0.1);
         }
     </style>
 </head>
+
 <body>
     <div class="main-container">
         <!-- Header Section -->
@@ -565,7 +585,7 @@
                     </a>
                 </div>
             </div>
-            
+
             <!-- Estadísticas -->
             <div class="stats-row">
                 <div class="stat-card">
@@ -584,10 +604,6 @@
                     <span class="stat-number">{{stats.cursosAvanzados}}</span>
                     <div class="stat-label">Nivel Avanzado</div>
                 </div>
-                <div class="stat-card">
-                    <span class="stat-number">{{stats.cursosPublicados}}</span>
-                    <div class="stat-label">Cursos Publicados</div>
-                </div>
             </div>
         </div>
 
@@ -596,23 +612,23 @@
             <div class="controls-row">
                 <div class="search-group">
                     <form method="GET" class="d-flex w-100">
-                        <input type="text" 
-                               class="form-control search-input" 
-                               name="search" 
-                               placeholder="Buscar cursos..." 
-                               value="{{search}}">
+                        <input type="text" class="form-control search-input" name="search"
+                            placeholder="Buscar cursos..." value="{{search}}">
                         <button type="submit" class="btn btn-primary ms-2">
                             <i class="bi bi-search"></i>
                         </button>
                     </form>
                 </div>
-                
+
                 <!-- Filtros por nivel -->
                 <div class="filter-tabs">
                     <a href="/cursos" class="filter-tab {{#unless filtro}}active{{/unless}}">Todos</a>
-                    <a href="/cursos?nivel=básico" class="filter-tab {{#if (eq filtro 'básico')}}active{{/if}}">Básico</a>
-                    <a href="/cursos?nivel=intermedio" class="filter-tab {{#if (eq filtro 'intermedio')}}active{{/if}}">Intermedio</a>
-                    <a href="/cursos?nivel=avanzado" class="filter-tab {{#if (eq filtro 'avanzado')}}active{{/if}}">Avanzado</a>
+                    <a href="/cursos?nivel=básico"
+                        class="filter-tab {{#if (eq filtro 'básico')}}active{{/if}}">Básico</a>
+                    <a href="/cursos?nivel=intermedio"
+                        class="filter-tab {{#if (eq filtro 'intermedio')}}active{{/if}}">Intermedio</a>
+                    <a href="/cursos?nivel=avanzado"
+                        class="filter-tab {{#if (eq filtro 'avanzado')}}active{{/if}}">Avanzado</a>
                 </div>
             </div>
         </div>
@@ -626,70 +642,75 @@
                 </h5>
                 <span class="badge bg-primary">{{cursos.length}} curso{{#if (gt cursos.length 1)}}s{{/if}}</span>
             </div>
-            
+
             {{#if cursos.length}}
-                <div class="courses-grid">
-                    {{#each cursos}}
-                    <div class="course-card">
-                        <div class="course-image">
-                            {{#if miniatura}}
-                                <img src="{{miniatura}}" alt="{{titulo}}" style="width: 100%; height: 100%; object-fit: cover;">
-                            {{else}}
-                                <i class="bi bi-play-circle"></i>
+            <div class="courses-grid">
+                {{#each cursos}}
+                <div class="course-card">
+                    <div class="course-image">
+                        {{#if miniatura}}
+                        <img src="{{miniatura}}" alt="{{titulo}}" style="width: 100%; height: 100%; object-fit: cover;">
+                        {{else}}
+                        <i class="bi bi-play-circle"></i>
+                        {{/if}}
+                    </div>
+                    <div class="course-content">
+                        <h6 class="course-title">{{titulo}}</h6>
+                        <p class="course-description">{{descripcion}}</p>
+
+                        <div class="course-meta">
+                            <span class="course-price">{{precio_formato}}</span>
+                            <span class="course-level level-{{nivel}}">{{nivel}}</span>
+                        </div>
+
+                        <div class="course-footer">
+                            <small class="course-instructor">
+                                <i class="bi bi-person me-1"></i>{{instructor_nombre}}
+                            </small>
+                            {{#if total_valoraciones}}
+                            <div class="course-rating">
+                                <i class="bi bi-star-fill"></i>
+                                <span>{{calificacion_promedio}}</span>
+                                <small class="text-muted">({{total_valoraciones}})</small>
+                            </div>
                             {{/if}}
                         </div>
-                        <div class="course-content">
-                            <h6 class="course-title">{{titulo}}</h6>
-                            <p class="course-description">{{descripcion}}</p>
-                            
-                            <div class="course-meta">
-                                <span class="course-price">{{precio_formato}}</span>
-                                <span class="course-level level-{{nivel}}">{{nivel}}</span>
-                            </div>
-                            
-                            <div class="course-footer">
-                                <small class="course-instructor">
-                                    <i class="bi bi-person me-1"></i>{{instructor_nombre}}
-                                </small>
-                                {{#if total_valoraciones}}
-                                <div class="course-rating">
-                                    <i class="bi bi-star-fill"></i>
-                                    <span>{{calificacion_promedio}}</span>
-                                    <small class="text-muted">({{total_valoraciones}})</small>
-                                </div>
-                                {{/if}}
-                            </div>
-                            
-                            <div class="mt-3">
-                                <a href="/cursos/{{id_curso}}" class="btn btn-primary w-100">
-                                    <i class="bi bi-eye me-2"></i>Ver Curso
+
+                        <div class="mt-3">
+                            <div class="d-flex gap-2">
+                                <a href="/cursos/{{id_curso}}" class="btn btn-primary flex-fill">
+                                    <i class="bi bi-eye me-1"></i>Ver
                                 </a>
+                                <button class="btn btn-success" onclick="agregarAlCarritoLista({{id_curso}})" title="Agregar al carrito">
+                                    <i class="bi bi-cart-plus"></i>
+                                </button>
                             </div>
                         </div>
                     </div>
-                    {{/each}}
                 </div>
+                {{/each}}
+            </div>
             {{else}}
-                <div class="empty-state">
-                    <i class="bi bi-journal-x icon"></i>
-                    <h5>No hay cursos disponibles</h5>
-                    <p>Actualmente no tenemos cursos que coincidan con tu búsqueda.</p>
-                    {{#if search}}
-                        <a href="/cursos" class="btn btn-primary">
-                            <i class="bi bi-arrow-clockwise me-2"></i>Ver Todos los Cursos
-                        </a>
-                    {{/if}}
-                </div>
+            <div class="empty-state">
+                <i class="bi bi-journal-x icon"></i>
+                <h5>No hay cursos disponibles</h5>
+                <p>Actualmente no tenemos cursos que coincidan con tu búsqueda.</p>
+                {{#if search}}
+                <a href="/cursos" class="btn btn-primary">
+                    <i class="bi bi-arrow-clockwise me-2"></i>Ver Todos los Cursos
+                </a>
+                {{/if}}
+            </div>
             {{/if}}
         </div>
     </div>
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    
+
     <script>
         // Animaciones de entrada
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             // Animar las tarjetas de curso
             const courseCards = document.querySelectorAll('.course-card');
             courseCards.forEach((card, index) => {
@@ -716,14 +737,14 @@
         });
 
         // Filtros en tiempo real
-        document.querySelector('.search-input')?.addEventListener('input', function(e) {
+        document.querySelector('.search-input')?.addEventListener('input', function (e) {
             const searchTerm = e.target.value.toLowerCase();
             const courseCards = document.querySelectorAll('.course-card');
-            
+
             courseCards.forEach(card => {
                 const title = card.querySelector('.course-title').textContent.toLowerCase();
                 const description = card.querySelector('.course-description').textContent.toLowerCase();
-                
+
                 if (title.includes(searchTerm) || description.includes(searchTerm)) {
                     card.style.display = 'block';
                 } else {
@@ -731,6 +752,44 @@
                 }
             });
         });
+
+        // Función para agregar al carrito desde la lista
+        function agregarAlCarritoLista(cursoId) {
+            fetch('/carrito/agregar/' + cursoId, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Mostrar notificación de éxito
+                    const btn = event.target.closest('button');
+                    const originalHtml = btn.innerHTML;
+                    btn.innerHTML = '<i class="bi bi-check"></i>';
+                    btn.classList.remove('btn-success');
+                    btn.classList.add('btn-outline-success');
+                    btn.disabled = true;
+                    
+                    setTimeout(() => {
+                        btn.innerHTML = originalHtml;
+                        btn.classList.remove('btn-outline-success');
+                        btn.classList.add('btn-success');
+                        btn.disabled = false;
+                    }, 2000);
+                    
+                    alert('✅ Curso agregado al carrito exitosamente');
+                } else {
+                    alert('❌ Error: ' + (data.message || 'No se pudo agregar al carrito'));
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('❌ Error de conexión. Intenta nuevamente.');
+            });
+        }
     </script>
 </body>
+
 </html>

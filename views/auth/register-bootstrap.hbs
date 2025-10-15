@@ -446,6 +446,10 @@
                     </label>
                 </div>
 
+                {{#if redirectTo}}
+                <input type="hidden" name="redirectTo" value="{{redirectTo}}">
+                {{/if}}
+
                 <button type="submit" class="btn btn-register" id="registerButton">
                     <span class="button-text">
                         <i class="bi bi-person-plus me-2"></i>
@@ -470,7 +474,7 @@
         <div class="register-footer">
             <p class="mb-0">
                 ¿Ya tienes una cuenta? 
-                <a href="/auth/login" class="login-link">Inicia sesión aquí</a>
+                <a href="/auth/login{{#if redirectTo}}?redirect={{redirectTo}}{{/if}}" class="login-link">Inicia sesión aquí</a>
             </p>
         </div>
     </div>

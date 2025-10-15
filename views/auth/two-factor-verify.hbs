@@ -42,10 +42,10 @@
 
         .verify-container {
             background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            border-radius: 15px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
             overflow: hidden;
-            max-width: 500px;
+            max-width: 400px;
             width: 100%;
             position: relative;
         }
@@ -53,7 +53,7 @@
         .verify-header {
             background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
             color: white;
-            padding: 2.5rem 2rem;
+            padding: 1.9rem 1.5rem;
             text-align: center;
             position: relative;
             overflow: hidden;
@@ -76,8 +76,8 @@
         }
 
         .shield-icon {
-            font-size: 4rem;
-            margin-bottom: 1rem;
+            font-size: 3rem;
+            margin-bottom: 0.8rem;
             position: relative;
             z-index: 2;
             animation: bounce 2s infinite;
@@ -85,88 +85,88 @@
 
         @keyframes bounce {
             0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
-            40% { transform: translateY(-10px); }
-            60% { transform: translateY(-5px); }
+            40% { transform: translateY(-8px); }
+            60% { transform: translateY(-4px); }
         }
 
         .verify-header h1 {
-            font-size: 1.8rem;
+            font-size: 1.4rem;
             font-weight: 700;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.4rem;
             position: relative;
             z-index: 2;
         }
 
         .verify-header p {
             opacity: 0.9;
-            font-size: 1rem;
+            font-size: 0.85rem;
             margin: 0;
             position: relative;
             z-index: 2;
         }
 
         .verify-body {
-            padding: 2.5rem 2rem;
+            padding: 1.9rem 1.5rem;
         }
 
         .user-info {
             background: var(--bg-light);
-            border-radius: 12px;
-            padding: 1rem;
-            margin-bottom: 2rem;
+            border-radius: 9px;
+            padding: 0.8rem;
+            margin-bottom: 1.5rem;
             text-align: center;
         }
 
         .user-avatar {
-            width: 50px;
-            height: 50px;
+            width: 40px;
+            height: 40px;
             background: var(--primary-color);
             color: white;
             border-radius: 50%;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.5rem;
+            font-size: 1.2rem;
             font-weight: 600;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.4rem;
         }
 
         .verification-form {
-            margin-bottom: 2rem;
+            margin-bottom: 1.5rem;
         }
 
         .form-control {
-            border-radius: 12px;
+            border-radius: 9px;
             border: 2px solid var(--border-color);
-            padding: 1rem;
-            font-size: 1.5rem;
+            padding: 0.8rem;
+            font-size: 1.2rem;
             text-align: center;
-            letter-spacing: 0.5rem;
+            letter-spacing: 0.4rem;
             font-weight: 600;
             transition: all 0.3s ease;
         }
 
         .form-control:focus {
             border-color: var(--primary-color);
-            box-shadow: 0 0 0 0.2rem rgba(234, 88, 12, 0.25);
-            transform: translateY(-2px);
+            box-shadow: 0 0 0 0.15rem rgba(234, 88, 12, 0.25);
+            transform: translateY(-1px);
         }
 
         .btn-primary {
             background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
             border: none;
-            border-radius: 12px;
+            border-radius: 9px;
             font-weight: 600;
-            padding: 1rem;
-            font-size: 1.1rem;
+            padding: 0.8rem;
+            font-size: 0.9rem;
             transition: all 0.3s ease;
             width: 100%;
         }
 
         .btn-primary:hover {
             background: linear-gradient(135deg, var(--primary-hover) 0%, #9a3412 100%);
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(234, 88, 12, 0.4);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 15px rgba(234, 88, 12, 0.4);
         }
 
         .btn-primary:disabled {
@@ -177,22 +177,22 @@
 
         .backup-section {
             border-top: 2px solid var(--border-color);
-            padding-top: 2rem;
-            margin-top: 2rem;
+            padding-top: 1.5rem;
+            margin-top: 1.5rem;
             text-align: center;
         }
 
         .backup-toggle {
             color: var(--primary-color);
             text-decoration: none;
-            font-size: 1rem;
+            font-size: 0.85rem;
             font-weight: 500;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            padding: 0.75rem 1.5rem;
+            padding: 0.6rem 1.2rem;
             border: 2px solid var(--primary-color);
-            border-radius: 8px;
+            border-radius: 6px;
             background: rgba(234, 88, 12, 0.1);
             transition: all 0.3s ease;
         }
@@ -200,25 +200,26 @@
         .backup-toggle:hover {
             color: white;
             background: var(--primary-color);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(234, 88, 12, 0.3);
+            transform: translateY(-1px);
+            box-shadow: 0 3px 9px rgba(234, 88, 12, 0.3);
         }
 
         .backup-form {
             display: none;
-            margin-top: 1rem;
+            margin-top: 0.8rem;
         }
 
         .backup-form .form-control {
-            font-size: 1rem;
-            letter-spacing: 0.1rem;
+            font-size: 0.85rem;
+            letter-spacing: 0.08rem;
             text-transform: uppercase;
         }
 
         .alert {
-            border-radius: 8px;
+            border-radius: 6px;
             border: none;
-            margin-bottom: 1rem;
+            margin-bottom: 0.8rem;
+            font-size: 0.85rem;
         }
 
         .alert-danger {
@@ -229,17 +230,17 @@
         .alert-info {
             background: #eff6ff;
             color: #1e40af;
-            border-left: 4px solid #3b82f6;
+            border-left: 3px solid #3b82f6;
         }
 
         .timer-display {
             background: rgba(234, 88, 12, 0.1);
             border: 1px solid rgba(234, 88, 12, 0.2);
-            border-radius: 8px;
-            padding: 0.75rem;
+            border-radius: 6px;
+            padding: 0.6rem;
             text-align: center;
-            margin-bottom: 1rem;
-            font-size: 0.9rem;
+            margin-bottom: 0.8rem;
+            font-size: 0.75rem;
             color: var(--primary-color);
         }
 
@@ -254,7 +255,7 @@
             align-items: center;
             justify-content: center;
             z-index: 1000;
-            border-radius: 20px;
+            border-radius: 15px;
         }
 
         .spinner-border {
@@ -263,16 +264,20 @@
 
         @media (max-width: 576px) {
             .verify-header {
-                padding: 2rem 1.5rem;
+                padding: 1.5rem 1.2rem;
             }
             
             .verify-body {
-                padding: 2rem 1.5rem;
+                padding: 1.5rem 1.2rem;
             }
             
             .form-control {
-                font-size: 1.25rem;
-                padding: 0.875rem;
+                font-size: 1rem;
+                padding: 0.7rem;
+            }
+            
+            .verify-container {
+                max-width: 350px;
             }
         }
     </style>

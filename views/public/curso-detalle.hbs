@@ -6,8 +6,6 @@
     <title>{{title}}</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <!-- Bootstrap Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
     <!-- Google Fonts -->
@@ -21,369 +19,458 @@
             --success-color: #10b981;
             --warning-color: #f59e0b;
             --danger-color: #ef4444;
+            --info-color: #3b82f6;
             --text-dark: #1f2937;
             --text-muted: #6b7280;
             --border-color: #e5e7eb;
             --bg-light: #f8fafc;
         }
 
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+
         body {
             background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
             color: var(--text-dark);
-            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
         }
-        
-        .course-header {
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
-            color: white;
-            padding: 3rem 0;
-            position: relative;
-            overflow: hidden;
+
+        .main-container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 1.5rem;
         }
-        
-        .course-header::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="20" cy="20" r="2" fill="rgba(255,255,255,0.1)"/><circle cx="80" cy="80" r="3" fill="rgba(255,255,255,0.1)"/><circle cx="40" cy="70" r="1" fill="rgba(255,255,255,0.1)"/></svg>');
-            /* Allow clicks to pass through the decorative overlay */
-            pointer-events: none;
-        }
-        
-        .course-info-card {
+
+        .header-section {
             background: white;
-            border-radius: 16px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-            border: 1px solid var(--border-color);
-            margin-top: -50px;
-            position: relative;
-            z-index: 2;
+            border-radius: 12px;
+            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid var(--primary-color);
         }
-        
+
+        .header-title {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .header-title h1 {
+            color: var(--text-dark);
+            font-weight: 700;
+            font-size: 1.8rem;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .course-subtitle {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+            line-height: 1.5;
+        }
+
+        .course-badges {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+
         .instructor-badge {
             background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
             color: white;
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-            font-size: 0.875rem;
-            font-weight: 500;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        
-        .stats-item {
-            text-align: center;
-            padding: 1.5rem;
-            border-right: 1px solid var(--border-color);
-            transition: transform 0.2s ease;
-        }
-        
-        .stats-item:last-child {
-            border-right: none;
-        }
-
-        .stats-item:hover {
-            transform: translateY(-2px);
-        }
-        
-        .stats-number {
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--primary-color);
-            display: block;
-        }
-        
-        .stats-label {
-            font-size: 0.875rem;
-            color: var(--text-muted);
-            margin-top: 0.5rem;
-        }
-        
-        .module-card {
-            background: white;
+            padding: 0.4rem 0.8rem;
             border-radius: 16px;
-            border: 1px solid var(--border-color);
-            margin-bottom: 2rem;
-            overflow: hidden;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-        }
-        
-        .module-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
-        }
-        
-        .module-header {
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
-            color: white;
-            padding: 1.5rem 2rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        
-        .module-content {
-            padding: 0;
-        }
-        
-        .video-item {
-            border-bottom: 1px solid var(--bg-light);
-            transition: all 0.3s ease;
-        }
-        
-        .video-item:last-child {
-            border-bottom: none;
-        }
-        
-        .video-item:hover {
-            background-color: var(--bg-light);
-        }
-        
-        .video-link {
-            display: flex;
-            align-items: center;
-            padding: 1.5rem 2rem;
-            text-decoration: none;
-            color: inherit;
-            transition: all 0.3s ease;
-        }
-        
-        .video-link:hover {
-            color: var(--primary-color);
-            text-decoration: none;
-        }
-        
-        .video-icon {
-            width: 50px;
-            height: 50px;
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            margin-right: 1.5rem;
-            font-size: 1rem;
-            transition: all 0.3s ease;
-        }
-        
-        .video-preview-icon {
-            background: linear-gradient(135deg, var(--warning-color) 0%, #d97706 100%);
-        }
-        
-        .video-locked-icon {
-            background: var(--text-muted);
-        }
-        
-        .video-completed-icon {
-            background: linear-gradient(135deg, var(--success-color) 0%, #059669 100%);
-        }
-        
-        .video-info {
-            flex: 1;
-        }
-        
-        .video-title {
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-            font-size: 1rem;
-            line-height: 1.4;
-        }
-        
-        .video-duration {
-            font-size: 0.875rem;
-            color: var(--text-muted);
-            display: flex;
-            align-items: center;
-            gap: 0.25rem;
-        }
-        
-        .video-status {
-            margin-left: 1rem;
             font-size: 0.75rem;
-            padding: 0.375rem 0.875rem;
-            border-radius: 20px;
             font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.025em;
-        }
-        
-        .status-preview {
-            background: rgba(245, 158, 11, 0.1);
-            color: var(--warning-color);
-            border: 1px solid rgba(245, 158, 11, 0.2);
-        }
-        
-        .status-locked {
-            background: rgba(107, 114, 128, 0.1);
-            color: var(--text-muted);
-            border: 1px solid rgba(107, 114, 128, 0.2);
-        }
-        
-        .status-completed {
-            background: rgba(16, 185, 129, 0.1);
-            color: var(--success-color);
-            border: 1px solid rgba(16, 185, 129, 0.2);
-        }
-        
-        .purchase-card {
-            background: white;
-            border-radius: 16px;
-            border: 2px solid var(--primary-color);
-            padding: 2rem;
-            text-align: center;
-            margin-bottom: 2rem;
-            box-shadow: 0 4px 20px rgba(234, 88, 12, 0.1);
-        }
-        
-        .price-display {
-            font-size: 3rem;
-            font-weight: 700;
-            color: var(--primary-color);
-            margin: 1.5rem 0;
-        }
-        
-        .progress-card {
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
-            color: white;
-            border-radius: 16px;
-            padding: 2rem;
-            margin-bottom: 2rem;
-            box-shadow: 0 4px 20px rgba(234, 88, 12, 0.3);
-        }
-        
-        .progress-bar-custom {
-            background-color: rgba(255,255,255,0.2);
-            height: 12px;
-            border-radius: 6px;
-            overflow: hidden;
-            margin: 1.5rem 0;
-        }
-        
-        .progress-fill {
-            background-color: white;
-            height: 100%;
-            border-radius: 6px;
-            transition: width 0.3s ease;
-        }
-        
-        .btn-primary-custom {
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
-            border: none;
-            border-radius: 12px;
-            padding: 0.875rem 2rem;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-        
-        .btn-primary-custom:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(234, 88, 12, 0.4);
-        }
-
-        /* Back button improvements */
-        .back-btn {
-            position: relative;
-            z-index: 3; /* sit above the decorative overlay */
-            background: rgba(255,255,255,0.95);
-            color: var(--text-dark);
-            padding: 0.5rem 1rem;
-            border-radius: 999px;
             display: inline-flex;
             align-items: center;
-            gap: 0.5rem;
-            box-shadow: 0 6px 20px rgba(31,41,55,0.08);
-            border: 1px solid rgba(0,0,0,0.06);
-            transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
-            text-decoration: none;
+            gap: 0.4rem;
         }
 
-        .back-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 12px 30px rgba(31,41,55,0.12);
-            background: white;
-        }
-
-        .back-btn .bi {
-            font-size: 1.05rem;
-            line-height: 1;
-        }
-        
-        .btn-success-custom {
-            background: linear-gradient(135deg, var(--success-color) 0%, #059669 100%);
-            border: none;
-            border-radius: 12px;
-            padding: 0.875rem 2rem;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-        
-        .btn-success-custom:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
-        }
-        
         .level-badge {
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-            font-size: 0.875rem;
+            padding: 0.4rem 0.8rem;
+            border-radius: 16px;
+            font-size: 0.75rem;
             font-weight: 600;
             text-transform: uppercase;
         }
-        
-        .level-basico {
+
+        .level-básico {
             background: rgba(16, 185, 129, 0.1);
             color: var(--success-color);
             border: 1px solid rgba(16, 185, 129, 0.2);
         }
-        
+
         .level-intermedio {
             background: rgba(245, 158, 11, 0.1);
             color: var(--warning-color);
             border: 1px solid rgba(245, 158, 11, 0.2);
         }
-        
+
         .level-avanzado {
             background: rgba(239, 68, 68, 0.1);
             color: var(--danger-color);
             border: 1px solid rgba(239, 68, 68, 0.2);
         }
-        
+
+        .category-badge {
+            background: var(--bg-light);
+            color: var(--text-muted);
+            padding: 0.4rem 0.8rem;
+            border-radius: 16px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            border: 1px solid var(--border-color);
+        }
+
+        .stats-section {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.1);
+            padding: 1.2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 1.2rem;
+        }
+
+        .stat-card {
+            background: var(--bg-light);
+            border-radius: 10px;
+            padding: 1.2rem;
+            text-align: center;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-number {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            display: block;
+        }
+
+        .stat-label {
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            margin-top: 0.4rem;
+        }
+
+        .progress-section {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .progress-card {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
+            color: white;
+            border-radius: 10px;
+            padding: 1.2rem;
+        }
+
+        .progress-bar-custom {
+            background-color: rgba(255,255,255,0.2);
+            height: 10px;
+            border-radius: 5px;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+
+        .progress-fill {
+            background-color: white;
+            height: 100%;
+            border-radius: 5px;
+            transition: width 0.3s ease;
+        }
+
+        .purchase-section {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            border: 2px solid var(--primary-color);
+        }
+
+        .price-display {
+            font-size: 2.4rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin: 1rem 0;
+        }
+
+        .content-section {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .section-header {
+            background: var(--bg-light);
+            padding: 1.2rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .section-title {
+            font-weight: 600;
+            color: var(--text-dark);
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .module-card {
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .module-card:last-child {
+            border-bottom: none;
+        }
+
+        .module-header {
+            background: var(--bg-light);
+            padding: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .module-header:hover {
+            background: rgba(234, 88, 12, 0.05);
+        }
+
+        .module-title {
+            font-weight: 600;
+            color: var(--text-dark);
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 0.9rem;
+        }
+
+        .module-meta {
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            margin-top: 0.25rem;
+        }
+
+        .video-item {
+            border-bottom: 1px solid #f1f5f9;
+            transition: all 0.2s ease;
+        }
+
+        .video-item:last-child {
+            border-bottom: none;
+        }
+
+        .video-item:hover {
+            background-color: rgba(234, 88, 12, 0.02);
+        }
+
+        .video-link {
+            display: flex;
+            align-items: center;
+            padding: 0.8rem 1.2rem;
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.2s ease;
+        }
+
+        .video-link:hover {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .video-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            margin-right: 0.8rem;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+        }
+
+        .video-icon.available {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
+        }
+
+        .video-icon.preview {
+            background: linear-gradient(135deg, var(--warning-color) 0%, #d97706 100%);
+        }
+
+        .video-icon.locked {
+            background: var(--text-muted);
+        }
+
+        .video-icon.completed {
+            background: linear-gradient(135deg, var(--success-color) 0%, #059669 100%);
+        }
+
+        .video-info {
+            flex: 1;
+        }
+
+        .video-title {
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+            font-size: 0.85rem;
+            line-height: 1.4;
+        }
+
+        .video-duration {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .video-status {
+            margin-left: 0.8rem;
+            font-size: 0.7rem;
+            padding: 0.25rem 0.6rem;
+            border-radius: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
+        }
+
+        .status-preview {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning-color);
+            border: 1px solid rgba(245, 158, 11, 0.2);
+        }
+
+        .status-locked {
+            background: rgba(107, 114, 128, 0.1);
+            color: var(--text-muted);
+            border: 1px solid rgba(107, 114, 128, 0.2);
+        }
+
+        .status-completed {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success-color);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            padding: 0.6rem 1.2rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, var(--primary-hover) 0%, #9a3412 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(234, 88, 12, 0.4);
+        }
+
+        .btn-success {
+            background: var(--success-color);
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            padding: 0.6rem 1.2rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-success:hover {
+            background: #059669;
+            transform: translateY(-2px);
+        }
+
+        .btn-outline-secondary {
+            border: 2px solid var(--border-color);
+            color: var(--text-muted);
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            padding: 0.6rem 1.2rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-outline-secondary:hover {
+            background: var(--text-muted);
+            border-color: var(--text-muted);
+            color: white;
+        }
+
         @media (max-width: 768px) {
-            .course-header {
-                padding: 2rem 0;
+            .main-container {
+                padding: 0.8rem;
             }
-            
-            .stats-item {
-                border-right: none;
-                border-bottom: 1px solid var(--border-color);
+
+            .header-section {
+                padding: 1.2rem;
+            }
+
+            .header-title h1 {
+                font-size: 1.5rem;
+            }
+
+            .stats-row {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.8rem;
+            }
+
+            .stat-card {
                 padding: 1rem;
             }
-            
-            .stats-item:last-child {
-                border-bottom: none;
-            }
-            
+
             .video-link {
-                padding: 1rem;
+                padding: 0.6rem 1rem;
             }
 
             .video-icon {
-                width: 40px;
-                height: 40px;
-                margin-right: 1rem;
-            }
-            
-            .price-display {
-                font-size: 2.5rem;
+                width: 32px;
+                height: 32px;
+                margin-right: 0.6rem;
+                font-size: 0.8rem;
             }
 
-            .module-header {
-                padding: 1rem 1.5rem;
+            .price-display {
+                font-size: 2rem;
+            }
+
+            .course-badges {
+                gap: 0.5rem;
             }
         }
     </style>
@@ -393,7 +480,7 @@
     <nav class="navbar navbar-expand-lg navbar-dark" style="background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);">
         <div class="container">
             <a class="navbar-brand fw-bold" href="/">
-                <i class="fas fa-graduation-cap me-2"></i>StartEducation
+                <i class="bi bi-graduation-cap me-2"></i>StartEducation
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
@@ -411,13 +498,13 @@
                     {{#if userName}}
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                            <i class="fas fa-user-circle me-1"></i>{{userName}}
+                            <i class="bi bi-person-circle me-1"></i>{{userName}}
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="/dashboard"><i class="fas fa-tachometer-alt me-2"></i>Dashboard</a></li>
-                            <li><a class="dropdown-item" href="/perfil"><i class="fas fa-user-edit me-2"></i>Mi Perfil</a></li>
+                            <li><a class="dropdown-item" href="/dashboard"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a></li>
+                            <li><a class="dropdown-item" href="/perfil"><i class="bi bi-person-gear me-2"></i>Mi Perfil</a></li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="/auth/logout"><i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión</a></li>
+                            <li><a class="dropdown-item" href="/auth/logout"><i class="bi bi-box-arrow-right me-2"></i>Cerrar Sesión</a></li>
                         </ul>
                     </li>
                     {{else}}
@@ -433,209 +520,204 @@
         </div>
     </nav>
 
-    <!-- Course Header -->
-    <div class="course-header">
-        <div class="container">
-            <div class="row align-items-center">
-                    <div class="col-lg-8">
-                        <h1 class="display-5 fw-bold mb-3">{{curso.titulo}}</h1>
-                        <p class="lead mb-4">{{curso.descripcion}}</p>
-                        <div class="d-flex flex-wrap align-items-center gap-3">
-                            <div class="instructor-badge">
-                                <i class="fas fa-chalkboard-teacher me-2"></i>{{curso.instructor_nombre}}
-                            </div>
-                            <span class="level-badge level-{{curso.nivel}}">
-                                {{curso.nivel}}
-                            </span>
-                            <span class="badge bg-light text-dark">
-                                <i class="fas fa-tag me-1"></i>{{curso.categoria_nombre}}
-                            </span>
+    <div class="main-container">
+        <!-- Course Header -->
+        <div class="header-section">
+            <div class="header-title">
+                <div>
+                    <h1>
+                        <i class="bi bi-play-circle"></i>
+                        {{curso.titulo}}
+                    </h1>
+                    <p class="course-subtitle">{{curso.descripcion}}</p>
+                    <div class="course-badges">
+                        <div class="instructor-badge">
+                            <i class="bi bi-person-video2"></i>{{curso.instructor_nombre}}
                         </div>
-                    </div>
-                    <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
-                        {{#if backUrl}}
-                        <a href="{{backUrl}}" class="back-btn" aria-label="Volver al Dashboard">
-                            <i class="bi bi-arrow-left"></i>
-                            <span>Volver al Dashboard</span>
-                        </a>
-                        {{else}}
-                        <a href="/user-dashboard" class="back-btn" aria-label="Volver al Dashboard">
-                            <i class="bi bi-arrow-left"></i>
-                            <span>Volver al Dashboard</span>
-                        </a>
-                        {{/if}}
+                        <span class="level-badge level-{{curso.nivel}}">
+                            {{curso.nivel}}
+                        </span>
+                        <span class="category-badge">
+                            <i class="bi bi-tag me-1"></i>{{curso.categoria_nombre}}
+                        </span>
                     </div>
                 </div>
+                <div class="d-flex gap-2">
+                    <a href="/cursos" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-left me-2"></i>Volver a Cursos
+                    </a>
+                </div>
+            </div>
         </div>
-    </div>
 
-    <!-- Course Info Card -->
-    <div class="container">
-        <div class="course-info-card p-4 mb-4">
-            <div class="row">
-                <div class="col-md-3 stats-item">
-                    <span class="stats-number">{{curso.total_modulos}}</span>
-                    <span class="stats-label">Módulos</span>
+        <!-- Course Stats -->
+        <div class="stats-section">
+            <div class="stats-row">
+                <div class="stat-card">
+                    <span class="stat-number">{{curso.total_modulos}}</span>
+                    <div class="stat-label">Módulos</div>
                 </div>
-                <div class="col-md-3 stats-item">
-                    <span class="stats-number">{{curso.total_videos}}</span>
-                    <span class="stats-label">Videos</span>
+                <div class="stat-card">
+                    <span class="stat-number">{{curso.total_videos}}</span>
+                    <div class="stat-label">Videos</div>
                 </div>
-                <div class="col-md-3 stats-item">
-                    <span class="stats-number">{{curso.duracion_total_minutos}}</span>
-                    <span class="stats-label">Minutos</span>
+                <div class="stat-card">
+                    <span class="stat-number">{{curso.duracion_total_minutos}}</span>
+                    <div class="stat-label">Minutos</div>
                 </div>
-                <div class="col-md-3 stats-item">
-                    <span class="stats-number">
+                <div class="stat-card">
+                    <span class="stat-number">
                         {{#if tieneAcceso}}
                             {{progreso.porcentaje_completado}}%
                         {{else}}
                             0%
                         {{/if}}
                     </span>
-                    <span class="stats-label">Progreso</span>
+                    <div class="stat-label">Progreso</div>
                 </div>
             </div>
         </div>
 
         <!-- Progress Card (only if user has access) -->
         {{#if tieneAcceso}}
-        <div class="progress-card">
-            <div class="row align-items-center">
-                <div class="col-md-8">
-                    <h5 class="mb-2">
-                        <i class="fas fa-chart-line me-2"></i>Tu Progreso
-                    </h5>
-                    <p class="mb-3">Has completado {{progreso.videos_completados}} de {{progreso.total_videos}} videos</p>
-                    <div class="progress-bar-custom">
-                        <div class="progress-fill" style="width: {{progreso.porcentaje_completado}}%"></div>
+        <div class="progress-section">
+            <div class="progress-card">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h6 class="mb-2">
+                            <i class="bi bi-graph-up me-2"></i>Tu Progreso en el Curso
+                        </h6>
+                        <p class="mb-3" style="font-size: 0.85rem;">Has completado {{progreso.videos_completados}} de {{progreso.total_videos}} videos</p>
+                        <div class="progress-bar-custom">
+                            <div class="progress-fill" style="width: {{progreso.porcentaje_completado}}%"></div>
+                        </div>
                     </div>
-                </div>
-                <div class="col-md-4 text-end">
-                    <a href="/mis-cursos/{{curso.id_curso}}" class="btn btn-success-custom btn-lg">
-                        <i class="fas fa-play me-2"></i>Continuar Curso
-                    </a>
+                    <div class="col-md-4 text-end">
+                        <a href="/mis-cursos/{{curso.id_curso}}" class="btn btn-success">
+                            <i class="bi bi-play me-2"></i>Continuar Curso
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
         {{else}}
         <!-- Purchase Card (only if user doesn't have access) -->
-        <div class="purchase-card">
-            <h4 class="mb-3">
-                <i class="fas fa-lock me-2"></i>Desbloquea este curso
-            </h4>
-            <p class="text-muted mb-3">Obtén acceso completo a todo el contenido del curso</p>
+        <div class="purchase-section">
+            <h5 class="mb-3">
+                <i class="bi bi-lock me-2"></i>Desbloquea este curso
+            </h5>
+            <p class="text-muted mb-3" style="font-size: 0.85rem;">Obtén acceso completo a todo el contenido del curso</p>
             <div class="price-display">${{curso.precio}}</div>
             <div class="d-grid gap-2 d-md-flex justify-content-md-center">
-                <button class="btn btn-primary-custom btn-lg" onclick="comprarCurso({{curso.id_curso}})">
-                    <i class="fas fa-shopping-cart me-2"></i>Comprar Curso
+                <button class="btn btn-primary" onclick="comprarCurso({{curso.id_curso}})">
+                    <i class="bi bi-cart-plus me-2"></i>Comprar Curso
                 </button>
-                <a href="/suscripciones" class="btn btn-outline-secondary btn-lg">
-                    <i class="fas fa-crown me-2"></i>Ver Suscripciones
+                <a href="/suscripciones" class="btn btn-outline-secondary">
+                    <i class="bi bi-star me-2"></i>Ver Suscripciones
                 </a>
             </div>
         </div>
         {{/if}}
 
         <!-- Course Content -->
-        <div class="row">
-            <div class="col-12">
-                <h3 class="mb-4">
-                    <i class="fas fa-list-alt me-2"></i>Contenido del Curso
-                </h3>
-                
-                {{#each modulos}}
-                <div class="module-card">
-                    <div class="module-header" data-bs-toggle="collapse" data-bs-target="#module-{{id_modulo}}" aria-expanded="true">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <h5 class="mb-1">
-                                    <i class="fas fa-folder me-2"></i>Módulo {{modulo_orden}}: {{modulo_titulo}}
-                                </h5>
-                                <small>{{total_videos}} videos • {{duracion_minutos}} minutos</small>
-                            </div>
-                            <i class="fas fa-chevron-down"></i>
+        <div class="content-section">
+            <div class="section-header">
+                <h6 class="section-title">
+                    <i class="bi bi-list-ul"></i>
+                    Contenido del Curso
+                </h6>
+                <span class="badge bg-primary">{{curso.total_modulos}} módulo{{#if (gt curso.total_modulos 1)}}s{{/if}}</span>
+            </div>
+            
+            {{#each modulos}}
+            <div class="module-card">
+                <div class="module-header" data-bs-toggle="collapse" data-bs-target="#module-{{id_modulo}}" aria-expanded="true">
+                    <div class="module-title">
+                        <div>
+                            <i class="bi bi-folder me-2"></i>Módulo {{modulo_orden}}: {{modulo_titulo}}
+                            <div class="module-meta">{{total_videos}} videos • {{duracion_minutos}} minutos</div>
                         </div>
+                        <i class="bi bi-chevron-down"></i>
                     </div>
-                    
-                    <div class="collapse show" id="module-{{id_modulo}}">
-                        <div class="module-content">
-                            {{#each videos}}
-                            <div class="video-item">
-                                {{#if ../tieneAcceso}}
-                                    <!-- User has access - can play all videos -->
-                                    <a href="/video/{{id_video}}" class="video-link" target="_blank">
-                                        <div class="video-icon {{#if completado}}video-completed-icon{{else}}{{#if es_preview}}video-preview-icon{{/if}}{{/if}}">
-                                            {{#if completado}}
-                                                <i class="fas fa-check"></i>
+                </div>
+                
+                <div class="collapse show" id="module-{{id_modulo}}">
+                    <div class="module-content">
+                        {{#each videos}}
+                        <div class="video-item">
+                            {{#if ../tieneAcceso}}
+                                <!-- User has access - can play all videos -->
+                                <a href="/video/{{id_video}}" class="video-link">
+                                    <div class="video-icon {{#if completado}}completed{{else}}available{{/if}}">
+                                        {{#if completado}}
+                                            <i class="bi bi-check-lg"></i>
+                                        {{else}}
+                                            <i class="bi bi-play"></i>
+                                        {{/if}}
+                                    </div>
+                                    <div class="video-info">
+                                        <div class="video-title">{{orden}}. {{titulo}}</div>
+                                        <div class="video-duration">
+                                            <i class="bi bi-clock me-1"></i>
+                                            {{#if duracion_segundos}}
+                                                {{math duracion_segundos '/' 60 'round'}} min
                                             {{else}}
-                                                <i class="fas fa-play"></i>
+                                                --
                                             {{/if}}
+                                        </div>
+                                    </div>
+                                    {{#if completado}}
+                                        <span class="video-status status-completed">Completado</span>
+                                    {{/if}}
+                                </a>
+                            {{else}}
+                                <!-- User doesn't have access -->
+                                {{#if es_preview}}
+                                    <!-- Preview videos - can be watched -->
+                                    <a href="/video/{{id_video}}" class="video-link">
+                                        <div class="video-icon preview">
+                                            <i class="bi bi-eye"></i>
                                         </div>
                                         <div class="video-info">
                                             <div class="video-title">{{orden}}. {{titulo}}</div>
                                             <div class="video-duration">
-                                                <i class="fas fa-clock me-1"></i>
+                                                <i class="bi bi-clock me-1"></i>
                                                 {{#if duracion_segundos}}
-                                                    {{math duracion_segundos '/' 60 'round'}} minutos
+                                                    {{math duracion_segundos '/' 60 'round'}} min
                                                 {{else}}
-                                                    Duración no disponible
+                                                    --
                                                 {{/if}}
                                             </div>
                                         </div>
-                                        {{#if completado}}
-                                            <span class="video-status status-completed">Completado</span>
-                                        {{/if}}
+                                        <span class="video-status status-preview">Vista Previa</span>
                                     </a>
                                 {{else}}
-                                    <!-- User doesn't have access -->
-                                    {{#if es_preview}}
-                                        <!-- Preview videos - can be watched -->
-                                        <a href="/video/{{id_video}}" class="video-link" target="_blank">
-                                            <div class="video-icon video-preview-icon">
-                                                <i class="fas fa-eye"></i>
-                                            </div>
-                                            <div class="video-info">
-                                                <div class="video-title">{{orden}}. {{titulo}}</div>
-                                                <div class="video-duration">
-                                                    <i class="fas fa-clock me-1"></i>
-                                                    {{#if duracion_segundos}}
-                                                        {{math duracion_segundos '/' 60 'round'}} minutos
-                                                    {{else}}
-                                                        Duración no disponible
-                                                    {{/if}}
-                                                </div>
-                                            </div>
-                                            <span class="video-status status-preview">Vista Previa</span>
-                                        </a>
-                                    {{else}}
-                                        <!-- Locked videos -->
-                                        <div class="video-link" style="cursor: not-allowed; opacity: 0.7;">
-                                            <div class="video-icon video-locked-icon">
-                                                <i class="fas fa-lock"></i>
-                                            </div>
-                                            <div class="video-info">
-                                                <div class="video-title">{{orden}}. {{titulo}}</div>
-                                                <div class="video-duration">
-                                                    <i class="fas fa-clock me-1"></i>
-                                                    {{#if duracion_segundos}}
-                                                        {{math duracion_segundos '/' 60 'round'}} minutos
-                                                    {{else}}
-                                                        Duración no disponible
-                                                    {{/if}}
-                                                </div>
-                                            </div>
-                                            <span class="video-status status-locked">Bloqueado</span>
+                                    <!-- Locked videos -->
+                                    <div class="video-link" style="cursor: not-allowed; opacity: 0.7;">
+                                        <div class="video-icon locked">
+                                            <i class="bi bi-lock"></i>
                                         </div>
-                                    {{/if}}
+                                        <div class="video-info">
+                                            <div class="video-title">{{orden}}. {{titulo}}</div>
+                                            <div class="video-duration">
+                                                <i class="bi bi-clock me-1"></i>
+                                                {{#if duracion_segundos}}
+                                                    {{math duracion_segundos '/' 60 'round'}} min
+                                                {{else}}
+                                                    --
+                                                {{/if}}
+                                            </div>
+                                        </div>
+                                        <span class="video-status status-locked">Bloqueado</span>
+                                    </div>
                                 {{/if}}
-                            </div>
-                            {{/each}}
+                            {{/if}}
                         </div>
+                        {{/each}}
                     </div>
                 </div>
-                {{/each}}
             </div>
+            {{/each}}
         </div>
     </div>
 
@@ -656,10 +738,10 @@
             
             moduleHeaders.forEach(header => {
                 header.addEventListener('click', function() {
-                    const chevron = this.querySelector('.fa-chevron-down, .fa-chevron-up');
+                    const chevron = this.querySelector('.bi-chevron-down, .bi-chevron-up');
                     if (chevron) {
-                        chevron.classList.toggle('fa-chevron-down');
-                        chevron.classList.toggle('fa-chevron-up');
+                        chevron.classList.toggle('bi-chevron-down');
+                        chevron.classList.toggle('bi-chevron-up');
                     }
                 });
             });

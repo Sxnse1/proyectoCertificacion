@@ -1,20 +1,21 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{title}} - StartEducation</title>
-    
+
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="/images/favicon.svg">
-    
+
     <!-- Bootstrap 5.3 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
+
     <style>
         :root {
             --primary-color: #ea580c;
@@ -40,48 +41,48 @@
         }
 
         .main-container {
-            max-width: 1400px;
+            max-width: 1100px;
             margin: 0 auto;
-            padding: 2rem;
+            padding: 1.5rem;
         }
 
         .header-section {
             background: white;
-            border-radius: 16px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.1);
             border: 1px solid var(--border-color);
-            padding: 2rem;
-            margin-bottom: 2rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
         }
 
         .page-title {
             color: var(--primary-color);
             font-weight: 700;
-            font-size: 2.5rem;
-            margin-bottom: 0.5rem;
+            font-size: 1.8rem;
+            margin-bottom: 0.4rem;
             display: flex;
             align-items: center;
-            gap: 1rem;
+            gap: 0.75rem;
         }
 
         .page-subtitle {
             color: var(--text-muted);
-            font-size: 1.1rem;
+            font-size: 0.9rem;
             margin-bottom: 0;
         }
 
         .stats-cards {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-            margin-bottom: 2rem;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 0.8rem;
+            margin-bottom: 1.5rem;
         }
 
         .stat-card {
             background: white;
-            border-radius: 12px;
-            padding: 1.5rem;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            padding: 1.2rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
             border: 1px solid var(--border-color);
             text-align: center;
             transition: transform 0.2s ease;
@@ -92,35 +93,55 @@
         }
 
         .stat-icon {
-            font-size: 2rem;
-            margin-bottom: 0.5rem;
+            font-size: 1.6rem;
+            margin-bottom: 0.4rem;
         }
 
         .stat-number {
-            font-size: 2rem;
+            font-size: 1.6rem;
             font-weight: 700;
-            margin-bottom: 0.25rem;
+            margin-bottom: 0.2rem;
         }
 
         .stat-label {
             color: var(--text-muted);
-            font-size: 0.875rem;
+            font-size: 0.75rem;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.4px;
         }
 
-        .stat-total { color: var(--info-color); }
-        .stat-activos { color: var(--success-color); }
-        .stat-inactivos { color: var(--warning-color); }
-        .stat-baneados { color: var(--danger-color); }
-        .stat-instructores { color: #8b5cf6; }
-        .stat-estudiantes { color: #06b6d4; }
-        .stat-nuevos { color: var(--primary-color); }
+        .stat-total {
+            color: var(--info-color);
+        }
+
+        .stat-activos {
+            color: var(--success-color);
+        }
+
+        .stat-inactivos {
+            color: var(--warning-color);
+        }
+
+        .stat-baneados {
+            color: var(--danger-color);
+        }
+
+        .stat-instructores {
+            color: #8b5cf6;
+        }
+
+        .stat-estudiantes {
+            color: #06b6d4;
+        }
+
+        .stat-nuevos {
+            color: var(--primary-color);
+        }
 
         .content-section {
             background: white;
-            border-radius: 16px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.1);
             border: 1px solid var(--border-color);
             overflow: hidden;
         }
@@ -128,7 +149,7 @@
         .section-header {
             background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
             color: white;
-            padding: 1.5rem 2rem;
+            padding: 1.2rem 1.5rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -136,11 +157,11 @@
 
         .section-title {
             font-weight: 600;
-            font-size: 1.25rem;
+            font-size: 1rem;
             margin: 0;
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 0.4rem;
         }
 
         .btn-custom {
@@ -148,8 +169,9 @@
             border: 1px solid rgba(255, 255, 255, 0.3);
             color: white;
             font-weight: 500;
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
+            padding: 0.4rem 0.8rem;
+            font-size: 0.85rem;
+            border-radius: 6px;
             transition: all 0.3s ease;
         }
 
@@ -161,7 +183,7 @@
         }
 
         .filters-section {
-            padding: 1.5rem 2rem;
+            padding: 1.2rem 1.5rem;
             background: var(--bg-light);
             border-bottom: 1px solid var(--border-color);
         }
@@ -179,16 +201,18 @@
             color: var(--text-dark);
             font-weight: 600;
             border: none;
-            padding: 1rem;
+            padding: 0.8rem;
+            font-size: 0.85rem;
             position: sticky;
             top: 0;
             z-index: 10;
         }
 
         .table td {
-            padding: 1rem;
+            padding: 0.8rem;
             border-color: var(--border-color);
             vertical-align: middle;
+            font-size: 0.85rem;
         }
 
         .table tbody tr:hover {
@@ -197,13 +221,13 @@
 
         .usuario-card {
             display: flex;
-            gap: 1rem;
+            gap: 0.8rem;
             align-items: center;
         }
 
         .usuario-avatar {
-            width: 50px;
-            height: 50px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
             background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
             display: flex;
@@ -211,7 +235,7 @@
             justify-content: center;
             color: white;
             font-weight: 600;
-            font-size: 1.2rem;
+            font-size: 1rem;
             flex-shrink: 0;
         }
 
@@ -222,32 +246,32 @@
         .usuario-nombre {
             font-weight: 600;
             color: var(--text-dark);
-            margin-bottom: 0.25rem;
-            font-size: 1rem;
+            margin-bottom: 0.2rem;
+            font-size: 0.85rem;
         }
 
         .usuario-email {
             color: var(--text-muted);
-            font-size: 0.875rem;
-            margin-bottom: 0.25rem;
+            font-size: 0.75rem;
+            margin-bottom: 0.2rem;
         }
 
         .usuario-username {
             color: var(--text-muted);
-            font-size: 0.75rem;
+            font-size: 0.65rem;
             background: var(--bg-light);
-            padding: 0.125rem 0.5rem;
-            border-radius: 12px;
+            padding: 0.1rem 0.4rem;
+            border-radius: 10px;
             display: inline-block;
         }
 
         .badge-custom {
-            padding: 0.4rem 0.8rem;
-            border-radius: 20px;
-            font-size: 0.75rem;
+            padding: 0.3rem 0.6rem;
+            border-radius: 15px;
+            font-size: 0.65rem;
             font-weight: 500;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.4px;
         }
 
         .badge-rol {
@@ -261,8 +285,8 @@
         }
 
         .badge-estatus {
-            font-size: 0.75rem;
-            padding: 0.25rem 0.75rem;
+            font-size: 0.65rem;
+            padding: 0.2rem 0.6rem;
         }
 
         .status-activo {
@@ -282,16 +306,16 @@
 
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
-            gap: 0.5rem;
-            margin-top: 0.5rem;
+            grid-template-columns: repeat(auto-fit, minmax(64px, 1fr));
+            gap: 0.4rem;
+            margin-top: 0.4rem;
         }
 
         .stat-item {
             text-align: center;
-            padding: 0.5rem;
-            border-radius: 6px;
-            font-size: 0.75rem;
+            padding: 0.4rem;
+            border-radius: 5px;
+            font-size: 0.65rem;
             border: 1px solid var(--border-color);
         }
 
@@ -314,12 +338,12 @@
         }
 
         .btn-action {
-            padding: 0.4rem 0.6rem;
-            border-radius: 6px;
+            padding: 0.3rem 0.5rem;
+            border-radius: 5px;
             border: none;
-            font-size: 0.875rem;
+            font-size: 0.75rem;
             transition: all 0.2s ease;
-            margin: 0 0.125rem;
+            margin: 0 0.1rem;
         }
 
         .btn-view {
@@ -353,7 +377,7 @@
         }
 
         .pagination-section {
-            padding: 1.5rem 2rem;
+            padding: 1.2rem 1.5rem;
             background: var(--bg-light);
             border-top: 1px solid var(--border-color);
         }
@@ -376,45 +400,59 @@
 
         .empty-state {
             text-align: center;
-            padding: 4rem 2rem;
+            padding: 3rem 1.5rem;
             color: var(--text-muted);
         }
 
         .empty-state i {
-            font-size: 4rem;
-            margin-bottom: 1rem;
+            font-size: 3rem;
+            margin-bottom: 0.8rem;
             opacity: 0.5;
         }
 
         @media (max-width: 768px) {
             .main-container {
-                padding: 1rem;
+                padding: 0.8rem;
             }
-            
+
             .page-title {
-                font-size: 2rem;
+                font-size: 1.5rem;
             }
-            
+
             .table-responsive {
-                font-size: 0.875rem;
+                font-size: 0.75rem;
             }
-            
+
             .usuario-card {
                 flex-direction: column;
-                gap: 0.5rem;
+                gap: 0.4rem;
             }
-            
+
             .btn-action {
-                padding: 0.3rem 0.5rem;
-                font-size: 0.75rem;
+                padding: 0.25rem 0.4rem;
+                font-size: 0.65rem;
             }
 
             .stats-cards {
                 grid-template-columns: repeat(2, 1fr);
+                gap: 0.6rem;
+            }
+
+            .header-section,
+            .filters-section,
+            .pagination-section {
+                padding: 1rem;
+            }
+
+            .usuario-avatar {
+                width: 32px;
+                height: 32px;
+                font-size: 0.85rem;
             }
         }
     </style>
 </head>
+
 <body>
     <div class="main-container">
         <!-- Header Section -->
@@ -479,13 +517,6 @@
                 <div class="stat-number stat-estudiantes">{{stats.total_estudiantes}}</div>
                 <div class="stat-label">Estudiantes</div>
             </div>
-            <div class="stat-card">
-                <div class="stat-icon stat-nuevos">
-                    <i class="bi bi-person-plus"></i>
-                </div>
-                <div class="stat-number stat-nuevos">{{stats.nuevos_mes_actual}}</div>
-                <div class="stat-label">Nuevos este mes</div>
-            </div>
         </div>
 
         <!-- Content Section -->
@@ -496,7 +527,8 @@
                     <i class="bi bi-list-ul"></i>
                     Lista de Usuarios
                 </h2>
-                <button type="button" class="btn btn-custom" data-bs-toggle="modal" data-bs-target="#createUsuarioModal">
+                <button type="button" class="btn btn-custom" data-bs-toggle="modal"
+                    data-bs-target="#createUsuarioModal">
                     <i class="bi bi-plus-circle"></i> Nuevo Usuario
                 </button>
             </div>
@@ -506,24 +538,27 @@
                 <form method="GET" class="row g-3">
                     <div class="col-md-4">
                         <label for="search" class="form-label">Buscar usuario</label>
-                        <input type="text" class="form-control" id="search" name="search" 
-                               value="{{search}}" placeholder="Buscar por nombre, email o usuario...">
+                        <input type="text" class="form-control" id="search" name="search" value="{{search}}"
+                            placeholder="Buscar por nombre, email o usuario...">
                     </div>
                     <div class="col-md-2">
                         <label for="rol" class="form-label">Rol</label>
                         <select class="form-select" id="rol" name="rol">
                             <option value="">Todos los roles</option>
-                            <option value="user" {{#if (eq rolFilter 'user')}}selected{{/if}}>Estudiante</option>
-                            <option value="instructor" {{#if (eq rolFilter 'instructor')}}selected{{/if}}>Instructor</option>
+                            <option value="user" {{#if (eq rolFilter 'user' )}}selected{{/if}}>Estudiante</option>
+                            <option value="instructor" {{#if (eq rolFilter 'instructor' )}}selected{{/if}}>Instructor
+                            </option>
                         </select>
                     </div>
                     <div class="col-md-2">
                         <label for="estatus" class="form-label">Estado</label>
                         <select class="form-select" id="estatus" name="estatus">
                             <option value="">Todos los estados</option>
-                            <option value="activo" {{#if (eq estatusFilter 'activo')}}selected{{/if}}>Activo</option>
-                            <option value="inactivo" {{#if (eq estatusFilter 'inactivo')}}selected{{/if}}>Inactivo</option>
-                            <option value="baneado" {{#if (eq estatusFilter 'baneado')}}selected{{/if}}>Baneado</option>
+                            <option value="activo" {{#if (eq estatusFilter 'activo' )}}selected{{/if}}>Activo</option>
+                            <option value="inactivo" {{#if (eq estatusFilter 'inactivo' )}}selected{{/if}}>Inactivo
+                            </option>
+                            <option value="baneado" {{#if (eq estatusFilter 'baneado' )}}selected{{/if}}>Baneado
+                            </option>
                         </select>
                     </div>
                     <div class="col-md-2">
@@ -578,9 +613,9 @@
                                 <td>
                                     <span class="badge badge-custom badge-rol {{rol}}">
                                         {{#if (eq rol 'instructor')}}
-                                            <i class="bi bi-mortarboard"></i>
+                                        <i class="bi bi-mortarboard"></i>
                                         {{else}}
-                                            <i class="bi bi-person"></i>
+                                        <i class="bi bi-person"></i>
                                         {{/if}}
                                         {{#if (eq rol 'instructor')}}Instructor{{else}}Estudiante{{/if}}
                                     </span>
@@ -588,11 +623,11 @@
                                 <td>
                                     <span class="badge status-{{estatus}}">
                                         {{#if (eq estatus 'activo')}}
-                                            <i class="bi bi-check-circle"></i>
+                                        <i class="bi bi-check-circle"></i>
                                         {{else if (eq estatus 'inactivo')}}
-                                            <i class="bi bi-pause-circle"></i>
+                                        <i class="bi bi-pause-circle"></i>
                                         {{else}}
-                                            <i class="bi bi-x-circle"></i>
+                                        <i class="bi bi-x-circle"></i>
                                         {{/if}}
                                         {{estatus}}
                                     </span>
@@ -624,44 +659,51 @@
                                 </td>
                                 <td>
                                     <div class="d-flex flex-column gap-1">
-                                        <button type="button" class="btn btn-action btn-view" 
-                                                onclick="viewUsuario({{id_usuario}})" title="Ver detalles">
+                                        <button type="button" class="btn btn-action btn-view"
+                                            onclick="viewUsuario({{id_usuario}})" title="Ver detalles">
                                             <i class="bi bi-eye"></i>
                                         </button>
-                                        <button type="button" class="btn btn-action btn-edit" 
-                                                onclick="editUsuario({{id_usuario}})" title="Editar">
+                                        <button type="button" class="btn btn-action btn-edit"
+                                            onclick="editUsuario({{id_usuario}})" title="Editar">
                                             <i class="bi bi-pencil"></i>
                                         </button>
                                         <div class="dropdown">
-                                            <button class="btn btn-action btn-view dropdown-toggle" 
-                                                    data-bs-toggle="dropdown" title="Más opciones">
+                                            <button class="btn btn-action btn-view dropdown-toggle"
+                                                data-bs-toggle="dropdown" title="Más opciones">
                                                 <i class="bi bi-three-dots"></i>
                                             </button>
                                             <ul class="dropdown-menu">
                                                 {{#if (eq estatus 'activo')}}
-                                                <li><a class="dropdown-item" href="#" onclick="changeStatus({{id_usuario}}, 'inactivo', '{{nombre}} {{apellido}}')">
-                                                    <i class="bi bi-pause-circle text-warning me-2"></i>Desactivar
-                                                </a></li>
+                                                <li><a class="dropdown-item" href="#"
+                                                        onclick="changeStatus({{id_usuario}}, 'inactivo', '{{nombre}} {{apellido}}')">
+                                                        <i class="bi bi-pause-circle text-warning me-2"></i>Desactivar
+                                                    </a></li>
                                                 {{/if}}
                                                 {{#if (eq estatus 'inactivo')}}
-                                                <li><a class="dropdown-item" href="#" onclick="changeStatus({{id_usuario}}, 'activo', '{{nombre}} {{apellido}}')">
-                                                    <i class="bi bi-check-circle text-success me-2"></i>Activar
-                                                </a></li>
+                                                <li><a class="dropdown-item" href="#"
+                                                        onclick="changeStatus({{id_usuario}}, 'activo', '{{nombre}} {{apellido}}')">
+                                                        <i class="bi bi-check-circle text-success me-2"></i>Activar
+                                                    </a></li>
                                                 {{/if}}
                                                 {{#unless (eq estatus 'baneado')}}
-                                                <li><a class="dropdown-item text-danger" href="#" onclick="changeStatus({{id_usuario}}, 'baneado', '{{nombre}} {{apellido}}')">
-                                                    <i class="bi bi-x-circle me-2"></i>Banear
-                                                </a></li>
+                                                <li><a class="dropdown-item text-danger" href="#"
+                                                        onclick="changeStatus({{id_usuario}}, 'baneado', '{{nombre}} {{apellido}}')">
+                                                        <i class="bi bi-x-circle me-2"></i>Banear
+                                                    </a></li>
                                                 {{/unless}}
                                                 {{#if (eq estatus 'baneado')}}
-                                                <li><a class="dropdown-item" href="#" onclick="changeStatus({{id_usuario}}, 'activo', '{{nombre}} {{apellido}}')">
-                                                    <i class="bi bi-check-circle text-success me-2"></i>Desbanear
-                                                </a></li>
+                                                <li><a class="dropdown-item" href="#"
+                                                        onclick="changeStatus({{id_usuario}}, 'activo', '{{nombre}} {{apellido}}')">
+                                                        <i class="bi bi-check-circle text-success me-2"></i>Desbanear
+                                                    </a></li>
                                                 {{/if}}
-                                                <li><hr class="dropdown-divider"></li>
-                                                <li><a class="dropdown-item text-danger" href="#" onclick="deleteUsuario({{id_usuario}}, '{{nombre}} {{apellido}}', {{cursos_creados}}, {{compras_realizadas}})">
-                                                    <i class="bi bi-trash me-2"></i>Eliminar
-                                                </a></li>
+                                                <li>
+                                                    <hr class="dropdown-divider">
+                                                </li>
+                                                <li><a class="dropdown-item text-danger" href="#"
+                                                        onclick="deleteUsuario({{id_usuario}}, '{{nombre}} {{apellido}}', {{cursos_creados}}, {{compras_realizadas}})">
+                                                        <i class="bi bi-trash me-2"></i>Eliminar
+                                                    </a></li>
                                             </ul>
                                         </div>
                                     </div>
@@ -676,7 +718,8 @@
                     <i class="bi bi-people"></i>
                     <h4>No hay usuarios</h4>
                     <p>No se encontraron usuarios con los criterios de búsqueda especificados.</p>
-                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createUsuarioModal">
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                        data-bs-target="#createUsuarioModal">
                         <i class="bi bi-plus-circle"></i> Crear Primer Usuario
                     </button>
                 </div>
@@ -695,21 +738,24 @@
                     <nav>
                         <ul class="pagination mb-0">
                             <li class="page-item {{#unless (gt currentPage 1)}}disabled{{/unless}}">
-                                <a class="page-link" href="/admin/usuarios?page={{subtract currentPage 1}}&search={{search}}&rol={{rolFilter}}&estatus={{estatusFilter}}&limit={{limit}}">
+                                <a class="page-link"
+                                    href="/admin/usuarios?page={{subtract currentPage 1}}&search={{search}}&rol={{rolFilter}}&estatus={{estatusFilter}}&limit={{limit}}">
                                     <i class="bi bi-chevron-left"></i>
                                 </a>
                             </li>
-                            
+
                             {{#for 1 totalPages}}
                             <li class="page-item {{#if (eq this ../currentPage)}}active{{/if}}">
-                                <a class="page-link" href="/admin/usuarios?page={{this}}&search={{../search}}&rol={{../rolFilter}}&estatus={{../estatusFilter}}&limit={{../limit}}">
+                                <a class="page-link"
+                                    href="/admin/usuarios?page={{this}}&search={{../search}}&rol={{../rolFilter}}&estatus={{../estatusFilter}}&limit={{../limit}}">
                                     {{this}}
                                 </a>
                             </li>
                             {{/for}}
-                            
+
                             <li class="page-item {{#unless (lt currentPage totalPages)}}disabled{{/unless}}">
-                                <a class="page-link" href="/admin/usuarios?page={{add currentPage 1}}&search={{search}}&rol={{rolFilter}}&estatus={{estatusFilter}}&limit={{limit}}">
+                                <a class="page-link"
+                                    href="/admin/usuarios?page={{add currentPage 1}}&search={{search}}&rol={{rolFilter}}&estatus={{estatusFilter}}&limit={{limit}}">
                                     <i class="bi bi-chevron-right"></i>
                                 </a>
                             </li>
@@ -737,22 +783,22 @@
                             <div class="col-md-6">
                                 <label for="create_nombre" class="form-label">Nombre *</label>
                                 <input type="text" class="form-control" id="create_nombre" name="nombre" required
-                                       placeholder="Nombre del usuario">
+                                    placeholder="Nombre del usuario">
                             </div>
                             <div class="col-md-6">
                                 <label for="create_apellido" class="form-label">Apellido *</label>
                                 <input type="text" class="form-control" id="create_apellido" name="apellido" required
-                                       placeholder="Apellido del usuario">
+                                    placeholder="Apellido del usuario">
                             </div>
                             <div class="col-md-6">
                                 <label for="create_nombre_usuario" class="form-label">Nombre de Usuario *</label>
-                                <input type="text" class="form-control" id="create_nombre_usuario" name="nombre_usuario" required
-                                       placeholder="nombre_usuario">
+                                <input type="text" class="form-control" id="create_nombre_usuario" name="nombre_usuario"
+                                    required placeholder="nombre_usuario">
                             </div>
                             <div class="col-md-6">
                                 <label for="create_email" class="form-label">Email *</label>
                                 <input type="email" class="form-control" id="create_email" name="email" required
-                                       placeholder="usuario@ejemplo.com">
+                                    placeholder="usuario@ejemplo.com">
                             </div>
                             <div class="col-md-6">
                                 <label for="create_rol" class="form-label">Rol *</label>
@@ -812,7 +858,8 @@
                             </div>
                             <div class="col-md-6">
                                 <label for="edit_nombre_usuario" class="form-label">Nombre de Usuario *</label>
-                                <input type="text" class="form-control" id="edit_nombre_usuario" name="nombre_usuario" required>
+                                <input type="text" class="form-control" id="edit_nombre_usuario" name="nombre_usuario"
+                                    required>
                             </div>
                             <div class="col-md-6">
                                 <label for="edit_email" class="form-label">Email *</label>
@@ -871,12 +918,12 @@
 
     <script>
         // Crear usuario
-        document.getElementById('createUsuarioForm').addEventListener('submit', async function(e) {
+        document.getElementById('createUsuarioForm').addEventListener('submit', async function (e) {
             e.preventDefault();
-            
+
             const formData = new FormData(this);
             const data = Object.fromEntries(formData);
-            
+
             try {
                 const response = await fetch('/admin/usuarios', {
                     method: 'POST',
@@ -885,9 +932,9 @@
                     },
                     body: JSON.stringify(data)
                 });
-                
+
                 const result = await response.json();
-                
+
                 if (result.success) {
                     showAlert('success', result.message);
                     bootstrap.Modal.getInstance(document.getElementById('createUsuarioModal')).hide();
@@ -906,7 +953,7 @@
             try {
                 const response = await fetch(`/admin/usuarios/${id}`);
                 const result = await response.json();
-                
+
                 if (result.success) {
                     const usuario = result.usuario;
                     document.getElementById('viewUsuarioContent').innerHTML = `
@@ -967,7 +1014,7 @@
                             </div>
                         </div>
                     `;
-                    
+
                     const modal = new bootstrap.Modal(document.getElementById('viewUsuarioModal'));
                     modal.show();
                 } else {
@@ -984,10 +1031,10 @@
             try {
                 const response = await fetch(`/admin/usuarios/${id}`);
                 const result = await response.json();
-                
+
                 if (result.success) {
                     const usuario = result.usuario;
-                    
+
                     document.getElementById('edit_id_usuario').value = usuario.id_usuario;
                     document.getElementById('edit_nombre').value = usuario.nombre;
                     document.getElementById('edit_apellido').value = usuario.apellido;
@@ -995,7 +1042,7 @@
                     document.getElementById('edit_email').value = usuario.email;
                     document.getElementById('edit_rol').value = usuario.rol;
                     document.getElementById('edit_estatus').value = usuario.estatus;
-                    
+
                     const modal = new bootstrap.Modal(document.getElementById('editUsuarioModal'));
                     modal.show();
                 } else {
@@ -1007,13 +1054,13 @@
             }
         }
 
-        document.getElementById('editUsuarioForm').addEventListener('submit', async function(e) {
+        document.getElementById('editUsuarioForm').addEventListener('submit', async function (e) {
             e.preventDefault();
-            
+
             const formData = new FormData(this);
             const data = Object.fromEntries(formData);
             const id = data.id_usuario;
-            
+
             try {
                 const response = await fetch(`/admin/usuarios/${id}`, {
                     method: 'PUT',
@@ -1022,9 +1069,9 @@
                     },
                     body: JSON.stringify(data)
                 });
-                
+
                 const result = await response.json();
-                
+
                 if (result.success) {
                     showAlert('success', result.message);
                     bootstrap.Modal.getInstance(document.getElementById('editUsuarioModal')).hide();
@@ -1045,7 +1092,7 @@
                 'inactivo': 'desactivar',
                 'baneado': 'banear'
             };
-            
+
             if (confirm(`¿Estás seguro de que deseas ${statusNames[newStatus]} al usuario "${nombre}"?`)) {
                 try {
                     const response = await fetch(`/admin/usuarios/${id}/status`, {
@@ -1055,9 +1102,9 @@
                         },
                         body: JSON.stringify({ estatus: newStatus })
                     });
-                    
+
                     const result = await response.json();
-                    
+
                     if (result.success) {
                         showAlert('success', result.message);
                         setTimeout(() => location.reload(), 1500);
@@ -1077,24 +1124,24 @@
                 showAlert('warning', `No se puede eliminar al usuario "${nombre}" porque tiene datos relacionados. Considera cambiar su estado a "inactivo" en su lugar.`);
                 return;
             }
-            
+
             if (confirm(`¿Estás seguro de que deseas eliminar al usuario "${nombre}"?\n\nEsta acción no se puede deshacer.`)) {
                 fetch(`/admin/usuarios/${id}`, {
                     method: 'DELETE'
                 })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        showAlert('success', data.message);
-                        setTimeout(() => location.reload(), 1500);
-                    } else {
-                        showAlert('danger', data.message);
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    showAlert('danger', 'Error al eliminar el usuario');
-                });
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            showAlert('success', data.message);
+                            setTimeout(() => location.reload(), 1500);
+                        } else {
+                            showAlert('danger', data.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        showAlert('danger', 'Error al eliminar el usuario');
+                    });
             }
         }
 
@@ -1107,9 +1154,9 @@
                 ${message}
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             `;
-            
+
             document.body.appendChild(alert);
-            
+
             setTimeout(() => {
                 if (alert.parentNode) {
                     alert.remove();
@@ -1118,4 +1165,5 @@
         }
     </script>
 </body>
+
 </html>

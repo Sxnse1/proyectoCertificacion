@@ -380,6 +380,10 @@
                     <a href="/auth/forgot-password">¿Olvidaste tu contraseña?</a>
                 </div>
 
+                {{#if redirectTo}}
+                <input type="hidden" name="redirectTo" value="{{redirectTo}}">
+                {{/if}}
+
                 <button type="submit" class="btn btn-login" id="loginButton">
                     <span class="button-text">
                         <i class="bi bi-box-arrow-in-right me-2"></i>
@@ -406,7 +410,7 @@
         <div class="login-footer">
             <p class="mb-0">
                 ¿No tienes una cuenta? 
-                <a href="/register" class="register-link">Regístrate aquí</a>
+                <a href="/register{{#if redirectTo}}?redirect={{redirectTo}}{{/if}}" class="register-link">Regístrate aquí</a>
             </p>
         </div>
     </div>

@@ -546,6 +546,283 @@
             color: var(--primary-color);
         }
 
+        /* Recommended Courses Section */
+        .recommended-courses-section {
+            background: var(--bg-secondary);
+            padding: 5rem 0;
+        }
+
+        .course-card {
+            background: var(--bg-primary);
+            border-radius: 1rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: all 0.3s ease;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .course-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .course-image {
+            position: relative;
+            height: 200px;
+            overflow: hidden;
+            background: var(--bg-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .course-thumbnail {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            object-position: center;
+            transition: transform 0.3s ease;
+        }
+
+        .course-card:hover .course-thumbnail {
+            transform: scale(1.05);
+        }
+
+        .thumb-placeholder {
+            width: 100%;
+            height: 100%;
+            background: var(--gradient-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 3rem;
+        }
+
+        .course-level {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: var(--primary-color);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 2rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: capitalize;
+        }
+
+        .course-content {
+            padding: 1.5rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .course-category {
+            color: var(--primary-color);
+            font-size: 0.875rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.5rem;
+        }
+
+        .course-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.75rem;
+            line-height: 1.3;
+        }
+
+        .course-description {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            margin-bottom: 1rem;
+            line-height: 1.5;
+            flex: 1;
+        }
+
+        .course-stats {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            padding: 0.75rem 0;
+            border-top: 1px solid var(--border-light);
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .stat-item i {
+            color: var(--primary-color);
+        }
+
+        .course-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-top: 0.75rem;
+            border-top: 1px solid var(--border-light);
+        }
+
+        .course-instructor {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .course-instructor i {
+            color: var(--primary-color);
+        }
+
+        .course-price {
+            font-weight: 700;
+            color: var(--primary-color);
+            font-size: 1.125rem;
+        }
+
+        .btn-course {
+            background: var(--gradient-primary);
+            color: white;
+            text-decoration: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            text-align: center;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-course:hover {
+            background: var(--gradient-secondary);
+            transform: translateY(-2px);
+            color: white;
+            box-shadow: 0 4px 15px rgba(234, 88, 12, 0.3);
+        }
+
+        /* Contact Modal Styles */
+        #contactModal .modal-dialog {
+            transition: transform 0.3s ease-out;
+        }
+
+        #contactModal.show .modal-dialog {
+            transform: scale(1);
+        }
+
+        #contactModal .contact-icon {
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+        }
+
+        #contactModal .form-control,
+        #contactModal .form-select {
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            padding: 12px 16px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            background-color: var(--bg-primary);
+        }
+
+        #contactModal .form-control:focus,
+        #contactModal .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(234, 88, 12, 0.15);
+            background-color: var(--bg-primary);
+        }
+
+        #contactModal .form-control.is-valid,
+        #contactModal .form-select.is-valid {
+            border-color: var(--success-color);
+            background-image: none;
+        }
+
+        #contactModal .form-control.is-invalid,
+        #contactModal .form-select.is-invalid {
+            border-color: var(--danger-color);
+            background-image: none;
+        }
+
+        #contactModal .form-label {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        #contactModal .btn-primary {
+            background: var(--gradient-primary);
+            border: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        #contactModal .btn-primary:hover {
+            background: var(--gradient-secondary);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(234, 88, 12, 0.3);
+        }
+
+        #contactModal .btn-primary:disabled {
+            background: var(--text-muted);
+            opacity: 0.7;
+            transform: none;
+            box-shadow: none;
+        }
+
+        #contactModal .alert {
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        #contactModal .alert-success {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(5, 150, 105, 0.1) 100%);
+            color: var(--success-color);
+        }
+
+        #contactModal .alert-danger {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(220, 38, 38, 0.1) 100%);
+            color: var(--danger-color);
+        }
+
+        /* Responsive adjustments for contact modal */
+        @media (max-width: 768px) {
+            #contactModal .modal-dialog {
+                margin: 10px;
+            }
+            
+            #contactModal .modal-body {
+                padding: 20px;
+            }
+            
+            #contactModal .form-control,
+            #contactModal .form-select {
+                font-size: 16px; /* Prevent zoom on iOS */
+            }
+        }
+
         /* Footer */
         .footer {
             background: var(--bg-tertiary);
@@ -647,16 +924,13 @@
                         <a class="nav-link" href="#inicio">Inicio</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#cursos">Cursos</a>
+                        <a class="nav-link" href="#cursos-recomendados">Cursos</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#instructores">Instructores</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#testimonios">Testimonios</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#contacto">Contacto</a>
+                        <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#contactModal">Contacto</a>
                     </li>
                 </ul>
 
@@ -699,7 +973,7 @@
                             <i class="bi bi-play-circle"></i>
                             Comenzar Ahora
                         </a>
-                        <a href="#cursos" class="btn-hero btn-hero-secondary">
+                        <a href="#cursos-recomendados" class="btn-hero btn-hero-secondary">
                             <i class="bi bi-eye"></i>
                             Ver Cursos
                         </a>
@@ -747,6 +1021,48 @@
             </div>
         </div>
     </section>
+
+    <!-- Recommended Courses Section -->
+    {{#if recommendedCourses}}
+    <section id="cursos-recomendados" class="recommended-courses-section py-5">
+        <div class="container">
+            <div class="row mb-5">
+                <div class="col-lg-8 mx-auto text-center">
+                    <h2 class="display-5 fw-bold mb-4 fade-in">Cursos Recomendados</h2>
+                    <p class="lead text-muted fade-in">Descubre nuestros cursos más populares y comienza tu viaje hacia la maestría</p>
+                </div>
+            </div>
+            
+            <div class="row g-4">
+                {{#each recommendedCourses}}
+                <div class="col-lg-4 col-md-6">
+                    <div class="course-card fade-in">
+                        <div class="course-image">
+                            {{#if miniatura}}
+                                <img src="{{miniatura}}" alt="{{titulo}}" class="course-thumbnail">
+                            {{else}}
+                                <div class="thumb-placeholder">
+                                    <i class="bi bi-play-circle"></i>
+                                </div>
+                            {{/if}}
+                            <div class="course-level">{{nivel}}</div>
+                        </div>
+                        <div class="course-content">
+                            <div class="course-category">{{categoria_nombre}}</div>
+                            <h3 class="course-title">{{titulo}}</h3>
+                            <p class="course-description">{{descripcion}}</p>
+                            <a href="/auth/login?redirect=/curso/{{id_curso}}" class="btn-course">
+                                Ver Curso
+                                <i class="bi bi-arrow-right"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {{/each}}
+            </div>
+        </div>
+    </section>
+    {{/if}}
 
     <!-- Features Section -->
     <section id="cursos" class="features-section">
@@ -875,7 +1191,6 @@
                     <ul class="footer-links">
                         <li><a href="#">Sobre Nosotros</a></li>
                         <li><a href="#">Instructores</a></li>
-                        <li><a href="#">Testimonios</a></li>
                         <li><a href="#">Blog</a></li>
                     </ul>
                 </div>
@@ -904,6 +1219,120 @@
             </div>
         </div>
     </footer>
+
+    <!-- Contact Modal -->
+    <div class="modal fade" id="contactModal" tabindex="-1" aria-labelledby="contactModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg">
+                <!-- Modal Header with Gradient -->
+                <div class="modal-header border-0 position-relative overflow-hidden" style="background: var(--gradient-primary); color: white;">
+                    <div class="position-absolute top-0 start-0 w-100 h-100" style="background: url('data:image/svg+xml,<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 20\"><defs><radialGradient id=\"a\" cx=\"50%\" cy=\"50%\" r=\"50%\"><stop offset=\"0%\" stop-color=\"white\" stop-opacity=\"0.1\"/><stop offset=\"100%\" stop-color=\"white\" stop-opacity=\"0\"/></radialGradient></defs><rect width=\"100\" height=\"20\" fill=\"url(%23a)\"/></svg>') no-repeat center/cover;"></div>
+                    <div class="d-flex align-items-center position-relative">
+                        <div class="contact-icon me-3">
+                            <i class="bi bi-envelope-heart" style="font-size: 2rem;"></i>
+                        </div>
+                        <div>
+                            <h4 class="modal-title fw-bold mb-1" id="contactModalLabel">¡Hablemos!</h4>
+                            <p class="mb-0 opacity-75" style="font-size: 0.9rem;">Estamos aquí para ayudarte</p>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white position-relative" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                
+                <!-- Modal Body -->
+                <div class="modal-body p-0">
+                    <!-- Welcome Section -->
+                    <div class="px-4 py-3 bg-light border-bottom">
+                        <div class="row align-items-center">
+                            <div class="col-md-8">
+                                <p class="mb-0 text-muted">
+                                    <i class="bi bi-info-circle text-primary me-2"></i>
+                                    ¿Tienes preguntas sobre nuestros cursos? ¡Escríbenos y te responderemos pronto!
+                                </p>
+                            </div>
+                            <div class="col-md-4 text-end">
+                                <div class="d-flex align-items-center justify-content-end gap-2 text-muted">
+                                    <i class="bi bi-clock"></i>
+                                    <small>Respuesta en 24h</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Form Section -->
+                    <div class="p-4">
+                        <div id="contactAlert"></div>
+                        
+                        <form id="contactForm">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold">
+                                        <i class="bi bi-person text-primary me-2"></i>Nombre Completo
+                                    </label>
+                                    <input type="text" class="form-control form-control-lg border-2" id="nombre" name="nombre" placeholder="Ingresa tu nombre completo" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold">
+                                        <i class="bi bi-envelope text-primary me-2"></i>Correo Electrónico
+                                    </label>
+                                    <input type="email" class="form-control form-control-lg border-2" id="email" name="email" placeholder="tu@email.com" required>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label fw-semibold">
+                                        <i class="bi bi-tags text-primary me-2"></i>¿En qué podemos ayudarte?
+                                    </label>
+                                    <select class="form-select form-select-lg border-2" id="asunto" name="asunto" required>
+                                        <option value="">Selecciona el tema de tu consulta</option>
+                                        <option value="consulta-curso">📚 Información sobre cursos</option>
+                                        <option value="problemas-acceso">🔐 Problemas de acceso o login</option>
+                                        <option value="soporte-tecnico">🛠️ Soporte técnico</option>
+                                        <option value="certificacion">🏆 Certificaciones y diplomas</option>
+                                        <option value="membresia">💳 Membresías y pagos</option>
+                                        <option value="sugerencia">💡 Sugerencias y feedback</option>
+                                        <option value="colaboracion">🤝 Oportunidades de colaboración</option>
+                                        <option value="otro">❓ Otro tema</option>
+                                    </select>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label fw-semibold">
+                                        <i class="bi bi-chat-text text-primary me-2"></i>Cuéntanos más detalles
+                                    </label>
+                                    <textarea class="form-control border-2" id="mensaje" name="mensaje" rows="4" placeholder="Describe tu consulta con el mayor detalle posible para brindarte la mejor ayuda..." required></textarea>
+                                    <div class="form-text">
+                                        <small class="text-muted">
+                                            <i class="bi bi-lightbulb me-1"></i>
+                                            Tip: Mientras más detalles nos proporciones, mejor podremos ayudarte.
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                
+                <!-- Modal Footer -->
+                <div class="modal-footer border-0 bg-light px-4 py-3">
+                    <div class="w-100 d-flex justify-content-between align-items-center">
+                        <div class="d-flex align-items-center text-muted">
+                            <i class="bi bi-shield-check text-success me-2"></i>
+                            <small>Tus datos están seguros con nosotros</small>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <button type="button" class="btn btn-light btn-lg px-4" data-bs-dismiss="modal">
+                                <i class="bi bi-x-lg me-2"></i>Cancelar
+                            </button>
+                            <button type="submit" form="contactForm" class="btn btn-primary btn-lg px-4" id="sendButton">
+                                <span class="button-text">
+                                    <i class="bi bi-send me-2"></i>Enviar Mensaje
+                                </span>
+                                <span class="spinner-border spinner-border-sm d-none me-2" role="status" aria-hidden="true"></span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Bootstrap 5.3 JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
@@ -1024,17 +1453,200 @@
             }
         }
 
+        // Contact Form Handler
+        class ContactFormHandler {
+            constructor() {
+                this.form = document.getElementById('contactForm');
+                this.sendButton = document.getElementById('sendButton');
+                this.buttonText = this.sendButton.querySelector('.button-text');
+                this.spinner = this.sendButton.querySelector('.spinner-border');
+                this.alertContainer = document.getElementById('contactAlert');
+                this.modal = document.getElementById('contactModal');
+                this.init();
+            }
+            
+            init() {
+                this.form.addEventListener('submit', (e) => this.handleSubmit(e));
+                
+                // Reset form when modal is closed
+                this.modal.addEventListener('hidden.bs.modal', () => {
+                    this.form.reset();
+                    this.clearAlerts();
+                    this.setLoadingState(false);
+                });
+                
+                // Add real-time validation
+                this.addValidation();
+            }
+            
+            addValidation() {
+                const inputs = this.form.querySelectorAll('input, select, textarea');
+                inputs.forEach(input => {
+                    input.addEventListener('blur', () => this.validateField(input));
+                    input.addEventListener('input', () => {
+                        if (input.classList.contains('is-invalid')) {
+                            this.validateField(input);
+                        }
+                    });
+                });
+            }
+            
+            validateField(field) {
+                const isValid = field.checkValidity();
+                
+                if (isValid) {
+                    field.classList.remove('is-invalid');
+                    field.classList.add('is-valid');
+                } else {
+                    field.classList.remove('is-valid');
+                    field.classList.add('is-invalid');
+                }
+                
+                return isValid;
+            }
+            
+            validateForm() {
+                const inputs = this.form.querySelectorAll('input, select, textarea');
+                let isValid = true;
+                
+                inputs.forEach(input => {
+                    if (!this.validateField(input)) {
+                        isValid = false;
+                    }
+                });
+                
+                return isValid;
+            }
+            
+            async handleSubmit(e) {
+                e.preventDefault();
+                
+                // Clear previous alerts
+                this.clearAlerts();
+                
+                // Validate form
+                if (!this.validateForm()) {
+                    this.showError('Por favor, completa todos los campos correctamente.');
+                    return;
+                }
+                
+                // Show loading state
+                this.setLoadingState(true);
+                
+                const formData = new FormData(this.form);
+                const data = {
+                    nombre: formData.get('nombre').trim(),
+                    email: formData.get('email').trim(),
+                    asunto: formData.get('asunto'),
+                    mensaje: formData.get('mensaje').trim()
+                };
+                
+                try {
+                    console.log('📧 Enviando mensaje de contacto...', data);
+                    
+                    const response = await fetch('/contact', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(data)
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (response.ok) {
+                        this.showSuccess();
+                        this.form.reset();
+                        this.clearValidation();
+                        
+                        // Close modal after delay
+                        setTimeout(() => {
+                            const modalInstance = bootstrap.Modal.getInstance(this.modal);
+                            if (modalInstance) {
+                                modalInstance.hide();
+                            }
+                        }, 3000);
+                    } else {
+                        this.showError(result.error || 'Error al enviar el mensaje. Intenta nuevamente.');
+                    }
+                } catch (error) {
+                    console.error('❌ Error al enviar contacto:', error);
+                    this.showError('Error de conexión. Verifica tu conexión a internet e intenta nuevamente.');
+                } finally {
+                    this.setLoadingState(false);
+                }
+            }
+            
+            setLoadingState(loading) {
+                this.sendButton.disabled = loading;
+                const otherInputs = this.form.querySelectorAll('input, select, textarea, button:not(#sendButton)');
+                
+                if (loading) {
+                    this.buttonText.textContent = 'Enviando...';
+                    this.spinner.classList.remove('d-none');
+                    otherInputs.forEach(input => input.disabled = true);
+                } else {
+                    this.buttonText.innerHTML = '<i class="bi bi-send me-2"></i>Enviar Mensaje';
+                    this.spinner.classList.add('d-none');
+                    otherInputs.forEach(input => input.disabled = false);
+                }
+            }
+            
+            clearAlerts() {
+                this.alertContainer.innerHTML = '';
+            }
+            
+            clearValidation() {
+                const inputs = this.form.querySelectorAll('input, select, textarea');
+                inputs.forEach(input => {
+                    input.classList.remove('is-valid', 'is-invalid');
+                });
+            }
+            
+            showSuccess() {
+                this.alertContainer.innerHTML = `
+                    <div class="alert alert-success alert-dismissible fade show border-0 shadow-sm" role="alert">
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-check-circle-fill text-success me-3" style="font-size: 1.5rem;"></i>
+                            <div>
+                                <h6 class="mb-1 fw-bold">¡Mensaje enviado exitosamente!</h6>
+                                <small class="text-muted">Te contactaremos en las próximas 24 horas.</small>
+                            </div>
+                        </div>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+                    </div>
+                `;
+            }
+            
+            showError(message) {
+                this.alertContainer.innerHTML = `
+                    <div class="alert alert-danger alert-dismissible fade show border-0 shadow-sm" role="alert">
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-exclamation-triangle-fill text-danger me-3" style="font-size: 1.5rem;"></i>
+                            <div>
+                                <h6 class="mb-1 fw-bold">Error al enviar mensaje</h6>
+                                <small class="text-muted">${message}</small>
+                            </div>
+                        </div>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+                    </div>
+                `;
+            }
+        }
+
         // Initialize all components when DOM is ready
         document.addEventListener('DOMContentLoaded', function() {
             new ThemeManager();
             new ScrollAnimations();
             new SmoothScrolling();
             new MobileNavigation();
+            new ContactFormHandler();
             
             console.log('✨ StartEducation Homepage iniciada');
             console.log('🎨 Modo oscuro/claro disponible');
             console.log('💫 Animaciones de scroll activas');
             console.log('📱 Navegación móvil optimizada');
+            console.log('📧 Formulario de contacto activo');
         });
     </script>
 </body>

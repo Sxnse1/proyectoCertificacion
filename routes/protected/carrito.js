@@ -53,7 +53,7 @@ router.get('/', async function(req, res, next) {
       userName: user.nombre,
       userEmail: user.email,
       userRole: user.rol,
-      layout: 'layouts/main'
+      layout: 'layouts/main'  // Layout corregido sin referencias req.get
     });
 
   } catch (error) {
