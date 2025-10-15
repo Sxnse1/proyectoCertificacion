@@ -577,9 +577,18 @@
       {{#each categorias}}
         <div class="col-md-4 mb-4">
           {{! Esta es la estructura de tarjeta que coincide con tu imagen }}
-          <div class="card h-100 shadow-sm">
-            <img src="{{this.imagen_url}}" class="card-img-top" alt="{{this.nombre}}" style="height: 200px; object-fit: cover;">
-            <div class="card-body d-flex flex-column">
+                    <div class="card h-100 shadow-sm">
+                        {{#if this.imagen_url}}
+                            <img src="{{this.imagen_url}}" class="card-img-top" alt="{{this.nombre}}" style="height: 200px; object-fit: cover;">
+                        {{else}}
+                            <div class="card-img-placeholder" style="height:200px; display:flex; align-items:center; justify-content:center; background: linear-gradient(135deg, rgba(234,88,12,0.95), rgba(59,130,246,0.95)); color:white;">
+                                <div class="text-center">
+                                    <i class="bi bi-book" style="font-size:2rem; opacity:0.95;"></i>
+                                    <div style="font-weight:600; margin-top:6px;">{{this.nombre}}</div>
+                                </div>
+                            </div>
+                        {{/if}}
+                        <div class="card-body d-flex flex-column">
               <h5 class="card-title">{{this.nombre}}</h5>
               <p class="card-text text-muted">{{this.descripcion}}</p>
               <div class="mt-auto">
@@ -634,10 +643,10 @@
   {{> recomendaciones}}
 
   {{! 2. Mostramos el div de progreso vacío con un mensaje }}
-   <div class="mb-5 text-center">
+   {{!-- <div class="mb-5 text-center">
     <h2 class="h4">Mi Progreso de Aprendizaje</h2>
     <p class="text-muted">Aún no has comenzado ningún curso. ¡Elige uno de nuestros cursos recomendados para empezar!</p>
-  </div>
+  </div> --}}
 {{/if}}
         <!-- Progreso de Aprendizaje -->
         <div class="table-section">
@@ -698,13 +707,27 @@
                                 <div class="row">
                                     {{#each recommendedCourses}}
                                     <div class="col-md-6 col-lg-4 mb-4">
-                                        <div class="categoria-card h-100">
-                                            <div class="categoria-header">
-                                                <div class="categoria-info">
-                                                    <div class="categoria-name">{{titulo}}</div>
-                                                    <div class="categoria-description">{{descripcion}}</div>
-                                                </div>
-                                            </div>
+                                                                            <div class="categoria-card h-100">
+                                                                                    {{#if miniatura}}
+                                                                                        <img src="{{miniatura}}" class="card-img-top mb-3" alt="{{titulo}}" style="height:160px; object-fit:cover; border-radius:8px;">
+                                                                                    {{else}}
+                                                                                        {{#if imagen_url}}
+                                                                                            <img src="{{imagen_url}}" class="card-img-top mb-3" alt="{{titulo}}" style="height:160px; object-fit:cover; border-radius:8px;">
+                                                                                        {{else}}
+                                                                                            <div class="thumb-placeholder mb-3" style="height:160px; display:flex; align-items:center; justify-content:center; border-radius:8px; background: linear-gradient(135deg, var(--primary-color), var(--success-color)); color:white;">
+                                                                                                <div class="text-center">
+                                                                                                    <i class="bi bi-film" style="font-size:1.75rem;"></i>
+                                                                                                    <div style="font-weight:600; font-size:0.95rem; margin-top:6px;">{{titulo}}</div>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        {{/if}}
+                                                                                    {{/if}}
+                                                                                            <div class="categoria-header">
+                                                                                                    <div class="categoria-info">
+                                                                                                            <div class="categoria-name">{{titulo}}</div>
+                                                                                                            <div class="categoria-description">{{descripcion}}</div>
+                                                                                                    </div>
+                                                                                            </div>
                                             <div class="categoria-stats">
                                                 <div class="categoria-stat">
                                                     <i class="bi bi-person"></i> {{instructor}}
