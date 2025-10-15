@@ -1,20 +1,21 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{title}} - StartEducation</title>
-    
+
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="/images/favicon.svg">
-    
+
     <!-- Bootstrap 5.3 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
+
     <style>
         :root {
             --primary-color: #ea580c;
@@ -294,10 +295,25 @@
             margin-bottom: 1rem;
         }
 
-        .action-icon.primary { background: rgba(234, 88, 12, 0.1); color: var(--primary-color); }
-        .action-icon.success { background: rgba(16, 185, 129, 0.1); color: var(--success-color); }
-        .action-icon.warning { background: rgba(245, 158, 11, 0.1); color: var(--warning-color); }
-        .action-icon.info { background: rgba(59, 130, 246, 0.1); color: var(--info-color); }
+        .action-icon.primary {
+            background: rgba(234, 88, 12, 0.1);
+            color: var(--primary-color);
+        }
+
+        .action-icon.success {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success-color);
+        }
+
+        .action-icon.warning {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning-color);
+        }
+
+        .action-icon.info {
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--info-color);
+        }
 
         .categoria-card {
             background: white;
@@ -313,6 +329,43 @@
             transform: translateY(-2px);
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
             border-color: var(--primary-color);
+        }
+
+        .curso-thumbnail {
+            width: 100%;
+            height: 160px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            background: var(--bg-light);
+        }
+
+        .thumb-placeholder {
+            width: 100%;
+            height: 160px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            background: linear-gradient(135deg, var(--primary-color), var(--success-color));
+            color: white;
+            margin-bottom: 1rem;
+        }
+
+        .card-img-top {
+            aspect-ratio: 16/9;
+            object-fit: cover;
+            border-radius: 8px 8px 0 0;
+        }
+
+        .card-img-placeholder {
+            aspect-ratio: 16/9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, rgba(234,88,12,0.95), rgba(59,130,246,0.95));
+            color: white;
+            border-radius: 8px 8px 0 0;
         }
 
         .categoria-header {
@@ -386,11 +439,11 @@
             .main-container {
                 padding: 1rem;
             }
-            
+
             .header-section {
                 padding: 1.5rem;
             }
-            
+
             .controls-row {
                 flex-direction: column;
                 align-items: stretch;
@@ -458,22 +511,23 @@
             .main-container {
                 padding: 1rem;
             }
-            
+
             .stats-row {
                 grid-template-columns: repeat(2, 1fr);
                 gap: 1rem;
             }
-            
+
             .stat-card {
                 padding: 1rem;
             }
-            
+
             .stat-number {
                 font-size: 2rem;
             }
         }
     </style>
 </head>
+
 <body>
     <div class="main-container">
         <!-- Mensaje de Bienvenida (temporal) -->
@@ -497,13 +551,14 @@
                     <a href="/perfil" class="btn btn-outline-secondary">
                         <i class="bi bi-person me-2"></i>Mi Perfil
                     </a>
-                    <a href="/auth/logout" class="btn btn-outline-secondary">
-                        <i class="bi bi-box-arrow-right me-2"></i>Cerrar Sesión
-                    </a>
                     <a href="/suscripciones" class="btn btn-outline-secondary">
                         <i class="bi bi-credit-card me-2"></i>
                         {{#if subscription.active}}Suscripción Activa{{else}}Sin Suscripción{{/if}}
                     </a>
+                    <a href="/auth/logout" class="btn btn-outline-secondary">
+                        <i class="bi bi-box-arrow-right me-2"></i>Cerrar Sesión
+                    </a>
+                    
                 </div>
             </div>
             <div class="stats-row">
@@ -525,17 +580,19 @@
                 </div>
                 <div class="stat-card">
                     <span class="stat-number">
+                        
                         {{#if subscription.active}}
-                            <i class="bi bi-check-circle text-success"></i> Activa
+                        <i class="bi bi-check-circle text-success"></i> Activa
                         {{else}}
-                            <i class="bi bi-exclamation-triangle text-warning"></i> Inactiva
+                        <i class="bi bi-exclamation-triangle text-warning"></i> Inactiva
                         {{/if}}
                     </span>
-                    <div class="stat-label">Suscripción</div>
+                    {{!-- <div class="stat-label">Suscripción</div> --}}
                     {{#if subscription.active}}
-                        <small class="text-muted">Plan: {{subscription.planName}}<br>Renovación: {{formatDate subscription.endDate}}</small>
+                    <small class="text-muted">Plan: {{subscription.planName}}<br>Renovación: {{formatDate
+                        subscription.endDate}}</small>
                     {{else}}
-                        <small class="text-muted">Suscríbete para acceder a todo</small>
+                    <small class="text-muted">Suscríbete para acceder a todo</small>
                     {{/if}}
                 </div>
             </div>
@@ -568,86 +625,89 @@
         </div>
 
 
-{{! Se define un "partial" para las recomendaciones con el estilo visual corregido }}
-{{#*inline "recomendaciones"}}
-  <div class="mb-5">
-    <h2 class="h4">Cursos Recomendados para Ti</h2>
-    <p class="text-muted">Explora nuevas áreas y sigue expandiendo tus habilidades.</p>
-    <div class="row">
-      {{#each categorias}}
-        <div class="col-md-4 mb-4">
-          {{! Esta es la estructura de tarjeta que coincide con tu imagen }}
+        {{! Se define un "partial" para las recomendaciones con el estilo visual corregido }}
+        {{#*inline "recomendaciones"}}
+        <div class="mb-5">
+            <h2 class="h4">Cursos Recomendados para Ti</h2>
+            <p class="text-muted">Explora nuevas áreas y sigue expandiendo tus habilidades.</p>
+            <div class="row">
+                {{#each categorias}}
+                <div class="col-md-4 mb-4">
+                    {{! Esta es la estructura de tarjeta que coincide con tu imagen }}
                     <div class="card h-100 shadow-sm">
                         {{#if this.imagen_url}}
-                            <img src="{{this.imagen_url}}" class="card-img-top" alt="{{this.nombre}}" style="height: 200px; object-fit: cover;">
+                        <img src="{{this.imagen_url}}" class="card-img-top" alt="{{this.nombre}}">
                         {{else}}
-                            <div class="card-img-placeholder" style="height:200px; display:flex; align-items:center; justify-content:center; background: linear-gradient(135deg, rgba(234,88,12,0.95), rgba(59,130,246,0.95)); color:white;">
-                                <div class="text-center">
-                                    <i class="bi bi-book" style="font-size:2rem; opacity:0.95;"></i>
-                                    <div style="font-weight:600; margin-top:6px;">{{this.nombre}}</div>
-                                </div>
+                        <div class="card-img-placeholder">
+                            <div class="text-center">
+                                <i class="bi bi-book" style="font-size:2rem; opacity:0.95;"></i>
+                                <div style="font-weight:600; margin-top:6px;">{{this.nombre}}</div>
                             </div>
+                        </div>
                         {{/if}}
                         <div class="card-body d-flex flex-column">
-              <h5 class="card-title">{{this.nombre}}</h5>
-              <p class="card-text text-muted">{{this.descripcion}}</p>
-              <div class="mt-auto">
-                 <a href="/ruta-al-curso/{{this.id_curso}}" class="btn btn-primary">Ver Curso</a>
-              </div>
+                            <h5 class="card-title">{{this.nombre}}</h5>
+                            <p class="card-text text-muted">{{this.descripcion}}</p>
+                            <div class="mt-auto">
+                                <a href="/curso/{{this.id_curso}}" class="btn btn-primary">Ver Curso</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {{else}}
+                <div class="col-12">
+                    <p>No hay recomendaciones disponibles en este momento.</p>
+                </div>
+                {{/each}}
             </div>
-          </div>
         </div>
-      {{else}}
-        <div class="col-12">
-            <p>No hay recomendaciones disponibles en este momento.</p>
-        </div>
-      {{/each}}
-    </div>
-  </div>
-{{/inline}}
+        {{/inline}}
 
 
-{{! Lógica principal para decidir qué mostrar primero }}
+        {{! Lógica principal para decidir qué mostrar primero }}
 
-{{#if cursosEnProgreso.length}}
-  {{! --- SI EL USUARIO YA TIENE CURSOS EN PROGRESO --- }}
+        {{#if cursosEnProgreso.length}}
+        {{! --- SI EL USUARIO YA TIENE CURSOS EN PROGRESO --- }}
 
-  {{! 1. Mostramos primero su progreso }}
-  <div class="mb-5">
-    <h2 class="h4">Mi Progreso de Aprendizaje</h2>
-    <p class="text-muted">¡Sigue así! Estás a punto de completar tus metas.</p>
-    <div class="row">
-      {{#each cursosEnProgreso}}
-        <div class="col-md-4 mb-4">
-          <div class="card h-100 shadow-sm">
-            <img src="{{this.imagen_url}}" class="card-img-top" alt="{{this.nombre}}" style="height: 200px; object-fit: cover;">
-            <div class="card-body">
-              <h5 class="card-title">{{this.nombre}}</h5>
-              <div class="progress">
-                <div class="progress-bar" role="progressbar" style="width: {{this.progreso}}%;" aria-valuenow="{{this.progreso}}" aria-valuemin="0" aria-valuemax="100">{{this.progreso}}%</div>
-              </div>
+        {{! 1. Mostramos primero su progreso }}
+        <div class="mb-5">
+            <h2 class="h4">Mi Progreso de Aprendizaje</h2>
+            <p class="text-muted">¡Sigue así! Estás a punto de completar tus metas.</p>
+            <div class="row">
+                {{#each cursosEnProgreso}}
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100 shadow-sm">
+                        <img src="{{this.imagen_url}}" class="card-img-top" alt="{{this.nombre}}">
+                        <div class="card-body">
+                            <h5 class="card-title">{{this.nombre}}</h5>
+                            <div class="progress">
+                                <div class="progress-bar" role="progressbar" style="width: {{this.progreso}}%;"
+                                    aria-valuenow="{{this.progreso}}" aria-valuemin="0" aria-valuemax="100">
+                                    {{this.progreso}}%</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {{/each}}
             </div>
-          </div>
         </div>
-      {{/each}}
-    </div>
-  </div>
 
-  {{! 2. Mostramos las recomendaciones debajo }}
-  {{> recomendaciones}}
+        {{! 2. Mostramos las recomendaciones debajo }}
+        {{> recomendaciones}}
 
-{{else}}
-  {{! --- SI EL USUARIO ES NUEVO Y NO HA EMPEZADO NINGÚN CURSO --- }}
+        {{else}}
+        {{! --- SI EL USUARIO ES NUEVO Y NO HA EMPEZADO NINGÚN CURSO --- }}
 
-  {{! 1. Mostramos primero las recomendaciones para motivarlo a empezar }}
-  {{> recomendaciones}}
+        {{! 1. Mostramos primero las recomendaciones para motivarlo a empezar }}
+        {{> recomendaciones}}
 
-  {{! 2. Mostramos el div de progreso vacío con un mensaje }}
-   {{!-- <div class="mb-5 text-center">
-    <h2 class="h4">Mi Progreso de Aprendizaje</h2>
-    <p class="text-muted">Aún no has comenzado ningún curso. ¡Elige uno de nuestros cursos recomendados para empezar!</p>
-  </div> --}}
-{{/if}}
+        {{! 2. Mostramos el div de progreso vacío con un mensaje }}
+        {{!-- <div class="mb-5 text-center">
+            <h2 class="h4">Mi Progreso de Aprendizaje</h2>
+            <p class="text-muted">Aún no has comenzado ningún curso. ¡Elige uno de nuestros cursos recomendados para
+                empezar!</p>
+        </div> --}}
+        {{/if}}
         <!-- Progreso de Aprendizaje -->
         <div class="table-section">
             <div class="table-header">
@@ -663,14 +723,19 @@
                         <h6 class="mb-0">Progreso General</h6>
                         <span class="badge bg-primary">
                             {{#if stats.cursosCompletados}}
-                                {{math stats.cursosCompletados "*" 100 "/" stats.cursosInscritos "round"}}%
+                            {{math stats.cursosCompletados "*" 100 "/" stats.cursosInscritos "round"}}%
                             {{else}}
-                                0%
+                            0%
                             {{/if}}
                         </span>
                     </div>
                     <div class="progress mb-3">
-                        <div class="progress-bar" role="progressbar" style="width: {{#if stats.cursosCompletados}}{{math stats.cursosCompletados "*" 100 "/" stats.cursosInscritos "round"}}%{{else}}0%{{/if}}" aria-valuenow="{{#if stats.cursosCompletados}}{{math stats.cursosCompletados "*" 100 "/" stats.cursosInscritos "round"}}{{else}}0{{/if}}" aria-valuemin="0" aria-valuemax="100"></div>
+                        <div class="progress-bar" role="progressbar"
+                            style="width: {{#if stats.cursosCompletados}}{{math stats.cursosCompletados " *" 100 "/"
+                            stats.cursosInscritos "round" }}%{{else}}0%{{/if}}"
+                            aria-valuenow="{{#if stats.cursosCompletados}}{{math stats.cursosCompletados " *" 100 "/"
+                            stats.cursosInscritos "round" }}{{else}}0{{/if}}" aria-valuemin="0" aria-valuemax="100">
+                        </div>
                     </div>
                     <div class="row text-center">
                         <div class="col">
@@ -695,69 +760,71 @@
 
                 {{!-- Cursos recomendados abajo si SÍ tienes cursos inscritos--}}
                 {{#if stats.cursosInscritos}}
-                    {{#if recommendedCourses.length}}
-                        <div class="table-section" style="margin-bottom:2rem;">
-                            <div class="table-header">
-                                <h5 class="mb-0">
-                                    <i class="bi bi-stars me-2"></i>
-                                    Cursos Recomendados Para Ti
-                                </h5>
-                            </div>
-                            <div class="p-4">
-                                <div class="row">
-                                    {{#each recommendedCourses}}
-                                    <div class="col-md-6 col-lg-4 mb-4">
-                                                                            <div class="categoria-card h-100">
-                                                                                    {{#if miniatura}}
-                                                                                        <img src="{{miniatura}}" class="card-img-top mb-3" alt="{{titulo}}" style="height:160px; object-fit:cover; border-radius:8px;">
-                                                                                    {{else}}
-                                                                                        {{#if imagen_url}}
-                                                                                            <img src="{{imagen_url}}" class="card-img-top mb-3" alt="{{titulo}}" style="height:160px; object-fit:cover; border-radius:8px;">
-                                                                                        {{else}}
-                                                                                            <div class="thumb-placeholder mb-3" style="height:160px; display:flex; align-items:center; justify-content:center; border-radius:8px; background: linear-gradient(135deg, var(--primary-color), var(--success-color)); color:white;">
-                                                                                                <div class="text-center">
-                                                                                                    <i class="bi bi-film" style="font-size:1.75rem;"></i>
-                                                                                                    <div style="font-weight:600; font-size:0.95rem; margin-top:6px;">{{titulo}}</div>
-                                                                                                </div>
-                                                                                            </div>
-                                                                                        {{/if}}
-                                                                                    {{/if}}
-                                                                                            <div class="categoria-header">
-                                                                                                    <div class="categoria-info">
-                                                                                                            <div class="categoria-name">{{titulo}}</div>
-                                                                                                            <div class="categoria-description">{{descripcion}}</div>
-                                                                                                    </div>
-                                                                                            </div>
-                                            <div class="categoria-stats">
-                                                <div class="categoria-stat">
-                                                    <i class="bi bi-person"></i> {{instructor}}
-                                                </div>
-                                                <div class="categoria-stat">
-                                                    <i class="bi bi-clock"></i> {{duracion}}h
-                                                </div>
-                                            </div>
-                                            <div class="categoria-actions">
-                                                <a href="/cursos/{{id}}" class="btn btn-primary btn-sm">
-                                                    <i class="bi bi-search"></i> Ver Curso
-                                                </a>
-                                                <a href="/cursos/{{id}}/inscribir" class="btn btn-success btn-sm">
-                                                    <i class="bi bi-plus-circle"></i> Inscribirme
-                                                </a>
+                {{#if recommendedCourses.length}}
+                <div class="table-section" style="margin-bottom:2rem;">
+                    <div class="table-header">
+                        <h5 class="mb-0">
+                            <i class="bi bi-stars me-2"></i>
+                            Cursos Recomendados Para Ti
+                        </h5>
+                    </div>
+                    <div class="p-4">
+                        <div class="row">
+                            {{#each recommendedCourses}}
+                            <div class="col-md-6 col-lg-4 mb-4">
+                                <div class="categoria-card h-100">
+                                    {{#if miniatura}}
+                                    <img src="{{miniatura}}" class="curso-thumbnail" alt="{{titulo}}">
+                                    {{else}}
+                                    {{#if imagen_url}}
+                                    <img src="{{imagen_url}}" class="curso-thumbnail" alt="{{titulo}}">
+                                    {{else}}
+                                    <div class="thumb-placeholder">
+                                        <div class="text-center">
+                                            <i class="bi bi-film" style="font-size:1.75rem;"></i>
+                                            <div style="font-weight:600; font-size:0.95rem; margin-top:6px;">{{titulo}}
                                             </div>
                                         </div>
                                     </div>
-                                    {{/each}}
+                                    {{/if}}
+                                    {{/if}}
+                                    <div class="categoria-header">
+                                        <div class="categoria-info">
+                                            <div class="categoria-name">{{titulo}}</div>
+                                            <div class="categoria-description">{{descripcion}}</div>
+                                        </div>
+                                    </div>
+                                    <div class="categoria-stats">
+                                        <div class="categoria-stat">
+                                            <i class="bi bi-person"></i> {{instructor}}
+                                        </div>
+                                        <div class="categoria-stat">
+                                            <i class="bi bi-clock"></i> {{duracion}}h
+                                        </div>
+                                    </div>
+                                    <div class="categoria-actions">
+                                        <a href="/curso/{{id}}" class="btn btn-primary btn-sm">
+                                            <i class="bi bi-search"></i> Ver Curso
+                                        </a>
+                                        <a href="/cursos/{{id}}/inscribir" class="btn btn-success btn-sm">
+                                            <i class="bi bi-plus-circle"></i> Inscribirme
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
+                            {{/each}}
                         </div>
-                    {{/if}}
+                    </div>
+                </div>
+                {{/if}}
                 {{/if}}
 
                 {{#unless stats.cursosInscritos}}
                 <div class="empty-state">
                     <i class="bi bi-book"></i>
                     <h4>¡Comienza tu aventura de aprendizaje!</h4>
-                    <p>Aún no tienes cursos inscritos. Explora nuestro catálogo y encuentra el curso perfecto para ti.</p>
+                    <p>Aún no tienes cursos inscritos. Explora nuestro catálogo y encuentra el curso perfecto para ti.
+                    </p>
                     <a href="/cursos" class="btn btn-primary">
                         <i class="bi bi-search me-2"></i>Explorar Cursos Disponibles
                     </a>
@@ -819,17 +886,17 @@
 
     <script>
         // Ocultar mensaje de bienvenida después de 4 segundos
-        setTimeout(function() {
+        setTimeout(function () {
             const welcome = document.getElementById('welcome-message');
             if (welcome) welcome.style.display = 'none';
         }, 4000);
     </script>
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    
+
     <script>
         // Animaciones de entrada
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             // Animar las estadísticas
             const statCards = document.querySelectorAll('.stat-card');
             statCards.forEach((card, index) => {
@@ -853,14 +920,15 @@
 
         // Efecto hover mejorado para las tarjetas de estadísticas
         document.querySelectorAll('.stat-card').forEach(card => {
-            card.addEventListener('mouseenter', function() {
+            card.addEventListener('mouseenter', function () {
                 this.style.transform = 'translateY(-8px) scale(1.02)';
             });
-            
-            card.addEventListener('mouseleave', function() {
+
+            card.addEventListener('mouseleave', function () {
                 this.style.transform = 'translateY(0) scale(1)';
             });
         });
     </script>
 </body>
+
 </html>

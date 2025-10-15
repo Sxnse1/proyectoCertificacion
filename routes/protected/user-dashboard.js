@@ -59,13 +59,13 @@ router.get('/', async function(req, res, next) {
           const cursosRecomendadosResult = await db.executeQuery(`
             WITH RankedCursos AS (
               SELECT
-                titulo, descripcion, miniatura, nivel,
+                id_curso, titulo, descripcion, miniatura, nivel,
                 ROW_NUMBER() OVER(PARTITION BY nivel ORDER BY NEWID()) as rn
               FROM Cursos
               WHERE estatus = 'publicado'
             )
             SELECT
-              titulo AS nombre, descripcion, miniatura, nivel
+              id_curso, titulo AS nombre, descripcion, miniatura, nivel
             FROM RankedCursos
             WHERE rn = 1 AND nivel IN ('básico', 'intermedio', 'avanzado');
           `);
@@ -163,12 +163,31 @@ router.get('/', async function(req, res, next) {
       ];
     }
 
+    // Normalizar objetos para la plantilla: asegurarnos de tener campos consistentes
+    const normalizedRecommended = recomendaciones.map((c, idx) => {
+      const titulo = c.titulo || c.nombre || c.titulo || `Curso ${idx + 1}`;
+      const descripcion = c.descripcion || c.descripcion || '';
+      const miniatura = c.miniatura || null;
+      const imagen_url = c.imagen_url || (miniatura ? bunnyService.getBunnyCdnUrl(miniatura) : null) || c.imagen_url || null;
+      // intentar extraer id si existe (id_curso o id)
+      const id = c.id_curso || c.id || null;
+      return { id, titulo, descripcion, miniatura, imagen_url };
+    });
+
+    // Log de depuración: imprime las primeras recomendaciones (miniatura/imagen_url)
+    try {
+      console.log('[USER-DASHBOARD] 🔍 recommendedCourses sample:', JSON.stringify(normalizedRecommended.slice(0,5), null, 2));
+    } catch (e) {
+      console.log('[USER-DASHBOARD] 🔍 Error al serializar recomendaciones:', e.message);
+    }
+
     res.render('estudiante/user-dashboard', {
       title: 'Mi Dashboard - StartEducation',
       user: user,
       stats: { cursosInscritos, cursosCompletados, horasEstudio, certificados },
       subscription: subscription,
       categorias: recomendaciones,
+      recommendedCourses: normalizedRecommended,
       cursosEnProgreso: cursosEnProgreso,
       layout: false
     });

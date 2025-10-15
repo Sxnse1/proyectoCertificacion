@@ -138,6 +138,8 @@ router.get('/:cursoId', requireAuth, async function(req, res, next) {
 
     console.log('[CURSO-DETALLE] 📊 Progreso:', progreso);
 
+    const backUrl = req.get('referer') || '/user-dashboard';
+
     res.render('public/curso-detalle', {
       title: `${curso.titulo} - StartEducation`,
       curso: curso,
@@ -147,6 +149,7 @@ router.get('/:cursoId', requireAuth, async function(req, res, next) {
       userName: user.nombre,
       userEmail: user.email,
       userRole: user.rol
+      , backUrl: backUrl
     });
 
   } catch (error) {

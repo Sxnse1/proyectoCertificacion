@@ -237,6 +237,28 @@ class BunnyService {
   }
 
   /**
+   * Construye una URL pública para miniaturas o recursos en Bunny CDN.
+   * Acepta tres formatos en `pathOrId`:
+   * - URL absoluta (https://...): se devuelve tal cual
+   * - GUID/ID de video de Bunny: construye la URL del thumbnail del video
+   * - Ruta relativa/clave: la prefixa con el hostname CDN configurado
+   * @param {string} pathOrId
+   * @returns {string|null}
+   */
+  getBunnyCdnUrl(pathOrId) {
+    if (!pathOrId) return null;
+    // Si ya es URL absoluta la devolvemos
+    if (/^https?:\/\//i.test(pathOrId)) return pathOrId;
+    // Si parece un GUID/ID (alfanumérico con guiones, longitud > 8) asumimos videoId
+    if (/^[A-Za-z0-9-]{8,}$/.test(pathOrId)) {
+      return `${this.streamBaseUrl}/${this.libraryId}/${pathOrId}/thumbnail.jpg`;
+    }
+    // En cualquier otro caso, tratamos como ruta relativa dentro del CDN hostname
+    const clean = pathOrId.replace(/^\/+/, '');
+    return `https://${this.cdnHostname}/${clean}`;
+  }
+
+  /**
    * Mapea los estados de Bunny.net a estados más comprensibles
    * @param {number} bunnyStatus - Estado numérico de Bunny.net
    * @returns {string} - Estado mapeado
