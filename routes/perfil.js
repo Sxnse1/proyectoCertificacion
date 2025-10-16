@@ -86,6 +86,32 @@ router.get('/', async (req, res) => {
         `);
       
       stats = studentStats.recordset[0];
+      
+      // Información de suscripción para estudiantes
+      const subscriptionQuery = await pool.request()
+        .input('userId', sql.Int, user.id)
+        .query(`
+          SELECT 
+            s.id_suscripcion,
+            s.estatus,
+            s.fecha_compra,
+            s.fecha_vencimiento,
+            m.nombre as nombre_membresia,
+            m.precio,
+            m.tipo_periodo,
+            CASE 
+              WHEN s.estatus = 'activa' AND s.fecha_vencimiento > GETDATE() THEN 1
+              ELSE 0
+            END as tiene_suscripcion_activa,
+            DATEDIFF(day, GETDATE(), s.fecha_vencimiento) as dias_restantes
+          FROM Suscripciones s
+          INNER JOIN Membresias m ON s.id_membresia = m.id_membresia
+          WHERE s.id_usuario = @userId 
+          ORDER BY s.fecha_compra DESC
+        `);
+      
+      const subscription = subscriptionQuery.recordset.length > 0 ? subscriptionQuery.recordset[0] : null;
+      stats.subscription = subscription;
     }
     
     // Actividad reciente

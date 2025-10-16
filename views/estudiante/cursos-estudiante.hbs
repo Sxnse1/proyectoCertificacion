@@ -681,7 +681,8 @@
                                 <a href="/cursos/{{id_curso}}" class="btn btn-primary flex-fill">
                                     <i class="bi bi-eye me-1"></i>Ver
                                 </a>
-                                <button class="btn btn-success" onclick="agregarAlCarritoLista({{id_curso}})" title="Agregar al carrito">
+                                <button class="btn btn-success" onclick="agregarAlCarritoLista({{id_curso}})"
+                                    title="Agregar al carrito">
                                     <i class="bi bi-cart-plus"></i>
                                 </button>
                             </div>
@@ -761,33 +762,33 @@
                     'Content-Type': 'application/json'
                 }
             })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Mostrar notificación de éxito
-                    const btn = event.target.closest('button');
-                    const originalHtml = btn.innerHTML;
-                    btn.innerHTML = '<i class="bi bi-check"></i>';
-                    btn.classList.remove('btn-success');
-                    btn.classList.add('btn-outline-success');
-                    btn.disabled = true;
-                    
-                    setTimeout(() => {
-                        btn.innerHTML = originalHtml;
-                        btn.classList.remove('btn-outline-success');
-                        btn.classList.add('btn-success');
-                        btn.disabled = false;
-                    }, 2000);
-                    
-                    alert('✅ Curso agregado al carrito exitosamente');
-                } else {
-                    alert('❌ Error: ' + (data.message || 'No se pudo agregar al carrito'));
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('❌ Error de conexión. Intenta nuevamente.');
-            });
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Mostrar notificación de éxito
+                        const btn = event.target.closest('button');
+                        const originalHtml = btn.innerHTML;
+                        btn.innerHTML = '<i class="bi bi-check"></i>';
+                        btn.classList.remove('btn-success');
+                        btn.classList.add('btn-outline-success');
+                        btn.disabled = true;
+
+                        setTimeout(() => {
+                            btn.innerHTML = originalHtml;
+                            btn.classList.remove('btn-outline-success');
+                            btn.classList.add('btn-success');
+                            btn.disabled = false;
+                        }, 2000);
+
+                        alert('✅ Curso agregado al carrito exitosamente');
+                    } else {
+                        alert('❌ Error: ' + (data.message || 'No se pudo agregar al carrito'));
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('❌ Error de conexión. Intenta nuevamente.');
+                });
         }
     </script>
 </body>

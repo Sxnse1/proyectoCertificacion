@@ -446,31 +446,43 @@ router.post('/upload',
 router.put('/:id', async function(req, res, next) {
   try {
     const { id } = req.params;
-    const { titulo, descripcion, id_modulo, estatus } = req.body;
+    let { titulo, descripcion, id_modulo, estatus } = req.body;
     const db = req.app.locals.db;
     
     console.log('[VIDEOS-ADMIN] ✏️ Actualizando video ID:', id);
-    console.log('[VIDEOS-ADMIN] 📝 Datos a actualizar:', { titulo, descripcion, id_modulo, estatus });
+    console.log('[VIDEOS-ADMIN] 📝 Request body completo:', req.body);
+    console.log('[VIDEOS-ADMIN] 📝 Datos extraídos:', { titulo, descripcion, id_modulo, estatus });
+    console.log('[VIDEOS-ADMIN] 📝 Tipos de datos:', {
+      titulo: typeof titulo,
+      descripcion: typeof descripcion, 
+      id_modulo: typeof id_modulo,
+      estatus: typeof estatus
+    });
     
     // Validar que el video existe
     const existsResult = await db.executeQuery(`
-      SELECT id_video FROM Video WHERE id_video = @videoId
+      SELECT id_video, titulo, descripcion, estatus FROM Video WHERE id_video = @videoId
     `, { videoId: id });
     
     if (!existsResult.recordset || existsResult.recordset.length === 0) {
+      console.log('[VIDEOS-ADMIN] ❌ Video no encontrado con ID:', id);
       return res.status(404).json({
         success: false,
         error: 'Video no encontrado'
       });
     }
     
+    console.log('[VIDEOS-ADMIN] 📋 Video actual en DB:', existsResult.recordset[0]);
+    
     // Validar estatus (mapear activo a publicado para compatibilidad)
+    let validatedEstatus = estatus;
     if (estatus === 'activo') {
-      estatus = 'publicado';
+      validatedEstatus = 'publicado';
+      console.log('[VIDEOS-ADMIN] 🔄 Mapeando estatus "activo" a "publicado"');
     }
     
     const validStatuses = ['publicado', 'borrador', 'archivado'];
-    if (estatus && !validStatuses.includes(estatus)) {
+    if (validatedEstatus && !validStatuses.includes(validatedEstatus)) {
       return res.status(400).json({
         success: false,
         error: 'Estado no válido. Los estados permitidos son: publicado, borrador, archivado'
@@ -496,9 +508,9 @@ router.put('/:id', async function(req, res, next) {
       params.id_modulo = id_modulo;
     }
     
-    if (estatus) {
+    if (validatedEstatus) {
       updateFields.push('estatus = @estatus');
-      params.estatus = estatus;
+      params.estatus = validatedEstatus;
     }
     
     if (updateFields.length === 0) {
@@ -517,9 +529,25 @@ router.put('/:id', async function(req, res, next) {
       WHERE id_video = @videoId
     `;
     
-    await db.executeQuery(updateQuery, params);
+    console.log('[VIDEOS-ADMIN] 🔍 Query a ejecutar:', updateQuery);
+    console.log('[VIDEOS-ADMIN] 🔍 Parámetros:', params);
     
-    console.log('[VIDEOS-ADMIN] ✅ Video actualizado exitosamente');
+    const updateResult = await db.executeQuery(updateQuery, params);
+    console.log('[VIDEOS-ADMIN] 🔍 Resultado de actualización:', updateResult);
+    
+    // Verificar si se actualizó algún registro
+    if (updateResult.rowsAffected && updateResult.rowsAffected[0] > 0) {
+      console.log('[VIDEOS-ADMIN] ✅ Video actualizado exitosamente - Filas afectadas:', updateResult.rowsAffected[0]);
+      
+      // Obtener el video actualizado para confirmar
+      const verifyResult = await db.executeQuery(`
+        SELECT titulo, descripcion, estatus FROM Video WHERE id_video = @videoId
+      `, { videoId: id });
+      console.log('[VIDEOS-ADMIN] 🔍 Video después de actualización:', verifyResult.recordset[0]);
+      
+    } else {
+      console.log('[VIDEOS-ADMIN] ⚠️ Actualización ejecutada pero no se afectaron filas');
+    }
     
     res.json({
       success: true,

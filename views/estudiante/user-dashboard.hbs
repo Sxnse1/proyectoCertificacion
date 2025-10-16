@@ -590,23 +590,7 @@
                     <span class="stat-number">{{stats.certificados}}</span>
                     <div class="stat-label">Certificados Obtenidos</div>
                 </div>
-                <div class="stat-card">
-                    <span class="stat-number">
-                        
-                        {{#if subscription.active}}
-                        <i class="bi bi-check-circle text-success"></i> Suscripción Activa
-                        {{else}}
-                        <i class="bi bi-exclamation-triangle text-warning"></i>  Suscripción Inactiva
-                        {{/if}}
-                    </span>
-                    {{!-- <div class="stat-label">Suscripción</div> --}}
-                    {{#if subscription.active}}
-                    <small class="text-muted">Plan: {{subscription.planName}}<br>Renovación: {{formatDate
-                        subscription.endDate}}</small>
-                    {{!-- {{else}}
-                    <small class="text-muted">Suscríbete para acceder a todo</small> --}}
-                    {{/if}}
-                </div>
+                
             </div>
         </div>
 
@@ -645,38 +629,45 @@
 
         {{! Se define un "partial" para las recomendaciones con el estilo visual corregido }}
         {{#*inline "recomendaciones"}}
-        <div class="mb-5">
-            <h2 class="h4">Cursos Recomendados para Ti</h2>
-            <p class="text-muted">Explora nuevas áreas y sigue expandiendo tus habilidades.</p>
-            <div class="row">
-                {{#each categorias}}
-                <div class="col-md-4 mb-4">
-                    {{! Esta es la estructura de tarjeta que coincide con tu imagen }}
-                    <div class="card h-100 shadow-sm">
-                        {{#if this.imagen_url}}
-                        <img src="{{this.imagen_url}}" class="card-img-top" alt="{{this.nombre}}">
-                        {{else}}
-                        <div class="card-img-placeholder">
-                            <div class="text-center">
-                                <i class="bi bi-book" style="font-size:2rem; opacity:0.95;"></i>
-                                <div style="font-weight:600; margin-top:6px;">{{this.nombre}}</div>
+        <div class="table-section mb-5">
+            <div class="table-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-stars me-2"></i>
+                    Cursos Recomendados para Ti
+                </h5>
+            </div>
+            <div class="p-4">
+                <p class="text-muted">Explora nuevas áreas y sigue expandiendo tus habilidades.</p>
+                <div class="row">
+                    {{#each categorias}}
+                    <div class="col-md-4 mb-4">
+                        {{!-- Esta es la estructura de tarjeta que coincide con tu imagen --}}
+                        <div class="card h-100 shadow-sm">
+                            {{#if this.imagen_url}}
+                            <img src="{{this.imagen_url}}" class="card-img-top" alt="{{this.nombre}}">
+                            {{else}}
+                            <div class="card-img-placeholder">
+                                <div class="text-center">
+                                    <i class="bi bi-book" style="font-size:2rem; opacity:0.95;"></i>
+                                    <div style="font-weight:600; margin-top:6px;">{{this.nombre}}</div>
+                                </div>
                             </div>
-                        </div>
-                        {{/if}}
-                        <div class="card-body d-flex flex-column">
-                            <h5 class="card-title">{{this.nombre}}</h5>
-                            <p class="card-text text-muted">{{this.descripcion}}</p>
-                            <div class="mt-auto">
-                                <a href="/curso/{{this.id_curso}}" class="btn btn-primary">Ver Curso</a>
+                            {{/if}}
+                            <div class="card-body d-flex flex-column">
+                                <h5 class="card-title">{{this.nombre}}</h5>
+                                <p class="card-text text-muted">{{this.descripcion}}</p>
+                                <div class="mt-auto">
+                                    <a href="/curso/{{this.id_curso}}" class="btn btn-primary">Ver Curso</a>
+                                </div>
                             </div>
                         </div>
                     </div>
+                    {{else}}
+                    <div class="col-12">
+                        <p>No hay recomendaciones disponibles en este momento.</p>
+                    </div>
+                    {{/each}}
                 </div>
-                {{else}}
-                <div class="col-12">
-                    <p>No hay recomendaciones disponibles en este momento.</p>
-                </div>
-                {{/each}}
             </div>
         </div>
         {{/inline}}

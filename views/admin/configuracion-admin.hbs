@@ -39,18 +39,18 @@
         }
 
         .main-container {
-            max-width: 1400px;
+            max-width: 1100px;
             margin: 0 auto;
-            padding: 2rem;
+            padding: 1.5rem;
         }
 
         .header-section {
             background: white;
-            border-radius: 16px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-            padding: 2rem;
-            margin-bottom: 2rem;
-            border-left: 5px solid var(--primary-color);
+            border-radius: 12px;
+            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid var(--primary-color);
         }
 
         .header-title {
@@ -58,29 +58,30 @@
             align-items: center;
             justify-content: space-between;
             flex-wrap: wrap;
-            gap: 1rem;
+            gap: 0.8rem;
         }
 
         .header-title h1 {
             color: var(--text-dark);
             font-weight: 700;
+            font-size: 1.8rem;
             margin: 0;
             display: flex;
             align-items: center;
-            gap: 0.75rem;
+            gap: 0.6rem;
         }
 
         .stats-row {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1.5rem;
-            margin-top: 1.5rem;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 1.2rem;
+            margin-top: 1.2rem;
         }
 
         .stat-card {
             background: var(--bg-light);
-            border-radius: 12px;
-            padding: 1.5rem;
+            border-radius: 10px;
+            padding: 1.2rem;
             text-align: center;
             border: 1px solid var(--border-color);
             transition: transform 0.2s ease;
@@ -91,7 +92,7 @@
         }
 
         .stat-number {
-            font-size: 2rem;
+            font-size: 1.6rem;
             font-weight: 700;
             color: var(--primary-color);
             display: block;
@@ -99,58 +100,61 @@
 
         .stat-label {
             color: var(--text-muted);
-            font-size: 0.875rem;
+            font-size: 0.75rem;
             font-weight: 500;
-            margin-top: 0.5rem;
+            margin-top: 0.4rem;
         }
 
         .config-section {
             background: white;
-            border-radius: 16px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-            margin-bottom: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 1.5rem;
             overflow: hidden;
         }
 
         .config-header {
             background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
             color: white;
-            padding: 1.5rem;
+            padding: 1.2rem;
             border: none;
         }
 
         .config-body {
-            padding: 2rem;
+            padding: 1.5rem;
         }
 
         .form-group {
-            margin-bottom: 1.5rem;
+            margin-bottom: 1.2rem;
         }
 
         .form-label {
             font-weight: 600;
             color: var(--text-dark);
-            margin-bottom: 0.5rem;
+            font-size: 0.85rem;
+            margin-bottom: 0.4rem;
         }
 
         .form-control, .form-select {
             border: 2px solid var(--border-color);
-            border-radius: 8px;
-            padding: 0.75rem;
+            border-radius: 6px;
+            padding: 0.6rem;
+            font-size: 0.85rem;
             transition: all 0.2s ease;
         }
 
         .form-control:focus, .form-select:focus {
             border-color: var(--primary-color);
-            box-shadow: 0 0 0 0.2rem rgba(234, 88, 12, 0.25);
+            box-shadow: 0 0 0 0.15rem rgba(234, 88, 12, 0.25);
         }
 
         .btn-primary {
             background: var(--primary-color);
             border-color: var(--primary-color);
             font-weight: 500;
-            padding: 0.75rem 1.5rem;
-            border-radius: 8px;
+            padding: 0.6rem 1.2rem;
+            font-size: 0.85rem;
+            border-radius: 6px;
         }
 
         .btn-primary:hover {
@@ -161,26 +165,33 @@
         .btn-success {
             background: var(--success-color);
             border-color: var(--success-color);
+            padding: 0.6rem 1.2rem;
+            font-size: 0.85rem;
         }
 
         .btn-warning {
             background: var(--warning-color);
             border-color: var(--warning-color);
             color: white;
+            padding: 0.6rem 1.2rem;
+            font-size: 0.85rem;
         }
 
         .btn-danger {
             background: var(--danger-color);
             border-color: var(--danger-color);
+            padding: 0.6rem 1.2rem;
+            font-size: 0.85rem;
         }
 
         .back-button {
             display: inline-flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 0.4rem;
             color: var(--text-muted);
             text-decoration: none;
             font-weight: 500;
+            font-size: 0.85rem;
             transition: color 0.2s ease;
         }
 
@@ -189,16 +200,17 @@
         }
 
         .alert {
-            border-radius: 12px;
+            border-radius: 9px;
             border: none;
-            padding: 1rem 1.5rem;
+            padding: 0.8rem 1.2rem;
+            font-size: 0.85rem;
         }
 
         .switch {
             position: relative;
             display: inline-block;
-            width: 60px;
-            height: 34px;
+            width: 48px;
+            height: 28px;
         }
 
         .switch input {
@@ -216,14 +228,14 @@
             bottom: 0;
             background-color: #ccc;
             transition: .4s;
-            border-radius: 34px;
+            border-radius: 28px;
         }
 
         .slider:before {
             position: absolute;
             content: "";
-            height: 26px;
-            width: 26px;
+            height: 20px;
+            width: 20px;
             left: 4px;
             bottom: 4px;
             background-color: white;
@@ -236,14 +248,14 @@
         }
 
         input:checked + .slider:before {
-            transform: translateX(26px);
+            transform: translateX(20px);
         }
 
         .log-item {
             display: flex;
             align-items: center;
-            gap: 1rem;
-            padding: 1rem;
+            gap: 0.8rem;
+            padding: 0.8rem;
             border-bottom: 1px solid var(--border-color);
         }
 
@@ -252,11 +264,11 @@
         }
 
         .log-level {
-            padding: 0.25rem 0.75rem;
-            border-radius: 20px;
-            font-size: 0.75rem;
+            padding: 0.2rem 0.6rem;
+            border-radius: 15px;
+            font-size: 0.65rem;
             font-weight: 600;
-            min-width: 80px;
+            min-width: 64px;
             text-align: center;
         }
 
@@ -277,22 +289,35 @@
 
         .server-info {
             background: var(--bg-light);
-            border-radius: 12px;
-            padding: 1.5rem;
-            margin-top: 1rem;
+            border-radius: 9px;
+            padding: 1.2rem;
+            margin-top: 0.8rem;
         }
 
         .color-picker {
-            width: 60px;
-            height: 40px;
+            width: 48px;
+            height: 32px;
             border: 2px solid var(--border-color);
-            border-radius: 8px;
+            border-radius: 6px;
             cursor: pointer;
         }
 
         @media (max-width: 768px) {
             .main-container {
+                padding: 0.8rem;
+            }
+            
+            .header-section,
+            .config-body {
                 padding: 1rem;
+            }
+
+            .config-header {
+                padding: 1rem;
+            }
+
+            .header-title h1 {
+                font-size: 1.5rem;
             }
             
             .header-title {
@@ -301,7 +326,26 @@
             }
             
             .stats-row {
-                grid-template-columns: 1fr;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.8rem;
+            }
+
+            .form-group {
+                margin-bottom: 1rem;
+            }
+
+            .switch {
+                width: 40px;
+                height: 24px;
+            }
+
+            .slider:before {
+                height: 16px;
+                width: 16px;
+            }
+
+            input:checked + .slider:before {
+                transform: translateX(16px);
             }
         }
     </style>

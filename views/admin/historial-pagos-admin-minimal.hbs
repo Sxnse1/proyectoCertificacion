@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{title}} - StartEducation Admin</title>
+    
+    <!-- Bootstrap 5.3 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    
+    <style>
+        body {
+            background: #f8fafc;
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .top-bar {
+            background: #ea580c;
+            color: white;
+            padding: 12px 0;
+        }
+        
+        .stats-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid #ea580c;
+        }
+        
+        .table-responsive {
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Top Bar -->
+    <div class="top-bar">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center">
+                    <i class="bi bi-shield-check me-2"></i>
+                    <span>Panel de Administración</span>
+                </div>
+                <div class="d-flex align-items-center">
+                    <span class="me-3">Bienvenido, Admin</span>
+                    <a href="/dashboard" class="btn btn-outline-light btn-sm">
+                        <i class="bi bi-house-door"></i> Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container my-4">
+        
+        <h2 class="mb-4">
+            <i class="bi bi-credit-card-2-front text-primary me-2"></i>
+            {{title}}
+        </h2>
+
+        <!-- Statistics Cards -->
+        <div class="row mb-4">
+            <div class="col-md-3 mb-3">
+                <div class="stats-card">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <h6 class="text-muted mb-1">Ingresos Totales</h6>
+                            <h4 class="mb-0 text-primary">${{stats.totalIngresos}}</h4>
+                        </div>
+                        <i class="bi bi-currency-dollar fs-2 text-primary"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-3 mb-3">
+                <div class="stats-card">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <h6 class="text-muted mb-1">Ingresos del Mes</h6>
+                            <h4 class="mb-0 text-success">${{stats.ingresosMes}}</h4>
+                        </div>
+                        <i class="bi bi-calendar-month fs-2 text-success"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-3 mb-3">
+                <div class="stats-card">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <h6 class="text-muted mb-1">Total Transacciones</h6>
+                            <h4 class="mb-0 text-info">{{stats.totalTransacciones}}</h4>
+                        </div>
+                        <i class="bi bi-graph-up fs-2 text-info"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-3 mb-3">
+                <div class="stats-card">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <h6 class="text-muted mb-1">Tasa de Éxito</h6>
+                            <h4 class="mb-0 text-warning">{{stats.tasaExito}}%</h4>
+                        </div>
+                        <i class="bi bi-check-circle fs-2 text-warning"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Payments Table -->
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">
+                    <i class="bi bi-list-ul me-2"></i>
+                    Historial de Pagos ({{pagos.length}} registros)
+                </h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>ID</th>
+                                <th>Usuario</th>
+                                <th>Concepto</th>
+                                <th>Tipo</th>
+                                <th>Monto</th>
+                                <th>Estado</th>
+                                <th>Fecha</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {{#each pagos}}
+                            <tr>
+                                <td><code>{{id_pago}}</code></td>
+                                <td>
+                                    <div class="fw-bold">{{usuario_nombre}}</div>
+                                    <small class="text-muted">{{usuario_email}}</small>
+                                </td>
+                                <td>{{concepto}}</td>
+                                <td>
+                                    <span class="badge bg-info">{{tipo_pago}}</span>
+                                </td>
+                                <td class="fw-bold">${{monto}}</td>
+                                <td>
+                                    <span class="badge bg-success">{{estatus}}</span>
+                                </td>
+                                <td>{{fecha_pago}}</td>
+                            </tr>
+                            {{else}}
+                            <tr>
+                                <td colspan="7" class="text-center py-4">
+                                    <div class="text-muted">
+                                        <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+                                        <p>No hay pagos registrados</p>
+                                    </div>
+                                </td>
+                            </tr>
+                            {{/each}}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

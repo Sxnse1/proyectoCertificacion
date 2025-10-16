@@ -255,14 +255,45 @@
             color: white;
         }
 
-        .badge-inactiva {
+        .badge-cancelada {
             background: var(--text-muted);
             color: white;
         }
 
-        .badge-vencida {
+        .badge-expirada {
             background: var(--danger-color);
             color: white;
+        }
+
+        .badge-pausada {
+            background: var(--warning-color);
+            color: white;
+        }
+
+        .badge-proxima_expirar {
+            background: var(--warning-color);
+            color: white;
+        }
+
+        .user-info {
+            max-width: 200px;
+        }
+
+        .date-info {
+            font-size: 0.9rem;
+        }
+
+        .duration-info {
+            text-align: center;
+            min-width: 120px;
+        }
+
+        .progress {
+            margin-top: 0.25rem !important;
+        }
+
+        .progress-bar {
+            background: var(--primary-color);
         }
 
         .actions-group {
@@ -331,12 +362,28 @@
                     <div class="stat-label">Activas</div>
                 </div>
                 <div class="stat-card">
-                    <span class="stat-number">{{suscripcionesVencidas}}</span>
-                    <div class="stat-label">Vencidas</div>
+                    <span class="stat-number">{{suscripcionesCanceladas}}</span>
+                    <div class="stat-label">Canceladas</div>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">{{suscripcionesExpiradas}}</span>
+                    <div class="stat-label">Expiradas</div>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">{{suscripcionesPausadas}}</span>
+                    <div class="stat-label">Pausadas</div>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">{{proximasExpirar}}</span>
+                    <div class="stat-label">Próximas a Expirar</div>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">{{usuariosActivos}}</span>
+                    <div class="stat-label">Usuarios Activos</div>
                 </div>
                 <div class="stat-card">
                     <span class="stat-number">${{ingresosMensuales}}</span>
-                    <div class="stat-label">Ingresos del Mes</div>
+                    <div class="stat-label">Ingresos Activos</div>
                 </div>
             </div>
         </div>
@@ -355,8 +402,16 @@
                     <select class="form-select filter-select" id="filterEstatus" onchange="filtrar()">
                         <option value="">Todos los estatus</option>
                         <option value="activa">Activas</option>
-                        <option value="inactiva">Inactivas</option>
-                        <option value="vencida">Vencidas</option>
+                        <option value="cancelada">Canceladas</option>
+                        <option value="expirada">Expiradas</option>
+                        <option value="pausada">Pausadas</option>
+                        <option value="proxima_expirar">Próximas a Expirar</option>
+                    </select>
+                    <select class="form-select filter-select" id="filterMembresia" onchange="filtrar()">
+                        <option value="">Todas las membresías</option>
+                        {{#each membresias}}
+                        <option value="{{id_membresia}}">{{nombre_membresia}}</option>
+                        {{/each}}
                     </select>
                 </div>
             </div>
@@ -369,12 +424,12 @@
                     <thead>
                         <tr>
                             <th>ID</th>
-                            <th>Usuario</th>
+                            <th>Información del Usuario</th>
                             <th>Membresía</th>
                             <th>Precio</th>
-                            <th>Fecha Compra</th>
-                            <th>Fecha Vencimiento</th>
+                            <th>Fechas</th>
                             <th>Estatus</th>
+                            <th>Duración</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
@@ -384,37 +439,84 @@
                             <tr>
                                 <td><strong>#{{id_suscripcion}}</strong></td>
                                 <td>
-                                    <strong>{{nombre_usuario}}</strong><br>
-                                    <small class="text-muted">{{email_usuario}}</small>
+                                    <div class="user-info">
+                                        <strong>{{nombre_usuario}}</strong><br>
+                                        <small class="text-muted">
+                                            <i class="bi bi-envelope"></i> {{email_usuario}}
+                                        </small><br>
+                                        <small class="text-muted">
+                                            <i class="bi bi-person-plus"></i> Registrado: {{formatDate fecha_registro_usuario}}
+                                        </small>
+                                    </div>
                                 </td>
-                                <td><strong>{{nombre_membresia}}</strong></td>
                                 <td>
-                                    <span class="text-primary fw-bold">${{precio}}</span>
+                                    <strong>{{nombre_membresia}}</strong><br>
+                                    <small class="text-muted">{{descripcion_membresia}}</small>
                                 </td>
-                                <td>{{formatDate fecha_compra}}</td>
-                                <td>{{formatDate fecha_vencimiento}}</td>
                                 <td>
-                                    <span class="badge badge-{{estatus}}">
-                                        {{estatus}}
+                                    <span class="text-primary fw-bold">${{precio}}</span><br>
+                                    <small class="text-muted">{{duracion_dias}} días</small>
+                                </td>
+                                <td>
+                                    <div class="date-info">
+                                        <strong>Compra:</strong><br>
+                                        <small>{{formatDate fecha_compra}}</small><br>
+                                        <strong>Vencimiento:</strong><br>
+                                        <small>{{formatDate fecha_vencimiento}}</small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge badge-{{estatus_real}}">
+                                        {{estatus_display}}
                                     </span>
+                                    {{#if dias_restantes}}
+                                    <br><small class="text-muted">{{dias_restantes}} días</small>
+                                    {{/if}}
+                                </td>
+                                <td>
+                                    <div class="duration-info">
+                                        <strong>{{dias_transcurridos}}</strong> / {{duracion_dias}}<br>
+                                        <small class="text-muted">días transcurridos</small>
+                                        <div class="progress mt-1" style="height: 4px;">
+                                            <div class="progress-bar" role="progressbar" 
+                                                 style="width: {{porcentaje_transcurrido}}%"></div>
+                                        </div>
+                                    </div>
                                 </td>
                                 <td>
                                     <div class="actions-group">
+                                        {{#if (eq estatus_real "activa")}}
+                                        <button class="btn btn-sm btn-warning" 
+                                                onclick="pausarSuscripcion({{id_suscripcion}})"
+                                                title="Pausar">
+                                            <i class="bi bi-pause-circle"></i>
+                                        </button>
+                                        {{else if (eq estatus_real "pausada")}}
+                                        <button class="btn btn-sm btn-success" 
+                                                onclick="reanudarSuscripcion({{id_suscripcion}})"
+                                                title="Reanudar">
+                                            <i class="bi bi-play-circle"></i>
+                                        </button>
+                                        {{/if}}
+                                        
                                         <button class="btn btn-sm btn-success" 
                                                 onclick="renovarSuscripcion({{id_suscripcion}})"
                                                 title="Renovar">
                                             <i class="bi bi-arrow-clockwise"></i>
                                         </button>
-                                        <button class="btn btn-sm btn-warning" 
-                                                onclick="modificarVencimiento({{id_suscripcion}})"
-                                                title="Modificar Vencimiento">
-                                            <i class="bi bi-calendar-event"></i>
+                                        <button class="btn btn-sm btn-info" 
+                                                onclick="extenderVencimiento({{id_suscripcion}})"
+                                                title="Extender Vencimiento">
+                                            <i class="bi bi-calendar-plus"></i>
                                         </button>
+                                        
+                                        {{#unless (eq estatus_real "cancelada")}}
                                         <button class="btn btn-sm btn-danger" 
                                                 onclick="cancelarSuscripcion({{id_suscripcion}})"
                                                 title="Cancelar">
                                             <i class="bi bi-x-circle"></i>
                                         </button>
+                                        {{/unless}}
                                     </div>
                                 </td>
                             </tr>
@@ -489,10 +591,72 @@
             }
         }
 
+        function pausarSuscripcion(id) {
+            if (confirm('¿Deseas pausar esta suscripción?')) {
+                fetch(`/admin/suscripciones/${id}/pausar`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Suscripción pausada exitosamente');
+                        location.reload();
+                    } else {
+                        alert('Error: ' + data.message);
+                    }
+                });
+            }
+        }
+
+        function reanudarSuscripcion(id) {
+            if (confirm('¿Deseas reanudar esta suscripción?')) {
+                fetch(`/admin/suscripciones/${id}/reanudar`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Suscripción reanudada exitosamente');
+                        location.reload();
+                    } else {
+                        alert('Error: ' + data.message);
+                    }
+                });
+            }
+        }
+
+        function extenderVencimiento(id) {
+            const dias = prompt('¿Cuántos días deseas extender la suscripción?');
+            if (dias && !isNaN(dias)) {
+                fetch(`/admin/suscripciones/${id}/extender`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ dias: parseInt(dias) })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert(`Suscripción extendida ${dias} días exitosamente`);
+                        location.reload();
+                    } else {
+                        alert('Error: ' + data.message);
+                    }
+                });
+            }
+        }
+
         function cancelarSuscripcion(id) {
             if (confirm('¿Estás seguro de cancelar esta suscripción?')) {
-                fetch(`/admin/suscripciones/${id}`, {
-                    method: 'DELETE',
+                fetch(`/admin/suscripciones/${id}/cancelar`, {
+                    method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     }

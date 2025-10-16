@@ -8,38 +8,103 @@ router.get('/', async (req, res) => {
   try {
     const pool = await connect();
     
-    // Obtener estadísticas
+    // Obtener estadísticas completas
     const statsQuery = await pool.request().query(`
       SELECT 
         COUNT(*) as totalSuscripciones,
-        (SELECT COUNT(*) FROM Suscripciones WHERE estatus = 'activa') as suscripcionesActivas,
-        (SELECT COUNT(*) FROM Suscripciones 
-         WHERE estatus = 'activa' AND DATEDIFF(day, GETDATE(), fecha_vencimiento) <= 7) as proximasExpirar,
+        SUM(CASE WHEN estatus = 'activa' AND fecha_vencimiento > GETDATE() THEN 1 ELSE 0 END) as suscripcionesActivas,
+        SUM(CASE WHEN estatus = 'cancelada' THEN 1 ELSE 0 END) as suscripcionesCanceladas,
+        SUM(CASE WHEN estatus = 'activa' AND fecha_vencimiento <= GETDATE() THEN 1 ELSE 0 END) as suscripcionesExpiradas,
+        SUM(CASE WHEN estatus = 'pausada' THEN 1 ELSE 0 END) as suscripcionesPausadas,
+        SUM(CASE WHEN estatus = 'activa' AND DATEDIFF(day, GETDATE(), fecha_vencimiento) <= 7 AND fecha_vencimiento > GETDATE() THEN 1 ELSE 0 END) as proximasExpirar,
         (SELECT SUM(m.precio) FROM Suscripciones s 
          INNER JOIN Membresias m ON s.id_membresia = m.id_membresia 
-         WHERE s.estatus = 'activa') as ingresosMensuales
+         WHERE s.estatus = 'activa' AND s.fecha_vencimiento > GETDATE()) as ingresosMensuales,
+        (SELECT SUM(m.precio) FROM Suscripciones s 
+         INNER JOIN Membresias m ON s.id_membresia = m.id_membresia 
+         WHERE s.fecha_compra >= DATEADD(month, -1, GETDATE())) as ingresosUltimoMes,
+        (SELECT COUNT(DISTINCT id_usuario) FROM Suscripciones WHERE estatus = 'activa') as usuariosActivos
       FROM Suscripciones
     `);
     
+    // Filtros de búsqueda
+    const search = req.query.search || '';
+    const estatusFilter = req.query.estatus || '';
+    const membresiaFilter = req.query.membresia || '';
+    
+    // Construir query con filtros
+    let whereClause = '';
+    let parameters = {};
+    
+    if (search || estatusFilter || membresiaFilter) {
+      let conditions = [];
+      
+      if (search) {
+        conditions.push("(u.nombre LIKE @search OR u.email LIKE @search)");
+        parameters.search = `%${search}%`;
+      }
+      
+      if (estatusFilter) {
+        conditions.push("s.estatus = @estatus");
+        parameters.estatus = estatusFilter;
+      }
+      
+      if (membresiaFilter) {
+        conditions.push("s.id_membresia = @membresia");
+        parameters.membresia = parseInt(membresiaFilter);
+      }
+      
+      whereClause = 'WHERE ' + conditions.join(' AND ');
+    }
+
     // Obtener todas las suscripciones con datos de usuario y membresía
-    const suscripcionesQuery = await pool.request().query(`
-      SELECT 
-        s.id_suscripcion,
-        s.id_usuario,
-        s.id_membresia,
-        s.fecha_compra,
-        s.fecha_vencimiento,
-        s.estatus,
-        m.precio as precio,
-        u.nombre as usuario_nombre,
-        u.email as usuario_email,
-        m.nombre as membresia_nombre,
-        DATEDIFF(day, GETDATE(), s.fecha_vencimiento) as dias_restantes
-      FROM Suscripciones s
-      INNER JOIN Usuarios u ON s.id_usuario = u.id_usuario
-      INNER JOIN Membresias m ON s.id_membresia = m.id_membresia
-      ORDER BY s.fecha_compra DESC
-    `);
+    const suscripcionesQuery = await pool.request()
+      .input('search', sql.NVarChar, parameters.search || '')
+      .input('estatus', sql.VarChar, parameters.estatus || '')
+      .input('membresia', sql.Int, parameters.membresia || 0)
+      .query(`
+        SELECT 
+          s.id_suscripcion,
+          s.id_usuario,
+          s.id_membresia,
+          s.fecha_compra,
+          s.fecha_vencimiento,
+          s.estatus,
+          m.precio as precio,
+          u.nombre as nombre_usuario,
+          u.apellido as apellido_usuario,
+          u.email as email_usuario,
+          u.fecha_registro as fecha_registro_usuario,
+          m.nombre as nombre_membresia,
+          m.tipo_periodo as tipo_periodo,
+          m.descripcion as descripcion_membresia,
+          DATEDIFF(day, GETDATE(), s.fecha_vencimiento) as dias_restantes,
+          CASE 
+            WHEN s.estatus = 'activa' AND s.fecha_vencimiento > GETDATE() THEN 'Activa'
+            WHEN s.estatus = 'activa' AND s.fecha_vencimiento <= GETDATE() THEN 'Expirada'
+            WHEN s.estatus = 'cancelada' THEN 'Cancelada'
+            WHEN s.estatus = 'pausada' THEN 'Pausada'
+            ELSE 'Inactiva'
+          END as estado_display,
+          CASE 
+            WHEN s.estatus = 'activa' AND DATEDIFF(day, GETDATE(), s.fecha_vencimiento) <= 7 THEN 'warning'
+            WHEN s.estatus = 'activa' AND s.fecha_vencimiento > GETDATE() THEN 'success'
+            WHEN s.estatus = 'cancelada' THEN 'danger'
+            ELSE 'secondary'
+          END as badge_class
+        FROM Suscripciones s
+        INNER JOIN Usuarios u ON s.id_usuario = u.id_usuario
+        INNER JOIN Membresias m ON s.id_membresia = m.id_membresia
+        ${whereClause}
+        ORDER BY 
+          CASE s.estatus 
+            WHEN 'activa' THEN 1 
+            WHEN 'pausada' THEN 2 
+            WHEN 'expirada' THEN 3 
+            ELSE 4 
+          END,
+          s.fecha_vencimiento DESC
+      `);
     
     // Obtener lista de membresías para el filtro
     const membresiasQuery = await pool.request().query(`
@@ -208,6 +273,100 @@ router.get('/exportar', async (req, res) => {
     res.json({ success: true, data: result.recordset });
   } catch (err) {
     console.error('Error al exportar suscripciones:', err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// POST - Pausar suscripción
+router.post('/:id/pausar', async (req, res) => {
+  const { id } = req.params;
+  
+  try {
+    const pool = await sql.connect(config);
+    
+    await pool.request()
+      .input('id', sql.Int, id)
+      .query(`
+        UPDATE Suscripciones 
+        SET estatus = 'pausada'
+        WHERE id_suscripcion = @id AND estatus = 'activa'
+      `);
+    
+    res.json({ success: true, message: 'Suscripción pausada exitosamente' });
+  } catch (err) {
+    console.error('Error al pausar suscripción:', err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// POST - Reanudar suscripción
+router.post('/:id/reanudar', async (req, res) => {
+  const { id } = req.params;
+  
+  try {
+    const pool = await sql.connect(config);
+    
+    await pool.request()
+      .input('id', sql.Int, id)
+      .query(`
+        UPDATE Suscripciones 
+        SET estatus = 'activa'
+        WHERE id_suscripcion = @id AND estatus = 'pausada'
+      `);
+    
+    res.json({ success: true, message: 'Suscripción reanudada exitosamente' });
+  } catch (err) {
+    console.error('Error al reanudar suscripción:', err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// POST - Extender vencimiento
+router.post('/:id/extender', async (req, res) => {
+  const { id } = req.params;
+  const { dias } = req.body;
+  
+  if (!dias || dias <= 0) {
+    return res.status(400).json({ success: false, error: 'Número de días inválido' });
+  }
+  
+  try {
+    const pool = await sql.connect(config);
+    
+    await pool.request()
+      .input('id', sql.Int, id)
+      .input('dias', sql.Int, dias)
+      .query(`
+        UPDATE Suscripciones 
+        SET fecha_vencimiento = DATEADD(DAY, @dias, fecha_vencimiento)
+        WHERE id_suscripcion = @id
+      `);
+    
+    res.json({ success: true, message: `Suscripción extendida ${dias} días exitosamente` });
+  } catch (err) {
+    console.error('Error al extender suscripción:', err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// POST - Cancelar suscripción
+router.post('/:id/cancelar', async (req, res) => {
+  const { id } = req.params;
+  
+  try {
+    const pool = await sql.connect(config);
+    
+    await pool.request()
+      .input('id', sql.Int, id)
+      .query(`
+        UPDATE Suscripciones 
+        SET estatus = 'cancelada'
+        WHERE id_suscripcion = @id
+      `);
+    
+    res.json({ success: true, message: 'Suscripción cancelada exitosamente' });
+  } catch (err) {
+    console.error('Error al cancelar suscripción:', err);
     res.status(500).json({ success: false, error: err.message });
   }
 });

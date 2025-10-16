@@ -113,6 +113,11 @@ function registerHandlebarsHelpers() {
       day: 'numeric' 
     });
   });
+
+  hbs.registerHelper('formatNumber', function(number, decimals = 1) {
+    if (number === null || number === undefined || isNaN(number)) return '0';
+    return parseFloat(number).toFixed(decimals);
+  });
   
   // ============================================================
   // ⏱️ HELPERS DE TIEMPO Y DURACIÓN

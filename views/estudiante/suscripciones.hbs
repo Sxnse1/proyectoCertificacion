@@ -374,25 +374,6 @@
                 </div>
             </div>
 
-            <!-- Estadísticas -->
-            <div class="stats-row">
-                <div class="stat-card">
-                    <span class="stat-number">{{stats.totalPlanes}}</span>
-                    <div class="stat-label">Planes Disponibles</div>
-                </div>
-                <div class="stat-card">
-                    <span class="stat-number">{{stats.usuariosActivos}}</span>
-                    <div class="stat-label">Usuarios Activos</div>
-                </div>
-                <div class="stat-card">
-                    <span class="stat-number">{{stats.descuentoActual}}%</span>
-                    <div class="stat-label">Descuento Especial</div>
-                </div>
-                <div class="stat-card">
-                    <span class="stat-number">{{#if currentSubscription.active}}Activa{{else}}Inactiva{{/if}}</span>
-                    <div class="stat-label">Mi Suscripción</div>
-                </div>
-            </div>
         </div>
 
         <!-- Current Subscription Status -->
@@ -421,7 +402,7 @@
                             {{#if currentSubscription.active}}
                             Acceso completo a todos los cursos y contenido premium
                             {{else}}
-                            Accede a contenido premium con una suscripción
+                            Accede a todo el contenido con una suscripción
                             {{/if}}
                         </p>
                         <small>
@@ -536,7 +517,7 @@
                                 {{else}}
                                 <button class="btn btn-primary subscribe-btn" data-membership-id="{{id_membresia}}"
                                     data-plan-name="{{nombre}}" data-price="{{precio}}">
-                                    <i class="bi bi-arrow-up-circle me-2"></i>Cambiar Plan
+                                    <i class="bi bi-arrow-up-circle me-2"></i>Seleccionar Plan
                                 </button>
                                 {{/if}}
                                 {{else}}

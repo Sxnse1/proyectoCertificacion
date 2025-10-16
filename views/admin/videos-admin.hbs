@@ -773,11 +773,14 @@
                 return;
             }
 
+            // Inicializar eventos del formulario antes de mostrar el modal
+            initEditFormEvents();
+
             // Mostrar el modal
             try {
                 const editModal = new bootstrap.Modal(modalElement);
                 editModal.show();
-                console.log('✅ Modal de edición mostrado');
+                console.log('✅ Modal de edición mostrado con eventos configurados');
             } catch (error) {
                 console.error('❌ Error al mostrar el modal:', error);
                 alert('Error al abrir el modal: ' + error.message);
@@ -1262,7 +1265,7 @@
                                 </label>
                                 <select class="form-select" id="editEstatus" name="estatus">
                                     <option value="borrador">� Borrador</option>
-                                    <option value="publicado">✅ Publicado</>
+                                    <option value="publicado">✅ Publicado</option>
                                     <option value="archivado">� Archivado</option>
                                 </select>
                             </div>

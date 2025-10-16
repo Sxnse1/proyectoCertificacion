@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -189,7 +190,7 @@
         }
 
         .progress-bar-custom {
-            background-color: rgba(255,255,255,0.2);
+            background-color: rgba(255, 255, 255, 0.2);
             height: 10px;
             border-radius: 5px;
             overflow: hidden;
@@ -475,9 +476,11 @@
         }
     </style>
 </head>
+
 <body>
     <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-dark" style="background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);">
+    <nav class="navbar navbar-expand-lg navbar-dark"
+        style="background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);">
         <div class="container">
             <a class="navbar-brand fw-bold" href="/">
                 <i class="bi bi-graduation-cap me-2"></i>StartEducation
@@ -501,10 +504,15 @@
                             <i class="bi bi-person-circle me-1"></i>{{userName}}
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="/dashboard"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a></li>
-                            <li><a class="dropdown-item" href="/perfil"><i class="bi bi-person-gear me-2"></i>Mi Perfil</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="/auth/logout"><i class="bi bi-box-arrow-right me-2"></i>Cerrar Sesión</a></li>
+                            <li><a class="dropdown-item" href="/dashboard"><i
+                                        class="bi bi-speedometer2 me-2"></i>Dashboard</a></li>
+                            <li><a class="dropdown-item" href="/perfil"><i class="bi bi-person-gear me-2"></i>Mi
+                                    Perfil</a></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li><a class="dropdown-item" href="/auth/logout"><i
+                                        class="bi bi-box-arrow-right me-2"></i>Cerrar Sesión</a></li>
                         </ul>
                     </li>
                     {{else}}
@@ -568,9 +576,9 @@
                 <div class="stat-card">
                     <span class="stat-number">
                         {{#if tieneAcceso}}
-                            {{progreso.porcentaje_completado}}%
+                        {{progreso.porcentaje_completado}}%
                         {{else}}
-                            0%
+                        0%
                         {{/if}}
                     </span>
                     <div class="stat-label">Progreso</div>
@@ -587,7 +595,8 @@
                         <h6 class="mb-2">
                             <i class="bi bi-graph-up me-2"></i>Tu Progreso en el Curso
                         </h6>
-                        <p class="mb-3" style="font-size: 0.85rem;">Has completado {{progreso.videos_completados}} de {{progreso.total_videos}} videos</p>
+                        <p class="mb-3" style="font-size: 0.85rem;">Has completado {{progreso.videos_completados}} de
+                            {{progreso.total_videos}} videos</p>
                         <div class="progress-bar-custom">
                             <div class="progress-fill" style="width: {{progreso.porcentaje_completado}}%"></div>
                         </div>
@@ -606,7 +615,8 @@
             <h5 class="mb-3">
                 <i class="bi bi-lock me-2"></i>Desbloquea este curso
             </h5>
-            <p class="text-muted mb-3" style="font-size: 0.85rem;">Obtén acceso completo a todo el contenido del curso</p>
+            <p class="text-muted mb-3" style="font-size: 0.85rem;">Obtén acceso completo a todo el contenido del curso
+            </p>
             <div class="price-display">${{curso.precio}}</div>
             <div class="d-grid gap-2 d-md-flex justify-content-md-center">
                 <button class="btn btn-primary" onclick="comprarCurso({{curso.id_curso}})">
@@ -626,12 +636,14 @@
                     <i class="bi bi-list-ul"></i>
                     Contenido del Curso
                 </h6>
-                <span class="badge bg-primary">{{curso.total_modulos}} módulo{{#if (gt curso.total_modulos 1)}}s{{/if}}</span>
+                <span class="badge bg-primary">{{curso.total_modulos}} módulo{{#if (gt curso.total_modulos
+                    1)}}s{{/if}}</span>
             </div>
-            
+
             {{#each modulos}}
             <div class="module-card">
-                <div class="module-header" data-bs-toggle="collapse" data-bs-target="#module-{{id_modulo}}" aria-expanded="true">
+                <div class="module-header" data-bs-toggle="collapse" data-bs-target="#module-{{id_modulo}}"
+                    aria-expanded="true">
                     <div class="module-title">
                         <div>
                             <i class="bi bi-folder me-2"></i>Módulo {{modulo_orden}}: {{modulo_titulo}}
@@ -640,77 +652,77 @@
                         <i class="bi bi-chevron-down"></i>
                     </div>
                 </div>
-                
+
                 <div class="collapse show" id="module-{{id_modulo}}">
                     <div class="module-content">
                         {{#each videos}}
                         <div class="video-item">
                             {{#if ../tieneAcceso}}
-                                <!-- User has access - can play all videos -->
-                                <a href="/video/{{id_video}}" class="video-link">
-                                    <div class="video-icon {{#if completado}}completed{{else}}available{{/if}}">
-                                        {{#if completado}}
-                                            <i class="bi bi-check-lg"></i>
+                            <!-- User has access - can play all videos -->
+                            <a href="/video/{{id_video}}" class="video-link">
+                                <div class="video-icon {{#if completado}}completed{{else}}available{{/if}}">
+                                    {{#if completado}}
+                                    <i class="bi bi-check-lg"></i>
+                                    {{else}}
+                                    <i class="bi bi-play"></i>
+                                    {{/if}}
+                                </div>
+                                <div class="video-info">
+                                    <div class="video-title">{{orden}}. {{titulo}}</div>
+                                    <div class="video-duration">
+                                        <i class="bi bi-clock me-1"></i>
+                                        {{#if duracion_segundos}}
+                                        {{math duracion_segundos '/' 60 'round'}} min
                                         {{else}}
-                                            <i class="bi bi-play"></i>
+                                        --
                                         {{/if}}
                                     </div>
-                                    <div class="video-info">
-                                        <div class="video-title">{{orden}}. {{titulo}}</div>
-                                        <div class="video-duration">
-                                            <i class="bi bi-clock me-1"></i>
-                                            {{#if duracion_segundos}}
-                                                {{math duracion_segundos '/' 60 'round'}} min
-                                            {{else}}
-                                                --
-                                            {{/if}}
-                                        </div>
-                                    </div>
-                                    {{#if completado}}
-                                        <span class="video-status status-completed">Completado</span>
-                                    {{/if}}
-                                </a>
-                            {{else}}
-                                <!-- User doesn't have access -->
-                                {{#if es_preview}}
-                                    <!-- Preview videos - can be watched -->
-                                    <a href="/video/{{id_video}}" class="video-link">
-                                        <div class="video-icon preview">
-                                            <i class="bi bi-eye"></i>
-                                        </div>
-                                        <div class="video-info">
-                                            <div class="video-title">{{orden}}. {{titulo}}</div>
-                                            <div class="video-duration">
-                                                <i class="bi bi-clock me-1"></i>
-                                                {{#if duracion_segundos}}
-                                                    {{math duracion_segundos '/' 60 'round'}} min
-                                                {{else}}
-                                                    --
-                                                {{/if}}
-                                            </div>
-                                        </div>
-                                        <span class="video-status status-preview">Vista Previa</span>
-                                    </a>
-                                {{else}}
-                                    <!-- Locked videos -->
-                                    <div class="video-link" style="cursor: not-allowed; opacity: 0.7;">
-                                        <div class="video-icon locked">
-                                            <i class="bi bi-lock"></i>
-                                        </div>
-                                        <div class="video-info">
-                                            <div class="video-title">{{orden}}. {{titulo}}</div>
-                                            <div class="video-duration">
-                                                <i class="bi bi-clock me-1"></i>
-                                                {{#if duracion_segundos}}
-                                                    {{math duracion_segundos '/' 60 'round'}} min
-                                                {{else}}
-                                                    --
-                                                {{/if}}
-                                            </div>
-                                        </div>
-                                        <span class="video-status status-locked">Bloqueado</span>
-                                    </div>
+                                </div>
+                                {{#if completado}}
+                                <span class="video-status status-completed">Completado</span>
                                 {{/if}}
+                            </a>
+                            {{else}}
+                            <!-- User doesn't have access -->
+                            {{#if es_preview}}
+                            <!-- Preview videos - can be watched -->
+                            <a href="/video/{{id_video}}" class="video-link">
+                                <div class="video-icon preview">
+                                    <i class="bi bi-eye"></i>
+                                </div>
+                                <div class="video-info">
+                                    <div class="video-title">{{orden}}. {{titulo}}</div>
+                                    <div class="video-duration">
+                                        <i class="bi bi-clock me-1"></i>
+                                        {{#if duracion_segundos}}
+                                        {{math duracion_segundos '/' 60 'round'}} min
+                                        {{else}}
+                                        --
+                                        {{/if}}
+                                    </div>
+                                </div>
+                                <span class="video-status status-preview">Vista Previa</span>
+                            </a>
+                            {{else}}
+                            <!-- Locked videos -->
+                            <div class="video-link" style="cursor: not-allowed; opacity: 0.7;">
+                                <div class="video-icon locked">
+                                    <i class="bi bi-lock"></i>
+                                </div>
+                                <div class="video-info">
+                                    <div class="video-title">{{orden}}. {{titulo}}</div>
+                                    <div class="video-duration">
+                                        <i class="bi bi-clock me-1"></i>
+                                        {{#if duracion_segundos}}
+                                        {{math duracion_segundos '/' 60 'round'}} min
+                                        {{else}}
+                                        --
+                                        {{/if}}
+                                    </div>
+                                </div>
+                                <span class="video-status status-locked">Bloqueado</span>
+                            </div>
+                            {{/if}}
                             {{/if}}
                         </div>
                         {{/each}}
@@ -723,7 +735,7 @@
 
     <!-- Bootstrap JavaScript -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
+
     <!-- Custom JavaScript -->
     <script>
         // Función para comprar curso
@@ -733,11 +745,11 @@
         }
 
         // Mejorar la experiencia de los acordeones de módulos
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const moduleHeaders = document.querySelectorAll('.module-header');
-            
+
             moduleHeaders.forEach(header => {
-                header.addEventListener('click', function() {
+                header.addEventListener('click', function () {
                     const chevron = this.querySelector('.bi-chevron-down, .bi-chevron-up');
                     if (chevron) {
                         chevron.classList.toggle('bi-chevron-down');
@@ -770,4 +782,5 @@
         });
     </script>
 </body>
+
 </html>

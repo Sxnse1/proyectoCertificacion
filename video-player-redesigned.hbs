@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{videoTitle}} - StartEducation</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/images/favicon.svg">
+    
+    <!-- Bootstrap 5.3 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-color: #ea580c;
+            --primary-hover: #c2410c;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --info-color: #3b82f6;
+            --text-dark: #1f2937;
+            --text-muted: #6b7280;
+            --border-color: #e5e7eb;
+            --bg-light: #f8fafc;
+        }
+
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            color: var(--text-dark);
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+
+        .main-container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 1.5rem;
+        }
+
+        .video-layout {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 1.5rem;
+        }
+
+        .video-main {
+            min-width: 0;
+        }
+
+        .video-sidebar {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--border-color);
+            height: fit-content;
+            max-height: calc(100vh - 3rem);
+            overflow-y: auto;
+        }
+
+        .header-section {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .header-title {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .header-title h1 {
+            color: var(--text-dark);
+            font-weight: 700;
+            font-size: 1.8rem;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .video-subtitle {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+            line-height: 1.5;
+        }
+
+        .course-breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .course-breadcrumb a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .course-breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        .video-player-section {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+        }
+
+        .video-container {
+            position: relative;
+            width: 100%;
+            height: 0;
+            padding-bottom: 56.25%; /* 16:9 aspect ratio */
+            background: #000;
+        }
+
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .video-info-section {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .video-meta {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 1.2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .meta-card {
+            background: var(--bg-light);
+            border-radius: 10px;
+            padding: 1.2rem;
+            text-align: center;
+            border: 1px solid var(--border-color);
+        }
+
+        .meta-number {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            display: block;
+        }
+
+        .meta-label {
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            margin-top: 0.4rem;
+        }
+
+        .video-description {
+            background: var(--bg-light);
+            padding: 1.2rem;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+        }
+
+        .description-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .description-text {
+            color: var(--text-muted);
+            line-height: 1.6;
+            margin: 0;
+            font-size: 0.85rem;
+        }
+
+        /* Sidebar Styles */
+        .sidebar-header {
+            background: var(--bg-light);
+            padding: 1.2rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .sidebar-title {
+            font-weight: 600;
+            color: var(--text-dark);
+            margin: 0;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .course-info {
+            padding: 1rem 1.2rem;
+            border-bottom: 1px solid var(--border-color);
+            background: rgba(234, 88, 12, 0.02);
+        }
+
+        .course-title {
+            font-weight: 600;
+            color: var(--text-dark);
+            font-size: 0.9rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .course-meta {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .module-section {
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .module-header {
+            background: var(--bg-light);
+            padding: 0.8rem 1.2rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .module-header:hover {
+            background: rgba(234, 88, 12, 0.05);
+        }
+
+        .module-header.active {
+            background: rgba(234, 88, 12, 0.1);
+            border-left: 3px solid var(--primary-color);
+        }
+
+        .module-title {
+            font-weight: 600;
+            color: var(--text-dark);
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 0.85rem;
+        }
+
+        .module-meta {
+            color: var(--text-muted);
+            font-size: 0.7rem;
+            margin-top: 0.25rem;
+        }
+
+        .video-list {
+            padding: 0;
+        }
+
+        .video-item {
+            border-bottom: 1px solid #f1f5f9;
+            transition: all 0.2s ease;
+        }
+
+        .video-item:last-child {
+            border-bottom: none;
+        }
+
+        .video-item:hover {
+            background-color: rgba(234, 88, 12, 0.02);
+        }
+
+        .video-item.current {
+            background-color: rgba(234, 88, 12, 0.1);
+            border-left: 3px solid var(--primary-color);
+        }
+
+        .video-link {
+            display: flex;
+            align-items: center;
+            padding: 0.8rem 1.2rem;
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.2s ease;
+        }
+
+        .video-link:hover {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .video-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            margin-right: 0.8rem;
+            font-size: 0.8rem;
+            flex-shrink: 0;
+        }
+
+        .video-icon.available {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
+        }
+
+        .video-icon.current {
+            background: linear-gradient(135deg, var(--success-color) 0%, #059669 100%);
+        }
+
+        .video-icon.locked {
+            background: var(--text-muted);
+        }
+
+        .video-icon.completed {
+            background: linear-gradient(135deg, var(--success-color) 0%, #059669 100%);
+        }
+
+        .video-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .video-title {
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+            font-size: 0.8rem;
+            line-height: 1.3;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .video-duration {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .navigation-section {
+            padding: 1.2rem;
+            background: var(--bg-light);
+            border-top: 1px solid var(--border-color);
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 0.8rem;
+        }
+
+        .btn-nav {
+            flex: 1;
+            padding: 0.6rem 1rem;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.8rem;
+            transition: all 0.3s ease;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.4rem;
+        }
+
+        .btn-nav:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-nav.btn-prev {
+            background: var(--text-muted);
+            color: white;
+        }
+
+        .btn-nav.btn-prev:hover:not(:disabled) {
+            background: #4b5563;
+        }
+
+        .btn-nav.btn-next {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
+            color: white;
+        }
+
+        .btn-nav.btn-next:hover:not(:disabled) {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(234, 88, 12, 0.3);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            padding: 0.6rem 1.2rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, var(--primary-hover) 0%, #9a3412 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(234, 88, 12, 0.4);
+        }
+
+        .btn-outline-secondary {
+            border: 2px solid var(--border-color);
+            color: var(--text-muted);
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            padding: 0.6rem 1.2rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-outline-secondary:hover {
+            background: var(--text-muted);
+            border-color: var(--text-muted);
+            color: white;
+        }
+
+        @media (max-width: 992px) {
+            .video-layout {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .video-sidebar {
+                order: 2;
+                max-height: 400px;
+            }
+
+            .main-container {
+                padding: 0.8rem;
+            }
+
+            .header-section {
+                padding: 1.2rem;
+            }
+
+            .header-title h1 {
+                font-size: 1.5rem;
+            }
+
+            .video-meta {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.8rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .video-meta {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-buttons {
+                flex-direction: column;
+            }
+
+            .course-breadcrumb {
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <!-- Header Section -->
+        <div class="header-section">
+            <div class="header-title">
+                <div>
+                    <h1>
+                        <i class="bi bi-play-circle"></i>
+                        {{videoTitle}}
+                    </h1>
+                    {{#if videoDescription}}
+                    <p class="video-subtitle">{{videoDescription}}</p>
+                    {{/if}}
+                    <div class="course-breadcrumb">
+                        <a href="/cursos">
+                            <i class="bi bi-collection"></i> Cursos
+                        </a>
+                        <i class="bi bi-chevron-right"></i>
+                        <a href="/cursos/{{courseId}}">{{courseTitle}}</a>
+                        <i class="bi bi-chevron-right"></i>
+                        <span>{{moduleTitle}}</span>
+                        <i class="bi bi-chevron-right"></i>
+                        <span class="text-primary">{{videoTitle}}</span>
+                    </div>
+                </div>
+                <div class="d-flex gap-2">
+                    <a href="/cursos/{{courseId}}" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-left me-2"></i>Volver al Curso
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="video-layout">
+            <!-- Main Video Content -->
+            <div class="video-main">
+                <!-- Video Player -->
+                <div class="video-player-section">
+                    <div class="video-container">
+                        {{#if bunnyLibraryId}}
+                        <iframe 
+                            src="https://iframe.mediadelivery.net/embed/{{bunnyLibraryId}}/{{videoId}}?autoplay=false&controls=true&responsive=true" 
+                            allow="autoplay; fullscreen; picture-in-picture; encrypted-media" 
+                            allowfullscreen
+                            title="{{videoTitle}}"
+                            id="videoPlayer">
+                        </iframe>
+                        {{else}}
+                        <!-- Fallback para videos migrados -->
+                        <iframe 
+                            src="https://player.vimeo.com/video/{{videoId}}?badge=0&autopause=0&player_id=0&app_id=58479" 
+                            allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share" 
+                            allowfullscreen
+                            title="{{videoTitle}}"
+                            id="videoPlayer">
+                        </iframe>
+                        {{/if}}
+                    </div>
+                </div>
+
+                <!-- Video Information -->
+                <div class="video-info-section">
+                    <!-- Video Metadata -->
+                    <div class="video-meta">
+                        {{#if videoDuration}}
+                        <div class="meta-card">
+                            <span class="meta-number">{{formatDuration videoDuration}}</span>
+                            <div class="meta-label">Duración</div>
+                        </div>
+                        {{/if}}
+                        
+                        {{#if videoOrder}}
+                        <div class="meta-card">
+                            <span class="meta-number">#{{videoOrder}}</span>
+                            <div class="meta-label">Lección</div>
+                        </div>
+                        {{/if}}
+                        
+                        {{#if moduleTitle}}
+                        <div class="meta-card">
+                            <span class="meta-number">{{moduleOrder}}</span>
+                            <div class="meta-label">Módulo</div>
+                        </div>
+                        {{/if}}
+                        
+                        <div class="meta-card">
+                            <span class="meta-number">{{courseProgress}}%</span>
+                            <div class="meta-label">Progreso</div>
+                        </div>
+                    </div>
+
+                    <!-- Video Description -->
+                    {{#if videoDescription}}
+                    <div class="video-description">
+                        <div class="description-title">
+                            <i class="bi bi-info-circle"></i>
+                            Descripción
+                        </div>
+                        <p class="description-text">{{videoDescription}}</p>
+                    </div>
+                    {{/if}}
+                </div>
+            </div>
+
+            <!-- Course Navigation Sidebar -->
+            <div class="video-sidebar">
+                <div class="sidebar-header">
+                    <h6 class="sidebar-title">
+                        <i class="bi bi-list-ul"></i>
+                        Contenido del Curso
+                    </h6>
+                </div>
+
+                <!-- Course Info -->
+                <div class="course-info">
+                    <div class="course-title">{{courseTitle}}</div>
+                    <div class="course-meta">
+                        {{totalModules}} módulos • {{totalVideos}} videos • {{courseProgress}}% completado
+                    </div>
+                </div>
+
+                <!-- Modules and Videos -->
+                {{#each modules}}
+                <div class="module-section">
+                    <div class="module-header {{#if isCurrentModule}}active{{/if}}" 
+                         data-bs-toggle="collapse" 
+                         data-bs-target="#module-{{id_modulo}}" 
+                         aria-expanded="{{#if isCurrentModule}}true{{else}}false{{/if}}">
+                        <div class="module-title">
+                            <div>
+                                <i class="bi bi-folder"></i>
+                                {{orden}}. {{titulo}}
+                                <div class="module-meta">{{videoCount}} videos</div>
+                            </div>
+                            <i class="bi bi-chevron-down"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="collapse {{#if isCurrentModule}}show{{/if}}" id="module-{{id_modulo}}">
+                        <div class="video-list">
+                            {{#each videos}}
+                            <div class="video-item {{#if isCurrent}}current{{/if}}">
+                                {{#if ../../../tieneAcceso}}
+                                    <a href="/video/{{id_video}}" class="video-link">
+                                        <div class="video-icon {{#if isCurrent}}current{{else if completado}}completed{{else}}available{{/if}}">
+                                            {{#if isCurrent}}
+                                                <i class="bi bi-play-fill"></i>
+                                            {{else if completado}}
+                                                <i class="bi bi-check-lg"></i>
+                                            {{else}}
+                                                <i class="bi bi-play"></i>
+                                            {{/if}}
+                                        </div>
+                                        <div class="video-info">
+                                            <div class="video-title">{{orden}}. {{titulo}}</div>
+                                            <div class="video-duration">
+                                                <i class="bi bi-clock"></i>
+                                                {{#if duracion_segundos}}
+                                                    {{formatDuration duracion_segundos}}
+                                                {{else}}
+                                                    --
+                                                {{/if}}
+                                            </div>
+                                        </div>
+                                    </a>
+                                {{else}}
+                                    {{#if es_preview}}
+                                        <a href="/video/{{id_video}}" class="video-link">
+                                            <div class="video-icon available">
+                                                <i class="bi bi-eye"></i>
+                                            </div>
+                                            <div class="video-info">
+                                                <div class="video-title">{{orden}}. {{titulo}} (Preview)</div>
+                                                <div class="video-duration">
+                                                    <i class="bi bi-clock"></i>
+                                                    {{#if duracion_segundos}}
+                                                        {{formatDuration duracion_segundos}}
+                                                    {{else}}
+                                                        --
+                                                    {{/if}}
+                                                </div>
+                                            </div>
+                                        </a>
+                                    {{else}}
+                                        <div class="video-link" style="cursor: not-allowed; opacity: 0.6;">
+                                            <div class="video-icon locked">
+                                                <i class="bi bi-lock"></i>
+                                            </div>
+                                            <div class="video-info">
+                                                <div class="video-title">{{orden}}. {{titulo}}</div>
+                                                <div class="video-duration">
+                                                    <i class="bi bi-clock"></i>
+                                                    {{#if duracion_segundos}}
+                                                        {{formatDuration duracion_segundos}}
+                                                    {{else}}
+                                                        --
+                                                    {{/if}}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {{/if}}
+                                {{/if}}
+                            </div>
+                            {{/each}}
+                        </div>
+                    </div>
+                </div>
+                {{/each}}
+
+                <!-- Navigation Buttons -->
+                <div class="navigation-section">
+                    <div class="nav-buttons">
+                        {{#if previousVideo}}
+                        <a href="/video/{{previousVideo.id_video}}" class="btn-nav btn-prev">
+                            <i class="bi bi-chevron-left"></i>
+                            Anterior
+                        </a>
+                        {{else}}
+                        <button class="btn-nav btn-prev" disabled>
+                            <i class="bi bi-chevron-left"></i>
+                            Anterior
+                        </button>
+                        {{/if}}
+
+                        {{#if nextVideo}}
+                        <a href="/video/{{nextVideo.id_video}}" class="btn-nav btn-next">
+                            Siguiente
+                            <i class="bi bi-chevron-right"></i>
+                        </a>
+                        {{else}}
+                        <button class="btn-nav btn-next" disabled>
+                            Siguiente
+                            <i class="bi bi-chevron-right"></i>
+                        </button>
+                        {{/if}}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Mejorar la experiencia de los acordeones de módulos
+        document.addEventListener('DOMContentLoaded', function() {
+            const moduleHeaders = document.querySelectorAll('.module-header');
+            
+            moduleHeaders.forEach(header => {
+                header.addEventListener('click', function() {
+                    const chevron = this.querySelector('.bi-chevron-down, .bi-chevron-up');
+                    if (chevron) {
+                        chevron.classList.toggle('bi-chevron-down');
+                        chevron.classList.toggle('bi-chevron-up');
+                    }
+                });
+            });
+
+            // Auto-scroll al video actual en la sidebar
+            const currentVideo = document.querySelector('.video-item.current');
+            if (currentVideo) {
+                currentVideo.scrollIntoView({ 
+                    behavior: 'smooth', 
+                    block: 'center' 
+                });
+            }
+        });
+
+        // Atajos de teclado para navegación
+        document.addEventListener('keydown', function(e) {
+            // No interceptar si hay un input enfocado
+            if (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA') {
+                return;
+            }
+            
+            switch(e.code) {
+                case 'ArrowLeft':
+                    e.preventDefault();
+                    const prevBtn = document.querySelector('.btn-prev:not(:disabled)');
+                    if (prevBtn) prevBtn.click();
+                    break;
+                case 'ArrowRight':
+                    e.preventDefault();
+                    const nextBtn = document.querySelector('.btn-next:not(:disabled)');
+                    if (nextBtn) nextBtn.click();
+                    break;
+                case 'Escape':
+                    window.history.back();
+                    break;
+            }
+        });
+
+        // Logging para debugging
+        console.log('🎬 Reproductor de video inicializado');
+        console.log('⌨️ Atajos disponibles:');
+        console.log('   • ← Flecha izquierda: Video anterior');
+        console.log('   • → Flecha derecha: Video siguiente');
+        console.log('   • Escape: Volver');
+    </script>
+</body>
+</html>

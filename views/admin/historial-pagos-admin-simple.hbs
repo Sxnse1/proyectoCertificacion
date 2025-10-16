@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{title}} - StartEducation Admin</title>
+    
+    <!-- Bootstrap 5.3 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-color: #ea580c;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+        }
+        
+        body {
+            background: #f8fafc;
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .top-bar {
+            background: var(--primary-color);
+            color: white;
+            padding: 12px 0;
+        }
+        
+        .navbar-custom {
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+            padding: 1rem 0;
+        }
+        
+        .stats-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid var(--primary-color);
+        }
+        
+        .payment-type.type-compra {
+            background: #eff6ff;
+            color: #1d4ed8;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+        }
+        
+        .payment-type.type-suscripcion {
+            background: #f0fdf4;
+            color: #15803d;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+        }
+        
+        .status-exitoso {
+            color: var(--success-color);
+            font-weight: 600;
+        }
+        
+        .status-cancelado {
+            color: var(--danger-color);
+            font-weight: 600;
+        }
+        
+        .status-expirado {
+            color: var(--warning-color);
+            font-weight: 600;
+        }
+        
+        .table-responsive {
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .table thead {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .table tbody tr:hover {
+            background: #f8fafc;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Top Bar -->
+    <div class="top-bar">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center">
+                    <i class="bi bi-shield-check me-2"></i>
+                    <span>Panel de Administración</span>
+                </div>
+                <div class="d-flex align-items-center">
+                    <span class="me-3">Bienvenido, Admin</span>
+                    <a href="/dashboard" class="btn btn-outline-light btn-sm">
+                        <i class="bi bi-house-door"></i> Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar-custom">
+        <div class="container">
+            <div class="d-flex align-items-center">
+                <img src="/images/logocomp.png" alt="StartEducation" class="me-3" style="height: 40px;">
+                <h4 class="mb-0 text-dark">
+                    <i class="bi bi-credit-card-2-front text-primary me-2"></i>
+                    {{title}}
+                </h4>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container my-4">
+        
+        <!-- Statistics Cards -->
+        <div class="row mb-4">
+            <div class="col-md-3 mb-3">
+                <div class="stats-card">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <h6 class="text-muted mb-1">Ingresos Totales</h6>
+                            <h4 class="mb-0 text-primary">${{stats.totalIngresos}}</h4>
+                        </div>
+                        <i class="bi bi-currency-dollar fs-2 text-primary"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-3 mb-3">
+                <div class="stats-card">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <h6 class="text-muted mb-1">Ingresos del Mes</h6>
+                            <h4 class="mb-0 text-success">${{stats.ingresosMes}}</h4>
+                        </div>
+                        <i class="bi bi-calendar-month fs-2 text-success"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-3 mb-3">
+                <div class="stats-card">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <h6 class="text-muted mb-1">Total Transacciones</h6>
+                            <h4 class="mb-0 text-info">{{stats.totalTransacciones}}</h4>
+                        </div>
+                        <i class="bi bi-graph-up fs-2 text-info"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-3 mb-3">
+                <div class="stats-card">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <h6 class="text-muted mb-1">Tasa de Éxito</h6>
+                            <h4 class="mb-0 text-warning">{{stats.tasaExito}}%</h4>
+                        </div>
+                        <i class="bi bi-check-circle fs-2 text-warning"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h6 class="card-title">Filtros</h6>
+                        <form method="GET" action="/admin/pagos">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <select class="form-select" name="tipo">
+                                        <option value="todos">Todos los tipos</option>
+                                        <option value="compra">Compras Individuales</option>
+                                        <option value="suscripcion">Suscripciones</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="bi bi-funnel"></i> Filtrar
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Payments Table -->
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">
+                    <i class="bi bi-list-ul me-2"></i>
+                    Historial de Pagos ({{pagos.length}} registros)
+                </h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Usuario</th>
+                                <th>Concepto</th>
+                                <th>Tipo</th>
+                                <th>Monto</th>
+                                <th>Estado</th>
+                                <th>Fecha</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {{#each pagos}}
+                            <tr>
+                                <td><code>{{id_pago}}</code></td>
+                                <td>
+                                    <div class="fw-bold">{{usuario_nombre}}</div>
+                                    <small class="text-muted">{{usuario_email}}</small>
+                                </td>
+                                <td>{{concepto}}</td>
+                                <td>
+                                    <span class="payment-type {{#eq origen 'compra'}}type-compra{{else}}type-suscripcion{{/eq}}">
+                                        {{tipo_pago}}
+                                    </span>
+                                </td>
+                                <td class="fw-bold">${{monto}}</td>
+                                <td>
+                                    <span class="status-{{estatus}}">
+                                        {{#eq estatus 'exitoso'}}✅ Exitoso{{/eq}}
+                                        {{#eq estatus 'cancelado'}}❌ Cancelado{{/eq}}
+                                        {{#eq estatus 'expirado'}}⚠️ Expirado{{/eq}}
+                                        {{#eq estatus 'pendiente'}}⏳ Pendiente{{/eq}}
+                                    </span>
+                                </td>
+                                <td>{{formatDate fecha_pago}}</td>
+                            </tr>
+                            {{else}}
+                            <tr>
+                                <td colspan="7" class="text-center py-4">
+                                    <div class="text-muted">
+                                        <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+                                        <p>No hay pagos registrados</p>
+                                    </div>
+                                </td>
+                            </tr>
+                            {{/each}}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Top Customers -->
+        {{#if topCompradores.length}}
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="bi bi-trophy me-2"></i>
+                            Top Compradores
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            {{#each topCompradores}}
+                            <div class="col-md-6 col-lg-4 mb-3">
+                                <div class="card border-primary">
+                                    <div class="card-body text-center">
+                                        <h6 class="card-title">{{usuario_nombre}}</h6>
+                                        <p class="text-muted small">{{usuario_email}}</p>
+                                        <h5 class="text-primary">${{total_gastado}}</h5>
+                                        <small class="text-muted">{{total_compras}} transacciones</small>
+                                    </div>
+                                </div>
+                            </div>
+                            {{/each}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {{/if}}
+
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
