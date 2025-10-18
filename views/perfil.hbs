@@ -334,13 +334,16 @@
         }
 
         .subscription-card.active {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            color: white;
+            /* Use same background as other stat cards */
+            background: var(--bg-light);
+            color: var(--text-dark);
+            border: 1px solid var(--border-color);
         }
 
         .subscription-card.active .stat-icon {
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
+            /* Keep the icon visually distinct: light green background and green icon */
+            background: rgba(16, 185, 129, 0.12); /* subtle green tint */
+            color: var(--success-color);
         }
 
         .subscription-card.inactive {

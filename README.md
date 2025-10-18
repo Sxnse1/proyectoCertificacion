@@ -1,8 +1,34 @@
-# proyectoCertificacion - SQL Server
+# Sistema de Gestión de Cursos Online
 
-Este proyecto Express.js está configurado para conectarse a SQL Server.
+Plataforma educativa completa desarrollada con Node.js, Express y SQL Server que permite la gestión de cursos, videos, usuarios y suscripciones con integración a Bunny CDN y sistema de 2FA.
 
-## Configuración inicial
+## 🚀 Características Principales
+
+- **Gestión de Usuarios**: Sistema de autenticación con 2FA para instructores
+- **Administración de Cursos**: CRUD completo de cursos, módulos y videos
+- **Integración con Bunny CDN**: Streaming optimizado de contenido multimedia
+- **Sistema de Suscripciones**: Gestión de membresías y pagos
+- **Dashboard Diferenciado**: Interfaces específicas para estudiantes e instructores
+- **Carga de Archivos**: Sistema seguro de upload de videos y recursos
+
+## 🏗️ Estructura del Proyecto
+
+```
+├── docs/              # Documentación del proyecto
+├── config/            # Configuración de aplicación y BD
+├── database/          # Scripts SQL y migraciones
+├── routes/
+│   ├── admin/         # Rutas administrativas
+│   ├── protected/     # Rutas autenticadas
+│   └── public/        # Rutas públicas
+├── views/             # Vistas Handlebars organizadas
+├── services/          # Servicios externos (Bunny, Email, 2FA)
+├── scripts/           # Utilidades y scripts de migración
+├── templates/         # Plantillas experimentales
+└── middleware/        # Middlewares de autenticación
+```
+
+## ⚙️ Configuración inicial
 
 ### 1. Instalar dependencias
 ```powershell
