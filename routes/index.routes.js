@@ -99,10 +99,6 @@ function configureRoutes(app) {
   
   app.use('/admin/pagos', requireRole(['admin', 'instructor']), historialPagosAdminRouter);
   
-  // Test de videos (temporal)
-  const testVideosRouter = require('./admin/test-videos');
-  app.use('/admin/test-videos', requireRole(['admin', 'instructor']), testVideosRouter);
-  
   // Certificados y Valoraciones
   const certificadosAdminRouter = require('./admin/certificados-admin');
   const valoracionesAdminRouter = require('./admin/valoraciones-admin');
