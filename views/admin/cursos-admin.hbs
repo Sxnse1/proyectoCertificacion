@@ -5,14 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{title}} - StartEducation</title>
     
-    <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="/images/favicon.svg">
     
-    <!-- Bootstrap 5.3 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Bootstrap Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
-    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <style>
@@ -39,7 +35,7 @@
         }
 
         .main-container {
-            max-width: 1100px;
+            max-width: 1400px;
             margin: 0 auto;
             padding: 1.5rem;
         }
@@ -235,43 +231,69 @@
             color: #4b5563;
         }
 
-        .stats-grid {
+        .stats-row {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(64px, 1fr));
-            gap: 0.4rem;
-            margin-top: 0.4rem;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.5rem;
+            width: 100%;
         }
 
-        .stat-item {
+        .stat-item-box {
             text-align: center;
-            padding: 0.4rem;
-            border-radius: 5px;
-            font-size: 0.65rem;
+            padding: 0.6rem 0.4rem;
+            border-radius: 8px;
             border: 1px solid var(--border-color);
+            transition: all 0.2s ease;
+        }
+
+        .stat-item-box:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-item-box i {
+            display: block;
+            font-size: 1.2rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .stat-item-box strong {
+            display: block;
+            font-size: 0.95rem;
+            margin-bottom: 0.1rem;
+            font-weight: 700;
+        }
+
+        .stat-item-box small {
+            display: block;
+            font-size: 0.65rem;
+            opacity: 0.8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .stat-modulos {
             background: rgba(168, 85, 247, 0.1);
             color: #7c3aed;
-            border-color: rgba(168, 85, 247, 0.2);
+            border-color: rgba(168, 85, 247, 0.3);
         }
 
         .stat-videos {
             background: rgba(59, 130, 246, 0.1);
             color: #1d4ed8;
-            border-color: rgba(59, 130, 246, 0.2);
+            border-color: rgba(59, 130, 246, 0.3);
         }
 
         .stat-valoraciones {
             background: rgba(245, 158, 11, 0.1);
             color: #d97706;
-            border-color: rgba(245, 158, 11, 0.2);
+            border-color: rgba(245, 158, 11, 0.3);
         }
 
         .stat-compras {
             background: rgba(16, 185, 129, 0.1);
             color: #059669;
-            border-color: rgba(16, 185, 129, 0.2);
+            border-color: rgba(16, 185, 129, 0.3);
         }
 
         .etiquetas-container {
@@ -384,6 +406,29 @@
             opacity: 0.5;
         }
 
+        .form-section-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 0.8rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .required-badge {
+            display: inline-block;
+            margin-left: .35rem;
+            padding: .1rem .4rem;
+            font-size: .65rem;
+            font-weight: 600;
+            color: #b91c1c;
+            background: rgba(239,68,68,.1);
+            border: 1px solid rgba(239,68,68,.3);
+            border-radius: 999px;
+            vertical-align: middle;
+        }
+        .form-text-helper { font-size: .75rem; color: #6b7280; }
+
         @media (max-width: 768px) {
             .main-container {
                 padding: 0.8rem;
@@ -393,36 +438,14 @@
                 font-size: 1.5rem;
             }
             
-            .table-responsive {
-                font-size: 0.75rem;
-            }
-            
-            .curso-card {
-                flex-direction: column;
-                gap: 0.4rem;
-            }
-            
-            .curso-miniatura {
-                width: 100%;
-                height: 96px;
-            }
-            
-            .btn-action {
-                padding: 0.25rem 0.4rem;
-                font-size: 0.65rem;
-            }
-            
-            .header-section,
-            .filters-section,
-            .pagination-section {
-                padding: 1rem;
+            .stats-row {
+                grid-template-columns: repeat(2, 1fr);
             }
         }
     </style>
 </head>
 <body>
     <div class="main-container">
-        <!-- Header Section -->
         <div class="header-section">
             <div class="d-flex justify-content-between align-items-center">
                 <div>
@@ -440,9 +463,7 @@
             </div>
         </div>
 
-        <!-- Content Section -->
         <div class="content-section">
-            <!-- Section Header -->
             <div class="section-header">
                 <h2 class="section-title">
                     <i class="bi bi-list-ul"></i>
@@ -453,7 +474,6 @@
                 </button>
             </div>
 
-            <!-- Filters Section -->
             <div class="filters-section">
                 <form method="GET" class="row g-3">
                     <div class="col-md-3">
@@ -509,18 +529,20 @@
                 </form>
             </div>
 
-            <!-- Table Section -->
             <div class="table-section">
                 {{#if cursos.length}}
                 <div class="table-responsive">
                     <table class="table">
                         <thead>
                             <tr>
-                                <th width="40%">Curso</th>
-                                <th width="15%">Instructor</th>
-                                <th width="10%">Precio</th>
-                                <th width="10%">Estado</th>
-                                <th width="15%">Estadísticas</th>
+                                <th width="28%">Curso</th>
+                                <th width="13%">Instructor</th>
+                                <th width="8%">Precio</th>
+                                <th width="8%">Estado</th>
+                                <th width="7%">Módulos</th>
+                                <th width="7%">Videos</th>
+                                <th width="7%">Rating</th>
+                                <th width="7%">Ventas</th>
                                 <th width="10%">Acciones</th>
                             </tr>
                         </thead>
@@ -585,64 +607,75 @@
                                     </span>
                                 </td>
                                 <td>
-                                    <div class="stats-grid">
-                                        <div class="stat-item stat-modulos" title="Módulos">
-                                            <i class="bi bi-collection"></i><br>
-                                            <strong>{{total_modulos}}</strong><br>
-                                            <small>Módulos</small>
-                                        </div>
-                                        <div class="stat-item stat-videos" title="Videos">
-                                            <i class="bi bi-play-circle"></i><br>
-                                            <strong>{{total_videos}}</strong><br>
-                                            <small>Videos</small>
-                                        </div>
-                                        <div class="stat-item stat-valoraciones" title="Valoración promedio">
-                                            <i class="bi bi-star"></i><br>
-                                            <strong>{{promedio_valoracion_display}}</strong><br>
-                                            <small>Rating</small>
-                                        </div>
-                                        <div class="stat-item stat-compras" title="Compras">
-                                            <i class="bi bi-cart"></i><br>
-                                            <strong>{{total_compras}}</strong><br>
-                                            <small>Ventas</small>
-                                        </div>
+                                    <div class="stat-item-box stat-modulos">
+                                        <i class="bi bi-collection"></i>
+                                        <strong>{{total_modulos}}</strong>
+                                        <small>Módulos</small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="stat-item-box stat-videos">
+                                        <i class="bi bi-play-circle"></i>
+                                        <strong>{{total_videos}}</strong>
+                                        <small>Videos</small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="stat-item-box stat-valoraciones">
+                                        <i class="bi bi-star-fill"></i>
+                                        <strong>{{promedio_valoracion_display}}</strong>
+                                        <small>Rating</small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="stat-item-box stat-compras">
+                                        <i class="bi bi-cart-check"></i>
+                                        <strong>{{total_compras}}</strong>
+                                        <small>Ventas</small>
                                     </div>
                                 </td>
                                 <td>
                                     <div class="d-flex flex-column gap-1">
                                         <button type="button" class="btn btn-action btn-view" 
                                                 onclick="viewCurso({{id_curso}})" title="Ver detalles">
-                                            <i class="bi bi-eye"></i>
+                                            <i class="bi bi-eye"></i> Ver
                                         </button>
                                         <button type="button" class="btn btn-action btn-edit" 
                                                 onclick="editCurso({{id_curso}})" title="Editar">
-                                            <i class="bi bi-pencil"></i>
+                                            <i class="bi bi-pencil"></i> Editar
                                         </button>
+                                        <!-- Video action moved into dropdown to avoid extra visible button -->
                                         <div class="dropdown">
-                                            <button class="btn btn-action btn-view dropdown-toggle" 
+                                            <button class="btn btn-action btn-view dropdown-toggle w-100" 
                                                     data-bs-toggle="dropdown" title="Más opciones">
-                                                <i class="bi bi-three-dots"></i>
+                                                <i class="bi bi-three-dots"></i> Más
                                             </button>
                                             <ul class="dropdown-menu">
                                                 {{#if (eq estatus 'borrador')}}
-                                                <li><a class="dropdown-item" href="#" onclick="changeStatus({{id_curso}}, 'publicado', '{{titulo}}')">
+                                                <li><a class="dropdown-item" href="#" onclick="changeStatus({{id_curso}}, 'publicado', '{{titulo}}'); return false;">
                                                     <i class="bi bi-check-circle text-success me-2"></i>Publicar
                                                 </a></li>
                                                 {{/if}}
                                                 {{#if (eq estatus 'publicado')}}
-                                                <li><a class="dropdown-item" href="#" onclick="changeStatus({{id_curso}}, 'inactivo', '{{titulo}}')">
+                                                <li><a class="dropdown-item" href="#" onclick="changeStatus({{id_curso}}, 'inactivo', '{{titulo}}'); return false;">
                                                     <i class="bi bi-pause-circle text-warning me-2"></i>Desactivar
                                                 </a></li>
                                                 {{/if}}
                                                 {{#if (eq estatus 'inactivo')}}
-                                                <li><a class="dropdown-item" href="#" onclick="changeStatus({{id_curso}}, 'publicado', '{{titulo}}')">
+                                                <li><a class="dropdown-item" href="#" onclick="changeStatus({{id_curso}}, 'publicado', '{{titulo}}'); return false;">
                                                     <i class="bi bi-check-circle text-success me-2"></i>Activar
                                                 </a></li>
                                                 {{/if}}
-                                                <li><hr class="dropdown-divider"></li>
-                                                <li><a class="dropdown-item text-danger" href="#" onclick="deleteCurso({{id_curso}}, '{{titulo}}', {{total_compras}})">
-                                                    <i class="bi bi-trash me-2"></i>Eliminar
-                                                </a></li>
+                                                                                                <!-- Add 'Agregar video' inside dropdown so buttons stay compact -->
+                                                                                                                                                <li>
+                                                                                                                                                    <a class="dropdown-item" href="#" onclick="openCreateModuloModal({{id_curso}}); return false;">
+                                                                                                                                                        <i class="bi bi-folder-plus me-2"></i>Agregar módulo
+                                                                                                                                                    </a>
+                                                                                                                                                </li>
+                                                                                                <li><hr class="dropdown-divider"></li>
+                                                                                                <li><a class="dropdown-item text-danger" href="#" onclick="deleteCurso({{id_curso}}, '{{titulo}}', {{total_compras}}); return false;">
+                                                                                                        <i class="bi bi-trash me-2"></i>Eliminar
+                                                                                                </a></li>
                                             </ul>
                                         </div>
                                     </div>
@@ -664,7 +697,6 @@
                 {{/if}}
             </div>
 
-            <!-- Pagination Section -->
             {{#if pagination.totalPages}}
             <div class="pagination-section">
                 <div class="d-flex justify-content-between align-items-center">
@@ -702,9 +734,8 @@
         </div>
     </div>
 
-    <!-- Modal Crear Curso -->
     <div class="modal fade" id="createCursoModal" tabindex="-1">
-        <div class="modal-dialog modal-lg">
+        <div class="modal-dialog modal-xl">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">
@@ -714,14 +745,17 @@
                 </div>
                 <form id="createCursoForm">
                     <div class="modal-body">
-                        <div class="row g-3">
+                        <div class="form-section-title">
+                            <i class="bi bi-mortarboard me-2"></i>Información del Curso
+                        </div>
+                        <div class="row g-3 mb-4">
                             <div class="col-md-8">
-                                <label for="create_titulo" class="form-label">Título del Curso *</label>
+                                <label for="create_titulo" class="form-label">Título del Curso <span class="required-badge">Obligatorio</span></label>
                                 <input type="text" class="form-control" id="create_titulo" name="titulo" required
                                        placeholder="Ej: Curso completo de JavaScript moderno">
                             </div>
                             <div class="col-md-4">
-                                <label for="create_categoria" class="form-label">Categoría *</label>
+                                <label for="create_categoria" class="form-label">Categoría <span class="required-badge">Obligatorio</span></label>
                                 <select class="form-select" id="create_categoria" name="id_categoria" required>
                                     <option value="">Seleccionar categoría...</option>
                                     {{#each categorias}}
@@ -734,21 +768,55 @@
                                 <textarea class="form-control" id="create_descripcion" name="descripcion" rows="3"
                                           placeholder="Describe de qué trata tu curso..."></textarea>
                             </div>
-                            <div class="col-md-6">
-                                <label for="create_precio" class="form-label">Precio *</label>
+                            <div class="col-md-4">
+                                <label for="create_precio" class="form-label">Precio <span class="required-badge">Obligatorio</span></label>
                                 <div class="input-group">
                                     <span class="input-group-text">$</span>
                                     <input type="number" class="form-control" id="create_precio" name="precio" 
                                            min="0" step="0.01" required placeholder="0.00">
                                 </div>
                             </div>
-                            <div class="col-md-6">
-                                <label for="create_nivel" class="form-label">Nivel *</label>
+                            <div class="col-md-4">
+                                <label for="create_nivel" class="form-label">Nivel <span class="required-badge">Obligatorio</span></label>
                                 <select class="form-select" id="create_nivel" name="nivel" required>
                                     <option value="">Seleccionar nivel...</option>
                                     <option value="básico">Básico</option>
                                     <option value="intermedio">Intermedio</option>
                                     <option value="avanzado">Avanzado</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="create_id_instructor" class="form-label">Instructor <span class="required-badge">Obligatorio</span></label>
+                                <select class="form-select" id="create_id_instructor" name="id_instructor" required>
+                                    <option value="">Seleccionar...</option>
+
+                                    {{#if currentUser}}
+                                    <optgroup label="Tú (Usuario actual)">
+                                      <option value="{{currentUser.id_usuario}}" selected>
+                                        {{currentUser.nombre}} {{currentUser.apellido}} (Tú)
+                                      </option>
+                                    </optgroup>
+                                    {{/if}}
+
+                                    {{#if instructores.length}}
+                                    <optgroup label="Instructores">
+                                      {{#each instructores}}
+                                      {{#unless (eq id_usuario ../currentUser.id_usuario)}}
+                                      <option value="{{id_usuario}}">{{nombre}} {{apellido}}</option>
+                                      {{/unless}}
+                                      {{/each}}
+                                    </optgroup>
+                                    {{/if}}
+
+                                    {{#if admins.length}}
+                                    <optgroup label="Administradores">
+                                      {{#each admins}}
+                                      {{#unless (eq id_usuario ../currentUser.id_usuario)}}
+                                      <option value="{{id_usuario}}">{{nombre}} {{apellido}} (Admin)</option>
+                                      {{/unless}}
+                                      {{/each}}
+                                    </optgroup>
+                                    {{/if}}
                                 </select>
                             </div>
                             <div class="col-12">
@@ -757,6 +825,21 @@
                                        placeholder="https://ejemplo.com/imagen.jpg">
                                 <div class="form-text">URL de la imagen que representará tu curso</div>
                             </div>
+                        </div>
+
+                        <div class="form-section-title">
+                          <i class="bi bi-collection me-2"></i>Módulo del curso (Opcional)
+                        </div>
+                        <div class="row g-3">
+                          <div class="col-md-12">
+                            <label class="form-label">Módulos del curso</label>
+                            <select class="form-select" id="create_modulo_select" disabled>
+                              <option value="">Se habilitará después de crear el curso</option>
+                            </select>
+                            <div class="form-text-helper">
+                              Al crear el curso se abrirá un formulario para seleccionar módulos existentes o crear uno nuevo en el mismo lugar.
+                            </div>
+                          </div>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -770,7 +853,6 @@
         </div>
     </div>
 
-    <!-- Modal Editar Curso -->
     <div class="modal fade" id="editCursoModal" tabindex="-1">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
@@ -785,11 +867,11 @@
                     <div class="modal-body">
                         <div class="row g-3">
                             <div class="col-md-8">
-                                <label for="edit_titulo" class="form-label">Título del Curso *</label>
+                                <label for="edit_titulo" class="form-label">Título del Curso <span class="required-badge">Obligatorio</span></label>
                                 <input type="text" class="form-control" id="edit_titulo" name="titulo" required>
                             </div>
                             <div class="col-md-4">
-                                <label for="edit_categoria" class="form-label">Categoría *</label>
+                                <label for="edit_categoria" class="form-label">Categoría <span class="required-badge">Obligatorio</span></label>
                                 <select class="form-select" id="edit_categoria" name="id_categoria" required>
                                     <option value="">Seleccionar categoría...</option>
                                     {{#each categorias}}
@@ -801,28 +883,58 @@
                                 <label for="edit_descripcion" class="form-label">Descripción</label>
                                 <textarea class="form-control" id="edit_descripcion" name="descripcion" rows="3"></textarea>
                             </div>
-                            <div class="col-md-4">
-                                <label for="edit_precio" class="form-label">Precio *</label>
+                            <div class="col-md-3">
+                                <label for="edit_precio" class="form-label">Precio <span class="required-badge">Obligatorio</span></label>
                                 <div class="input-group">
                                     <span class="input-group-text">$</span>
                                     <input type="number" class="form-control" id="edit_precio" name="precio" 
                                            min="0" step="0.01" required>
                                 </div>
                             </div>
-                            <div class="col-md-4">
-                                <label for="edit_nivel" class="form-label">Nivel *</label>
+                            <div class="col-md-3">
+                                <label for="edit_nivel" class="form-label">Nivel <span class="required-badge">Obligatorio</span></label>
                                 <select class="form-select" id="edit_nivel" name="nivel" required>
                                     <option value="básico">Básico</option>
                                     <option value="intermedio">Intermedio</option>
                                     <option value="avanzado">Avanzado</option>
                                 </select>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                                 <label for="edit_estatus" class="form-label">Estado</label>
                                 <select class="form-select" id="edit_estatus" name="estatus">
                                     <option value="borrador">Borrador</option>
                                     <option value="publicado">Publicado</option>
                                     <option value="inactivo">Inactivo</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="edit_id_instructor" class="form-label">Instructor <span class="required-badge">Obligatorio</span></label>
+                                <select class="form-select" id="edit_id_instructor" name="id_instructor" required>
+                                    <option value="">Seleccionar...</option>
+
+                                    {{#if currentUser}}
+                                    <optgroup label="Tú (Usuario actual)">
+                                      <option value="{{currentUser.id_usuario}}">
+                                        {{currentUser.nombre}} {{currentUser.apellido}} (Tú)
+                                      </option>
+                                    </optgroup>
+                                    {{/if}}
+
+                                    {{#if instructores.length}}
+                                    <optgroup label="Instructores">
+                                      {{#each instructores}}
+                                      <option value="{{id_usuario}}">{{nombre}} {{apellido}}</option>
+                                      {{/each}}
+                                    </optgroup>
+                                    {{/if}}
+
+                                    {{#if admins.length}}
+                                    <optgroup label="Administradores">
+                                      {{#each admins}}
+                                      <option value="{{id_usuario}}">{{nombre}} {{apellido}} (Admin)</option>
+                                      {{/each}}
+                                    </optgroup>
+                                    {{/if}}
                                 </select>
                             </div>
                             <div class="col-12">
@@ -842,7 +954,6 @@
         </div>
     </div>
 
-    <!-- Modal Ver Curso -->
     <div class="modal fade" id="viewCursoModal" tabindex="-1">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
@@ -853,8 +964,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body" id="viewCursoContent">
-                    <!-- Contenido cargado dinámicamente -->
-                </div>
+                    </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
                 </div>
@@ -862,38 +972,128 @@
         </div>
     </div>
 
-    <!-- Bootstrap 5.3 JS -->
+    <div class="modal fade" id="createVideoModal" tabindex="-1">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title"><i class="bi bi-file-earmark-plus"></i> Agregar Video</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <form id="createVideoForm">
+            <div class="modal-body">
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label for="video_curso" class="form-label">
+                    Curso <span class="required-badge">Obligatorio</span>
+                  </label>
+                  <select id="video_curso" name="id_curso" class="form-select" required>
+                    {{#each cursos}}
+                    <option value="{{id_curso}}">{{titulo}}</option>
+                    {{/each}}
+                  </select>
+                </div>
+
+                <div class="col-md-6">
+                  <label for="video_modulo" class="form-label">
+                    Módulo (nombre del módulo) <span class="required-badge">Obligatorio</span>
+                  </label>
+                  <div class="d-flex gap-2">
+                    <select id="video_modulo" name="id_modulo" class="form-select" required>
+                      <option value="">Seleccione un módulo...</option>
+                    </select>
+                    <button class="btn btn-outline-primary" type="button" id="toggleCreateModuloBtn">
+                      <i class="bi bi-plus-lg"></i>
+                    </button>
+                  </div>
+                  <div class="form-text-helper">Se cargan automáticamente los módulos del curso seleccionado. Si no existen, crea uno aquí.</div>
+                </div>
+
+                                <div class="col-12 d-none" id="createModuloSection">
+                                    <div class="row g-3 align-items-end">
+                                        <div class="col-md-9">
+                                            <label for="nuevo_modulo_titulo" class="form-label">
+                                                Nombre del módulo <span class="form-text-helper">(Opcional — se usará "Módulo N" si queda vacío)</span>
+                                            </label>
+                                            <input id="nuevo_modulo_titulo" class="form-control" placeholder="Ej: Introducción (opcional)">
+                                        </div>
+                                        <div class="col-md-3 d-grid">
+                                            <button class="btn btn-primary" type="button" id="createModuloBtn">
+                                                <i class="bi bi-check2-circle"></i> Crear
+                                            </button>
+                                        </div>
+                                        <div class="col-12">
+                                            <div class="form-text-helper">Si no escribes un nombre, se generará automáticamente "Módulo {n}". El orden se calculará automáticamente también.</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                <div class="col-md-8">
+                  <label for="video_titulo" class="form-label">
+                    Título del video <span class="required-badge">Obligatorio</span>
+                  </label>
+                  <input id="video_titulo" name="titulo" class="form-control" required>
+                </div>
+                <div class="col-md-4">
+                  <label for="video_orden" class="form-label">
+                    Orden <span class="required-badge">Obligatorio</span>
+                  </label>
+                  <input type="number" id="video_orden" name="orden" class="form-control" min="1" value="1" required>
+                </div>
+                <div class="col-12">
+                  <label for="video_url" class="form-label">URL (opcional)</label>
+                  <input type="url" id="video_url" name="url" class="form-control" placeholder="https://...">
+                </div>
+                <div class="col-md-4">
+                  <label for="video_estatus" class="form-label">Estado</label>
+                  <select id="video_estatus" name="estatus" class="form-select">
+                    <option value="borrador">Borrador</option>
+                    <option value="publicado">Publicado</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Cancelar</button>
+              <button class="btn btn-primary" type="submit"><i class="bi bi-check2-circle"></i> Guardar</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
-        // Crear curso
+        // Crear curso - SOLUCIÓN 1: Recarga la página
         document.getElementById('createCursoForm').addEventListener('submit', async function(e) {
             e.preventDefault();
-            
+
             const formData = new FormData(this);
             const data = Object.fromEntries(formData);
-            
+
             try {
                 const response = await fetch('/admin/cursos', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(data)
                 });
-                
+
                 const result = await response.json();
-                
+
                 if (result.success) {
-                    showAlert('success', result.message);
-                    bootstrap.Modal.getInstance(document.getElementById('createCursoModal')).hide();
-                    setTimeout(() => location.reload(), 1500);
+                    const modalCreate = bootstrap.Modal.getInstance(document.getElementById('createCursoModal'));
+                    if (modalCreate) modalCreate.hide();
+
+                    showAlert('success', 'Curso creado exitosamente. Recargando para mostrar el nuevo curso...');
+                    
+                    // Recargar la página después de 1 segundo para ver el nuevo curso
+                    setTimeout(() => location.reload(), 1000);
                 } else {
-                    showAlert('danger', result.message);
+                    showAlert('danger', result.message || 'No se pudo crear el curso');
                 }
             } catch (error) {
                 console.error('Error:', error);
-                showAlert('danger', 'Error al crear el curso');
+                showAlert('danger', 'Error al crear el curso: ' + error.message);
             }
         });
 
@@ -926,30 +1126,26 @@
                             </div>
                             <div class="col-12">
                                 <h6>Estadísticas</h6>
-                                <div class="row text-center">
-                                    <div class="col-3">
-                                        <div class="border rounded p-2">
-                                            <h5 class="mb-0 text-primary">${curso.total_modulos}</h5>
-                                            <small>Módulos</small>
-                                        </div>
+                                <div class="stats-row">
+                                    <div class="stat-item-box stat-modulos">
+                                        <i class="bi bi-collection"></i>
+                                        <strong>${curso.total_modulos}</strong>
+                                        <small>Módulos</small>
                                     </div>
-                                    <div class="col-3">
-                                        <div class="border rounded p-2">
-                                            <h5 class="mb-0 text-info">${curso.total_videos}</h5>
-                                            <small>Videos</small>
-                                        </div>
+                                    <div class="stat-item-box stat-videos">
+                                        <i class="bi bi-play-circle"></i>
+                                        <strong>${curso.total_videos}</strong>
+                                        <small>Videos</small>
                                     </div>
-                                    <div class="col-3">
-                                        <div class="border rounded p-2">
-                                            <h5 class="mb-0 text-warning">${curso.promedio_valoracion_display}</h5>
-                                            <small>Rating</small>
-                                        </div>
+                                    <div class="stat-item-box stat-valoraciones">
+                                        <i class="bi bi-star-fill"></i>
+                                        <strong>${curso.promedio_valoracion_display}</strong>
+                                        <small>Rating</small>
                                     </div>
-                                    <div class="col-3">
-                                        <div class="border rounded p-2">
-                                            <h5 class="mb-0 text-success">${curso.total_compras}</h5>
-                                            <small>Ventas</small>
-                                        </div>
+                                    <div class="stat-item-box stat-compras">
+                                        <i class="bi bi-cart-check"></i>
+                                        <strong>${curso.total_compras}</strong>
+                                        <small>Ventas</small>
                                     </div>
                                 </div>
                             </div>
@@ -983,6 +1179,7 @@
                     document.getElementById('edit_precio').value = curso.precio;
                     document.getElementById('edit_nivel').value = curso.nivel;
                     document.getElementById('edit_estatus').value = curso.estatus;
+                    document.getElementById('edit_id_instructor').value = curso.id_instructor;
                     document.getElementById('edit_miniatura').value = curso.miniatura || '';
                     
                     const modal = new bootstrap.Modal(document.getElementById('editCursoModal'));
@@ -1105,6 +1302,235 @@
                 }
             }, 5000);
         }
+
+        // Cargar módulos al seleccionar un curso en el modal de agregar video
+        document.getElementById('video_curso').addEventListener('change', function() {
+            loadModulosForCurso(this.value);
+        });
+
+        // Crear video
+        document.getElementById('createVideoForm').addEventListener('submit', async function(e) {
+          e.preventDefault();
+          
+          const formData = new FormData(this);
+          const data = Object.fromEntries(formData);
+          
+          try {
+              const response = await fetch('/admin/videos', {
+                  method: 'POST',
+                  headers: {
+                      'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify(data)
+              });
+              
+              const result = await response.json();
+              
+              if (result.success) {
+                  showAlert('success', result.message);
+                  bootstrap.Modal.getInstance(document.getElementById('createVideoModal')).hide();
+                  setTimeout(() => location.reload(), 1500);
+              } else {
+                  showAlert('danger', result.message);
+              }
+          } catch (error) {
+              console.error('Error:', error);
+              showAlert('danger', 'Error al crear el video');
+          }
+        });
+
+        let cachedModulos = [];
+
+        function openCreateVideoModal(idCurso) {
+            const modalEl = document.getElementById('createVideoModal');
+            const selectCurso = document.getElementById('video_curso');
+            const selectModulo = document.getElementById('video_modulo');
+            const createSection = document.getElementById('createModuloSection');
+
+            // Reset UI
+            createSection.classList.add('d-none');
+            document.getElementById('nuevo_modulo_titulo').value = '';
+            selectModulo.innerHTML = '<option value="">Seleccione un módulo...</option>';
+
+            // Preseleccionar curso
+            if (idCurso) selectCurso.value = String(idCurso);
+
+            // Cargar módulos
+            loadModulosForCurso(selectCurso.value);
+
+            // Al cambiar de curso, recargar módulos y ocultar creación
+            selectCurso.onchange = () => {
+                createSection.classList.add('d-none');
+                loadModulosForCurso(selectCurso.value);
+            };
+
+            // Toggle sección crear módulo
+            document.getElementById('toggleCreateModuloBtn').onclick = () => {
+                const visible = !createSection.classList.contains('d-none');
+                createSection.classList.toggle('d-none', visible);
+                if (!visible) {
+                    // focus the module title
+                    document.getElementById('nuevo_modulo_titulo').focus();
+                }
+            };
+
+            // Crear módulo inline (comportamiento intermedio):
+            // - Si el usuario no pone título, se genera "Módulo {n}"
+            // - El orden se calcula automáticamente usando guessNextOrden()
+            document.getElementById('createModuloBtn').onclick = async () => {
+                const idCursoSel = selectCurso.value;
+                let titulo = document.getElementById('nuevo_modulo_titulo').value.trim();
+
+                if (!idCursoSel) { showAlert('warning', 'Selecciona un curso primero'); return; }
+
+                // Calcular orden automáticamente
+                const orden = guessNextOrden();
+
+                // Si no hay título, generar uno por defecto
+                if (!titulo) {
+                    titulo = `Módulo ${orden}`;
+                }
+
+                try {
+                    const res = await fetch(`/admin/cursos/${idCursoSel}/modulos`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ titulo, orden })
+                    });
+                    const data = await res.json();
+                    if (!data.success) throw new Error(data.message || 'No se pudo crear el módulo');
+
+                    // Recargar módulos y preseleccionar el nuevo
+                    await loadModulosForCurso(idCursoSel);
+                    if (data.modulo?.id_modulo) {
+                        document.getElementById('video_modulo').value = String(data.modulo.id_modulo);
+                    }
+                    document.getElementById('createModuloSection').classList.add('d-none');
+                    showAlert('success', 'Módulo creado');
+                } catch (e) {
+                    console.error(e);
+                    showAlert('danger', e.message || 'Error al crear el módulo');
+                }
+            };
+
+            new bootstrap.Modal(modalEl).show();
+        }
+
+        async function loadModulosForCurso(idCurso) {
+            const selectModulo = document.getElementById('video_modulo');
+            if (!idCurso) {
+                selectModulo.innerHTML = '<option value="">Seleccione un curso primero</option>';
+                return;
+            }
+            selectModulo.innerHTML = '<option value="">Cargando módulos...</option>';
+            try {
+                const res = await fetch(`/admin/cursos/${idCurso}/modulos`);
+                let data;
+                try {
+                    data = await res.json();
+                } catch (jsonErr) {
+                    // Response wasn't JSON (maybe an HTML error page)
+                    const text = await res.text();
+                    throw new Error('Respuesta inesperada del servidor al cargar módulos: ' + (text.slice(0,200)));
+                }
+                if (!data.success) throw new Error(data.message || 'No se pudieron cargar los módulos');
+
+                cachedModulos = Array.isArray(data.modulos) ? data.modulos : [];
+                if (cachedModulos.length === 0) {
+                    selectModulo.innerHTML = '<option value="">No hay módulos en este curso, crea uno nuevo</option>';
+                    // Abrir automáticamente la creación
+                    document.getElementById('createModuloSection').classList.remove('d-none');
+                    // El orden se calculará automáticamente cuando se cree el módulo
+                    return;
+                }
+
+                cachedModulos.sort((a, b) => (a.orden ?? 0) - (b.orden ?? 0));
+                selectModulo.innerHTML = cachedModulos
+                    .map(m => `<option value="${m.id_modulo}">#${m.orden} - ${m.titulo}</option>`)
+                    .join('');
+            } catch (e) {
+                console.error(e);
+                selectModulo.innerHTML = '<option value="">Error al cargar módulos</option>';
+                showAlert('danger', 'Error al cargar los módulos del curso: ' + (e.message || 'comprueba el servidor'));
+            }
+        }
+
+        // Abre el modal de "Agregar Video" y muestra la sección de crear módulo activada
+        function openCreateModuloModal(idCurso) {
+            // Reuse the video modal but open with the create-module section visible
+            openCreateVideoModal(idCurso);
+            // after modal is shown, ensure create section is visible
+            setTimeout(() => {
+                const createSection = document.getElementById('createModuloSection');
+                if (createSection) createSection.classList.remove('d-none');
+                // focus the module title
+                const titulo = document.getElementById('nuevo_modulo_titulo');
+                if (titulo) titulo.focus();
+            }, 250);
+        }
+
+        function guessNextOrden() {
+            if (!cachedModulos || cachedModulos.length === 0) return 1;
+            return Math.max(...cachedModulos.map(m => m.orden || 0)) + 1;
+        }
+
+        document.getElementById('createVideoForm')?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const form = e.currentTarget;
+            const formData = new FormData(form);
+            let payload = Object.fromEntries(formData);
+
+            // Validación: id_modulo requerido
+            if (!payload.id_modulo) {
+                // Si está visible la creación de módulo y tiene título, creamos primero
+                const createSectionVisible = !document.getElementById('createModuloSection').classList.contains('d-none');
+                const tituloNuevo = document.getElementById('nuevo_modulo_titulo')?.value.trim();
+                if (createSectionVisible) {
+                    const idCursoSel = document.getElementById('video_curso').value;
+                    // calcular orden y título si es necesario
+                    const ordenNuevo = guessNextOrden();
+                    const tituloGenerado = tituloNuevo || `Módulo ${ordenNuevo}`;
+                    try {
+                        const res = await fetch(`/admin/cursos/${idCursoSel}/modulos`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ titulo: tituloGenerado, orden: ordenNuevo })
+                        });
+                        const data = await res.json();
+                        if (!data.success || !data.modulo?.id_modulo) throw new Error(data.message || 'No se pudo crear el módulo');
+                        // Actualizar select y payload
+                        await loadModulosForCurso(idCursoSel);
+                        document.getElementById('video_modulo').value = String(data.modulo.id_modulo);
+                        payload.id_modulo = String(data.modulo.id_modulo);
+                    } catch (err) {
+                        showAlert('danger', err.message || 'Error al crear el módulo');
+                        return;
+                    }
+                } else {
+                    showAlert('warning', 'Selecciona un módulo o crea uno nuevo');
+                    return;
+                }
+            }
+
+            try {
+                const res = await fetch('/admin/videos', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+                if (data.success) {
+                    showAlert('success', 'Video creado correctamente');
+                    bootstrap.Modal.getInstance(document.getElementById('createVideoModal')).hide();
+                    setTimeout(() => location.reload(), 1200);
+                } else {
+                    showAlert('danger', data.message || 'No se pudo crear el video');
+                }
+            } catch (e) {
+                console.error(e);
+                showAlert('danger', 'Error al crear el video');
+            }
+        });
     </script>
 </body>
 </html>

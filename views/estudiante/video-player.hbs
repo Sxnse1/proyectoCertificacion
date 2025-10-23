@@ -650,6 +650,142 @@
                         </iframe>
                     </div>
                     {{/if}}
+                        <script>
+                            // Resume playback support: Vimeo (via SDK) and Bunny (postMessage protocol best-effort)
+                            (function(){
+                                const videoId = '{{videoId}}';
+                                const storageKey = `videoProgress:${videoId}`;
+                                const bunnyIframe = document.getElementById('bunnyPlayer');
+                                const vimeoIframe = document.getElementById('vimeoPlayer');
+
+                                function savePosition(seconds) {
+                                    try { localStorage.setItem(storageKey, String(Math.floor(seconds || 0))); } catch(e){}
+                                }
+                                function restorePosition() {
+                                    try { const s = localStorage.getItem(storageKey); return s ? (parseInt(s,10)||0) : 0; } catch(e){ return 0; }
+                                }
+
+                                // Server persistence helpers
+                                let lastKnownTime = 0;
+                                let progressSaveTimer = null;
+                                async function saveProgressToServer(seconds) {
+                                    try {
+                                        lastKnownTime = Math.floor(seconds || 0);
+                                        if (progressSaveTimer) clearTimeout(progressSaveTimer);
+                                        progressSaveTimer = setTimeout(async () => {
+                                            await fetch('/video/progress', {
+                                                method: 'POST',
+                                                credentials: 'same-origin',
+                                                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                                                body: JSON.stringify({ videoId: {{videoId}}, seconds: lastKnownTime })
+                                            });
+                                        }, 800);
+                                    } catch (e) { console.warn('Error saving progress to server', e); }
+                                }
+
+                                async function loadProgressFromServer() {
+                                    try {
+                                        const res = await fetch(`/video/progress/${{videoId}}`, { credentials: 'same-origin', headers: { 'Accept': 'application/json' } });
+                                        if (!res.ok) return 0;
+                                        const data = await res.json().catch(()=>null);
+                                        return (data && data.seconds) ? parseInt(data.seconds,10) : 0;
+                                    } catch (e) { return 0; }
+                                }
+
+                                // Vimeo handling (SDK)
+                                if (vimeoIframe) {
+                                    const vimeoScript = document.createElement('script');
+                                    vimeoScript.src = 'https://player.vimeo.com/api/player.js';
+                                    vimeoScript.onload = async () => {
+                                        try {
+                                            const player = new Vimeo.Player(vimeoIframe);
+                                            // Prefer server-saved position over localStorage
+                                            const serverStart = await loadProgressFromServer();
+                                            const localStart = restorePosition();
+                                            const start = (serverStart && serverStart > 0) ? serverStart : localStart;
+                                            if (start > 0) await player.setCurrentTime(start).catch(()=>{});
+                                            // periodic save to local and server
+                                            setInterval(async ()=>{ try{ const t = await player.getCurrentTime(); savePosition(t); saveProgressToServer(t);}catch(e){} }, 10000);
+                                            window.addEventListener('beforeunload', async ()=>{ try{ const t = await player.getCurrentTime(); savePosition(t); await saveProgressToServer(t);}catch(e){} });
+                                        } catch(e){ console.warn('Vimeo resume init', e); }
+                                    };
+                                    document.body.appendChild(vimeoScript);
+                                }
+
+                                // Bunny handling: implement a small postMessage protocol and fallbacks.
+                                if (bunnyIframe) {
+                                    const start = restorePosition();
+                                    // Try postMessage seek first (some Bunny players accept custom messages). We'll send several attempts.
+                                    function trySeek(seconds){
+                                        try {
+                                            const msg = { type: 'seek', seconds: Math.floor(seconds||0) };
+                                            bunnyIframe.contentWindow.postMessage(msg, '*');
+                                        } catch(e) { /* ignore */ }
+                                    }
+
+                                    // Ask iframe for current time (if it replies with {type:'timeupdate', currentTime:N})
+                                    function requestCurrentTime(){
+                                        try { bunnyIframe.contentWindow.postMessage({ type: 'getCurrentTime' }, '*'); } catch(e){}
+                                    }
+
+                                    // Listen for messages from iframe
+                                    window.addEventListener('message', function(ev){
+                                        if (!ev.data) return;
+                                        try {
+                                            const d = typeof ev.data === 'string' ? JSON.parse(ev.data) : ev.data;
+                                            if (d && d.type === 'timeupdate' && typeof d.currentTime === 'number') {
+                                                const s = Math.floor(d.currentTime);
+                                                savePosition(s);
+                                                saveProgressToServer(s);
+                                            }
+                                            // allow iframe to confirm that it accepted a seek
+                                            if (d && d.type === 'seeked' && typeof d.currentTime === 'number') {
+                                                const s = Math.floor(d.currentTime);
+                                                savePosition(s);
+                                                saveProgressToServer(s);
+                                            }
+                                        } catch(e) { /* not JSON or other origin */ }
+                                    });
+
+                                    // If we have a stored start time, prefer server value and try several seek attempts spaced out.
+                                    (async ()=>{
+                                        const serverStart = await loadProgressFromServer();
+                                        const resolvedStart = (serverStart && serverStart > 0) ? serverStart : start;
+                                        if (resolvedStart > 0) {
+                                            // try URL fragment fallback
+                                            try {
+                                                const src = bunnyIframe.getAttribute('src');
+                                                if (src && !src.includes('#t=')) bunnyIframe.setAttribute('src', src + `#t=${resolvedStart}`);
+                                            } catch(e){}
+                                            // send postMessage seeks a few times
+                                            [0,500,1500,3000].forEach(delay => setTimeout(()=> trySeek(resolvedStart), delay));
+                                            // persist chosen start
+                                            savePosition(resolvedStart);
+                                            saveProgressToServer(resolvedStart);
+                                        }
+                                    })();
+
+                                    // Periodically request current time from iframe
+                                    setInterval(requestCurrentTime, 7000);
+
+                                    // Save on app navigation buttons if present
+                                    ['prevVideoBtn','nextVideoBtn','volverCursoBtn'].forEach(id => {
+                                        const b = document.getElementById(id);
+                                        if (!b) return;
+                                        b.addEventListener('click', ()=>{
+                                            // ask iframe to report its current time right before navigation
+                                            requestCurrentTime();
+                                            // also save a marker
+                                            savePosition(0);
+                                        });
+                                    });
+
+                                    // Save on visibility/unload as a last resort
+                                    document.addEventListener('visibilitychange', function(){ if (document.hidden) requestCurrentTime(); });
+                                    window.addEventListener('beforeunload', function(){ requestCurrentTime(); });
+                                }
+                            })();
+                        </script>
                 </div>
 
                 <!-- Información del video -->

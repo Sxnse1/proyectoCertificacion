@@ -39,6 +39,7 @@ function configureRoutes(app) {
   const userDashboardRouter = require('./protected/user-dashboard');
   const favoritosRouter = require('./protected/favoritos');
   const videoRouter = require('./protected/video');
+  const videoProgressRouter = require('./protected/videoProgress');
   const usuariosRouter = require('./protected/usuarios');
   const perfilRouter = require('./perfil');
   const suscripcionesRouter = require('./protected/suscripciones');
@@ -52,6 +53,8 @@ function configureRoutes(app) {
   app.use('/user-dashboard', requireAuth, userDashboardRouter);
   app.use('/favoritos', requireAuth, favoritosRouter);
   app.use('/video', requireAuth, videoRouter);
+  // Video progress endpoints (save/restore playback position)
+  app.use('/video', requireAuth, videoProgressRouter);
   app.use('/usuarios', requireRole(['instructor', 'admin']), usuariosRouter);
   app.use('/perfil', requireAuth, perfilRouter);
   app.use('/suscripciones', requireAuth, suscripcionesRouter);

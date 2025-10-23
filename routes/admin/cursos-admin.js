@@ -553,6 +553,83 @@ router.get('/:id', async function(req, res, next) {
   }
 });
 
+/* GET - Obtener módulos de un curso (API usada por el frontend) */
+router.get('/:id/modulos', async function(req, res, next) {
+  try {
+    const db = req.app.locals.db;
+    const cursoId = req.params.id;
+
+    console.log(`[CURSOS] 📦 Obteniendo módulos para curso ${cursoId}`);
+
+    const modulosResult = await db.executeQuery(`
+      SELECT id_modulo, titulo, orden
+      FROM Modulos
+      WHERE id_curso = @id_curso
+      ORDER BY orden, titulo
+    `, { id_curso: cursoId });
+
+    const modulos = modulosResult.recordset || [];
+
+    res.json({ success: true, modulos });
+  } catch (error) {
+    console.error(`[CURSOS] ❌ Error al obtener módulos para curso ${req.params.id}:`, error);
+    res.status(500).json({ success: false, message: 'Error al obtener módulos', error: error.message });
+  }
+});
+
+/* POST - Crear módulo en un curso (API usada por el frontend inline) */
+router.post('/:id/modulos', async function(req, res, next) {
+  try {
+    const db = req.app.locals.db;
+    const cursoId = req.params.id;
+    let { titulo, orden } = req.body;
+
+    console.log(`[CURSOS] 📝 Creando módulo en curso ${cursoId}:`, { titulo, orden });
+
+    if (!titulo) {
+      // calcular orden provisional para generar nombre si es necesario
+      const maxOrdenResult = await db.executeQuery(
+        'SELECT ISNULL(MAX(orden), 0) + 1 as siguiente_orden FROM Modulos WHERE id_curso = @id_curso',
+        { id_curso: cursoId }
+      );
+      const siguiente = maxOrdenResult.recordset[0].siguiente_orden;
+      titulo = `Módulo ${siguiente}`;
+    }
+
+    // Si no se pasa orden, calcular siguiente
+    let ordenFinal = orden;
+    if (!ordenFinal) {
+      const maxOrdenResult2 = await db.executeQuery(
+        'SELECT ISNULL(MAX(orden), 0) + 1 as siguiente_orden FROM Modulos WHERE id_curso = @id_curso',
+        { id_curso: cursoId }
+      );
+      ordenFinal = maxOrdenResult2.recordset[0].siguiente_orden;
+    }
+
+    // Evitar conflicto de orden
+    const ordenCheck = await db.executeQuery(
+      'SELECT id_modulo FROM Modulos WHERE id_curso = @id_curso AND orden = @orden',
+      { id_curso: cursoId, orden: ordenFinal }
+    );
+    if (ordenCheck.recordset.length > 0) {
+      return res.status(400).json({ success: false, message: 'Ya existe un módulo con ese orden en este curso' });
+    }
+
+    const insertResult = await db.executeQuery(`
+      INSERT INTO Modulos (id_curso, titulo, orden, fecha_modificacion)
+      OUTPUT INSERTED.id_modulo, INSERTED.titulo, INSERTED.orden
+      VALUES (@id_curso, @titulo, @orden, GETDATE())
+    `, { id_curso: cursoId, titulo: titulo.trim(), orden: ordenFinal });
+
+    const nuevo = insertResult.recordset[0];
+
+    res.json({ success: true, modulo: { id_modulo: nuevo.id_modulo, titulo: nuevo.titulo, orden: nuevo.orden } });
+  } catch (error) {
+    console.error(`[CURSOS] ❌ Error creando módulo para curso ${req.params.id}:`, error);
+    res.status(500).json({ success: false, message: 'Error al crear módulo', error: error.message });
+  }
+});
+
 /* POST - Cambiar estatus del curso */
 router.post('/:id/status', async function(req, res, next) {
   try {

@@ -12,17 +12,20 @@ router.get('/:cursoId', requireAuth, async function(req, res, next) {
     console.log('[CURSO-DETALLE] 📚 Acceso al curso:', cursoId, '- Usuario:', user.email);
 
     // Obtener información del curso
+    // Use EXISTS subqueries for purchase/subscription checks to avoid JOIN duplication or mismatches
     const cursoQuery = `
       SELECT 
         c.*,
         cat.nombre as categoria_nombre,
         u.nombre + ' ' + u.apellido as instructor_nombre,
         u.email as instructor_email,
-        -- Verificar si el usuario ya compró el curso
-        CASE WHEN comp.id_compra IS NOT NULL THEN 1 ELSE 0 END as ya_comprado,
-        -- Verificar si tiene suscripción activa
-        CASE WHEN sus.id_suscripcion IS NOT NULL AND sus.estatus = 'activa' AND sus.fecha_vencimiento >= GETDATE() 
-             THEN 1 ELSE 0 END as tiene_suscripcion_activa,
+        -- Verificar si el usuario ya compró el curso (EXISTS para mayor robustez)
+        CASE WHEN EXISTS(SELECT 1 FROM Compras comp2 WHERE comp2.id_usuario = @userId AND comp2.id_curso = c.id_curso) THEN 1 ELSE 0 END as ya_comprado,
+        -- Verificar si tiene suscripción activa (EXISTS)
+        CASE WHEN EXISTS(
+            SELECT 1 FROM Suscripciones s2 
+            WHERE s2.id_usuario = @userId AND s2.estatus = 'activa' AND s2.fecha_vencimiento >= GETDATE()
+        ) THEN 1 ELSE 0 END as tiene_suscripcion_activa,
         -- Contar módulos del curso
         (SELECT COUNT(*) FROM Modulos m WHERE m.id_curso = c.id_curso) as total_modulos,
         -- Contar videos publicados del curso
@@ -36,8 +39,6 @@ router.get('/:cursoId', requireAuth, async function(req, res, next) {
       FROM Cursos c
       INNER JOIN Categorias cat ON c.id_categoria = cat.id_categoria
       INNER JOIN Usuarios u ON c.id_usuario = u.id_usuario
-      LEFT JOIN Compras comp ON c.id_curso = comp.id_curso AND comp.id_usuario = @userId
-      LEFT JOIN Suscripciones sus ON sus.id_usuario = @userId
       WHERE c.id_curso = @cursoId AND c.estatus = 'publicado'
     `;
 

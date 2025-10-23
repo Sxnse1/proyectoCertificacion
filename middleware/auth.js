@@ -35,7 +35,13 @@ const requireAuth = (req, res, next) => {
   
   // Guardar la URL original para redirigir después del login
   req.session.redirectTo = req.originalUrl;
-  
+  // Si la petición es XHR/Fetch (acepta JSON) devolvemos 401 JSON en lugar de redireccionar
+  const acceptsJSON = req.headers['accept'] && req.headers['accept'].includes('application/json');
+  const isXHR = req.headers['x-requested-with'] === 'XMLHttpRequest';
+  if (acceptsJSON || isXHR) {
+    return res.status(401).json({ success: false, message: 'No autenticado' });
+  }
+
   return res.redirect('/auth/login?error=sesion_expirada');
 };
 

@@ -522,7 +522,7 @@
                                 {{/if}}
                                 {{else}}
                                 <button class="btn btn-primary subscribe-btn" data-membership-id="{{id_membresia}}"
-                                    data-plan-name="{{nombre}}" data-price="{{precio}}">
+                                    data-plan-name="{{nombre}}" data-price="{{precio}}" {{#if ../currentSubscription.active}}disabled title="Tienes una suscripción activa, no puedes seleccionar otro plan hasta que termine"{{/if}}>
                                     <i class="bi bi-cart-plus me-2"></i>Suscribirse Ahora
                                 </button>
                                 {{/if}}
