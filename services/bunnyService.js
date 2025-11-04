@@ -88,6 +88,17 @@ class BunnyService {
         });
       }
 
+      // 4. Obtener información actualizada del video (incluyendo duración)
+      let finalVideoInfo = videoInfo;
+      try {
+        // Esperar un poco para que Bunny procese los metadatos básicos
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        const updatedInfo = await this.getVideoInfo(videoGuid);
+        finalVideoInfo = { ...videoInfo, ...updatedInfo };
+      } catch (error) {
+        console.log('[BUNNY] ⚠️ No se pudieron obtener metadatos actualizados:', error.message);
+      }
+
       // Retornar información compatible con el sistema actual
       return {
         video_id: videoGuid,
@@ -97,7 +108,9 @@ class BunnyService {
         thumbnail_url: `${this.streamBaseUrl}/${this.libraryId}/${videoGuid}/thumbnail.jpg`,
         direct_play_url: `${this.streamBaseUrl}/${this.libraryId}/${videoGuid}/play_720p.mp4`,
         embed_url: `${this.streamBaseUrl}/embed/${this.libraryId}/${videoGuid}`,
-        status: 'uploaded'
+        duration: finalVideoInfo.duration || finalVideoInfo.length || 0,
+        status: 'uploaded',
+        metadata: finalVideoInfo
       };
 
     } catch (error) {

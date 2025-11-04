@@ -1,9 +1,25 @@
 const express = require('express');
 const router = express.Router();
+const fs = require('fs');
 const bunnyService = require('../../services/bunnyService');
 const { uploadConfig, handleUploadError, cleanupTempFile, validateVideoData } = require('../../middleware/uploadMiddleware');
 const requireAuth = require('../../middleware/auth').requireAuth;
 const requireRole = require('../../middleware/auth').requireRole;
+
+// Función auxiliar para formatear duración
+function formatearDuracion(segundos) {
+  if (!segundos || segundos === 0) return '0:00';
+  
+  const horas = Math.floor(segundos / 3600);
+  const minutos = Math.floor((segundos % 3600) / 60);
+  const segs = segundos % 60;
+  
+  if (horas > 0) {
+    return `${horas}:${minutos.toString().padStart(2, '0')}:${segs.toString().padStart(2, '0')}`;
+  } else {
+    return `${minutos}:${segs.toString().padStart(2, '0')}`;
+  }
+}
 
 // Middleware de autenticación para todas las rutas
 router.use(requireAuth);
@@ -280,6 +296,241 @@ router.post('/upload-test', async (req, res) => {
       file: req.file ? 'Archivo presente' : 'Sin archivo'
     }
   });
+});
+
+/* POST - Crear video sin archivo (solo con URL) */
+router.post('/', async function(req, res, next) {
+  try {
+    const db = req.app.locals.db;
+    let { titulo, descripcion, id_modulo, url, duracion_minutos = 0, estatus = 'borrador', orden } = req.body;
+    
+    console.log('[VIDEO-CREATE] 📝 Creando video sin archivo:', { titulo, id_modulo, url });
+
+    // Validaciones básicas
+    if (!titulo || !id_modulo) {
+      return res.status(400).json({
+        success: false,
+        error: 'El título y el módulo son obligatorios'
+      });
+    }
+
+    if (!url) {
+      return res.status(400).json({
+        success: false,
+        error: 'Debe proporcionar una URL del video'
+      });
+    }
+
+    // Validar estatus
+    const estatusPermitidos = ['borrador', 'publicado', 'archivado'];
+    if (!estatusPermitidos.includes(estatus)) {
+      estatus = 'borrador';
+    }
+
+    // Determinar el orden del video
+    let ordenFinal;
+    if (orden && parseInt(orden) > 0) {
+      ordenFinal = parseInt(orden);
+    } else {
+      const ordenResult = await db.executeQuery(`
+        SELECT ISNULL(MAX(orden), 0) + 1 as siguiente_orden 
+        FROM Video 
+        WHERE id_modulo = @id_modulo
+      `, { id_modulo: id_modulo });
+      
+      ordenFinal = ordenResult.recordset[0].siguiente_orden;
+    }
+
+    // Insertar video en base de datos
+    const insertResult = await db.executeQuery(`
+      INSERT INTO Video (
+        id_modulo, titulo, descripcion, url, 
+        duracion_segundos, orden, estatus, fecha_creacion,
+        video_provider
+      ) 
+      OUTPUT INSERTED.*
+      VALUES (
+        @id_modulo, @titulo, @descripcion, @url,
+        @duracion_segundos, @orden, @estatus, GETDATE(),
+        'external'
+      )
+    `, {
+      id_modulo: id_modulo,
+      titulo: titulo,
+      descripcion: descripcion || null,
+      url: url,
+      duracion_segundos: (parseInt(duracion_minutos) || 0) * 60,
+      orden: ordenFinal,
+      estatus: estatus
+    });
+
+    const nuevoVideo = insertResult.recordset[0];
+    
+    console.log('[VIDEO-CREATE] ✅ Video creado con URL:', nuevoVideo.id_video);
+
+    res.json({
+      success: true,
+      message: 'Video creado exitosamente',
+      video: {
+        id: nuevoVideo.id_video,
+        titulo: nuevoVideo.titulo,
+        url: nuevoVideo.url
+      }
+    });
+
+  } catch (error) {
+    console.error('[VIDEO-CREATE] ❌ Error creando video:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Error al crear el video: ' + error.message
+    });
+  }
+});
+
+/* POST - Subir video desde dashboard */
+router.post('/upload-dashboard', uploadConfig.single('video'), async (req, res) => {
+  try {
+    const { titulo, descripcion, id_modulo, orden } = req.body;
+    const videoFile = req.file;
+
+    console.log('[DASHBOARD-UPLOAD] 📤 Subida de video desde dashboard:', { titulo, id_modulo });
+
+    if (!videoFile) {
+      return res.status(400).json({
+        success: false,
+        message: 'No se recibió archivo de video'
+      });
+    }
+
+    if (!titulo || !id_modulo) {
+      return res.status(400).json({
+        success: false,
+        message: 'Título y módulo son requeridos'
+      });
+    }
+
+    const db = req.app.locals.db;
+
+    // Verificar que el módulo existe
+    const moduloCheck = await db.executeQuery(`
+      SELECT id_modulo FROM Modulos WHERE id_modulo = @id_modulo
+    `, { id_modulo: id_modulo });
+
+    if (moduloCheck.recordset.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: 'Módulo no encontrado'
+      });
+    }
+
+    // Subir a Bunny.net
+    const bunnyResult = await bunnyService.uploadVideo(videoFile.path, {
+      titulo: titulo,
+      descripcion: descripcion || ''
+    });
+
+    console.log('[DASHBOARD-UPLOAD] ✅ Video subido a Bunny.net:', bunnyResult.video_id);
+
+    // Determinar orden
+    let ordenFinal;
+    if (orden && parseInt(orden) > 0) {
+      ordenFinal = parseInt(orden);
+    } else {
+      const ordenResult = await db.executeQuery(`
+        SELECT ISNULL(MAX(orden), 0) + 1 as siguiente_orden 
+        FROM Video 
+        WHERE id_modulo = @id_modulo
+      `, { id_modulo: id_modulo });
+      
+      ordenFinal = ordenResult.recordset[0].siguiente_orden;
+    }
+
+    // Guardar en base de datos
+    const insertResult = await db.executeQuery(`
+      INSERT INTO Video (
+        id_modulo, 
+        titulo, 
+        descripcion, 
+        bunny_video_id, 
+        bunny_library_id,
+        url,
+        bunny_embed_url,
+        bunny_thumbnail_url, 
+        duracion_segundos,
+        orden, 
+        estatus,
+        video_provider,
+        fecha_creacion
+      )
+      OUTPUT INSERTED.*
+      VALUES (
+        @id_modulo,
+        @titulo,
+        @descripcion,
+        @bunny_video_id,
+        @bunny_library_id,
+        @embed_url,
+        @bunny_embed_url,
+        @bunny_thumbnail_url,
+        @duracion,
+        @orden,
+        'publicado',
+        'bunny',
+        GETDATE()
+      )
+    `, {
+      id_modulo: id_modulo,
+      titulo: titulo,
+      descripcion: descripcion || '',
+      bunny_video_id: bunnyResult.bunny_id,
+      bunny_library_id: bunnyResult.library_id,
+      embed_url: bunnyResult.embed_url,
+      bunny_embed_url: bunnyResult.embed_url,
+      bunny_thumbnail_url: bunnyResult.thumbnail_url,
+      duracion: bunnyResult.duration || 0,
+      orden: ordenFinal
+    });
+
+    const newVideo = insertResult.recordset[0];
+
+    // Limpiar archivo temporal
+    try {
+      fs.unlinkSync(videoFile.path);
+    } catch (cleanupError) {
+      console.warn('[DASHBOARD-UPLOAD] ⚠️ No se pudo limpiar archivo temporal:', cleanupError.message);
+    }
+
+    console.log('[DASHBOARD-UPLOAD] 🎉 Video guardado exitosamente:', newVideo.id_video);
+
+    // Formatear duración para respuesta
+    const duracionFormateada = formatearDuracion(newVideo.duracion_segundos || 0);
+
+    res.json({
+      success: true,
+      message: 'Video subido y guardado exitosamente',
+      video: {
+        ...newVideo,
+        duracion_formateada: duracionFormateada
+      }
+    });
+
+  } catch (error) {
+    console.error('[DASHBOARD-UPLOAD] ❌ Error:', error);
+    
+    // Limpiar archivo en caso de error
+    if (req.file && req.file.path) {
+      try {
+        fs.unlinkSync(req.file.path);
+      } catch (cleanupError) {
+        console.warn('[DASHBOARD-UPLOAD] ⚠️ No se pudo limpiar archivo tras error:', cleanupError.message);
+      }
+    }
+
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Error interno del servidor'
+    });
+  }
 });
 
 router.post('/upload', 
@@ -772,6 +1023,56 @@ router.delete('/:id', async function(req, res, next) {
       success: false,
       error: 'Error interno del servidor al eliminar el video',
       details: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
+  }
+});
+
+/* GET - Obtener video por ID (API para edición) */
+router.get('/:id', async function(req, res, next) {
+  try {
+    const videoId = req.params.id;
+    const db = req.app.locals.db;
+    
+    console.log(`[VIDEOS-ADMIN] 📖 Obteniendo video ${videoId} para API`);
+    
+    // Obtener video de BD
+    const videoResult = await db.executeQuery(`
+      SELECT 
+        v.id_video,
+        v.titulo,
+        v.descripcion,
+        v.url,
+        v.orden,
+        v.estatus,
+        v.duracion_segundos,
+        v.id_modulo,
+        m.titulo as modulo_titulo
+      FROM Video v
+      LEFT JOIN Modulos m ON v.id_modulo = m.id_modulo
+      WHERE v.id_video = @id
+    `, { id: videoId });
+    
+    if (videoResult.recordset.length === 0) {
+      return res.status(404).json({
+        success: false,
+        error: 'Video no encontrado'
+      });
+    }
+    
+    const video = videoResult.recordset[0];
+    
+    console.log(`[VIDEOS-ADMIN] ✅ Video encontrado: ${video.titulo}`);
+    
+    res.json({
+      success: true,
+      video: video
+    });
+    
+  } catch (error) {
+    console.error(`[VIDEOS-ADMIN] ❌ Error obteniendo video ${req.params.id}:`, error);
+    res.status(500).json({
+      success: false,
+      error: 'Error al obtener el video'
     });
   }
 });

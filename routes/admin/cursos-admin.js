@@ -477,6 +477,202 @@ router.delete('/:id', async function(req, res, next) {
   }
 });
 
+/* GET - Dashboard centralizado del curso */
+router.get('/:id/dashboard', async function(req, res, next) {
+  try {
+    const db = req.app.locals.db;
+    const cursoId = req.params.id;
+
+    console.log(`[CURSOS] 📊 Obteniendo dashboard para curso ${cursoId}`);
+
+    // Obtener información básica del curso (simplificada para debugging)
+    const cursoQuery = `
+      SELECT 
+        c.id_curso,
+        c.titulo,
+        c.descripcion,
+        c.miniatura,
+        c.precio,
+        c.nivel,
+        c.estatus,
+        c.fecha_creacion,
+        c.id_usuario,
+        c.id_categoria,
+        u.nombre as instructor_nombre,
+        u.apellido as instructor_apellido,
+        u.email as instructor_email,
+        cat.nombre as categoria_nombre,
+        FORMAT(c.fecha_creacion, 'dd/MM/yyyy HH:mm') as fecha_creacion_formateada
+      FROM Cursos c
+      INNER JOIN Usuarios u ON c.id_usuario = u.id_usuario
+      INNER JOIN Categorias cat ON c.id_categoria = cat.id_categoria
+      WHERE c.id_curso = @id_curso
+    `;
+
+    console.log(`[CURSOS] 🔍 Ejecutando consulta principal...`);
+    const cursoResult = await db.executeQuery(cursoQuery, { id_curso: cursoId });
+    
+    if (cursoResult.recordset.length === 0) {
+      return res.status(404).render('shared/error', {
+        message: 'Curso no encontrado',
+        title: 'Error 404'
+      });
+    }
+
+    let curso = cursoResult.recordset[0];
+    console.log(`[CURSOS] ✅ Curso encontrado: ${curso.titulo}`);
+
+    // Obtener estadísticas por separado
+    console.log(`[CURSOS] 🔍 Obteniendo estadísticas...`);
+    const statsQuery = `
+      SELECT 
+        COUNT(DISTINCT m.id_modulo) as total_modulos,
+        COUNT(DISTINCT v.id_video) as total_videos,
+        COUNT(CASE WHEN v.estatus = 'publicado' THEN 1 END) as videos_publicados,
+        COALESCE(SUM(CASE WHEN ISNUMERIC(CAST(v.duracion_segundos AS VARCHAR)) = 1 THEN v.duracion_segundos ELSE 0 END), 0) as duracion_total_segundos
+      FROM Cursos c
+      LEFT JOIN Modulos m ON c.id_curso = m.id_curso
+      LEFT JOIN Video v ON m.id_modulo = v.id_modulo
+      WHERE c.id_curso = @id_curso
+    `;
+
+    const statsResult = await db.executeQuery(statsQuery, { id_curso: cursoId });
+    
+    // Combinar estadísticas con datos del curso
+    curso = { ...curso, ...statsResult.recordset[0] };
+
+    // Agregar propiedades calculadas
+    curso.instructor_completo = `${curso.instructor_nombre} ${curso.instructor_apellido}`;
+    curso.duracion_total_minutos = Math.floor(curso.duracion_total_segundos / 60);
+    curso.duracion_display = formatDuration(curso.duracion_total_segundos);
+    curso.precio_formateado = `$${curso.precio.toFixed(2)}`;
+    curso.promedio_valoracion_display = '0.0'; // Temporal, calcularemos después
+
+    // Obtener módulos con sus videos
+    const modulosQuery = `
+      SELECT 
+        m.id_modulo,
+        m.titulo,
+        m.orden,
+        COUNT(v.id_video) as total_videos,
+        COUNT(CASE WHEN v.estatus = 'publicado' THEN 1 END) as videos_publicados,
+        COUNT(CASE WHEN v.estatus = 'borrador' THEN 1 END) as videos_borrador,
+        COUNT(CASE WHEN v.estatus = 'archivado' THEN 1 END) as videos_archivados,
+        COALESCE(SUM(v.duracion_segundos), 0) as duracion_total_segundos
+      FROM Modulos m
+      LEFT JOIN Video v ON m.id_modulo = v.id_modulo
+      WHERE m.id_curso = @id_curso
+      GROUP BY m.id_modulo, m.titulo, m.orden
+      ORDER BY m.orden, m.titulo
+    `;
+
+    const modulosResult = await db.executeQuery(modulosQuery, { id_curso: cursoId });
+    const modulos = modulosResult.recordset.map(modulo => ({
+      ...modulo,
+      duracion_display: formatDuration(modulo.duracion_total_segundos),
+      videos: [] // Los llenaremos después
+    }));
+
+    // Obtener videos para cada módulo
+    if (modulos.length > 0) {
+      const modulosIds = modulos.map(m => m.id_modulo);
+      
+      // Crear parámetros dinámicos para la consulta IN
+      const inClause = modulosIds.map((_, index) => `@modulo${index}`).join(',');
+      const videosQuery = `
+        SELECT 
+          v.id_video,
+          v.id_modulo,
+          v.titulo,
+          v.descripcion,
+          v.url,
+          v.orden,
+          v.estatus,
+          v.duracion_segundos,
+          CASE 
+            WHEN v.duracion_segundos IS NOT NULL AND ISNUMERIC(CAST(v.duracion_segundos AS VARCHAR)) = 1 THEN 
+              CASE 
+                WHEN v.duracion_segundos >= 3600 THEN 
+                  CAST(v.duracion_segundos / 3600 AS VARCHAR) + 'h ' + CAST((v.duracion_segundos % 3600) / 60 AS VARCHAR) + 'm'
+                ELSE 
+                  CAST(v.duracion_segundos / 60 AS VARCHAR) + 'm'
+              END
+            ELSE '0m'
+          END as duracion_display
+        FROM Video v
+        WHERE v.id_modulo IN (${inClause})
+        ORDER BY v.id_modulo, v.orden, v.titulo
+      `;
+
+      // Crear objeto de parámetros
+      const videosParams = {};
+      modulosIds.forEach((id, index) => {
+        videosParams[`modulo${index}`] = id;
+      });
+
+      const videosResult = await db.executeQuery(videosQuery, videosParams);
+      const videosMap = {};
+      
+      videosResult.recordset.forEach(video => {
+        if (!videosMap[video.id_modulo]) {
+          videosMap[video.id_modulo] = [];
+        }
+        videosMap[video.id_modulo].push(video);
+      });
+
+      // Asignar videos a módulos
+      modulos.forEach(modulo => {
+        modulo.videos = videosMap[modulo.id_modulo] || [];
+      });
+    }
+
+    // Obtener etiquetas del curso
+    const etiquetasQuery = `
+      SELECT e.id_etiqueta, e.nombre
+      FROM Curso_Etiqueta ce
+      INNER JOIN Etiquetas e ON ce.id_etiqueta = e.id_etiqueta
+      WHERE ce.id_curso = @id_curso
+      ORDER BY e.nombre
+    `;
+
+    const etiquetasResult = await db.executeQuery(etiquetasQuery, { id_curso: cursoId });
+    curso.etiquetas = etiquetasResult.recordset;
+
+    // Obtener categorías para el formulario de edición
+    const categoriasResult = await db.executeQuery(`
+      SELECT id_categoria, nombre
+      FROM Categorias
+      ORDER BY nombre
+    `);
+
+    // Obtener instructores para el formulario de edición
+    const instructoresResult = await db.executeQuery(`
+      SELECT id_usuario, nombre, apellido, email
+      FROM Usuarios
+      WHERE rol IN ('instructor', 'admin')
+      ORDER BY nombre, apellido
+    `);
+
+    console.log(`[CURSOS] ✅ Dashboard cargado para curso: ${curso.titulo}`);
+    console.log(`[CURSOS] 📊 Estadísticas: ${modulos.length} módulos, ${curso.total_videos} videos`);
+
+    res.render('admin/curso-dashboard', {
+      title: `Dashboard: ${curso.titulo}`,
+      curso: curso,
+      modulos: modulos,
+      categorias: categoriasResult.recordset,
+      instructores: instructoresResult.recordset
+    });
+
+  } catch (error) {
+    console.error(`[CURSOS] ❌ Error al obtener dashboard del curso ${req.params.id}:`, error);
+    res.status(500).render('shared/error', {
+      message: 'Error interno del servidor al cargar el dashboard',
+      error: error
+    });
+  }
+});
+
 /* GET - Obtener curso por ID */
 router.get('/:id', async function(req, res, next) {
   try {

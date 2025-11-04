@@ -1,0 +1,2007 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{curso.titulo}} - Dashboard - StartEducation</title>
+    
+    <link rel="icon" type="image/svg+xml" href="/images/favicon.svg">
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+    
+    <style>
+        :root {
+            --primary-color: #ea580c;
+            --primary-hover: #c2410c;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --text-dark: #1f2937;
+            --text-muted: #6b7280;
+            --border-color: #e5e7eb;
+            --bg-light: #f8fafc;
+        }
+
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            color: var(--text-dark);
+            min-height: 100vh;
+        }
+
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1.5rem;
+        }
+
+        .course-header {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--border-color);
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .course-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
+        }
+
+        .course-title {
+            color: var(--primary-color);
+            font-weight: 700;
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .course-meta {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .status-badge {
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-publicado {
+            background: rgba(16, 185, 129, 0.1);
+            color: #059669;
+        }
+
+        .status-borrador {
+            background: rgba(245, 158, 11, 0.1);
+            color: #d97706;
+        }
+
+        .status-inactivo {
+            background: rgba(107, 114, 128, 0.1);
+            color: #4b5563;
+        }
+
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--border-color);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .stat-modulos .stat-icon {
+            background: rgba(168, 85, 247, 0.1);
+            color: #7c3aed;
+        }
+
+        .stat-videos .stat-icon {
+            background: rgba(59, 130, 246, 0.1);
+            color: #1d4ed8;
+        }
+
+        .stat-estudiantes .stat-icon {
+            background: rgba(16, 185, 129, 0.1);
+            color: #059669;
+        }
+
+        .stat-valoracion .stat-icon {
+            background: rgba(245, 158, 11, 0.1);
+            color: #d97706;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .section-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+        }
+
+        .section-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
+            color: white;
+            padding: 1.2rem 1.5rem;
+            display: flex;
+            justify-content: between;
+            align-items: center;
+        }
+
+        .section-title {
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex-grow: 1;
+        }
+
+        .section-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-section {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            font-weight: 500;
+            padding: 0.4rem 0.8rem;
+            font-size: 0.8rem;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-section:hover {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.5);
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        .section-content {
+            padding: 1.5rem;
+        }
+
+        .modulo-item {
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            overflow: hidden;
+            transition: box-shadow 0.2s ease;
+        }
+
+        .modulo-item:hover {
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .modulo-header {
+            background: var(--bg-light);
+            padding: 1rem 1.25rem;
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .modulo-title {
+            font-weight: 600;
+            color: var(--text-dark);
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex-grow: 1;
+        }
+
+        .modulo-badge {
+            background: var(--primary-color);
+            color: white;
+            padding: 0.2rem 0.6rem;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            min-width: 24px;
+            text-align: center;
+        }
+
+        .modulo-stats {
+            display: flex;
+            gap: 1rem;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+        }
+
+        .modulo-actions {
+            display: flex;
+            gap: 0.3rem;
+        }
+
+        .video-list {
+            background: white;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .video-item {
+            padding: 0.75rem 1.25rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background-color 0.2s ease;
+        }
+
+        .video-item:hover {
+            background-color: rgba(234, 88, 12, 0.05);
+        }
+
+        .video-item:last-child {
+            border-bottom: none;
+        }
+
+        .video-info {
+            flex-grow: 1;
+        }
+
+        .video-title {
+            font-weight: 500;
+            color: var(--text-dark);
+            margin-bottom: 0.2rem;
+            font-size: 0.9rem;
+        }
+
+        .video-meta {
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            display: flex;
+            gap: 0.8rem;
+        }
+
+        .video-status {
+            padding: 0.2rem 0.5rem;
+            border-radius: 8px;
+            font-size: 0.65rem;
+            font-weight: 500;
+        }
+
+        .video-publicado {
+            background: rgba(16, 185, 129, 0.1);
+            color: #059669;
+        }
+
+        .video-borrador {
+            background: rgba(245, 158, 11, 0.1);
+            color: #d97706;
+        }
+
+        .video-archivado {
+            background: rgba(107, 114, 128, 0.1);
+            color: #4b5563;
+        }
+
+        .btn-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            transition: all 0.2s ease;
+            margin: 0 0.1rem;
+        }
+
+        .btn-edit {
+            background: rgba(59, 130, 246, 0.1);
+            color: #1d4ed8;
+        }
+
+        .btn-edit:hover {
+            background: rgba(59, 130, 246, 0.2);
+            color: #1e40af;
+        }
+
+        .btn-delete {
+            background: rgba(239, 68, 68, 0.1);
+            color: #dc2626;
+        }
+
+        .btn-delete:hover {
+            background: rgba(239, 68, 68, 0.2);
+            color: #b91c1c;
+        }
+
+        .btn-add {
+            background: rgba(16, 185, 129, 0.1);
+            color: #059669;
+        }
+
+        .btn-add:hover {
+            background: rgba(16, 185, 129, 0.2);
+            color: #047857;
+        }
+
+        .drag-handle {
+            cursor: grab;
+            color: var(--text-muted);
+            padding: 0.25rem;
+            margin-right: 0.5rem;
+        }
+
+        .drag-handle:hover {
+            color: var(--primary-color);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 2rem 1rem;
+            color: var(--text-muted);
+        }
+
+        .empty-state i {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            opacity: 0.5;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .info-item {
+            padding: 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--bg-light);
+        }
+
+        .info-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.5rem;
+        }
+
+        .info-value {
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .etiquetas-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.3rem;
+            margin-top: 0.5rem;
+        }
+
+        .etiqueta-badge {
+            background: rgba(234, 88, 12, 0.1);
+            color: var(--primary-color);
+            padding: 0.2rem 0.6rem;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 500;
+            border: 1px solid rgba(234, 88, 12, 0.2);
+        }
+
+        .actions-bar {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--border-color);
+            padding: 1rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .btn-primary-custom {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
+            border: none;
+            color: white;
+            font-weight: 500;
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary-custom:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(234, 88, 12, 0.3);
+            color: white;
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
+            color: white;
+            border-bottom: none;
+        }
+
+        .modal-header .btn-close {
+            filter: invert(1);
+        }
+
+        .form-section-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 0.8rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .required-badge {
+            display: inline-block;
+            margin-left: .35rem;
+            padding: .1rem .4rem;
+            font-size: .65rem;
+            font-weight: 600;
+            color: #b91c1c;
+            background: rgba(239,68,68,.1);
+            border: 1px solid rgba(239,68,68,.3);
+            border-radius: 999px;
+            vertical-align: middle;
+        }
+
+        .collapse-icon {
+            transition: transform 0.2s ease;
+        }
+
+        .collapse-icon.collapsed {
+            transform: rotate(-90deg);
+        }
+
+        /* Upload Area Styles */
+        .upload-area {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .upload-area:hover {
+            border-color: var(--primary-color) !important;
+            background: rgba(234, 88, 12, 0.05) !important;
+        }
+
+        .upload-area.dragover {
+            border-color: var(--primary-color) !important;
+            background: rgba(234, 88, 12, 0.1) !important;
+            transform: scale(1.02);
+        }
+
+        .upload-progress .progress-bar {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
+        }
+
+        .upload-success {
+            background: rgba(16, 185, 129, 0.05);
+            border-color: var(--success-color) !important;
+        }
+
+        #selected-file-name {
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        #upload-status {
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 1024px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                padding: 1rem;
+            }
+            
+            .course-title {
+                font-size: 1.5rem;
+            }
+            
+            .stats-row {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .course-meta {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            
+            .actions-bar {
+                flex-direction: column;
+                gap: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <!-- Course Header -->
+        <div class="course-header">
+            <div class="d-flex justify-content-between align-items-start mb-3">
+                <div class="flex-grow-1">
+                    <h1 class="course-title">
+                        <i class="bi bi-mortarboard"></i>
+                        {{curso.titulo}}
+                    </h1>
+                    <div class="course-meta">
+                        <div class="meta-item">
+                            <i class="bi bi-person"></i>
+                            <span>{{curso.instructor_completo}}</span>
+                        </div>
+                        <div class="meta-item">
+                            <i class="bi bi-tag"></i>
+                            <span>{{curso.categoria_nombre}}</span>
+                        </div>
+                        <div class="meta-item">
+                            <i class="bi bi-currency-dollar"></i>
+                            <span>{{curso.precio_formateado}}</span>
+                        </div>
+                        <div class="meta-item">
+                            <i class="bi bi-bar-chart"></i>
+                            <span>{{curso.nivel}}</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="status-badge status-{{curso.estatus}}">
+                                {{#if (eq curso.estatus 'publicado')}}
+                                    <i class="bi bi-check-circle"></i>
+                                {{else if (eq curso.estatus 'borrador')}}
+                                    <i class="bi bi-clock"></i>
+                                {{else}}
+                                    <i class="bi bi-pause-circle"></i>
+                                {{/if}}
+                                {{curso.estatus}}
+                            </span>
+                        </div>
+                    </div>
+                    {{#if curso.descripcion}}
+                    <p class="text-muted mb-0">{{curso.descripcion}}</p>
+                    {{/if}}
+                </div>
+                <div class="d-flex gap-2">
+                    <a href="/admin/cursos" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-left"></i> Volver
+                    </a>
+                    <button type="button" class="btn btn-primary-custom" onclick="editCurso()">
+                        <i class="bi bi-pencil"></i> Editar Curso
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistics Cards -->
+        <div class="stats-row">
+            <div class="stat-card stat-modulos">
+                <div class="stat-icon">
+                    <i class="bi bi-collection"></i>
+                </div>
+                <div class="stat-number">{{curso.total_modulos}}</div>
+                <div class="stat-label">Módulos</div>
+            </div>
+            <div class="stat-card stat-videos">
+                <div class="stat-icon">
+                    <i class="bi bi-play-circle"></i>
+                </div>
+                <div class="stat-number">{{curso.total_videos}}</div>
+                <div class="stat-label">Videos</div>
+            </div>
+            <div class="stat-card stat-estudiantes">
+                <div class="stat-icon">
+                    <i class="bi bi-people"></i>
+                </div>
+                <div class="stat-number">{{curso.total_compras}}</div>
+                <div class="stat-label">Estudiantes</div>
+            </div>
+            <div class="stat-card stat-valoracion">
+                <div class="stat-icon">
+                    <i class="bi bi-star-fill"></i>
+                </div>
+                <div class="stat-number">{{curso.promedio_valoracion_display}}</div>
+                <div class="stat-label">Valoración</div>
+            </div>
+        </div>
+
+        <!-- Main Content Grid -->
+        <div class="content-grid">
+            <!-- Modules and Videos Section -->
+            <div class="section-card">
+                <div class="section-header">
+                    <h3 class="section-title">
+                        <i class="bi bi-collection"></i>
+                        Módulos y Videos
+                    </h3>
+                    <div class="section-actions">
+                        <button type="button" class="btn btn-section" onclick="openCreateModuloModal()">
+                            <i class="bi bi-plus"></i> Módulo
+                        </button>
+                    </div>
+                </div>
+                <div class="section-content">
+                    {{#if modulos.length}}
+                    <div id="modulos-container">
+                        {{#each modulos}}
+                        <div class="modulo-item" data-modulo-id="{{id_modulo}}">
+                            <div class="modulo-header" onclick="toggleModulo({{id_modulo}})">
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-grip-vertical drag-handle"></i>
+                                    <span class="modulo-badge">{{orden}}</span>
+                                    <h5 class="modulo-title">{{titulo}}</h5>
+                                </div>
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="modulo-stats">
+                                        <span><i class="bi bi-play-circle"></i> {{total_videos}} videos</span>
+                                        <span><i class="bi bi-clock"></i> {{duracion_display}}</span>
+                                    </div>
+                                    <div class="modulo-actions">
+                                        <button type="button" class="btn btn-icon btn-add" 
+                                                onclick="event.stopPropagation(); openCreateVideoModal({{id_modulo}})" 
+                                                title="Agregar video">
+                                            <i class="bi bi-plus"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-icon btn-edit" 
+                                                onclick="event.stopPropagation(); editModulo({{id_modulo}})" 
+                                                title="Editar módulo">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-icon btn-delete" 
+                                                onclick="event.stopPropagation(); deleteModulo({{id_modulo}})" 
+                                                title="Eliminar módulo">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                    <i class="bi bi-chevron-down collapse-icon" id="icon-{{id_modulo}}"></i>
+                                </div>
+                            </div>
+                            <div class="collapse" id="modulo-{{id_modulo}}">
+                                <div class="video-list">
+                                    {{#if videos.length}}
+                                    {{#each videos}}
+                                    <div class="video-item" data-video-id="{{id_video}}">
+                                        <div class="video-info">
+                                            <div class="video-title">{{orden}}. {{titulo}}</div>
+                                            <div class="video-meta">
+                                                <span><i class="bi bi-clock"></i> {{duracion_display}}</span>
+                                                {{#if url}}
+                                                <span><i class="bi bi-link-45deg"></i> Con video</span>
+                                                {{/if}}
+                                            </div>
+                                        </div>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <span class="video-status video-{{estatus}}">{{estatus}}</span>
+                                            <button type="button" class="btn btn-icon btn-edit" 
+                                                    onclick="editVideo({{id_video}})" title="Editar video">
+                                                <i class="bi bi-pencil"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-icon btn-delete" 
+                                                    onclick="deleteVideo({{id_video}})" title="Eliminar video">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    {{/each}}
+                                    {{else}}
+                                    <div class="empty-state">
+                                        <i class="bi bi-play-circle"></i>
+                                        <p>No hay videos en este módulo.</p>
+                                        <button type="button" class="btn btn-primary-custom btn-sm" 
+                                                onclick="openCreateVideoModal({{id_modulo}})">
+                                            <i class="bi bi-plus"></i> Agregar primer video
+                                        </button>
+                                    </div>
+                                    {{/if}}
+                                </div>
+                            </div>
+                        </div>
+                        {{/each}}
+                    </div>
+                    {{else}}
+                    <div class="empty-state">
+                        <i class="bi bi-collection"></i>
+                        <h4>No hay módulos</h4>
+                        <p>Este curso aún no tiene módulos. Crea el primer módulo para comenzar a organizar el contenido.</p>
+                        <button type="button" class="btn btn-primary-custom" onclick="openCreateModuloModal()">
+                            <i class="bi bi-plus-circle"></i> Crear primer módulo
+                        </button>
+                    </div>
+                    {{/if}}
+                </div>
+            </div>
+
+            <!-- Course Information Sidebar -->
+            <div>
+                <!-- Course Details -->
+                <div class="section-card mb-3">
+                    <div class="section-header">
+                        <h3 class="section-title">
+                            <i class="bi bi-info-circle"></i>
+                            Información del Curso
+                        </h3>
+                    </div>
+                    <div class="section-content">
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <div class="info-label">Fecha de Creación</div>
+                                <div class="info-value">{{curso.fecha_creacion_formateada}}</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">Duración Total</div>
+                                <div class="info-value">{{curso.duracion_display}}</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">Videos Publicados</div>
+                                <div class="info-value">{{curso.videos_publicados}}/{{curso.total_videos}}</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">Total Valoraciones</div>
+                                <div class="info-value">{{curso.total_valoraciones}}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Categories and Tags -->
+                <div class="section-card">
+                    <div class="section-header">
+                        <h3 class="section-title">
+                            <i class="bi bi-tags"></i>
+                            Categorías y Etiquetas
+                        </h3>
+                        <div class="section-actions">
+                            <button type="button" class="btn btn-section" onclick="manageTags()">
+                                <i class="bi bi-gear"></i> Gestionar
+                            </button>
+                        </div>
+                    </div>
+                    <div class="section-content">
+                        <div class="mb-3">
+                            <div class="info-label">Categoría Principal</div>
+                            <div class="info-value">{{curso.categoria_nombre}}</div>
+                        </div>
+                        <div>
+                            <div class="info-label">Etiquetas</div>
+                            {{#if curso.etiquetas.length}}
+                            <div class="etiquetas-list">
+                                {{#each curso.etiquetas}}
+                                <span class="etiqueta-badge">{{nombre}}</span>
+                                {{/each}}
+                            </div>
+                            {{else}}
+                            <p class="text-muted">No hay etiquetas asignadas.</p>
+                            {{/if}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Bar -->
+        <div class="actions-bar">
+            <div class="d-flex gap-2">
+                {{#if (eq curso.estatus 'borrador')}}
+                <button type="button" class="btn btn-success" onclick="changeStatus('publicado')">
+                    <i class="bi bi-check-circle"></i> Publicar Curso
+                </button>
+                {{/if}}
+                {{#if (eq curso.estatus 'publicado')}}
+                <button type="button" class="btn btn-warning" onclick="changeStatus('inactivo')">
+                    <i class="bi bi-pause-circle"></i> Desactivar Curso
+                </button>
+                {{/if}}
+                {{#if (eq curso.estatus 'inactivo')}}
+                <button type="button" class="btn btn-success" onclick="changeStatus('publicado')">
+                    <i class="bi bi-check-circle"></i> Activar Curso
+                </button>
+                {{/if}}
+            </div>
+            <div class="text-muted">
+                <small>Última actualización: hace 2 horas</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Edit Course -->
+    <div class="modal fade" id="editCursoModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="bi bi-pencil"></i> Editar Curso
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="editCursoForm">
+                    <div class="modal-body">
+                        <div class="form-section-title">
+                            <i class="bi bi-mortarboard me-2"></i>Información Básica
+                        </div>
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-8">
+                                <label for="edit_titulo" class="form-label">Título del Curso <span class="required-badge">Obligatorio</span></label>
+                                <input type="text" class="form-control" id="edit_titulo" name="titulo" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="edit_categoria" class="form-label">Categoría <span class="required-badge">Obligatorio</span></label>
+                                <select class="form-select" id="edit_categoria" name="id_categoria" required>
+                                    <option value="">Seleccionar...</option>
+                                    {{#each categorias}}
+                                    <option value="{{id_categoria}}">{{nombre}}</option>
+                                    {{/each}}
+                                </select>
+                            </div>
+                            <div class="col-12">
+                                <label for="edit_descripcion" class="form-label">Descripción</label>
+                                <textarea class="form-control" id="edit_descripcion" name="descripcion" rows="3"></textarea>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="edit_precio" class="form-label">Precio <span class="required-badge">Obligatorio</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text">$</span>
+                                    <input type="number" class="form-control" id="edit_precio" name="precio" min="0" step="0.01" required>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="edit_nivel" class="form-label">Nivel <span class="required-badge">Obligatorio</span></label>
+                                <select class="form-select" id="edit_nivel" name="nivel" required>
+                                    <option value="básico">Básico</option>
+                                    <option value="intermedio">Intermedio</option>
+                                    <option value="avanzado">Avanzado</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="edit_estatus" class="form-label">Estado</label>
+                                <select class="form-select" id="edit_estatus" name="estatus">
+                                    <option value="borrador">Borrador</option>
+                                    <option value="publicado">Publicado</option>
+                                    <option value="inactivo">Inactivo</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="edit_id_instructor" class="form-label">Instructor</label>
+                                <select class="form-select" id="edit_id_instructor" name="id_instructor">
+                                    {{#each instructores}}
+                                    <option value="{{id_usuario}}">{{nombre}} {{apellido}}</option>
+                                    {{/each}}
+                                </select>
+                            </div>
+                            <div class="col-12">
+                                <label for="edit_miniatura" class="form-label">URL de Miniatura</label>
+                                <input type="url" class="form-control" id="edit_miniatura" name="miniatura">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary-custom">
+                            <i class="bi bi-check-circle"></i> Actualizar Curso
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Create Module -->
+    <div class="modal fade" id="createModuloModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="bi bi-plus-circle"></i> Crear Nuevo Módulo
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="createModuloForm">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="create_modulo_titulo" class="form-label">Título del Módulo <span class="required-badge">Obligatorio</span></label>
+                            <input type="text" class="form-control" id="create_modulo_titulo" name="titulo" required
+                                   placeholder="Ej: Introducción al tema">
+                        </div>
+                        <div class="mb-3">
+                            <label for="create_modulo_orden" class="form-label">Orden</label>
+                            <input type="number" class="form-control" id="create_modulo_orden" name="orden" min="1"
+                                   placeholder="Orden automático si se deja vacío">
+                            <div class="form-text">Si no especificas un orden, se asignará automáticamente el siguiente disponible.</div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary-custom">
+                            <i class="bi bi-check-circle"></i> Crear Módulo
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Create Video -->
+    <div class="modal fade" id="createVideoModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="bi bi-plus-circle"></i> Agregar Video
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="createVideoForm" enctype="multipart/form-data">
+                    <input type="hidden" id="video_modulo_id" name="id_modulo">
+                    <div class="modal-body">
+                        <div class="row g-3">
+                            <div class="col-md-8">
+                                <label for="video_titulo" class="form-label">Título del Video <span class="required-badge">Obligatorio</span></label>
+                                <input type="text" class="form-control" id="video_titulo" name="titulo" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="video_orden" class="form-label">Orden</label>
+                                <input type="number" class="form-control" id="video_orden" name="orden" min="1">
+                            </div>
+                            <div class="col-12">
+                                <label for="video_descripcion" class="form-label">Descripción</label>
+                                <textarea class="form-control" id="video_descripcion" name="descripcion" rows="3"></textarea>
+                            </div>
+
+                            <!-- Video Upload Section -->
+                            <div class="col-12">
+                                <div class="form-section-title">
+                                    <i class="bi bi-cloud-upload me-2"></i>Archivo de Video
+                                </div>
+                                <div class="upload-area border rounded p-4 text-center" 
+                                     id="video-upload-area"
+                                     style="border: 2px dashed var(--border-color); background: var(--bg-light); transition: all 0.3s ease;">
+                                    
+                                    <div id="upload-prompt" class="upload-prompt">
+                                        <i class="bi bi-cloud-upload fs-1 text-muted mb-3"></i>
+                                        <h5 class="mb-2">Selecciona un archivo de video</h5>
+                                        <p class="text-muted mb-3">Arrastra y suelta tu video aquí o haz clic para seleccionar</p>
+                                        <input type="file" class="form-control d-none" id="video_file" name="video" 
+                                               accept="video/*,.mp4,.mov,.avi,.wmv,.webm">
+                                        <button type="button" class="btn btn-outline-primary" onclick="document.getElementById('video_file').click()">
+                                            <i class="bi bi-folder2-open"></i> Seleccionar Archivo
+                                        </button>
+                                        <div class="form-text mt-2">
+                                            Formatos soportados: MP4, MOV, AVI, WMV, WebM (Máximo: 2GB)
+                                        </div>
+                                    </div>
+
+                                    <div id="upload-progress" class="upload-progress d-none">
+                                        <div class="mb-3">
+                                            <i class="bi bi-file-earmark-play fs-1 text-primary"></i>
+                                        </div>
+                                        <h6 id="selected-file-name" class="mb-2"></h6>
+                                        <div class="progress mb-3" style="height: 8px;">
+                                            <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                                                 id="upload-progress-bar" 
+                                                 role="progressbar" 
+                                                 style="width: 0%"></div>
+                                        </div>
+                                        <div id="upload-status" class="text-muted">Preparando...</div>
+                                        <button type="button" class="btn btn-outline-secondary btn-sm mt-2" onclick="cancelVideoUpload()">
+                                            <i class="bi bi-x-circle"></i> Cancelar
+                                        </button>
+                                    </div>
+
+                                    <div id="upload-success" class="upload-success d-none">
+                                        <div class="mb-3">
+                                            <i class="bi bi-check-circle-fill fs-1 text-success"></i>
+                                        </div>
+                                        <h6 class="text-success mb-2">¡Video subido exitosamente!</h6>
+                                        <div id="success-file-name" class="text-muted"></div>
+                                        <button type="button" class="btn btn-outline-primary btn-sm mt-2" onclick="resetVideoUpload()">
+                                            <i class="bi bi-arrow-repeat"></i> Subir otro video
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Alternative URL Section -->
+                            <div class="col-12">
+                                <div class="form-section-title">
+                                    <i class="bi bi-link-45deg me-2"></i>O usar URL externa (opcional)
+                                </div>
+                                <div class="row g-2">
+                                    <div class="col-md-9">
+                                        <input type="url" class="form-control" id="video_url" name="url" 
+                                               placeholder="https://... (YouTube, Vimeo, etc.)">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <input type="number" class="form-control" id="video_duracion" name="duracion_minutos" 
+                                               min="0" placeholder="Duración (min)">
+                                    </div>
+                                </div>
+                                <div class="form-text">Solo necesario si no subes archivo. La duración se detecta automáticamente en archivos subidos.</div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label for="video_estatus" class="form-label">Estado</label>
+                                <select class="form-select" id="video_estatus" name="estatus">
+                                    <option value="borrador">Borrador</option>
+                                    <option value="publicado">Publicado</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary-custom" id="create-video-btn">
+                            <i class="bi bi-check-circle"></i> Crear Video
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Edit Module -->
+    <div class="modal fade" id="editModuloModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="bi bi-pencil"></i> Editar Módulo
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="editModuloForm">
+                    <input type="hidden" id="edit_modulo_id" name="id_modulo">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="edit_modulo_titulo" class="form-label">Título del Módulo <span class="required-badge">Obligatorio</span></label>
+                            <input type="text" class="form-control" id="edit_modulo_titulo" name="titulo" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="edit_modulo_orden" class="form-label">Orden <span class="required-badge">Obligatorio</span></label>
+                            <input type="number" class="form-control" id="edit_modulo_orden" name="orden" min="1" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary-custom">
+                            <i class="bi bi-check-circle"></i> Actualizar Módulo
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Edit Video -->
+    <div class="modal fade" id="editVideoModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="bi bi-pencil"></i> Editar Video
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="editVideoForm">
+                    <input type="hidden" id="edit_video_id" name="id_video">
+                    <div class="modal-body">
+                        <div class="row g-3">
+                            <div class="col-md-8">
+                                <label for="edit_video_titulo" class="form-label">Título del Video <span class="required-badge">Obligatorio</span></label>
+                                <input type="text" class="form-control" id="edit_video_titulo" name="titulo" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="edit_video_orden" class="form-label">Orden</label>
+                                <input type="number" class="form-control" id="edit_video_orden" name="orden" min="1">
+                            </div>
+                            <div class="col-12">
+                                <label for="edit_video_descripcion" class="form-label">Descripción</label>
+                                <textarea class="form-control" id="edit_video_descripcion" name="descripcion" rows="3"></textarea>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="edit_video_url" class="form-label">URL del Video</label>
+                                <input type="url" class="form-control" id="edit_video_url" name="url" placeholder="https://...">
+                            </div>
+                            <div class="col-md-3">
+                                <label for="edit_video_duracion" class="form-label">Duración (minutos)</label>
+                                <input type="number" class="form-control" id="edit_video_duracion" name="duracion_minutos" min="0">
+                            </div>
+                            <div class="col-md-3">
+                                <label for="edit_video_estatus" class="form-label">Estado</label>
+                                <select class="form-select" id="edit_video_estatus" name="estatus">
+                                    <option value="borrador">Borrador</option>
+                                    <option value="publicado">Publicado</option>
+                                    <option value="archivado">Archivado</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary-custom">
+                            <i class="bi bi-check-circle"></i> Actualizar Video
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Manage Tags -->
+    <div class="modal fade" id="manageTagsModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="bi bi-tags"></i> Gestionar Categorías y Etiquetas
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-section-title">
+                        <i class="bi bi-tag me-2"></i>Categoría Principal
+                    </div>
+                    <div class="mb-4">
+                        <select class="form-select" id="manage_categoria" name="id_categoria">
+                            {{#each categorias}}
+                            <option value="{{id_categoria}}" {{#if (eq id_categoria ../curso.id_categoria)}}selected{{/if}}>
+                                {{nombre}}
+                            </option>
+                            {{/each}}
+                        </select>
+                    </div>
+
+                    <div class="form-section-title">
+                        <i class="bi bi-tags me-2"></i>Etiquetas Asignadas
+                    </div>
+                    <div id="current-tags" class="mb-3">
+                        {{#each curso.etiquetas}}
+                        <span class="etiqueta-badge me-2 mb-2 d-inline-flex align-items-center">
+                            {{nombre}}
+                            <button type="button" class="btn-close btn-close-sm ms-2" 
+                                    onclick="removeTag({{id_etiqueta}})" style="font-size: 0.6rem;"></button>
+                        </span>
+                        {{/each}}
+                        {{#unless curso.etiquetas.length}}
+                        <p class="text-muted">No hay etiquetas asignadas.</p>
+                        {{/unless}}
+                    </div>
+
+                    <div class="form-section-title">
+                        <i class="bi bi-plus-circle me-2"></i>Agregar Etiquetas
+                    </div>
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="new-tag-input" 
+                               placeholder="Escribir nombre de etiqueta...">
+                        <button type="button" class="btn btn-outline-primary" onclick="addTag()">
+                            <i class="bi bi-plus"></i> Agregar
+                        </button>
+                    </div>
+                    <div class="form-text">Presiona Enter para agregar rápidamente.</div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-primary-custom" onclick="saveTagsAndCategory()">
+                        <i class="bi bi-check-circle"></i> Guardar Cambios
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        const cursoId = {{curso.id_curso}};
+        
+        // Handlebars helper polyfills for client-side
+        window.eq = function(a, b) {
+            return a === b;
+        };
+
+        // Toggle module collapse
+        function toggleModulo(moduloId) {
+            const collapse = document.getElementById(`modulo-${moduloId}`);
+            const icon = document.getElementById(`icon-${moduloId}`);
+            const bsCollapse = new bootstrap.Collapse(collapse, {toggle: false});
+            
+            if (collapse.classList.contains('show')) {
+                bsCollapse.hide();
+                icon.classList.add('collapsed');
+            } else {
+                bsCollapse.show();
+                icon.classList.remove('collapsed');
+            }
+        }
+
+        // Edit course
+        function editCurso() {
+            // Pre-fill form with current data
+            document.getElementById('edit_titulo').value = '{{curso.titulo}}';
+            document.getElementById('edit_descripcion').value = '{{curso.descripcion}}' || '';
+            document.getElementById('edit_categoria').value = '{{curso.id_categoria}}';
+            document.getElementById('edit_precio').value = '{{curso.precio}}';
+            document.getElementById('edit_nivel').value = '{{curso.nivel}}';
+            document.getElementById('edit_estatus').value = '{{curso.estatus}}';
+            document.getElementById('edit_id_instructor').value = '{{curso.id_instructor}}';
+            document.getElementById('edit_miniatura').value = '{{curso.miniatura}}' || '';
+            
+            const modal = new bootstrap.Modal(document.getElementById('editCursoModal'));
+            modal.show();
+        }
+
+        // Create module modal
+        function openCreateModuloModal() {
+            const modal = new bootstrap.Modal(document.getElementById('createModuloModal'));
+            modal.show();
+        }
+
+        // Create video modal
+        function openCreateVideoModal(moduloId) {
+            document.getElementById('video_modulo_id').value = moduloId;
+            const modal = new bootstrap.Modal(document.getElementById('createVideoModal'));
+            modal.show();
+        }
+
+        // Edit course form submission
+        document.getElementById('editCursoForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData);
+            
+            try {
+                const response = await fetch(`/admin/cursos/${cursoId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showAlert('success', result.message);
+                    bootstrap.Modal.getInstance(document.getElementById('editCursoModal')).hide();
+                    setTimeout(() => location.reload(), 1500);
+                } else {
+                    showAlert('danger', result.message);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showAlert('danger', 'Error al actualizar el curso');
+            }
+        });
+
+        // Create module form submission
+        document.getElementById('createModuloForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData);
+            data.id_curso = cursoId;
+            
+            try {
+                const response = await fetch('/admin/modulos', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showAlert('success', result.message);
+                    bootstrap.Modal.getInstance(document.getElementById('createModuloModal')).hide();
+                    setTimeout(() => location.reload(), 1500);
+                } else {
+                    showAlert('danger', result.message);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showAlert('danger', 'Error al crear el módulo');
+            }
+        });
+
+        // Video upload handling
+        let uploadInProgress = false;
+        let uploadRequest = null;
+
+        // File input change handler
+        document.getElementById('video_file').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                handleFileSelection(file);
+            }
+        });
+
+        // Drag and drop handlers
+        const uploadArea = document.getElementById('video-upload-area');
+        
+        uploadArea.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            this.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            this.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            this.classList.remove('dragover');
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                const file = files[0];
+                if (file.type.startsWith('video/')) {
+                    document.getElementById('video_file').files = files;
+                    handleFileSelection(file);
+                } else {
+                    showAlert('warning', 'Por favor selecciona un archivo de video válido');
+                }
+            }
+        });
+
+        // Click to select file
+        uploadArea.addEventListener('click', function(e) {
+            if (e.target.closest('.btn') || uploadInProgress) return;
+            document.getElementById('video_file').click();
+        });
+
+        function handleFileSelection(file) {
+            // Validate file type
+            const allowedTypes = ['video/mp4', 'video/quicktime', 'video/x-msvideo', 'video/webm'];
+            const allowedExtensions = ['.mp4', '.mov', '.avi', '.wmv', '.webm'];
+            const fileExtension = file.name.toLowerCase().substring(file.name.lastIndexOf('.'));
+            
+            if (!allowedTypes.includes(file.type) && !allowedExtensions.includes(fileExtension)) {
+                showAlert('danger', 'Tipo de archivo no válido. Solo se permiten videos: MP4, MOV, AVI, WMV, WebM');
+                resetVideoUpload();
+                return;
+            }
+
+            // Validate file size (2GB max)
+            const maxSize = 2 * 1024 * 1024 * 1024; // 2GB
+            if (file.size > maxSize) {
+                showAlert('danger', 'El archivo es demasiado grande. Máximo 2GB permitido.');
+                resetVideoUpload();
+                return;
+            }
+
+            // Show file selected
+            document.getElementById('selected-file-name').textContent = file.name;
+            document.getElementById('upload-prompt').classList.add('d-none');
+            document.getElementById('upload-progress').classList.remove('d-none');
+            document.getElementById('upload-status').textContent = 'Archivo seleccionado - Listo para subir';
+            document.getElementById('upload-progress-bar').style.width = '0%';
+        }
+
+        function resetVideoUpload() {
+            document.getElementById('video_file').value = '';
+            document.getElementById('upload-prompt').classList.remove('d-none');
+            document.getElementById('upload-progress').classList.add('d-none');
+            document.getElementById('upload-success').classList.add('d-none');
+            uploadInProgress = false;
+            uploadRequest = null;
+        }
+
+        function cancelVideoUpload() {
+            if (uploadRequest) {
+                uploadRequest.abort();
+            }
+            resetVideoUpload();
+            showAlert('info', 'Subida de video cancelada');
+        }
+
+        // Create video form submission with file upload
+        document.getElementById('createVideoForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const fileInput = document.getElementById('video_file');
+            const hasFile = fileInput.files && fileInput.files.length > 0;
+            const hasUrl = document.getElementById('video_url').value.trim();
+            
+            if (!hasFile && !hasUrl) {
+                showAlert('warning', 'Debes subir un archivo de video o proporcionar una URL');
+                return;
+            }
+
+            if (hasFile) {
+                await uploadVideoFile();
+            } else {
+                await createVideoWithUrl();
+            }
+        });
+
+        async function uploadVideoFile() {
+            const form = document.getElementById('createVideoForm');
+            const formData = new FormData(form);
+            const createBtn = document.getElementById('create-video-btn');
+            
+            uploadInProgress = true;
+            createBtn.disabled = true;
+            createBtn.innerHTML = '<i class="bi bi-cloud-upload"></i> Subiendo...';
+            
+            document.getElementById('upload-status').textContent = 'Subiendo a Bunny.net...';
+
+            try {
+                // Create XMLHttpRequest for progress tracking
+                uploadRequest = new XMLHttpRequest();
+                
+                uploadRequest.upload.addEventListener('progress', function(e) {
+                    if (e.lengthComputable) {
+                        const percentComplete = (e.loaded / e.total) * 100;
+                        document.getElementById('upload-progress-bar').style.width = percentComplete + '%';
+                        document.getElementById('upload-status').textContent = 
+                            `Subiendo... ${Math.round(percentComplete)}%`;
+                    }
+                });
+
+                uploadRequest.addEventListener('load', function() {
+                    try {
+                        const result = JSON.parse(uploadRequest.responseText);
+                        
+                        if (result.success) {
+                            // Show success
+                            document.getElementById('upload-progress').classList.add('d-none');
+                            document.getElementById('upload-success').classList.remove('d-none');
+                            document.getElementById('success-file-name').textContent = 
+                                document.getElementById('selected-file-name').textContent;
+                            
+                            showAlert('success', result.message);
+                            bootstrap.Modal.getInstance(document.getElementById('createVideoModal')).hide();
+                            setTimeout(() => location.reload(), 1500);
+                        } else {
+                            throw new Error(result.error || result.message || 'Error desconocido');
+                        }
+                    } catch (error) {
+                        console.error('Error parsing response:', error);
+                        showAlert('danger', 'Error procesando la respuesta del servidor');
+                    } finally {
+                        uploadInProgress = false;
+                        createBtn.disabled = false;
+                        createBtn.innerHTML = '<i class="bi bi-check-circle"></i> Crear Video';
+                    }
+                });
+
+                uploadRequest.addEventListener('error', function() {
+                    showAlert('danger', 'Error de conexión durante la subida');
+                    uploadInProgress = false;
+                    createBtn.disabled = false;
+                    createBtn.innerHTML = '<i class="bi bi-check-circle"></i> Crear Video';
+                });
+
+                uploadRequest.addEventListener('abort', function() {
+                    uploadInProgress = false;
+                    createBtn.disabled = false;
+                    createBtn.innerHTML = '<i class="bi bi-check-circle"></i> Crear Video';
+                });
+
+                // Send request
+                uploadRequest.open('POST', '/admin/videos/upload-dashboard');
+                uploadRequest.send(formData);
+
+            } catch (error) {
+                console.error('Error:', error);
+                showAlert('danger', 'Error al iniciar la subida: ' + error.message);
+                uploadInProgress = false;
+                createBtn.disabled = false;
+                createBtn.innerHTML = '<i class="bi bi-check-circle"></i> Crear Video';
+            }
+        }
+
+        async function createVideoWithUrl() {
+            const formData = new FormData(document.getElementById('createVideoForm'));
+            const data = Object.fromEntries(formData);
+            
+            try {
+                const response = await fetch('/admin/videos', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showAlert('success', result.message);
+                    bootstrap.Modal.getInstance(document.getElementById('createVideoModal')).hide();
+                    setTimeout(() => location.reload(), 1500);
+                } else {
+                    showAlert('danger', result.message);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showAlert('danger', 'Error al crear el video');
+            }
+        }
+
+        // Reset upload area when modal is closed
+        document.getElementById('createVideoModal').addEventListener('hidden.bs.modal', function() {
+            if (!uploadInProgress) {
+                resetVideoUpload();
+            }
+        });
+
+        // Edit module form submission
+        document.getElementById('editModuloForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData);
+            const id = data.id_modulo;
+            
+            try {
+                const response = await fetch(`/admin/modulos/${id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showAlert('success', result.message);
+                    bootstrap.Modal.getInstance(document.getElementById('editModuloModal')).hide();
+                    setTimeout(() => location.reload(), 1500);
+                } else {
+                    showAlert('danger', result.message);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showAlert('danger', 'Error al actualizar el módulo');
+            }
+        });
+
+        // Edit video form submission
+        document.getElementById('editVideoForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData);
+            const id = data.id_video;
+            
+            try {
+                const response = await fetch(`/admin/videos/${id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showAlert('success', result.message);
+                    bootstrap.Modal.getInstance(document.getElementById('editVideoModal')).hide();
+                    setTimeout(() => location.reload(), 1500);
+                } else {
+                    showAlert('danger', result.message);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showAlert('danger', 'Error al actualizar el video');
+            }
+        });
+
+        // Tag management functions
+        function addTag() {
+            const input = document.getElementById('new-tag-input');
+            const tagName = input.value.trim();
+            
+            if (!tagName) {
+                showAlert('warning', 'Escribe el nombre de la etiqueta');
+                return;
+            }
+            
+            // Check if tag already exists
+            const currentTags = document.getElementById('current-tags');
+            const existingTags = Array.from(currentTags.querySelectorAll('.etiqueta-badge'))
+                .map(badge => badge.textContent.trim());
+            
+            if (existingTags.includes(tagName)) {
+                showAlert('warning', 'Esta etiqueta ya está asignada');
+                return;
+            }
+            
+            // Add new tag badge
+            const tagBadge = document.createElement('span');
+            tagBadge.className = 'etiqueta-badge me-2 mb-2 d-inline-flex align-items-center';
+            tagBadge.innerHTML = `
+                ${tagName}
+                <button type="button" class="btn-close btn-close-sm ms-2" 
+                        onclick="removeTagElement(this)" style="font-size: 0.6rem;"></button>
+            `;
+            
+            currentTags.appendChild(tagBadge);
+            input.value = '';
+            
+            // Remove "no tags" message if present
+            const noTagsMessage = currentTags.querySelector('.text-muted');
+            if (noTagsMessage) {
+                noTagsMessage.remove();
+            }
+        }
+        
+        function removeTag(tagId) {
+            // Remove tag by ID (for existing tags)
+            showAlert('info', `Eliminar etiqueta ID: ${tagId}`);
+        }
+        
+        function removeTagElement(button) {
+            // Remove tag element (for new tags)
+            button.parentElement.remove();
+            
+            // Show "no tags" message if no tags left
+            const currentTags = document.getElementById('current-tags');
+            if (currentTags.children.length === 0) {
+                currentTags.innerHTML = '<p class="text-muted">No hay etiquetas asignadas.</p>';
+            }
+        }
+        
+        function saveTagsAndCategory() {
+            showAlert('info', 'Función de guardar etiquetas y categoría en desarrollo');
+        }
+
+        // Add Enter key support for tag input
+        document.getElementById('new-tag-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                addTag();
+            }
+        });
+
+        // Change course status
+        function changeStatus(newStatus) {
+            const statusNames = {
+                'publicado': 'publicar',
+                'borrador': 'marcar como borrador',
+                'inactivo': 'desactivar'
+            };
+            
+            if (confirm(`¿Estás seguro de que deseas ${statusNames[newStatus]} este curso?`)) {
+                fetch(`/admin/cursos/${cursoId}/status`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ estatus: newStatus })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showAlert('success', data.message);
+                        setTimeout(() => location.reload(), 1500);
+                    } else {
+                        showAlert('danger', data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showAlert('danger', 'Error al cambiar el estado del curso');
+                });
+            }
+        }
+
+        // Edit module
+        async function editModulo(id) {
+            try {
+                const response = await fetch(`/admin/modulos/${id}`);
+                const result = await response.json();
+                
+                if (result.success) {
+                    const modulo = result.modulo;
+                    
+                    // Pre-fill edit form
+                    document.getElementById('edit_modulo_id').value = modulo.id_modulo;
+                    document.getElementById('edit_modulo_titulo').value = modulo.titulo;
+                    document.getElementById('edit_modulo_orden').value = modulo.orden;
+                    
+                    const modal = new bootstrap.Modal(document.getElementById('editModuloModal'));
+                    modal.show();
+                } else {
+                    showAlert('danger', result.message);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showAlert('danger', 'Error al obtener los datos del módulo');
+            }
+        }
+
+        // Delete module
+        async function deleteModulo(id) {
+            const moduloElement = document.querySelector(`[data-modulo-id="${id}"]`);
+            const titulo = moduloElement.querySelector('.modulo-title').textContent.trim();
+            const videosCount = moduloElement.querySelector('.modulo-stats span').textContent.match(/\d+/)[0];
+            
+            if (parseInt(videosCount) > 0) {
+                showAlert('warning', `No se puede eliminar el módulo "${titulo}" porque tiene ${videosCount} video(s) asociado(s). Elimina primero los videos.`);
+                return;
+            }
+            
+            if (confirm(`¿Estás seguro de que deseas eliminar el módulo "${titulo}"?`)) {
+                try {
+                    const response = await fetch(`/admin/modulos/${id}`, {
+                        method: 'DELETE'
+                    });
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        showAlert('success', result.message);
+                        moduloElement.remove();
+                    } else {
+                        showAlert('danger', result.message);
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    showAlert('danger', 'Error al eliminar el módulo');
+                }
+            }
+        }
+
+        // Edit video
+        async function editVideo(id) {
+            try {
+                const response = await fetch(`/admin/videos/${id}`);
+                if (!response.ok) {
+                    throw new Error('Video no encontrado');
+                }
+                
+                const videoData = await response.json();
+                const video = videoData.video || videoData;
+                
+                // Pre-fill edit form
+                document.getElementById('edit_video_id').value = video.id_video;
+                document.getElementById('edit_video_titulo').value = video.titulo;
+                document.getElementById('edit_video_descripcion').value = video.descripcion || '';
+                document.getElementById('edit_video_url').value = video.url || '';
+                document.getElementById('edit_video_orden').value = video.orden;
+                document.getElementById('edit_video_duracion').value = Math.floor((video.duracion_segundos || 0) / 60);
+                document.getElementById('edit_video_estatus').value = video.estatus;
+                
+                const modal = new bootstrap.Modal(document.getElementById('editVideoModal'));
+                modal.show();
+            } catch (error) {
+                console.error('Error:', error);
+                showAlert('danger', 'Error al obtener los datos del video');
+            }
+        }
+
+        // Delete video
+        async function deleteVideo(id) {
+            const videoElement = document.querySelector(`[data-video-id="${id}"]`);
+            const titulo = videoElement.querySelector('.video-title').textContent.replace(/^\d+\.\s*/, '').trim();
+            
+            if (confirm(`¿Estás seguro de que deseas eliminar el video "${titulo}"?`)) {
+                try {
+                    const response = await fetch(`/admin/videos/${id}`, {
+                        method: 'DELETE'
+                    });
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        showAlert('success', result.message);
+                        videoElement.remove();
+                        
+                        // Update module stats
+                        const moduloElement = videoElement.closest('.modulo-item');
+                        const videosCountElement = moduloElement.querySelector('.modulo-stats span');
+                        const currentCount = parseInt(videosCountElement.textContent.match(/\d+/)[0]);
+                        videosCountElement.innerHTML = `<i class="bi bi-play-circle"></i> ${currentCount - 1} videos`;
+                        
+                        // If no videos left, show empty state
+                        const videoList = moduloElement.querySelector('.video-list');
+                        if (videoList.children.length === 0) {
+                            const moduloId = moduloElement.dataset.moduloId;
+                            videoList.innerHTML = `
+                                <div class="empty-state">
+                                    <i class="bi bi-play-circle"></i>
+                                    <p>No hay videos en este módulo.</p>
+                                    <button type="button" class="btn btn-primary-custom btn-sm" 
+                                            onclick="openCreateVideoModal(${moduloId})">
+                                        <i class="bi bi-plus"></i> Agregar primer video
+                                    </button>
+                                </div>
+                            `;
+                        }
+                    } else {
+                        showAlert('danger', result.message);
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    showAlert('danger', 'Error al eliminar el video');
+                }
+            }
+        }
+
+        // Manage tags
+        function manageTags() {
+            const modal = new bootstrap.Modal(document.getElementById('manageTagsModal'));
+            modal.show();
+        }
+
+        // Show alert function
+        function showAlert(type, message) {
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+            alert.style.cssText = 'top: 20px; right: 20px; z-index: 9999; max-width: 400px;';
+            alert.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            
+            document.body.appendChild(alert);
+            
+            setTimeout(() => {
+                if (alert.parentNode) {
+                    alert.remove();
+                }
+            }, 5000);
+        }
+
+        // Initialize drag and drop for modules
+        if (typeof Sortable !== 'undefined') {
+            const modulosContainer = document.getElementById('modulos-container');
+            if (modulosContainer) {
+                Sortable.create(modulosContainer, {
+                    handle: '.drag-handle',
+                    animation: 150,
+                    ghostClass: 'sortable-ghost',
+                    dragClass: 'sortable-drag',
+                    onEnd: async function(evt) {
+                        const modulosItems = modulosContainer.querySelectorAll('.modulo-item');
+                        const modulos = [];
+                        
+                        modulosItems.forEach((item, index) => {
+                            const moduloId = parseInt(item.dataset.moduloId);
+                            const newOrder = index + 1;
+                            
+                            modulos.push({
+                                id_modulo: moduloId,
+                                nuevo_orden: newOrder
+                            });
+                            
+                            // Update the badge number
+                            const badge = item.querySelector('.modulo-badge');
+                            badge.textContent = newOrder;
+                        });
+                        
+                        // Send to server
+                        try {
+                            const response = await fetch('/admin/modulos/reorder', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify({ modulos })
+                            });
+                            
+                            const result = await response.json();
+                            
+                            if (result.success) {
+                                showAlert('success', 'Módulos reordenados correctamente');
+                            } else {
+                                showAlert('danger', result.message);
+                                location.reload(); // Reload on error
+                            }
+                        } catch (error) {
+                            console.error('Error:', error);
+                            showAlert('danger', 'Error al reordenar módulos');
+                            location.reload();
+                        }
+                    }
+                });
+            }
+        }
+        
+        // Additional CSS for sortable
+        const style = document.createElement('style');
+        style.textContent = `
+            .sortable-ghost {
+                opacity: 0.4;
+                background: rgba(234, 88, 12, 0.1);
+            }
+            
+            .sortable-drag {
+                transform: rotate(2deg);
+                box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            }
+            
+            .drag-handle:active {
+                cursor: grabbing;
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

@@ -636,21 +636,24 @@
                                 </td>
                                 <td>
                                     <div class="d-flex flex-column gap-1">
-                                        <button type="button" class="btn btn-action btn-view" 
-                                                onclick="viewCurso({{id_curso}})" title="Ver detalles">
-                                            <i class="bi bi-eye"></i> Ver
-                                        </button>
+                                        <a href="/admin/cursos/{{id_curso}}/dashboard" class="btn btn-action btn-view" title="Dashboard del curso">
+                                            <i class="bi bi-speedometer2"></i> Dashboard
+                                        </a>
                                         <button type="button" class="btn btn-action btn-edit" 
                                                 onclick="editCurso({{id_curso}})" title="Editar">
                                             <i class="bi bi-pencil"></i> Editar
                                         </button>
-                                        <!-- Video action moved into dropdown to avoid extra visible button -->
+                                        <!-- More options in dropdown -->
                                         <div class="dropdown">
                                             <button class="btn btn-action btn-view dropdown-toggle w-100" 
                                                     data-bs-toggle="dropdown" title="Más opciones">
                                                 <i class="bi bi-three-dots"></i> Más
                                             </button>
                                             <ul class="dropdown-menu">
+                                                <li><a class="dropdown-item" href="#" onclick="viewCurso({{id_curso}}); return false;">
+                                                    <i class="bi bi-eye text-info me-2"></i>Ver detalles
+                                                </a></li>
+                                                <li><hr class="dropdown-divider"></li>
                                                 {{#if (eq estatus 'borrador')}}
                                                 <li><a class="dropdown-item" href="#" onclick="changeStatus({{id_curso}}, 'publicado', '{{titulo}}'); return false;">
                                                     <i class="bi bi-check-circle text-success me-2"></i>Publicar
@@ -666,16 +669,15 @@
                                                     <i class="bi bi-check-circle text-success me-2"></i>Activar
                                                 </a></li>
                                                 {{/if}}
-                                                                                                <!-- Add 'Agregar video' inside dropdown so buttons stay compact -->
-                                                                                                                                                <li>
-                                                                                                                                                    <a class="dropdown-item" href="#" onclick="openCreateModuloModal({{id_curso}}); return false;">
-                                                                                                                                                        <i class="bi bi-folder-plus me-2"></i>Agregar módulo
-                                                                                                                                                    </a>
-                                                                                                                                                </li>
-                                                                                                <li><hr class="dropdown-divider"></li>
-                                                                                                <li><a class="dropdown-item text-danger" href="#" onclick="deleteCurso({{id_curso}}, '{{titulo}}', {{total_compras}}); return false;">
-                                                                                                        <i class="bi bi-trash me-2"></i>Eliminar
-                                                                                                </a></li>
+                                                <li>
+                                                    <a class="dropdown-item" href="#" onclick="openCreateModuloModal({{id_curso}}); return false;">
+                                                        <i class="bi bi-folder-plus me-2"></i>Agregar módulo
+                                                    </a>
+                                                </li>
+                                                <li><hr class="dropdown-divider"></li>
+                                                <li><a class="dropdown-item text-danger" href="#" onclick="deleteCurso({{id_curso}}, '{{titulo}}', {{total_compras}}); return false;">
+                                                        <i class="bi bi-trash me-2"></i>Eliminar
+                                                </a></li>
                                             </ul>
                                         </div>
                                     </div>
