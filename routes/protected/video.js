@@ -221,7 +221,8 @@ router.get('/:videoId', async function(req, res, next) {
       userName: user.nombre,
       userEmail: user.email,
       userRole: user.rol,
-      videoId: playerId,
+      videoId: playerId, // ID para el iframe del reproductor (Bunny/Vimeo)
+      dbVideoId: video.id_video, // ID de la base de datos para progreso
       bunnyVideoId: video.bunny_video_id,
       bunnyEmbedUrl: video.bunny_embed_url,
       videoProvider: video.video_provider || 'bunny',

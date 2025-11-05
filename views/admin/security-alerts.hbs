@@ -1,0 +1,231 @@
+{{!-- 
+🚨 ALERTAS DE SEGURIDAD - VISTA PRINCIPAL
+============================================================
+Vista para mostrar alertas de seguridad y patrones sospechosos
+============================================================
+--}}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{title}}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        .alert-card {
+            border-left: 4px solid;
+            margin-bottom: 1rem;
+        }
+        .alert-high { border-left-color: #dc3545; }
+        .alert-medium { border-left-color: #fd7e14; }
+        .alert-low { border-left-color: #198754; }
+        
+        .security-stats {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <!-- Header simplificado -->
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="/dashboard">
+                    <i class="bi bi-shield-exclamation me-2"></i>Alertas de Seguridad
+                </a>
+                <div class="navbar-nav ms-auto">
+                    <span class="navbar-text text-white me-3">
+                        <i class="bi bi-person-circle me-1"></i>{{currentUser.nombre}}
+                    </span>
+                    <a class="nav-link text-white" href="/admin/logs">
+                        <i class="bi bi-journal-text"></i> Logs
+                    </a>
+                    <a class="nav-link text-white" href="/auth/logout">
+                        <i class="bi bi-box-arrow-right"></i> Salir
+                    </a>
+                </div>
+            </div>
+        </nav>
+        
+        <div class="content-wrapper p-4">
+            <!-- Resumen de alertas -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="card security-stats">
+                        <div class="card-body">
+                            <h4 class="card-title mb-3">
+                                <i class="bi bi-shield-check me-2"></i>
+                                Resumen de Seguridad
+                            </h4>
+                            <div class="row">
+                                <div class="col-md-3 text-center">
+                                    <h3 class="mb-0 fw-bold">{{report.summary.total_alerts}}</h3>
+                                    <small>Total de Alertas</small>
+                                </div>
+                                <div class="col-md-3 text-center">
+                                    <h3 class="mb-0 fw-bold text-danger">{{report.summary.high_severity}}</h3>
+                                    <small>Críticas</small>
+                                </div>
+                                <div class="col-md-3 text-center">
+                                    <h3 class="mb-0 fw-bold text-warning">{{report.summary.medium_severity}}</h3>
+                                    <small>Medias</small>
+                                </div>
+                                <div class="col-md-3 text-center">
+                                    <h3 class="mb-0 fw-bold">{{stats.general.total_actions_24h}}</h3>
+                                    <small>Acciones 24h</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lista de alertas -->
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">
+                                <i class="bi bi-exclamation-triangle me-2"></i>
+                                Alertas Activas
+                            </h5>
+                            <small class="text-muted">Actualizado: {{formatDate report.timestamp}}</small>
+                        </div>
+                        <div class="card-body">
+                            {{#if alerts}}
+                                {{#each alerts}}
+                                <div class="alert-card card alert-{{#if (eq severity 'HIGH')}}high{{else}}{{#if (eq severity 'MEDIUM')}}medium{{else}}low{{/if}}{{/if}}">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between align-items-start">
+                                            <div class="flex-grow-1">
+                                                <h6 class="card-title mb-1">
+                                                    {{#if (eq severity 'HIGH')}}
+                                                        <i class="bi bi-exclamation-circle text-danger me-1"></i>
+                                                    {{else}}{{#if (eq severity 'MEDIUM')}}
+                                                        <i class="bi bi-exclamation-triangle text-warning me-1"></i>
+                                                    {{else}}
+                                                        <i class="bi bi-info-circle text-info me-1"></i>
+                                                    {{/if}}{{/if}}
+                                                    {{title}}
+                                                </h6>
+                                                <p class="card-text mb-2">{{message}}</p>
+                                                <div class="d-flex gap-3">
+                                                    <small class="text-muted">
+                                                        <i class="bi bi-person me-1"></i>
+                                                        {{user.name}} ({{user.email}})
+                                                    </small>
+                                                    <small class="text-muted">
+                                                        <i class="bi bi-clock me-1"></i>
+                                                        {{formatTime timestamp}}
+                                                    </small>
+                                                </div>
+                                            </div>
+                                            <div class="ms-3">
+                                                <span class="badge 
+                                                    {{#if (eq severity 'HIGH')}}bg-danger
+                                                    {{else}}{{#if (eq severity 'MEDIUM')}}bg-warning
+                                                    {{else}}bg-info{{/if}}{{/if}}">
+                                                    {{severity}}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        
+                                        {{#if details}}
+                                        <div class="mt-2">
+                                            <small class="text-muted">
+                                                <strong>Detalles:</strong>
+                                                {{#if details.count}}{{details.count}} acciones{{/if}}
+                                                {{#if details.timespan}}en {{details.timespan}}{{/if}}
+                                                {{#if details.ip}}desde IP {{details.ip}}{{/if}}
+                                            </small>
+                                        </div>
+                                        {{/if}}
+                                    </div>
+                                </div>
+                                {{/each}}
+                            {{else}}
+                                <div class="alert alert-success">
+                                    <i class="bi bi-check-circle me-2"></i>
+                                    <strong>¡Todo en orden!</strong> No se han detectado patrones sospechosos.
+                                </div>
+                            {{/if}}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Panel de estadísticas -->
+                <div class="col-lg-4">
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            <h6 class="mb-0">
+                                <i class="bi bi-graph-up me-2"></i>
+                                Actividad 24h
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row text-center">
+                                <div class="col-4">
+                                    <div class="text-success">
+                                        <i class="bi bi-plus-circle fs-4"></i>
+                                        <div class="fw-bold">{{stats.general.creations_24h}}</div>
+                                        <small>Creados</small>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="text-primary">
+                                        <i class="bi bi-pencil-square fs-4"></i>
+                                        <div class="fw-bold">{{stats.general.updates_24h}}</div>
+                                        <small>Actualizados</small>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="text-danger">
+                                        <i class="bi bi-trash fs-4"></i>
+                                        <div class="fw-bold">{{stats.general.deletions_24h}}</div>
+                                        <small>Eliminados</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{#if recommendations}}
+                    <div class="card">
+                        <div class="card-header">
+                            <h6 class="mb-0">
+                                <i class="bi bi-lightbulb me-2"></i>
+                                Recomendaciones
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            {{#each recommendations}}
+                            <div class="mb-3">
+                                <h6 class="text-{{#if (eq priority 'HIGH')}}danger{{else}}{{#if (eq priority 'MEDIUM')}}warning{{else}}info{{/if}}{{/if}}">
+                                    {{title}}
+                                </h6>
+                                <small class="text-muted">{{description}}</small>
+                            </div>
+                            {{#unless @last}}<hr class="my-2">{{/unless}}
+                            {{/each}}
+                        </div>
+                    </div>
+                    {{/if}}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Auto-refrescar cada 5 minutos
+        setTimeout(function() {
+            location.reload();
+        }, 300000);
+    </script>
+</body>
+</html>

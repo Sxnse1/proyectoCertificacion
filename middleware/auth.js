@@ -1,6 +1,15 @@
-// Middleware de autenticación para StartEducation
-// Este middleware protege rutas que requieren autenticación
+/**
+ * 🛡️ MIDDLEWARE DE AUTENTICACIÓN Y AUTORIZACIÓN RBAC - StartEducation
+ * ================================================================
+ * Sistema de Control de Acceso Basado en Roles (RBAC) granular
+ * Autor: Arquitecto Backend Senior
+ * Fecha: 5 de noviembre de 2025
+ * ================================================================
+ */
 
+const { executeQuery } = require('../config/database');
+
+// Middleware básico de autenticación
 const requireAuth = (req, res, next) => {
   // Verificar si el usuario está autenticado mediante sesión
   if (req.session && req.session.user) {
@@ -117,52 +126,7 @@ const logAccess = (req, res, next) => {
   next();
 };
 
-// Middleware específico para asegurar acceso solo a administradores
-const ensureAdmin = (req, res, next) => {
-  // Verificar autenticación primero
-  if (!req.session || !req.session.user) {
-    console.log('[ADMIN MIDDLEWARE] 🚫 Acceso denegado - Usuario no autenticado');
-    console.log('[ADMIN MIDDLEWARE] 📍 Ruta intentada:', req.originalUrl);
-    req.session.redirectTo = req.originalUrl;
-    return res.redirect('/auth/login?error=sesion_expirada');
-  }
-  
-  // Verificar 2FA si es necesario
-  const twoFactorService = require('../services/twoFactorService');
-  if (twoFactorService.requires2FA(req.session.user.rol)) {
-    if (!req.session.user.two_factor_enabled || !req.session.user.two_factor_verified) {
-      console.log('[ADMIN MIDDLEWARE] 🔐 Usuario requiere completar configuración de 2FA');
-      console.log('[ADMIN MIDDLEWARE] 👤 Usuario:', req.session.user.email);
-      return res.redirect('/two-factor/setup');
-    }
-  }
-  
-  // Verificar que sea administrador
-  const userRole = req.session.user.rol;
-  if (userRole !== 'admin' && userRole !== 'instructor') {
-    console.log('[ADMIN MIDDLEWARE] 🚫 Acceso denegado - No es administrador');
-    console.log('[ADMIN MIDDLEWARE] 👤 Usuario:', req.session.user.email);
-    console.log('[ADMIN MIDDLEWARE] 🎭 Rol actual:', userRole);
-    console.log('[ADMIN MIDDLEWARE] 📍 Ruta intentada:', req.originalUrl);
-    
-    // Si es XHR/API, devolver error JSON
-    const acceptsJSON = req.headers['accept'] && req.headers['accept'].includes('application/json');
-    const isXHR = req.headers['x-requested-with'] === 'XMLHttpRequest';
-    if (acceptsJSON || isXHR) {
-      return res.status(403).json({ 
-        success: false, 
-        message: 'Acceso denegado - Se requieren privilegios de administrador' 
-      });
-    }
-    
-    // Para navegador, redirigir con mensaje de error
-    return res.redirect('/auth/login?error=acceso_denegado');
-  }
-  
-  // Usuario es admin autenticado, continuar
-  console.log('[ADMIN MIDDLEWARE] ✅ Acceso autorizado para admin:', req.session.user.email);
-  next();
-};
+// [ELIMINADO] ensureAdmin - ahora se usa hasPermission() con RBAC
 
 // Middleware para inyectar contadores del sidebar de admin
 const injectAdminCounts = async (req, res, next) => {
@@ -207,12 +171,232 @@ const injectAdminCounts = async (req, res, next) => {
   next();
 };
 
+/**
+ * 🔑 MIDDLEWARE RBAC: hasPermission Factory
+ * ========================================
+ * Genera middleware para verificar permisos específicos
+ */
+const hasPermission = (permisoRequerido) => {
+  return async (req, res, next) => {
+    try {
+      // 1. Verificar autenticación básica
+      if (!req.session || !req.session.user) {
+        console.log('[RBAC MIDDLEWARE] 🚫 Acceso denegado - Usuario no autenticado');
+        console.log('[RBAC MIDDLEWARE] 📍 Ruta intentada:', req.originalUrl);
+        req.session.redirectTo = req.originalUrl;
+        return res.redirect('/auth/login?error=sesion_expirada');
+      }
+
+      // 2. Verificar 2FA si es necesario
+      const twoFactorService = require('../services/twoFactorService');
+      if (twoFactorService.requires2FA(req.session.user.rol)) {
+        if (!req.session.user.two_factor_enabled || !req.session.user.two_factor_verified) {
+          console.log('[RBAC MIDDLEWARE] 🔐 Usuario requiere completar configuración de 2FA');
+          console.log('[RBAC MIDDLEWARE] 👤 Usuario:', req.session.user.email);
+          return res.redirect('/two-factor/setup');
+        }
+      }
+
+      // 3. Verificar permisos desde la sesión
+      if (!req.session.user.permisos || !Array.isArray(req.session.user.permisos)) {
+        console.log('[RBAC MIDDLEWARE] ⚠️ Usuario sin permisos cargados, recargando...');
+        
+        // Intentar recargar permisos desde base de datos
+        try {
+          const db = req.app?.locals?.db;
+          const permisos = await cargarPermisosUsuario(req.session.user.id, db);
+          req.session.user.permisos = permisos;
+        } catch (error) {
+          console.log('[RBAC MIDDLEWARE] ❌ Error recargando permisos:', error.message);
+          return res.status(500).json({ 
+            success: false, 
+            message: 'Error interno del servidor' 
+          });
+        }
+      }
+
+      // 4. Verificar si el usuario tiene el permiso requerido
+      const tienePermiso = req.session.user.permisos.includes(permisoRequerido);
+      
+      if (!tienePermiso) {
+        console.log('[RBAC MIDDLEWARE] 🚫 Acceso denegado - Permiso insuficiente');
+        console.log('[RBAC MIDDLEWARE] 👤 Usuario:', req.session.user.email);
+        console.log('[RBAC MIDDLEWARE] 🎭 Rol:', req.session.user.rol);
+        console.log('[RBAC MIDDLEWARE] 🔑 Permiso requerido:', permisoRequerido);
+        console.log('[RBAC MIDDLEWARE] 🔐 Permisos del usuario:', req.session.user.permisos);
+        console.log('[RBAC MIDDLEWARE] 📍 Ruta intentada:', req.originalUrl);
+        
+        // Registrar intento de acceso no autorizado en auditoría
+        try {
+          const auditService = require('../services/auditService');
+          await auditService.logAction({
+            usuarioId: req.session.user.id,
+            accion: 'ACCESO_DENEGADO',
+            entidad: 'Sistema',
+            entidadId: null,
+            detalles: `Intento de acceso sin permiso: ${permisoRequerido} en ${req.originalUrl}`,
+            ip: req.ip
+          }, req.app?.locals?.db);
+        } catch (auditError) {
+          console.log('[RBAC MIDDLEWARE] ⚠️ Error registrando auditoría:', auditError.message);
+        }
+
+        // Si es petición AJAX/API, devolver error JSON
+        const acceptsJSON = req.headers['accept'] && req.headers['accept'].includes('application/json');
+        const isXHR = req.headers['x-requested-with'] === 'XMLHttpRequest';
+        if (acceptsJSON || isXHR) {
+          return res.status(403).json({ 
+            success: false, 
+            message: `Acceso denegado. Se requiere el permiso: ${permisoRequerido}`,
+            requiredPermission: permisoRequerido
+          });
+        }
+
+        // Para navegador, redirigir con mensaje de error
+        return res.redirect('/auth/login?error=permisos_insuficientes');
+      }
+
+      // 5. Acceso autorizado
+      console.log('[RBAC MIDDLEWARE] ✅ Acceso autorizado');
+      console.log('[RBAC MIDDLEWARE] 👤 Usuario:', req.session.user.email);
+      console.log('[RBAC MIDDLEWARE] 🔑 Permiso verificado:', permisoRequerido);
+      next();
+
+    } catch (error) {
+      console.error('[RBAC MIDDLEWARE] ❌ Error en verificación de permisos:', error);
+      return res.status(500).json({ 
+        success: false, 
+        message: 'Error interno del servidor' 
+      });
+    }
+  };
+};
+
+/**
+ * 📊 FUNCIÓN AUXILIAR: Cargar permisos de usuario desde base de datos
+ * ==================================================================
+ */
+async function cargarPermisosUsuario(userId, db = null) {
+  try {
+    // Usar la instancia de base de datos proporcionada o la global
+    const dbInstance = db || require('../config/database');
+    
+    const query = `
+      SELECT DISTINCT p.NombrePermiso
+      FROM Usuarios u
+      INNER JOIN Roles r ON u.RolID = r.RolID
+      INNER JOIN RolPermiso rp ON r.RolID = rp.RolID
+      INNER JOIN Permisos p ON rp.PermisoID = p.PermisoID
+      WHERE u.id_usuario = @userId 
+        AND r.Activo = 1 
+        AND p.Activo = 1
+    `;
+
+    const result = await dbInstance.executeQuery(query, { userId: userId });
+
+    const permisos = result.recordset.map(row => row.NombrePermiso);
+    console.log(`[RBAC] 🔄 Permisos recargados para usuario ${userId}:`, permisos);
+    
+    return permisos;
+  } catch (error) {
+    console.error('[RBAC] ❌ Error cargando permisos:', error);
+    throw error;
+  }
+}
+
+/**
+ * 🔧 MIDDLEWARE DE COMPATIBILIDAD: ensureAdmin (DEPRECATED)
+ * =========================================================
+ * Mantener por compatibilidad hacia atrás, pero marcado como obsoleto
+ */
+const ensureAdmin = (req, res, next) => {
+  console.log('[RBAC MIDDLEWARE] ⚠️ ADVERTENCIA: ensureAdmin está obsoleto, usar hasPermission()');
+  
+  // Usar el nuevo sistema RBAC con permiso de superadmin
+  return hasPermission('gestionar_roles')(req, res, next);
+};
+
+/**
+ * 🔄 MIDDLEWARE: Verificar múltiples permisos (OR logic)
+ * ======================================================
+ */
+const hasAnyPermission = (permisosRequeridos) => {
+  return async (req, res, next) => {
+    // Verificar autenticación básica
+    if (!req.session || !req.session.user) {
+      console.log('[RBAC MIDDLEWARE] 🚫 Acceso denegado - Usuario no autenticado');
+      req.session.redirectTo = req.originalUrl;
+      return res.redirect('/auth/login?error=sesion_expirada');
+    }
+
+    // Verificar si tiene al menos uno de los permisos
+    const userPermisos = req.session.user.permisos || [];
+    const tieneAlgunPermiso = permisosRequeridos.some(permiso => userPermisos.includes(permiso));
+
+    if (!tieneAlgunPermiso) {
+      console.log('[RBAC MIDDLEWARE] 🚫 Acceso denegado - Sin ningún permiso requerido');
+      console.log('[RBAC MIDDLEWARE] 🔑 Permisos requeridos:', permisosRequeridos);
+      console.log('[RBAC MIDDLEWARE] 🔐 Permisos del usuario:', userPermisos);
+      
+      return res.status(403).json({ 
+        success: false, 
+        message: 'Acceso denegado. Se requiere al menos uno de los permisos especificados.',
+        requiredPermissions: permisosRequeridos
+      });
+    }
+
+    console.log('[RBAC MIDDLEWARE] ✅ Acceso autorizado con permiso múltiple');
+    next();
+  };
+};
+
+/**
+ * 🎯 MIDDLEWARE: Verificar todos los permisos (AND logic)
+ * =======================================================
+ */
+const hasAllPermissions = (permisosRequeridos) => {
+  return async (req, res, next) => {
+    // Verificar autenticación básica
+    if (!req.session || !req.session.user) {
+      req.session.redirectTo = req.originalUrl;
+      return res.redirect('/auth/login?error=sesion_expirada');
+    }
+
+    // Verificar si tiene todos los permisos
+    const userPermisos = req.session.user.permisos || [];
+    const tieneTodosLosPermisos = permisosRequeridos.every(permiso => userPermisos.includes(permiso));
+
+    if (!tieneTodosLosPermisos) {
+      console.log('[RBAC MIDDLEWARE] 🚫 Acceso denegado - Faltan permisos requeridos');
+      const permisosFaltantes = permisosRequeridos.filter(p => !userPermisos.includes(p));
+      console.log('[RBAC MIDDLEWARE] 🔑 Permisos faltantes:', permisosFaltantes);
+      
+      return res.status(403).json({ 
+        success: false, 
+        message: 'Acceso denegado. Se requieren todos los permisos especificados.',
+        requiredPermissions: permisosRequeridos,
+        missingPermissions: permisosFaltantes
+      });
+    }
+
+    console.log('[RBAC MIDDLEWARE] ✅ Acceso autorizado con todos los permisos');
+    next();
+  };
+};
+
 module.exports = {
+  // Middleware existente (mantener compatibilidad)
   requireAuth,
   requireBasicAuth,
   requireRole,
   injectUserData,
   logAccess,
   injectAdminCounts,
-  ensureAdmin
+  ensureAdmin, // DEPRECATED - usar hasPermission('gestionar_roles')
+  
+  // Nuevo sistema RBAC
+  hasPermission,
+  hasAnyPermission,
+  hasAllPermissions,
+  cargarPermisosUsuario
 };

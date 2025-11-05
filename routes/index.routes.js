@@ -77,6 +77,7 @@ function configureRoutes(app) {
   const cursosAdminRouter = require('./admin/cursos-admin');
   const videosAdminRouter = require('./admin/videos-admin');
   const usuariosAdminRouter = require('./admin/usuarios-admin');
+  const rolesAdminRouter = require('./admin/roles-admin');
   
   app.use('/admin/categorias', categoriasAdminRouter);
   app.use('/admin/etiquetas', etiquetasAdminRouter);
@@ -84,6 +85,7 @@ function configureRoutes(app) {
   app.use('/admin/cursos', cursosAdminRouter);
   app.use('/admin/videos', videosAdminRouter);
   app.use('/admin/usuarios', usuariosAdminRouter);
+  app.use('/admin/roles', rolesAdminRouter);
   
   // Analytics y Reportes
   const analyticsAdminRouter = require('./admin/analytics-admin');
@@ -115,10 +117,14 @@ function configureRoutes(app) {
   app.use('/certificados', requireAuth, certificadosAdminRouter); // Acceso para todos los usuarios autenticados
   app.use('/admin/valoraciones', valoracionesAdminRouter);
   
-  // Configuración del Sistema
+  // Configuración del Sistema y Auditoría
   const configuracionAdminRouter = require('./admin/configuracion-admin');
+  const logsAdminRouter = require('./admin/logs-admin');
+  const securityAlertsRouter = require('./admin/security-alerts');
   
   app.use('/admin/configuracion', configuracionAdminRouter);
+  app.use('/admin/logs', logsAdminRouter);
+  app.use('/admin/security', securityAlertsRouter);
   
   // ============================================================
   // 🔧 RUTA DE SISTEMA (legacy)
@@ -126,6 +132,13 @@ function configureRoutes(app) {
   
   const systemRouter = require('./system');
   app.use('/system', requireRole(['instructor', 'admin']), systemRouter);
+  
+  // ============================================================
+  // 🧪 RUTAS DE PRUEBA
+  // ============================================================
+  
+  const logsTestRouter = require('./logs-test');
+  app.use('/logs-test', logsTestRouter);
   
   console.log('✅ [ROUTES] Todas las rutas configuradas exitosamente');
 }

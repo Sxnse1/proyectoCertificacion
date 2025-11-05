@@ -186,11 +186,27 @@ router.post('/login', async function(req, res, next) {
         // Las columnas de 2FA no existen aún - continuar sin 2FA
         console.log('[AUTH] ⚠️ Columnas de 2FA no encontradas, continuando sin 2FA:', columnError.message);
         
-        // Crear sesión normal y continuar
-        req.session.userId = user.id_usuario;
-        req.session.userRole = user.rol;
-        req.session.userName = user.nombre + ' ' + user.apellido;
-        req.session.userEmail = user.email;
+        // Crear sesión normal con permisos RBAC
+        const { cargarPermisosUsuario } = require('../../middleware/auth');
+        let permisos = [];
+        
+        try {
+          permisos = await cargarPermisosUsuario(user.id_usuario, db);
+          console.log('[AUTH] 🔐 Permisos cargados para', user.email, ':', permisos.length, 'permisos');
+        } catch (permissionError) {
+          console.error('[AUTH] ⚠️ Error cargando permisos RBAC:', permissionError.message);
+        }
+        
+        req.session.user = {
+          id: user.id_usuario,
+          nombre: `${user.nombre} ${user.apellido}`,
+          email: user.email,
+          rol: user.rol,
+          permisos: permisos,
+          two_factor_enabled: false,
+          two_factor_verified: false,
+          loginTime: new Date().toISOString()
+        };
         
         console.log('[AUTH] ✅ Sesión creada para:', user.email);
         
@@ -206,12 +222,13 @@ router.post('/login', async function(req, res, next) {
         // Usuario necesita configurar 2FA
         console.log('[AUTH] 🔐 Usuario requiere configurar 2FA:', email);
         
-        // Crear sesión temporal para configurar 2FA
+        // Crear sesión temporal para configurar 2FA (sin permisos aún)
         req.session.user = {
           id: user.id_usuario,
           nombre: `${user.nombre} ${user.apellido}`,
           email: user.email,
           rol: user.rol,
+          permisos: [], // Sin permisos hasta completar 2FA
           two_factor_enabled: false,
           two_factor_verified: false,
           loginTime: new Date().toISOString()
@@ -270,13 +287,27 @@ router.post('/login', async function(req, res, next) {
       }
     }
     
-    // Usuario no requiere 2FA o ya está verificado - crear sesión completa
+    // Usuario no requiere 2FA o ya está verificado - crear sesión completa con permisos RBAC
     const nombreCompleto = `${user.nombre} ${user.apellido}`;
+    
+    // Cargar permisos del usuario desde RBAC
+    const { cargarPermisosUsuario } = require('../../middleware/auth');
+    let permisos = [];
+    
+    try {
+      permisos = await cargarPermisosUsuario(user.id_usuario, db);
+      console.log('[AUTH] 🔐 Permisos cargados para', user.email, ':', permisos.length, 'permisos');
+    } catch (permissionError) {
+      console.error('[AUTH] ⚠️ Error cargando permisos RBAC:', permissionError.message);
+      // Continuar sin permisos - para compatibilidad con sistema anterior
+    }
+    
     req.session.user = {
       id: user.id_usuario,
       nombre: nombreCompleto,
       email: user.email,
       rol: user.rol,
+      permisos: permisos, // 🆕 Agregamos los permisos al objeto de sesión
       two_factor_enabled: false,
       two_factor_verified: false,
       loginTime: new Date().toISOString()
@@ -491,12 +522,23 @@ router.post('/change-password', async function(req, res, next) {
       console.error('[AUTH] ⚠️ Error enviando notificación de cambio:', emailError.message);
     }
     
-    // Crear sesión completa del usuario
+    // Crear sesión completa del usuario con permisos RBAC
+    const { cargarPermisosUsuario } = require('../../middleware/auth');
+    let permisos = [];
+    
+    try {
+      permisos = await cargarPermisosUsuario(tempUser.id, db);
+      console.log('[AUTH] 🔐 Permisos cargados tras cambio de contraseña para', tempUser.email, ':', permisos.length, 'permisos');
+    } catch (permissionError) {
+      console.error('[AUTH] ⚠️ Error cargando permisos RBAC:', permissionError.message);
+    }
+    
     req.session.user = {
       id: tempUser.id,
       nombre: tempUser.nombre,
       email: tempUser.email,
       rol: tempUser.rol,
+      permisos: permisos,
       two_factor_enabled: false,
       two_factor_verified: false,
       loginTime: new Date().toISOString()

@@ -2,9 +2,11 @@ var express = require('express');
 var router = express.Router();
 const bcrypt = require('bcryptjs');
 const emailService = require('../../services/emailService');
+const auditService = require('../../services/auditService');
+const { hasPermission } = require('../../middleware/auth');
 
 /* GET - Lista de usuarios con filtros y paginación */
-router.get('/', async function(req, res, next) {
+router.get('/', hasPermission('gestionar_usuarios'), async function(req, res, next) {
   try {
     const db = req.app.locals.db;
     const page = parseInt(req.query.page) || 1;
@@ -127,7 +129,7 @@ router.get('/', async function(req, res, next) {
 });
 
 /* POST - Crear nuevo usuario */
-router.post('/', async function(req, res, next) {
+router.post('/', hasPermission('crear_usuarios'), async function(req, res, next) {
   try {
     const db = req.app.locals.db;
     const { nombre, apellido, nombre_usuario, email, rol, estatus } = req.body;
@@ -262,6 +264,32 @@ router.post('/', async function(req, res, next) {
     const newUsuario = result.recordset[0];
     console.log(`[USUARIOS] ✅ Usuario creado exitosamente - ID: ${newUsuario.id_usuario}`);
 
+    // 🔍 REGISTRAR AUDITORÍA - Usuario creado
+    try {
+      await auditService.logAction({
+        usuarioId: req.session.user.id_usuario,
+        accion: auditService.AUDIT_ACTIONS.USUARIO_CREADO,
+        entidad: auditService.AUDIT_ENTITIES.USUARIO,
+        entidadId: newUsuario.id_usuario,
+        detalles: {
+          usuario_creado: {
+            nombre: newUsuario.nombre,
+            apellido: newUsuario.apellido,
+            email: newUsuario.email,
+            rol: newUsuario.rol,
+            estatus: newUsuario.estatus
+          },
+          admin_creador: req.session.user.email,
+          password_temporal_generada: true
+        },
+        ip: req.ip
+      }, db);
+      console.log('[USUARIOS] ✅ Auditoría registrada para creación de usuario');
+    } catch (auditError) {
+      console.error('[USUARIOS] ⚠️ Error registrando auditoría:', auditError.message);
+      // No fallar la operación principal si falla la auditoría
+    }
+
     // Enviar contraseña temporal por email
     console.log(`[USUARIOS] 📧 Enviando contraseña temporal por email a: ${email}`);
     
@@ -315,7 +343,7 @@ router.post('/', async function(req, res, next) {
 });
 
 /* GET - Obtener usuario específico */
-router.get('/:id', async function(req, res, next) {
+router.get('/:id', hasPermission('ver_usuarios'), async function(req, res, next) {
   try {
     const db = req.app.locals.db;
     const usuarioId = parseInt(req.params.id);
@@ -379,7 +407,7 @@ router.get('/:id', async function(req, res, next) {
 });
 
 /* PUT - Actualizar usuario */
-router.put('/:id', async function(req, res, next) {
+router.put('/:id', hasPermission('editar_usuarios'), async function(req, res, next) {
   try {
     const db = req.app.locals.db;
     const usuarioId = parseInt(req.params.id);
@@ -558,7 +586,7 @@ router.put('/:id', async function(req, res, next) {
 });
 
 /* POST - Cambiar estado de usuario */
-router.post('/:id/status', async function(req, res, next) {
+router.post('/:id/status', hasPermission('cambiar_estado_usuarios'), async function(req, res, next) {
   try {
     const db = req.app.locals.db;
     const usuarioId = parseInt(req.params.id);
@@ -633,7 +661,7 @@ router.post('/:id/status', async function(req, res, next) {
 });
 
 /* DELETE - Eliminar usuario */
-router.delete('/:id', async function(req, res, next) {
+router.delete('/:id', hasPermission('eliminar_usuarios'), async function(req, res, next) {
   try {
     const db = req.app.locals.db;
     const usuarioId = parseInt(req.params.id);
@@ -698,6 +726,37 @@ router.delete('/:id', async function(req, res, next) {
     await db.executeQuery(deleteQuery, { id: usuarioId });
 
     console.log(`[USUARIOS] ✅ Usuario eliminado exitosamente: "${usuario.nombre} ${usuario.apellido}"`);
+
+    // 🔍 REGISTRAR AUDITORÍA - Usuario eliminado
+    try {
+      await auditService.logAction({
+        usuarioId: req.session.user.id_usuario,
+        accion: auditService.AUDIT_ACTIONS.USUARIO_ELIMINADO,
+        entidad: auditService.AUDIT_ENTITIES.USUARIO,
+        entidadId: usuarioId,
+        detalles: {
+          usuario_eliminado: {
+            id: usuario.id_usuario,
+            nombre: usuario.nombre,
+            apellido: usuario.apellido,
+            email: usuario.email,
+            rol: usuario.rol
+          },
+          admin_eliminador: req.session.user.email,
+          dependencias_verificadas: {
+            cursos_creados: usuario.cursos_creados,
+            progreso_cursos: usuario.progreso_cursos,
+            compras_realizadas: usuario.compras_realizadas,
+            certificados_emitidos: usuario.certificados_emitidos
+          }
+        },
+        ip: req.ip
+      }, db);
+      console.log('[USUARIOS] ✅ Auditoría registrada para eliminación de usuario');
+    } catch (auditError) {
+      console.error('[USUARIOS] ⚠️ Error registrando auditoría:', auditError.message);
+      // No fallar la operación principal si falla la auditoría
+    }
 
     res.json({
       success: true,

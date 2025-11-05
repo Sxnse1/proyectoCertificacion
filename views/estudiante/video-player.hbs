@@ -759,7 +759,7 @@
     
     <!-- Variables globales para el reproductor -->
     <script>
-        window.currentVideoId = {{videoId}};
+        window.currentVideoId = {{dbVideoId}}; // ID de base de datos para progreso
         window.courseStructure = {{{json courseStructure}}};
         {{#if videoDuration}}
         window.videoDuration = {{videoDuration}};

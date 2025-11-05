@@ -178,14 +178,26 @@ router.post('/verify', async function(req, res, next) {
       });
     }
 
-    // Crear sesión completa
+    // Crear sesión completa con permisos RBAC
+    const { cargarPermisosUsuario } = require('../../middleware/auth');
+    let permisos = [];
+    
+    try {
+      permisos = await cargarPermisosUsuario(user.id_usuario, db);
+      console.log('[2FA-LOGIN] 🔐 Permisos cargados tras 2FA para', user.email, ':', permisos.length, 'permisos');
+    } catch (permissionError) {
+      console.error('[2FA-LOGIN] ⚠️ Error cargando permisos RBAC:', permissionError.message);
+    }
+    
     req.session.user = {
       id: user.id_usuario,
-      nombre: user.nombre,
+      nombre: `${user.nombre} ${user.apellido}`,
       email: user.email,
-      rol: user.rol,
+      rol: user.rol,  
+      permisos: permisos,
       two_factor_enabled: user.two_factor_enabled,
-      two_factor_verified: user.two_factor_verified
+      two_factor_verified: user.two_factor_verified,
+      loginTime: new Date().toISOString()
     };
 
     // Limpiar sesión pendiente

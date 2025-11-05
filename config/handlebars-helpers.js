@@ -162,6 +162,21 @@ function registerHandlebarsHelpers() {
     if (!str) return '';
     return str.substring(start, length || str.length).toUpperCase();
   });
+
+  hbs.registerHelper('toLowerCase', function(str) {
+    if (!str || typeof str !== 'string') return '';
+    return str.toLowerCase();
+  });
+
+  hbs.registerHelper('toUpperCase', function(str) {
+    if (!str || typeof str !== 'string') return '';
+    return str.toUpperCase();
+  });
+
+  hbs.registerHelper('capitalize', function(str) {
+    if (!str || typeof str !== 'string') return '';
+    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+  });
   
   // ============================================================
   // 🔁 HELPERS DE ITERACIÓN
@@ -289,6 +304,94 @@ function registerHandlebarsHelpers() {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2
     });
+  });
+
+  // ============================================================
+  // 🔍 HELPERS PARA LOGS DE AUDITORÍA
+  // ============================================================
+  
+  // Formatear solo la hora
+  hbs.registerHelper('formatTime', function(date) {
+    if (!date) return 'N/A';
+    const fechaObj = new Date(date);
+    return fechaObj.toLocaleTimeString('es-MX', {
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      timeZone: 'America/Mexico_City'
+    });
+  });
+
+  // Truncar texto
+  hbs.registerHelper('truncate', function(text, length) {
+    if (!text || typeof text !== 'string') return '';
+    if (text.length <= length) return text;
+    return text.substring(0, length) + '...';
+  });
+
+  // Verificar si un string contiene otro
+  hbs.registerHelper('includes', function(string, substring) {
+    if (!string || !substring) return false;
+    return string.includes(substring);
+  });
+
+  // Obtener clase CSS para tipo de acción
+  hbs.registerHelper('getActionClass', function(action) {
+    if (!action) return 'bg-secondary';
+    
+    if (action.includes('CREADO')) return 'bg-success';
+    if (action.includes('ELIMINADO')) return 'bg-danger';
+    if (action.includes('ACTUALIZADO')) return 'bg-warning';
+    if (action.includes('PUBLICADO')) return 'bg-info';
+    if (action.includes('SUSPENDIDO')) return 'bg-danger';
+    if (action.includes('REACTIVADO')) return 'bg-success';
+    
+    return 'bg-primary';
+  });
+
+  // Formatear IP para mostrar
+  hbs.registerHelper('formatIP', function(ip) {
+    if (!ip) return 'No disponible';
+    // Ocultar parte de la IP por privacidad (opcional)
+    if (ip.includes('.')) {
+      const parts = ip.split('.');
+      if (parts.length === 4) {
+        return `${parts[0]}.${parts[1]}.***.**`;
+      }
+    }
+    return ip;
+  });
+
+  // ============================================================
+  // 🔑 HELPERS PARA RBAC Y ROLES
+  // ============================================================
+  
+  // Contar módulos de permisos
+  hbs.registerHelper('countModulos', function(permisosPorModulo) {
+    if (!permisosPorModulo || typeof permisosPorModulo !== 'object') return 0;
+    return Object.keys(permisosPorModulo).length;
+  });
+
+  // Verificar si usuario tiene permiso específico
+  hbs.registerHelper('hasPermission', function(userPermisos, requiredPermission) {
+    if (!userPermisos || !Array.isArray(userPermisos)) return false;
+    return userPermisos.includes(requiredPermission);
+  });
+
+  // Obtener color de badge según número de permisos
+  hbs.registerHelper('getPermissionBadgeClass', function(totalPermisos) {
+    if (totalPermisos === 0) return 'bg-secondary';
+    if (totalPermisos < 5) return 'bg-warning';
+    if (totalPermisos < 15) return 'bg-info';
+    if (totalPermisos < 25) return 'bg-primary';
+    return 'bg-success';
+  });
+
+  // Formatear porcentaje de permisos
+  hbs.registerHelper('formatPercentage', function(current, total) {
+    if (!total || total === 0) return '0%';
+    const percentage = Math.round((current / total) * 100);
+    return `${percentage}%`;
   });
   
   console.log('✅ [HANDLEBARS] Helpers registrados exitosamente');

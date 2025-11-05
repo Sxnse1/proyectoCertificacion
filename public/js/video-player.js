@@ -24,13 +24,24 @@ function initializeVideoPlayer(videoId, courseStructure, videoDuration) {
     async function saveProgressToServer(seconds) {
         try {
             lastKnownTime = Math.floor(seconds || 0);
+
+            // Lógica de completado: (ej. 98% visto)
+            let isComplete = false;
+            if (window.videoDuration && lastKnownTime >= (window.videoDuration * 0.98)) {
+                isComplete = true;
+            }
+
             if (progressSaveTimer) clearTimeout(progressSaveTimer);
             progressSaveTimer = setTimeout(async () => {
                 await fetch('/video/progress', {
                     method: 'POST',
                     credentials: 'same-origin',
                     headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-                    body: JSON.stringify({ videoId: videoId, seconds: lastKnownTime })
+                    body: JSON.stringify({ 
+                        videoId: videoId,
+                        seconds: lastKnownTime,
+                        completado: isComplete
+                    })
                 });
             }, 800);
         } catch (e) { console.warn('Error saving progress to server', e); }

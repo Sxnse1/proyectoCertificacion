@@ -5,6 +5,7 @@ const bunnyService = require('../../services/bunnyService');
 const { uploadConfig, handleUploadError, cleanupTempFile, validateVideoData } = require('../../middleware/uploadMiddleware');
 const requireAuth = require('../../middleware/auth').requireAuth;
 const requireRole = require('../../middleware/auth').requireRole;
+const auditService = require('../../services/auditService');
 
 // Función auxiliar para formatear duración
 function formatearDuracion(segundos) {
@@ -367,6 +368,28 @@ router.post('/', async function(req, res, next) {
     const nuevoVideo = insertResult.recordset[0];
     
     console.log('[VIDEO-CREATE] ✅ Video creado con URL:', nuevoVideo.id_video);
+
+    // 🔍 Registrar acción de auditoría
+    try {
+      await auditService.logAction({
+        usuarioId: req.session.user.id,
+        accion: 'VIDEO_CREADO',
+        entidad: 'Video',
+        entidadId: nuevoVideo.id_video,
+        detalles: {
+          titulo: nuevoVideo.titulo,
+          modulo: id_modulo,
+          url: url,
+          duracion_minutos: duracion_minutos,
+          estatus: estatus
+        },
+        ip: req.ip || req.connection.remoteAddress
+      }, db);
+      console.log('[VIDEO-CREATE] 📋 Auditoría registrada: VIDEO_CREADO');
+    } catch (auditError) {
+      console.error('[VIDEO-CREATE] ⚠️ Error registrando auditoría:', auditError);
+      // No fallar la operación principal por errores de auditoría
+    }
 
     res.json({
       success: true,

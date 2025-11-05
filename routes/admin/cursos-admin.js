@@ -1,8 +1,10 @@
 var express = require('express');
 var router = express.Router();
+const auditService = require('../../services/auditService');
+const { hasPermission } = require('../../middleware/auth');
 
 /* GET - Lista de cursos con filtros y paginación */
-router.get('/', async function(req, res, next) {
+router.get('/', hasPermission('gestionar_cursos'), async function(req, res, next) {
   try {
     const db = req.app.locals.db;
     const page = parseInt(req.query.page) || 1;
@@ -179,7 +181,7 @@ router.get('/', async function(req, res, next) {
 });
 
 /* POST - Crear nuevo curso */
-router.post('/', async function(req, res, next) {
+router.post('/', hasPermission('crear_cursos'), async function(req, res, next) {
   try {
     const db = req.app.locals.db;
     const { titulo, descripcion, id_categoria, precio, nivel, miniatura } = req.body;
@@ -253,6 +255,27 @@ router.post('/', async function(req, res, next) {
 
     console.log(`[CURSOS] ✅ Curso creado exitosamente con ID: ${nuevoCursoId}`);
 
+    // 🔍 Registrar acción de auditoría
+    try {
+      await auditService.logAction({
+        usuarioId: id_usuario,
+        accion: 'CURSO_CREADO',
+        entidad: 'Curso',
+        entidadId: nuevoCursoId,
+        detalles: {
+          titulo: titulo.trim(),
+          categoria: id_categoria,
+          precio: parseFloat(precio),
+          nivel: nivel
+        },
+        ip: req.ip || req.connection.remoteAddress
+      }, db);
+      console.log('[CURSOS] 📋 Auditoría registrada: CURSO_CREADO');
+    } catch (auditError) {
+      console.error('[CURSOS] ⚠️ Error registrando auditoría:', auditError);
+      // No fallar la operación principal por errores de auditoría
+    }
+
     res.json({
       success: true,
       message: 'Curso creado exitosamente',
@@ -276,7 +299,7 @@ router.post('/', async function(req, res, next) {
 });
 
 /* PUT - Actualizar curso */
-router.put('/:id', async function(req, res, next) {
+router.put('/:id', hasPermission('editar_cursos'), async function(req, res, next) {
   try {
     const db = req.app.locals.db;
     const cursoId = req.params.id;
@@ -382,6 +405,28 @@ router.put('/:id', async function(req, res, next) {
 
     console.log(`[CURSOS] ✅ Curso ${cursoId} actualizado exitosamente`);
 
+    // 🔍 Registrar acción de auditoría
+    try {
+      await auditService.logAction({
+        usuarioId: req.session.user.id,
+        accion: 'CURSO_ACTUALIZADO',
+        entidad: 'Curso',
+        entidadId: cursoId,
+        detalles: {
+          titulo: titulo.trim(),
+          categoria: id_categoria,
+          precio: parseFloat(precio),
+          nivel: nivel,
+          estatus: estatus || 'sin_cambio'
+        },
+        ip: req.ip || req.connection.remoteAddress
+      }, db);
+      console.log('[CURSOS] 📋 Auditoría registrada: CURSO_ACTUALIZADO');
+    } catch (auditError) {
+      console.error('[CURSOS] ⚠️ Error registrando auditoría:', auditError);
+      // No fallar la operación principal por errores de auditoría
+    }
+
     res.json({
       success: true,
       message: 'Curso actualizado exitosamente'
@@ -398,7 +443,7 @@ router.put('/:id', async function(req, res, next) {
 });
 
 /* DELETE - Eliminar curso */
-router.delete('/:id', async function(req, res, next) {
+router.delete('/:id', hasPermission('eliminar_cursos'), async function(req, res, next) {
   try {
     const db = req.app.locals.db;
     const cursoId = req.params.id;
@@ -461,6 +506,27 @@ router.delete('/:id', async function(req, res, next) {
     );
 
     console.log(`[CURSOS] ✅ Curso "${curso.titulo}" eliminado exitosamente`);
+
+    // 🔍 Registrar acción de auditoría
+    try {
+      await auditService.logAction({
+        usuarioId: usuarioId,
+        accion: 'CURSO_ELIMINADO',
+        entidad: 'Curso',
+        entidadId: cursoId,
+        detalles: {
+          titulo: curso.titulo,
+          modulos_eliminados: curso.total_modulos,
+          videos_eliminados: curso.total_videos,
+          warning: warningMessage
+        },
+        ip: req.ip || req.connection.remoteAddress
+      }, db);
+      console.log('[CURSOS] 📋 Auditoría registrada: CURSO_ELIMINADO');
+    } catch (auditError) {
+      console.error('[CURSOS] ⚠️ Error registrando auditoría:', auditError);
+      // No fallar la operación principal por errores de auditoría
+    }
 
     res.json({
       success: true,
