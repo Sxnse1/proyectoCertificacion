@@ -585,123 +585,17 @@
     <!-- Bootstrap JavaScript -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     
+    <!-- Variables globales para mensajes del servidor -->
+    {{#if message}}
     <script>
-        // Función para eliminar item del carrito
-        function eliminarDelCarrito(carritoId) {
-            if (confirm('¿Estás seguro de que deseas eliminar este curso del carrito?')) {
-                fetch(`/carrito/eliminar/${carritoId}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    }
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        showMessage('Curso eliminado del carrito', 'success');
-                        setTimeout(() => location.reload(), 1000);
-                    } else {
-                        showMessage('Error al eliminar el curso: ' + data.message, 'error');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    showMessage('Error al comunicarse con el servidor', 'error');
-                });
-            }
-        }
-
-        // Función para guardar para después
-        function guardarParaDespues(idCurso) {
-            fetch(`/carrito/${idCurso}/guardar`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    showMessage('Curso guardado para después', 'success');
-                    setTimeout(() => location.reload(), 1000);
-                } else {
-                    showMessage('Error: ' + data.message, 'error');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                showMessage('Error al guardar el curso', 'error');
-            });
-        }
-
-        // Función para proceder al pago
-        function procederPago() {
-            // Aquí se implementaría la integración con pasarelas de pago
-            showMessage('Funcionalidad de pago en desarrollo. Próximamente tendrás acceso a diferentes métodos de pago.', 'info');
-        }
-
-        // Función para aplicar cupón
-        function aplicarCupon() {
-            const codigo = document.getElementById('codigoCupon').value.trim();
-            if (!codigo) {
-                showMessage('Por favor ingresa un código de cupón', 'error');
-                return;
-            }
-
-            fetch('/carrito/aplicar-cupon', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ codigo })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    showMessage('Cupón aplicado exitosamente', 'success');
-                    setTimeout(() => location.reload(), 1000);
-                } else {
-                    showMessage('Cupón inválido o expirado', 'error');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                showMessage('Error al aplicar el cupón', 'error');
-            });
-        }
-
-        // Función para mostrar mensajes
-        function showMessage(message, type) {
-            const alertClass = type === 'success' ? 'alert-success' : 
-                              type === 'error' ? 'alert-danger' : 'alert-info';
-            
-            const alertHtml = `
-                <div class="alert ${alertClass} alert-dismissible fade show position-fixed" 
-                     style="top: 20px; right: 20px; z-index: 9999; min-width: 300px;" role="alert">
-                    ${message}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-            `;
-            
-            document.body.insertAdjacentHTML('beforeend', alertHtml);
-            
-            // Auto-hide after 5 seconds
-            setTimeout(() => {
-                const alert = document.querySelector('.alert');
-                if (alert) {
-                    alert.remove();
-                }
-            }, 5000);
-        }
-
-        // Mostrar mensajes del servidor si existen
-        {{#if message}}
-        document.addEventListener('DOMContentLoaded', function() {
-            showMessage('{{message.text}}', '{{message.type}}');
-        });
-        {{/if}}
-
-        console.log('🛒 Carrito de compras inicializado');
+        window.serverMessage = {
+            text: '{{message.text}}',
+            type: '{{message.type}}'
+        };
     </script>
+    {{/if}}
+    
+    <!-- Carrito JavaScript -->
+    <script src="/js/carrito.js"></script>
 </body>
 </html>

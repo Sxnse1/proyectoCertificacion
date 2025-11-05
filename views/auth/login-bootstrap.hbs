@@ -418,63 +418,7 @@
     <!-- Bootstrap 5.3 JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     
-    <script>
-        // Toggle password visibility
-        function togglePassword() {
-            const passwordInput = document.getElementById('password');
-            const toggleIcon = document.getElementById('passwordToggleIcon');
-            
-            if (passwordInput.type === 'password') {
-                passwordInput.type = 'text';
-                toggleIcon.className = 'bi bi-eye-slash';
-            } else {
-                passwordInput.type = 'password';
-                toggleIcon.className = 'bi bi-eye';
-            }
-        }
-
-        // Form submission with loading state
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
-            const button = document.getElementById('loginButton');
-            const buttonText = button.querySelector('.button-text');
-            
-            // Add loading state
-            button.disabled = true;
-            button.classList.add('btn-loading');
-            buttonText.innerHTML = `
-                <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                Iniciando sesión...
-            `;
-        });
-
-        // Auto-focus on email field
-        document.addEventListener('DOMContentLoaded', function() {
-            document.getElementById('email').focus();
-        });
-
-        // Handle enter key on password field
-        document.getElementById('password').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                document.getElementById('loginForm').submit();
-            }
-        });
-
-        // Clear error messages after 5 seconds
-        setTimeout(function() {
-            const alerts = document.querySelectorAll('.alert');
-            alerts.forEach(function(alert) {
-                if (alert.classList.contains('alert-danger')) {
-                    alert.style.opacity = '0';
-                    setTimeout(function() {
-                        alert.remove();
-                    }, 300);
-                }
-            });
-        }, 5000);
-
-        console.log('🔐 Sistema de Login StartEducation iniciado');
-        console.log('🎨 Diseño Bootstrap 5.3 cargado');
-        console.log('✨ Componentes interactivos listos');
-    </script>
+    <!-- Login Bootstrap JavaScript -->
+    <script src="/js/login-bootstrap.js"></script>
 </body>
 </html>

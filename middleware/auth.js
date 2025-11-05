@@ -117,10 +117,54 @@ const logAccess = (req, res, next) => {
   next();
 };
 
+// Middleware para inyectar contadores del sidebar de admin
+const injectAdminCounts = async (req, res, next) => {
+  try {
+    // Verificar si el usuario es administrador
+    if (req.session?.user?.rol === 'admin') {
+      const db = req.app.locals.db;
+      
+      // Verificar si la conexión a BD existe
+      if (db) {
+        // Ejecutar consultas en paralelo para mejor rendimiento
+        const [cursosResult, usuariosResult] = await Promise.all([
+          db.request().query('SELECT COUNT(*) as totalCursos FROM Cursos'),
+          db.request().query('SELECT COUNT(*) as totalUsuarios FROM Usuarios')
+        ]);
+        
+        // Extraer los resultados y guardarlos en res.locals
+        const totalCursos = cursosResult.recordset[0].totalCursos;
+        const totalUsuarios = usuariosResult.recordset[0].totalUsuarios;
+        
+        res.locals.sidebarCounts = {
+          cursos: totalCursos,
+          usuarios: totalUsuarios
+        };
+        
+        console.log(`[ADMIN COUNTS] 📊 Cursos: ${totalCursos}, Usuarios: ${totalUsuarios}`);
+      } else {
+        res.locals.sidebarCounts = null;
+        console.log('[ADMIN COUNTS] ⚠️ Base de datos no disponible');
+      }
+    } else {
+      // No es admin, no necesita contadores
+      res.locals.sidebarCounts = null;
+    }
+  } catch (error) {
+    console.error('[ADMIN COUNTS] ❌ Error al obtener contadores:', error);
+    // En caso de error, inicializar como null para evitar crashes
+    res.locals.sidebarCounts = null;
+  }
+  
+  // Continuar con la siguiente función middleware
+  next();
+};
+
 module.exports = {
   requireAuth,
   requireBasicAuth,
   requireRole,
   injectUserData,
-  logAccess
+  logAccess,
+  injectAdminCounts
 };

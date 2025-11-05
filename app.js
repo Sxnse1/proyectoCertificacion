@@ -104,10 +104,11 @@ if (process.env.DB_SERVER && process.env.DB_SERVER !== 'localhost') {
 }
 
 // Importar middleware de autenticación
-const { requireAuth, requireRole, injectUserData, logAccess } = require('./middleware/auth');
+const { requireAuth, requireRole, injectUserData, injectAdminCounts, logAccess } = require('./middleware/auth');
 
 // Aplicar middleware global
 app.use(injectUserData);
+app.use(injectAdminCounts);
 app.use(logAccess);
 
 // ============================================================

@@ -495,7 +495,9 @@
                 <a href="/admin/cursos" class="nav-link">
                     <i class="bi bi-book"></i>
                     <span>Cursos</span>
-                    <span class="badge-count">12</span>
+                    {{#if sidebarCounts.cursos}}
+                    <span class="badge-count">{{formatNumber sidebarCounts.cursos}}</span>
+                    {{/if}}
                 </a>
             </div>
             <div class="nav-item">
@@ -530,7 +532,9 @@
                 <a href="/admin/usuarios" class="nav-link">
                     <i class="bi bi-people"></i>
                     <span>Usuarios</span>
-                    <span class="badge-count">847</span>
+                    {{#if sidebarCounts.usuarios}}
+                    <span class="badge-count">{{formatNumber sidebarCounts.usuarios}}</span>
+                    {{/if}}
                 </a>
             </div>
         </div>
@@ -620,11 +624,11 @@
                     <div class="stat-icon bg-primary-light text-primary">
                         <i class="bi bi-people"></i>
                     </div>
-                    <div class="stat-value">1,247</div>
+                    <div class="stat-value">{{formatNumber stats.estudiantesActivos}}</div>
                     <div class="stat-label">Estudiantes Activos</div>
                     <div class="stat-change change-positive">
                         <i class="bi bi-arrow-up"></i>
-                        <span>+12% vs mes anterior</span>
+                        <span>Total de usuarios activos</span>
                     </div>
                 </div>
 
@@ -632,11 +636,11 @@
                     <div class="stat-icon bg-success-light text-success">
                         <i class="bi bi-book"></i>
                     </div>
-                    <div class="stat-value">42</div>
+                    <div class="stat-value">{{formatNumber stats.cursosPublicados}}</div>
                     <div class="stat-label">Cursos Publicados</div>
                     <div class="stat-change change-positive">
                         <i class="bi bi-arrow-up"></i>
-                        <span>+3 este mes</span>
+                        <span>Cursos disponibles</span>
                     </div>
                 </div>
 
@@ -644,11 +648,11 @@
                     <div class="stat-icon bg-warning-light text-warning">
                         <i class="bi bi-currency-dollar"></i>
                     </div>
-                    <div class="stat-value">$24,680</div>
+                    <div class="stat-value">{{formatMoney stats.ingresosMes}}</div>
                     <div class="stat-label">Ingresos del Mes</div>
                     <div class="stat-change change-positive">
                         <i class="bi bi-arrow-up"></i>
-                        <span>+18% vs mes anterior</span>
+                        <span>Último mes</span>
                     </div>
                 </div>
 
@@ -656,11 +660,11 @@
                     <div class="stat-icon bg-danger-light text-danger">
                         <i class="bi bi-award"></i>
                     </div>
-                    <div class="stat-value">324</div>
+                    <div class="stat-value">{{formatNumber stats.certificadosEmitidos}}</div>
                     <div class="stat-label">Certificados Emitidos</div>
                     <div class="stat-change change-positive">
                         <i class="bi bi-arrow-up"></i>
-                        <span>+28 esta semana</span>
+                        <span>Total histórico</span>
                     </div>
                 </div>
             </div>
@@ -704,49 +708,24 @@
                             <h5 class="card-title mb-0">Actividad Reciente</h5>
                         </div>
                         <div class="card-body">
-                            <div class="d-flex align-items-center mb-3">
-                                <div class="bg-success-light text-success rounded-circle p-2 me-3">
-                                    <i class="bi bi-person-check"></i>
-                                </div>
-                                <div>
-                                    <div class="fw-semibold">Nuevo estudiante registrado</div>
-                                    <small class="text-muted">María González se inscribió al Curso Básico de
-                                        Barbería</small>
-                                    <small class="text-muted d-block">Hace 2 minutos</small>
-                                </div>
-                            </div>
-                            <div class="d-flex align-items-center mb-3">
-                                <div class="bg-primary-light text-primary rounded-circle p-2 me-3">
-                                    <i class="bi bi-play-circle"></i>
-                                </div>
-                                <div>
-                                    <div class="fw-semibold">Video completado</div>
-                                    <small class="text-muted">Carlos Mendoza completó "Técnicas de Fade
-                                        Avanzado"</small>
-                                    <small class="text-muted d-block">Hace 15 minutos</small>
-                                </div>
-                            </div>
-                            <div class="d-flex align-items-center mb-3">
+                            {{#each actividadReciente}}
+                            <div class="d-flex align-items-center {{#unless @last}}mb-3{{/unless}}">
                                 <div class="bg-warning-light text-warning rounded-circle p-2 me-3">
                                     <i class="bi bi-currency-dollar"></i>
                                 </div>
                                 <div>
-                                    <div class="fw-semibold">Nueva compra</div>
-                                    <small class="text-muted">Pago de $2,500 MXN por Membresía Anual</small>
-                                    <small class="text-muted d-block">Hace 1 hora</small>
+                                    <div class="fw-semibold">Nueva compra de {{this.nombre}} {{this.apellido}}</div>
+                                    <small class="text-muted">Se inscribió a "{{this.titulo}}" por {{formatMoney this.monto}}</small>
+                                    <small class="text-muted d-block">{{formatDate this.fecha_compra}}</small>
                                 </div>
                             </div>
-                            <div class="d-flex align-items-center">
-                                <div class="bg-danger-light text-danger rounded-circle p-2 me-3">
-                                    <i class="bi bi-award"></i>
-                                </div>
-                                <div>
-                                    <div class="fw-semibold">Certificado emitido</div>
-                                    <small class="text-muted">Ana Rodríguez obtuvo certificado de "Barbería
-                                        Clásica"</small>
-                                    <small class="text-muted d-block">Hace 2 horas</small>
-                                </div>
+                            {{else}}
+                            <div class="text-center py-4">
+                                <i class="bi bi-inbox display-4 text-muted"></i>
+                                <p class="text-muted mt-2">No hay actividad reciente disponible</p>
+                                <small class="text-muted">Las nuevas compras aparecerán aquí</small>
                             </div>
+                            {{/each}}
                         </div>
                     </div>
                 </div>
@@ -756,27 +735,29 @@
                             <h5 class="card-title mb-0">Cursos Populares</h5>
                         </div>
                         <div class="card-body">
-                            <div class="d-flex justify-content-between align-items-center mb-3">
+                            {{#each cursosPopulares}}
+                            <div class="d-flex justify-content-between align-items-center {{#unless @last}}mb-3{{/unless}}">
                                 <div>
-                                    <div class="fw-semibold">Barbería Básica</div>
-                                    <small class="text-muted">324 estudiantes</small>
+                                    <div class="fw-semibold">{{this.titulo}}</div>
+                                    <small class="text-muted">{{formatNumber this.total_compras}} compras • {{formatMoney this.precio}}</small>
                                 </div>
-                                <span class="badge bg-primary">Popular</span>
+                                <span class="badge bg-primary">
+                                    {{#if (gt this.total_compras 10)}}
+                                        Popular
+                                    {{else if (gt this.total_compras 5)}}
+                                        En crecimiento
+                                    {{else}}
+                                        Nuevo
+                                    {{/if}}
+                                </span>
                             </div>
-                            <div class="d-flex justify-content-between align-items-center mb-3">
-                                <div>
-                                    <div class="fw-semibold">Técnicas Avanzadas</div>
-                                    <small class="text-muted">198 estudiantes</small>
-                                </div>
-                                <span class="badge bg-success">Nuevo</span>
+                            {{else}}
+                            <div class="text-center py-4">
+                                <i class="bi bi-graph-up display-4 text-muted"></i>
+                                <p class="text-muted mt-2">Aún no hay cursos populares</p>
+                                <small class="text-muted">Los cursos con más ventas aparecerán aquí</small>
                             </div>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <div class="fw-semibold">Afeitado Clásico</div>
-                                    <small class="text-muted">156 estudiantes</small>
-                                </div>
-                                <span class="badge bg-warning">Tendencia</span>
-                            </div>
+                            {{/each}}
                         </div>
                     </div>
                 </div>

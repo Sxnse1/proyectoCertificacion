@@ -258,6 +258,38 @@ function registerHandlebarsHelpers() {
   hbs.registerHelper('json', function(context) {
     return JSON.stringify(context);
   });
+
+  // Formatear fecha en español
+  hbs.registerHelper('formatDate', function(date) {
+    if (!date) return 'Fecha no disponible';
+    
+    const fechaObj = new Date(date);
+    const opciones = {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      timeZone: 'America/Mexico_City'
+    };
+    
+    return fechaObj.toLocaleDateString('es-MX', opciones);
+  });
+
+  // Formatear número con comas
+  hbs.registerHelper('formatNumber', function(number) {
+    if (typeof number !== 'number') return '0';
+    return number.toLocaleString('es-MX');
+  });
+
+  // Formatear dinero
+  hbs.registerHelper('formatMoney', function(amount) {
+    if (typeof amount !== 'number') return '$0.00';
+    return '$' + amount.toLocaleString('es-MX', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    });
+  });
   
   console.log('✅ [HANDLEBARS] Helpers registrados exitosamente');
 }

@@ -65,6 +65,10 @@ function configureRoutes(app) {
   // 👨‍🏫 RUTAS DE ADMINISTRADOR
   // ============================================================
   
+  // Dashboard Principal de Admin
+  const dashboardAdminRouter = require('./admin/dashboard-admin');
+  app.use('/dashboard', requireAuth, dashboardAdminRouter);
+  
   // Gestión de Contenido
   const categoriasAdminRouter = require('./admin/categorias-admin');
   const etiquetasAdminRouter = require('./admin/etiquetas-admin');
