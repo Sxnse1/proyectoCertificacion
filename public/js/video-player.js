@@ -63,15 +63,41 @@ function initializeVideoPlayer(videoId, courseStructure, videoDuration) {
         vimeoScript.onload = async () => {
             try {
                 const player = new Vimeo.Player(vimeoIframe);
+                
+                // Esperar a que el video esté listo antes de intentar hacer seek
+                await player.ready();
+                
                 // Prefer server-saved position over localStorage
                 const serverStart = await loadProgressFromServer();
                 const localStart = restorePosition();
                 const start = (serverStart && serverStart > 0) ? serverStart : localStart;
-                if (start > 0) await player.setCurrentTime(start).catch(()=>{});
+                
+                if (start > 5) { // Solo reanudar si hay al menos 5 segundos
+                    console.log(`🎬 Reanudando video Vimeo en ${start}s`);
+                    await player.setCurrentTime(start).catch((e) => {
+                        console.warn('Error reanudando Vimeo:', e);
+                    });
+                }
+                
                 // periodic save to local and server
-                setInterval(async ()=>{ try{ const t = await player.getCurrentTime(); savePosition(t); saveProgressToServer(t);}catch(e){} }, 10000);
-                window.addEventListener('beforeunload', async ()=>{ try{ const t = await player.getCurrentTime(); savePosition(t); await saveProgressToServer(t);}catch(e){} });
-            } catch(e){ console.warn('Vimeo resume init', e); }
+                setInterval(async ()=>{ 
+                    try{ 
+                        const t = await player.getCurrentTime(); 
+                        savePosition(t); 
+                        saveProgressToServer(t);
+                    }catch(e){} 
+                }, 10000);
+                
+                window.addEventListener('beforeunload', async ()=>{ 
+                    try{ 
+                        const t = await player.getCurrentTime(); 
+                        savePosition(t); 
+                        await saveProgressToServer(t);
+                    }catch(e){} 
+                });
+            } catch(e){ 
+                console.warn('Vimeo resume init error:', e); 
+            }
         };
         document.body.appendChild(vimeoScript);
     }
@@ -115,14 +141,22 @@ function initializeVideoPlayer(videoId, courseStructure, videoDuration) {
         (async ()=>{
             const serverStart = await loadProgressFromServer();
             const resolvedStart = (serverStart && serverStart > 0) ? serverStart : start;
-            if (resolvedStart > 0) {
+            if (resolvedStart > 5) { // Solo reanudar si hay al menos 5 segundos
+                console.log(`🎬 Reanudando video Bunny en ${resolvedStart}s`);
+                
                 // try URL fragment fallback
                 try {
                     const src = bunnyIframe.getAttribute('src');
-                    if (src && !src.includes('#t=')) bunnyIframe.setAttribute('src', src + `#t=${resolvedStart}`);
+                    if (src && !src.includes('#t=')) {
+                        bunnyIframe.setAttribute('src', src + `#t=${resolvedStart}`);
+                    }
                 } catch(e){}
-                // send postMessage seeks a few times
-                [0,500,1500,3000].forEach(delay => setTimeout(()=> trySeek(resolvedStart), delay));
+                
+                // send postMessage seeks a few times with exponential backoff
+                [0, 500, 1500, 3000, 5000].forEach(delay => 
+                    setTimeout(() => trySeek(resolvedStart), delay)
+                );
+                
                 // persist chosen start
                 savePosition(resolvedStart);
                 saveProgressToServer(resolvedStart);

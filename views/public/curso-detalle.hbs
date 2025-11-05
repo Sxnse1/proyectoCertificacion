@@ -602,9 +602,19 @@
                         </div>
                     </div>
                     <div class="col-md-4 text-end">
-                        <a href="/mis-cursos/{{curso.id_curso}}" class="btn btn-success">
-                            <i class="bi bi-play me-2"></i>Continuar Curso
+                        {{#if progreso.ultimo_video_id}}
+                        <a href="/video/{{progreso.ultimo_video_id}}" class="btn btn-success">
+                            <i class="bi bi-play me-2"></i>Continuar donde dejé
                         </a>
+                        {{else if progreso.primer_video_id}}
+                        <a href="/video/{{progreso.primer_video_id}}" class="btn btn-success">
+                            <i class="bi bi-play me-2"></i>Comenzar Curso
+                        </a>
+                        {{else}}
+                        <a href="/mis-cursos/{{curso.id_curso}}" class="btn btn-success">
+                            <i class="bi bi-play me-2"></i>Ver Curso
+                        </a>
+                        {{/if}}
                     </div>
                 </div>
             </div>

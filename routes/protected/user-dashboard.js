@@ -95,19 +95,70 @@ router.get('/', async function(req, res, next) {
           
           if (existingTables.some(table => table.toLowerCase().includes('cursos'))) {
             const progresoResult = await db.executeQuery(`
-              SELECT c.titulo AS nombre, c.miniatura, i.progreso
+              SELECT 
+                c.id_curso,
+                c.titulo AS nombre, 
+                c.miniatura, 
+                i.progreso
               FROM inscripciones i
               INNER JOIN Cursos c ON i.id_curso = c.id_curso
               WHERE i.id_usuario = @userId AND i.progreso > 0 AND i.progreso < 100
             `, { userId: user.id });
             if (progresoResult && progresoResult.recordset) {
               cursosEnProgreso = progresoResult.recordset;
-              // También corregimos las URLs de las miniaturas para los cursos en progreso
-              cursosEnProgreso.forEach(curso => {
+              
+              // Para cada curso en progreso, obtener el último video visto
+              for (let curso of cursosEnProgreso) {
+                try {
+                  // Buscar el último video con progreso en este curso
+                  const ultimoVideoResult = await db.executeQuery(`
+                    SELECT TOP 1 
+                      v.id_video,
+                      v.titulo as video_titulo,
+                      p.minuto_actual,
+                      p.completado
+                    FROM Progreso p
+                    INNER JOIN Video v ON p.id_video = v.id_video
+                    INNER JOIN Modulos m ON v.id_modulo = m.id_modulo
+                    WHERE m.id_curso = @cursoId AND p.id_usuario = @userId
+                    ORDER BY p.fecha_modificacion DESC
+                  `, { cursoId: curso.id_curso, userId: user.id });
+                  
+                  if (ultimoVideoResult && ultimoVideoResult.recordset && ultimoVideoResult.recordset.length > 0) {
+                    const ultimoVideo = ultimoVideoResult.recordset[0];
+                    curso.ultimo_video_id = ultimoVideo.id_video;
+                    curso.ultimo_video_titulo = ultimoVideo.video_titulo;
+                    curso.minuto_actual = ultimoVideo.minuto_actual;
+                    curso.video_completado = ultimoVideo.completado;
+                  } else {
+                    // Si no hay progreso de video, obtener el primer video del curso
+                    const primerVideoResult = await db.executeQuery(`
+                      SELECT TOP 1 
+                        v.id_video,
+                        v.titulo as video_titulo
+                      FROM Video v
+                      INNER JOIN Modulos m ON v.id_modulo = m.id_modulo
+                      WHERE m.id_curso = @cursoId AND v.estatus = 'publicado'
+                      ORDER BY m.orden ASC, v.orden ASC
+                    `, { cursoId: curso.id_curso });
+                    
+                    if (primerVideoResult && primerVideoResult.recordset && primerVideoResult.recordset.length > 0) {
+                      const primerVideo = primerVideoResult.recordset[0];
+                      curso.ultimo_video_id = primerVideo.id_video;
+                      curso.ultimo_video_titulo = primerVideo.video_titulo;
+                      curso.minuto_actual = 0;
+                      curso.video_completado = false;
+                    }
+                  }
+                } catch (videoError) {
+                  console.error(`[USER-DASHBOARD] ⚠️ Error obteniendo último video del curso ${curso.id_curso}:`, videoError.message);
+                }
+                
+                // También corregimos las URLs de las miniaturas
                 if (curso.miniatura) {
                   curso.imagen_url = bunnyService.getBunnyCdnUrl(curso.miniatura);
                 }
-              });
+              }
             }
           }
         } catch (inscripcionesError) {

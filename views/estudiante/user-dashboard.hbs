@@ -38,6 +38,9 @@
             background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
             color: var(--text-dark);
             min-height: 100vh;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
         }
 
         .main-container {
@@ -49,10 +52,10 @@
         .header-section {
             background: white;
             border-radius: 12px;
-            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+            border: 1px solid var(--border-color);
             padding: 1.5rem;
             margin-bottom: 1.5rem;
-            border-left: 4px solid var(--primary-color);
         }
 
         .header-title {
@@ -64,13 +67,13 @@
         }
 
         .header-title h1 {
-            color: var(--text-dark);
+            color: var(--primary-color);
             font-weight: 700;
             font-size: 1.8rem;
             margin: 0;
             display: flex;
             align-items: center;
-            gap: 0.6rem;
+            gap: 0.75rem;
         }
 
         .stats-row {
@@ -110,7 +113,8 @@
         .controls-section {
             background: white;
             border-radius: 12px;
-            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+            border: 1px solid var(--border-color);
             padding: 1.2rem;
             margin-bottom: 1.5rem;
         }
@@ -126,7 +130,8 @@
         .subscription-status {
             background: white;
             border-radius: 12px;
-            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+            border: 1px solid var(--border-color);
             padding: 1.5rem;
             margin-bottom: 1.5rem;
         }
@@ -158,19 +163,21 @@
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
+            background: var(--primary-color);
             border: none;
             border-radius: 6px;
-            font-weight: 600;
-            font-size: 0.85rem;
-            padding: 0.6rem 1.2rem;
-            transition: all 0.3s ease;
+            font-weight: 500;
+            font-size: 0.8rem;
+            padding: 0.5rem 1rem;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
         }
 
         .btn-primary:hover {
-            background: linear-gradient(135deg, var(--primary-hover) 0%, #9a3412 100%);
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(234, 88, 12, 0.4);
+            background: var(--primary-hover);
+            transform: translateY(-1px);
         }
 
         .btn-success {
@@ -206,25 +213,26 @@
         }
 
         .btn-outline-secondary {
-            border: 2px solid var(--border-color);
+            border-color: var(--border-color);
             color: var(--text-muted);
+            font-weight: 500;
+            padding: 0.5rem 1rem;
             border-radius: 6px;
-            font-weight: 600;
-            font-size: 0.85rem;
-            padding: 0.6rem 1.2rem;
-            transition: all 0.3s ease;
+            font-size: 0.8rem;
+            transition: all 0.2s ease;
         }
 
         .btn-outline-secondary:hover {
-            background: var(--text-muted);
-            border-color: var(--text-muted);
-            color: white;
+            background: var(--bg-light);
+            border-color: var(--primary-color);
+            color: var(--primary-color);
         }
 
         .table-section {
             background: white;
             border-radius: 12px;
-            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+            border: 1px solid var(--border-color);
             overflow: hidden;
         }
 
@@ -232,6 +240,15 @@
             background: var(--bg-light);
             padding: 1.2rem;
             border-bottom: 1px solid var(--border-color);
+        }
+
+        .table-header h5 {
+            color: var(--text-dark);
+            font-weight: 600;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
         .table {
@@ -282,6 +299,17 @@
             border-radius: 4px;
         }
 
+        .card-img-placeholder {
+            aspect-ratio: 16/9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, rgba(234,88,12,0.95), rgba(59,130,246,0.95));
+            color: white;
+            font-size: 1.2rem;
+            border-radius: 6px 6px 0 0;
+        }
+
         .action-card {
             background: white;
             border: 1px solid var(--border-color);
@@ -302,14 +330,14 @@
         }
 
         .action-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 10px;
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.2rem;
-            margin-bottom: 0.8rem;
+            font-size: 1.1rem;
+            margin-bottom: 0;
         }
 
         .action-icon.primary {
@@ -374,6 +402,7 @@
             aspect-ratio: 16/9;
             object-fit: cover;
             border-radius: 6px 6px 0 0;
+            transition: all 0.3s ease;
         }
 
         .card-img-placeholder {
@@ -385,6 +414,19 @@
             color: white;
             font-size: 1.2rem;
             border-radius: 6px 6px 0 0;
+        }
+
+        .card {
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            border-color: var(--primary-color);
         }
 
         .categoria-header {
@@ -456,11 +498,21 @@
 
         @media (max-width: 768px) {
             .main-container {
-                padding: 0.8rem;
+                padding: 1rem;
             }
 
             .header-section {
                 padding: 1.2rem;
+            }
+
+            .header-title {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .header-title .d-flex {
+                flex-wrap: wrap;
+                gap: 0.5rem;
             }
 
             .controls-row {
@@ -475,6 +527,15 @@
             
             .stat-card {
                 padding: 1rem;
+            }
+
+            .stat-number {
+                font-size: 1.4rem;
+            }
+
+            .action-btn {
+                padding: 0.8rem 1rem;
+                font-size: 0.9rem;
             }
         }
 
@@ -514,11 +575,11 @@
             align-items: center;
             gap: 0.75rem;
             padding: 1rem 1.25rem;
-            border: 2px solid var(--border-color);
+            border: 1px solid var(--border-color);
             border-radius: 8px;
             text-decoration: none;
             color: var(--text-dark);
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
             background: white;
         }
 
@@ -526,7 +587,38 @@
             border-color: var(--primary-color);
             color: var(--primary-color);
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(234, 88, 12, 0.15);
+            box-shadow: 0 4px 12px rgba(234, 88, 12, 0.1);
+            text-decoration: none;
+        }
+
+        /* Estilos para tarjetas de cursos en progreso clicables */
+        .curso-progreso-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .curso-progreso-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15) !important;
+            border: 1px solid var(--primary-color);
+        }
+
+        .curso-progreso-card .card-img-top {
+            transition: all 0.3s ease;
+        }
+
+        .curso-progreso-card:hover .card-img-top {
+            transform: scale(1.05);
+        }
+
+        /* Asegurar que el enlace no cambie el color del texto */
+        a.text-decoration-none:hover .card-title {
+            color: var(--text-dark) !important;
+        }
+
+        /* Icono de play para indicar acción */
+        .curso-progreso-card .card-body small i {
+            color: var(--primary-color);
         }
 
         @media (max-width: 768px) {
@@ -686,50 +778,8 @@
 
         {{! Lógica principal para decidir qué mostrar primero }}
 
-        {{#if cursosEnProgreso.length}}
-        {{! --- SI EL USUARIO YA TIENE CURSOS EN PROGRESO --- }}
-
-        {{! 1. Mostramos primero su progreso }}
-        <div class="mb-5">
-            <h2 class="h4">Mi Progreso de Aprendizaje</h2>
-            <p class="text-muted">¡Sigue así! Estás a punto de completar tus metas.</p>
-            <div class="row">
-                {{#each cursosEnProgreso}}
-                <div class="col-md-4 mb-4">
-                    <div class="card h-100 shadow-sm">
-                        <img src="{{this.imagen_url}}" class="card-img-top" alt="{{this.nombre}}">
-                        <div class="card-body">
-                            <h5 class="card-title">{{this.nombre}}</h5>
-                            <div class="progress">
-                                <div class="progress-bar" role="progressbar" style="width: {{this.progreso}}%;"
-                                    aria-valuenow="{{this.progreso}}" aria-valuemin="0" aria-valuemax="100">
-                                    {{this.progreso}}%</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                {{/each}}
-            </div>
-        </div>
-
-        {{! 2. Mostramos las recomendaciones debajo }}
-        {{> recomendaciones}}
-
-        {{else}}
-        {{! --- SI EL USUARIO ES NUEVO Y NO HA EMPEZADO NINGÚN CURSO --- }}
-
-        {{! 1. Mostramos primero las recomendaciones para motivarlo a empezar }}
-        {{> recomendaciones}}
-
-        {{! 2. Mostramos el div de progreso vacío con un mensaje }}
-        {{!-- <div class="mb-5 text-center">
-            <h2 class="h4">Mi Progreso de Aprendizaje</h2>
-            <p class="text-muted">Aún no has comenzado ningún curso. ¡Elige uno de nuestros cursos recomendados para
-                empezar!</p>
-        </div> --}}
-        {{/if}}
-        <!-- Progreso de Aprendizaje -->
-        <div class="table-section">
+        <!-- Mi Progreso de Aprendizaje -->
+        <div class="table-section mb-5">
             <div class="table-header">
                 <h5 class="mb-0">
                     <i class="bi bi-graph-up me-2"></i>
@@ -737,8 +787,60 @@
                 </h5>
             </div>
             <div class="p-4">
+                {{#if cursosEnProgreso.length}}
+                <p class="text-muted mb-4">¡Sigue así! Estás a punto de completar tus metas.</p>
+                <div class="row">
+                    {{#each cursosEnProgreso}}
+                    <div class="col-md-4 mb-4">
+                        {{#if ultimo_video_id}}
+                        <a href="/video/{{ultimo_video_id}}" class="text-decoration-none">
+                        {{else}}
+                        <a href="/curso/{{id_curso}}" class="text-decoration-none">
+                        {{/if}}
+                            <div class="card h-100 shadow-sm curso-progreso-card">
+                                {{#if this.imagen_url}}
+                                <img src="{{this.imagen_url}}" class="card-img-top" alt="{{this.nombre}}">
+                                {{else}}
+                                <div class="card-img-placeholder">
+                                    <div class="text-center">
+                                        <i class="bi bi-book" style="font-size:2rem; opacity:0.95;"></i>
+                                        <div style="font-weight:600; margin-top:6px;">{{this.nombre}}</div>
+                                    </div>
+                                </div>
+                                {{/if}}
+                                <div class="card-body">
+                                    <h5 class="card-title text-dark">{{this.nombre}}</h5>
+                                    <div class="progress mb-2">
+                                        <div class="progress-bar" role="progressbar" style="width: {{this.progreso}}%;"
+                                            aria-valuenow="{{this.progreso}}" aria-valuemin="0" aria-valuemax="100">
+                                            {{this.progreso}}%</div>
+                                    </div>
+                                    {{#if ultimo_video_titulo}}
+                                    <small class="text-muted">
+                                        <i class="bi bi-play-circle"></i>
+                                        {{#if video_completado}}
+                                            Último video: {{ultimo_video_titulo}} ✓
+                                        {{else if minuto_actual}}
+                                            Continuar: {{ultimo_video_titulo}} ({{minuto_actual}} min)
+                                        {{else}}
+                                            Continuar: {{ultimo_video_titulo}}
+                                        {{/if}}
+                                    </small>
+                                    {{else}}
+                                    <small class="text-muted">
+                                        <i class="bi bi-arrow-right-circle"></i>
+                                        Ir al curso
+                                    </small>
+                                    {{/if}}
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    {{/each}}
+                </div>
+                
                 {{#if stats.cursosInscritos}}
-                <div class="progress-card">
+                <div class="progress-card mt-4">
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h6 class="mb-0">Progreso General</h6>
                         <span class="badge bg-primary">
@@ -777,81 +879,22 @@
                     </div>
                 </div>
                 {{/if}}
-
-                {{!-- Cursos recomendados abajo si SÍ tienes cursos inscritos--}}
-                {{#if stats.cursosInscritos}}
-                {{#if recommendedCourses.length}}
-                <div class="table-section" style="margin-bottom:2rem;">
-                    <div class="table-header">
-                        <h5 class="mb-0">
-                            <i class="bi bi-stars me-2"></i>
-                            Cursos Recomendados Para Ti
-                        </h5>
-                    </div>
-                    <div class="p-4">
-                        <div class="row">
-                            {{#each recommendedCourses}}
-                            <div class="col-md-6 col-lg-4 mb-4">
-                                <div class="categoria-card h-100">
-                                    {{#if miniatura}}
-                                    <img src="{{miniatura}}" class="curso-thumbnail" alt="{{titulo}}">
-                                    {{else}}
-                                    {{#if imagen_url}}
-                                    <img src="{{imagen_url}}" class="curso-thumbnail" alt="{{titulo}}">
-                                    {{else}}
-                                    <div class="thumb-placeholder">
-                                        <div class="text-center">
-                                            <i class="bi bi-film" style="font-size:1.75rem;"></i>
-                                            <div style="font-weight:600; font-size:0.95rem; margin-top:6px;">{{titulo}}
-                                            </div>
-                                        </div>
-                                    </div>
-                                    {{/if}}
-                                    {{/if}}
-                                    <div class="categoria-header">
-                                        <div class="categoria-info">
-                                            <div class="categoria-name">{{titulo}}</div>
-                                            <div class="categoria-description">{{descripcion}}</div>
-                                        </div>
-                                    </div>
-                                    <div class="categoria-stats">
-                                        <div class="categoria-stat">
-                                            <i class="bi bi-person"></i> {{instructor}}
-                                        </div>
-                                        <div class="categoria-stat">
-                                            <i class="bi bi-clock"></i> {{duracion}}h
-                                        </div>
-                                    </div>
-                                    <div class="categoria-actions">
-                                        <a href="/curso/{{id}}" class="btn btn-primary btn-sm">
-                                            <i class="bi bi-search"></i> Ver Curso
-                                        </a>
-                                        <a href="/cursos/{{id}}/inscribir" class="btn btn-success btn-sm">
-                                            <i class="bi bi-plus-circle"></i> Inscribirme
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                            {{/each}}
-                        </div>
-                    </div>
-                </div>
-                {{/if}}
-                {{/if}}
-
-                {{#unless stats.cursosInscritos}}
+                
+                {{else}}
                 <div class="empty-state">
                     <i class="bi bi-book"></i>
                     <h4>¡Comienza tu aventura de aprendizaje!</h4>
-                    <p>Aún no tienes cursos inscritos. Explora nuestro catálogo y encuentra el curso perfecto para ti.
-                    </p>
+                    <p>Aún no tienes cursos inscritos. Explora nuestro catálogo y encuentra el curso perfecto para ti.</p>
                     <a href="/cursos" class="btn btn-primary">
                         <i class="bi bi-search me-2"></i>Explorar Cursos Disponibles
                     </a>
                 </div>
-                {{/unless}}
+                {{/if}}
             </div>
         </div>
+
+        <!-- Cursos Recomendados para Ti -->
+        {{> recomendaciones}}
 
         <!-- Actividad Reciente -->
         {{#if recentActivity}}

@@ -119,6 +119,7 @@ router.get('/:cursoId', requireAuth, async function(req, res, next) {
     };
 
     if (tieneAcceso) {
+      // Obtener estadísticas de progreso
       const progresoQuery = `
         SELECT COUNT(*) as videos_completados
         FROM Progreso p 
@@ -135,6 +136,54 @@ router.get('/:cursoId', requireAuth, async function(req, res, next) {
       progreso.videos_completados = progresoResult.recordset[0].videos_completados;
       progreso.porcentaje_completado = curso.total_videos > 0 ? 
         Math.round((progreso.videos_completados / curso.total_videos) * 100) : 0;
+      
+      // Obtener el último video visto para navegación inteligente
+      const ultimoVideoQuery = `
+        SELECT TOP 1 
+          v.id_video,
+          v.titulo as video_titulo,
+          p.segundos_actuales,
+          p.completado
+        FROM Progreso p
+        INNER JOIN Video v ON p.id_video = v.id_video
+        INNER JOIN Modulos m ON v.id_modulo = m.id_modulo
+        WHERE m.id_curso = @cursoId AND p.id_usuario = @userId
+        ORDER BY p.fecha_modificacion DESC
+      `;
+      
+      const ultimoVideoResult = await db.executeQuery(ultimoVideoQuery, {
+        cursoId: parseInt(cursoId),
+        userId: user.id_usuario
+      });
+      
+      if (ultimoVideoResult && ultimoVideoResult.recordset && ultimoVideoResult.recordset.length > 0) {
+        const ultimoVideo = ultimoVideoResult.recordset[0];
+        progreso.ultimo_video_id = ultimoVideo.id_video;
+        progreso.ultimo_video_titulo = ultimoVideo.video_titulo;
+        progreso.segundos_actuales = ultimoVideo.segundos_actuales;
+        progreso.video_completado = ultimoVideo.completado;
+      } else {
+        // Si no hay progreso, obtener el primer video del curso
+        const primerVideoQuery = `
+          SELECT TOP 1 
+            v.id_video,
+            v.titulo as video_titulo
+          FROM Video v
+          INNER JOIN Modulos m ON v.id_modulo = m.id_modulo
+          WHERE m.id_curso = @cursoId AND v.estatus = 'publicado'
+          ORDER BY m.orden ASC, v.orden ASC
+        `;
+        
+        const primerVideoResult = await db.executeQuery(primerVideoQuery, {
+          cursoId: parseInt(cursoId)
+        });
+        
+        if (primerVideoResult && primerVideoResult.recordset && primerVideoResult.recordset.length > 0) {
+          const primerVideo = primerVideoResult.recordset[0];
+          progreso.primer_video_id = primerVideo.id_video;
+          progreso.primer_video_titulo = primerVideo.video_titulo;
+        }
+      }
     }
 
     console.log('[CURSO-DETALLE] 📊 Progreso:', progreso);
