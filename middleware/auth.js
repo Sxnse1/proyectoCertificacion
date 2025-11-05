@@ -117,6 +117,53 @@ const logAccess = (req, res, next) => {
   next();
 };
 
+// Middleware específico para asegurar acceso solo a administradores
+const ensureAdmin = (req, res, next) => {
+  // Verificar autenticación primero
+  if (!req.session || !req.session.user) {
+    console.log('[ADMIN MIDDLEWARE] 🚫 Acceso denegado - Usuario no autenticado');
+    console.log('[ADMIN MIDDLEWARE] 📍 Ruta intentada:', req.originalUrl);
+    req.session.redirectTo = req.originalUrl;
+    return res.redirect('/auth/login?error=sesion_expirada');
+  }
+  
+  // Verificar 2FA si es necesario
+  const twoFactorService = require('../services/twoFactorService');
+  if (twoFactorService.requires2FA(req.session.user.rol)) {
+    if (!req.session.user.two_factor_enabled || !req.session.user.two_factor_verified) {
+      console.log('[ADMIN MIDDLEWARE] 🔐 Usuario requiere completar configuración de 2FA');
+      console.log('[ADMIN MIDDLEWARE] 👤 Usuario:', req.session.user.email);
+      return res.redirect('/two-factor/setup');
+    }
+  }
+  
+  // Verificar que sea administrador
+  const userRole = req.session.user.rol;
+  if (userRole !== 'admin' && userRole !== 'instructor') {
+    console.log('[ADMIN MIDDLEWARE] 🚫 Acceso denegado - No es administrador');
+    console.log('[ADMIN MIDDLEWARE] 👤 Usuario:', req.session.user.email);
+    console.log('[ADMIN MIDDLEWARE] 🎭 Rol actual:', userRole);
+    console.log('[ADMIN MIDDLEWARE] 📍 Ruta intentada:', req.originalUrl);
+    
+    // Si es XHR/API, devolver error JSON
+    const acceptsJSON = req.headers['accept'] && req.headers['accept'].includes('application/json');
+    const isXHR = req.headers['x-requested-with'] === 'XMLHttpRequest';
+    if (acceptsJSON || isXHR) {
+      return res.status(403).json({ 
+        success: false, 
+        message: 'Acceso denegado - Se requieren privilegios de administrador' 
+      });
+    }
+    
+    // Para navegador, redirigir con mensaje de error
+    return res.redirect('/auth/login?error=acceso_denegado');
+  }
+  
+  // Usuario es admin autenticado, continuar
+  console.log('[ADMIN MIDDLEWARE] ✅ Acceso autorizado para admin:', req.session.user.email);
+  next();
+};
+
 // Middleware para inyectar contadores del sidebar de admin
 const injectAdminCounts = async (req, res, next) => {
   try {
@@ -166,5 +213,6 @@ module.exports = {
   requireRole,
   injectUserData,
   logAccess,
-  injectAdminCounts
+  injectAdminCounts,
+  ensureAdmin
 };

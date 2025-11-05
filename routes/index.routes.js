@@ -64,6 +64,7 @@ function configureRoutes(app) {
   // ============================================================
   // 👨‍🏫 RUTAS DE ADMINISTRADOR
   // ============================================================
+  // NOTA: Todas las rutas /admin/* ya están protegidas por el middleware ensureAdmin en app.js
   
   // Dashboard Principal de Admin
   const dashboardAdminRouter = require('./admin/dashboard-admin');
@@ -77,16 +78,16 @@ function configureRoutes(app) {
   const videosAdminRouter = require('./admin/videos-admin');
   const usuariosAdminRouter = require('./admin/usuarios-admin');
   
-  app.use('/admin/categorias', requireRole(['admin', 'instructor']), categoriasAdminRouter);
-  app.use('/admin/etiquetas', requireRole(['admin', 'instructor']), etiquetasAdminRouter);
-  app.use('/admin/modulos', requireRole(['admin', 'instructor']), modulosAdminRouter);
-  app.use('/admin/cursos', requireRole(['admin', 'instructor']), cursosAdminRouter);
-  app.use('/admin/videos', requireRole(['admin', 'instructor']), videosAdminRouter);
-  app.use('/admin/usuarios', requireRole(['admin', 'instructor']), usuariosAdminRouter);
+  app.use('/admin/categorias', categoriasAdminRouter);
+  app.use('/admin/etiquetas', etiquetasAdminRouter);
+  app.use('/admin/modulos', modulosAdminRouter);
+  app.use('/admin/cursos', cursosAdminRouter);
+  app.use('/admin/videos', videosAdminRouter);
+  app.use('/admin/usuarios', usuariosAdminRouter);
   
   // Analytics y Reportes
   const analyticsAdminRouter = require('./admin/analytics-admin');
-  app.use('/admin/analytics', requireRole(['admin', 'instructor']), analyticsAdminRouter);
+  app.use('/admin/analytics', analyticsAdminRouter);
   
   // Monetización y Comercio
   const membresiaAdminRouter = require('./admin/membresias-admin');
@@ -95,29 +96,29 @@ function configureRoutes(app) {
   const favoritosAdminRouter = require('./admin/favoritos-admin');
   const comprasAdminRouter = require('./admin/compras-admin');
   
-  app.use('/admin/membresias', requireRole(['admin', 'instructor']), membresiaAdminRouter);
-  app.use('/admin/suscripciones', requireRole(['admin', 'instructor']), suscripcionesAdminRouter);
-  app.use('/admin/carritos', requireRole(['admin', 'instructor']), carritoAdminRouter);
-  app.use('/admin/favoritos', requireRole(['admin', 'instructor']), favoritosAdminRouter);
-  app.use('/admin/compras', requireRole(['admin', 'instructor']), comprasAdminRouter);
+  app.use('/admin/membresias', membresiaAdminRouter);
+  app.use('/admin/suscripciones', suscripcionesAdminRouter);
+  app.use('/admin/carritos', carritoAdminRouter);
+  app.use('/admin/favoritos', favoritosAdminRouter);
+  app.use('/admin/compras', comprasAdminRouter);
   
   // Finanzas y Pagos
   const historialPagosAdminRouter = require('./admin/historial-pagos-admin');
   
-  app.use('/admin/pagos', requireRole(['admin', 'instructor']), historialPagosAdminRouter);
+  app.use('/admin/pagos', historialPagosAdminRouter);
   
   // Certificados y Valoraciones
   const certificadosAdminRouter = require('./admin/certificados-admin');
   const valoracionesAdminRouter = require('./admin/valoraciones-admin');
   
-  app.use('/admin/certificados', requireRole(['admin', 'instructor']), certificadosAdminRouter);
+  app.use('/admin/certificados', certificadosAdminRouter);
   app.use('/certificados', requireAuth, certificadosAdminRouter); // Acceso para todos los usuarios autenticados
-  app.use('/admin/valoraciones', requireRole(['admin', 'instructor']), valoracionesAdminRouter);
+  app.use('/admin/valoraciones', valoracionesAdminRouter);
   
   // Configuración del Sistema
   const configuracionAdminRouter = require('./admin/configuracion-admin');
   
-  app.use('/admin/configuracion', requireRole(['admin', 'instructor']), configuracionAdminRouter);
+  app.use('/admin/configuracion', configuracionAdminRouter);
   
   // ============================================================
   // 🔧 RUTA DE SISTEMA (legacy)
