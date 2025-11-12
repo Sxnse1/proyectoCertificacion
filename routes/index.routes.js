@@ -45,6 +45,7 @@ function configureRoutes(app) {
   const suscripcionesRouter = require('./protected/suscripciones');
   const carritoRouter = require('./protected/carrito');
   const cursoDetalleRouter = require('./protected/curso-detalle');
+  const pagosRouter = require('./protected/pagos');
   
   app.use('/users', requireAuth, usersRouter);
   app.use('/cursos', requireAuth, cursosRouter);
@@ -60,15 +61,17 @@ function configureRoutes(app) {
   app.use('/suscripciones', requireAuth, suscripcionesRouter);
   app.use('/carrito', requireAuth, carritoRouter);
   app.use('/curso', requireAuth, cursoDetalleRouter);
+  app.use('/pagos', requireAuth, pagosRouter);
   
   // ============================================================
   // 👨‍🏫 RUTAS DE ADMINISTRADOR
   // ============================================================
-  // NOTA: Todas las rutas /admin/* ya están protegidas por el middleware ensureAdmin en app.js
+  // NOTA: Todas las rutas /admin/* están protegidas por requireAuth + RBAC granular en cada ruta
   
   // Dashboard Principal de Admin
   const dashboardAdminRouter = require('./admin/dashboard-admin');
   app.use('/dashboard', requireAuth, dashboardAdminRouter);
+  app.use('/admin/dashboard', requireAuth, dashboardAdminRouter);
   
   // Gestión de Contenido
   const categoriasAdminRouter = require('./admin/categorias-admin');

@@ -65,10 +65,53 @@ class CarritoManager {
         }
     }
 
-    // Función para proceder al pago
-    procederPago() {
-        // Aquí se implementaría la integración con pasarelas de pago
-        this.showMessage('Funcionalidad de pago en desarrollo. Próximamente tendrás acceso a diferentes métodos de pago.', 'info');
+    // Función para proceder al pago con Mercado Pago
+    async procederPago() {
+        const btnPagar = document.querySelector('[onclick*="procederPago"]');
+        if (btnPagar) {
+            btnPagar.disabled = true;
+            btnPagar.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Procesando...';
+        }
+
+        try {
+            console.log('🛒 Iniciando proceso de pago...');
+            
+            // Crear preferencia de pago
+            const response = await fetch('/pagos/crear-preferencia', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            });
+
+            const data = await response.json();
+
+            if (!data.success) {
+                throw new Error(data.message || 'Error creando preferencia de pago');
+            }
+
+            console.log('✅ Preferencia creada:', data.preferenceId);
+            console.log('🔗 Init Point:', data.initPoint);
+            this.showMessage('Redirigiendo a Mercado Pago...', 'info');
+
+            // Usar el init_point proporcionado por MercadoPago
+            const checkoutUrl = data.initPoint;
+            console.log('🔗 Redirigiendo a:', checkoutUrl);
+            
+            // Esperar un momento para que el usuario vea el mensaje
+            setTimeout(() => {
+                window.location.href = checkoutUrl;
+            }, 1500);
+
+        } catch (error) {
+            console.error('❌ Error en proceso de pago:', error);
+            this.showMessage('Error al procesar el pago: ' + error.message, 'error');
+            
+            if (btnPagar) {
+                btnPagar.disabled = false;
+                btnPagar.innerHTML = '<i class="fas fa-credit-card"></i> Proceder al Pago';
+            }
+        }
     }
 
     // Función para aplicar cupón

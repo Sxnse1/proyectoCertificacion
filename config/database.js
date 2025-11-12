@@ -3,16 +3,30 @@ require('dotenv').config();
 const sql = require('mssql');
 
 // Configuración de la base de datos desde variables de entorno
+// Soporte para especificar servidor con instancia: e.g. "DESKTOP-6QU5OJ8\\SQLEXPRESS"
+const rawServer = process.env.DB_SERVER || 'localhost';
+let parsedServer = rawServer;
+let parsedInstance = process.env.DB_INSTANCE || null;
+
+// Si la variable DB_SERVER incluye una barra invertida o slash, separar servidor e instancia
+if (rawServer.includes('\\') || rawServer.includes('/')) {
+    const parts = rawServer.split(/\\|\//);
+    parsedServer = parts[0];
+    if (parts[1]) parsedInstance = parts[1];
+}
+
 const config = {
-    server: process.env.DB_SERVER || 'localhost',
+    server: parsedServer,
     database: process.env.DB_DATABASE || 'proyectoCertificacion',
     user: process.env.DB_USER || 'sa',
     password: process.env.DB_PASSWORD || '',
+    // Si se especifica instancia, la librería mssql normalmente ignora el puerto y usa la instancia
     port: parseInt(process.env.DB_PORT) || 1433,
     options: {
         encrypt: process.env.DB_ENCRYPT === 'true',
         trustServerCertificate: process.env.DB_TRUST_CERT === 'true',
         enableArithAbort: true,
+        instanceName: parsedInstance || undefined,
         // Timeouts más largos para Heroku y AWS RDS
         connectionTimeout: process.env.NODE_ENV === 'production' ? 90000 : 30000,
         requestTimeout: process.env.NODE_ENV === 'production' ? 90000 : 30000,

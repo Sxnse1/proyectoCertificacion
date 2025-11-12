@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const { requireRole } = require('../../middleware/auth');
+const { hasAnyPermission } = require('../../middleware/auth');
 
 // Dashboard principal de administrador
-router.get('/', requireRole(['admin']), async (req, res) => {
+router.get('/', hasAnyPermission(['gestionar_usuarios', 'gestionar_cursos', 'ver_analytics']), async (req, res) => {
     try {
         const db = req.app.locals.db;
 

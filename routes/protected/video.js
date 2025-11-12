@@ -107,7 +107,7 @@ router.get('/:videoId', async function(req, res, next) {
     // 3. Videos ARCHIVADOS: Solo el instructor que lo creó puede verlo (por ahora solo instructores/admins)
     
     if (videoEstatus === 'borrador') {
-      if (userRole !== 'instructor' && userRole !== 'admin') {
+      if (userRole !== 'instructor' && userRole !== 'admin' && userRole !== 'SuperAdmin' && userRole !== 'Admin') {
         console.log('[VIDEO] ❌ Acceso denegado - Video en borrador, usuario no es instructor/admin');
         return res.status(403).render('shared/error', {
           title: 'Acceso Denegado',
@@ -120,7 +120,7 @@ router.get('/:videoId', async function(req, res, next) {
     }
     
     if (videoEstatus === 'archivado') {
-      if (userRole !== 'instructor' && userRole !== 'admin') {
+      if (userRole !== 'instructor' && userRole !== 'admin' && userRole !== 'SuperAdmin' && userRole !== 'Admin') {
         console.log('[VIDEO] ❌ Acceso denegado - Video archivado, usuario no es instructor/admin');
         return res.status(403).render('shared/error', {
           title: 'Contenido Archivado',
@@ -183,7 +183,7 @@ router.get('/:videoId', async function(req, res, next) {
         
         if (row.id_video) {
           // Solo mostrar videos publicados a estudiantes
-          const canSeeVideo = userRole === 'instructor' || userRole === 'admin' || row.video_estatus === 'publicado';
+          const canSeeVideo = userRole === 'instructor' || userRole === 'admin' || userRole === 'SuperAdmin' || userRole === 'Admin' || row.video_estatus === 'publicado';
           
           if (canSeeVideo) {
             modulesMap.get(row.id_modulo).videos.push({

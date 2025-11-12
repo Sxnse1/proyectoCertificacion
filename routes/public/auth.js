@@ -46,10 +46,13 @@ router.post('/login', async function(req, res, next) {
     
     // Buscar usuario en la base de datos incluyendo información de contraseña temporal
     const result = await db.executeQuery(
-      `SELECT id_usuario, nombre, apellido, nombre_usuario, email, password, rol, estatus, 
-              ISNULL(tiene_password_temporal, 0) as tiene_password_temporal, 
-              fecha_password_temporal
-       FROM Usuarios WHERE email = @email`,
+      `SELECT u.id_usuario, u.nombre, u.apellido, u.nombre_usuario, u.email, u.password, 
+              r.NombreRol as rol, u.estatus, 
+              ISNULL(u.tiene_password_temporal, 0) as tiene_password_temporal, 
+              u.fecha_password_temporal
+       FROM Usuarios u
+       INNER JOIN Roles r ON u.RolID = r.RolID 
+       WHERE u.email = @email`,
       { email: email.toLowerCase() }
     );
     
@@ -191,8 +194,16 @@ router.post('/login', async function(req, res, next) {
         let permisos = [];
         
         try {
-          permisos = await cargarPermisosUsuario(user.id_usuario, db);
+          const { permisos: permisosArray, rol: rolActual } = await cargarPermisosUsuario(user.id_usuario, db);
+          permisos = permisosArray;
+          
+          // Usar el rol actualizado de la base de datos si está disponible
+          if (rolActual) {
+            user.rol = rolActual;
+          }
+          
           console.log('[AUTH] 🔐 Permisos cargados para', user.email, ':', permisos.length, 'permisos');
+          console.log('[AUTH] 👑 Rol actualizado:', user.rol);
         } catch (permissionError) {
           console.error('[AUTH] ⚠️ Error cargando permisos RBAC:', permissionError.message);
         }
@@ -211,7 +222,7 @@ router.post('/login', async function(req, res, next) {
         console.log('[AUTH] ✅ Sesión creada para:', user.email);
         
         // Redirigir según el rol
-        if (user.rol === 'instructor' || user.rol === 'admin') {
+        if (user.rol === 'instructor' || user.rol === 'admin' || user.rol === 'SuperAdmin' || user.rol === 'Admin') {
           return res.redirect('/dashboard');
         } else {
           return res.redirect('/user-dashboard');
@@ -295,7 +306,13 @@ router.post('/login', async function(req, res, next) {
     let permisos = [];
     
     try {
-      permisos = await cargarPermisosUsuario(user.id_usuario, db);
+      const { permisos: permisosArray, rol: rolActual } = await cargarPermisosUsuario(user.id_usuario, db);
+      permisos = permisosArray;
+      
+      // Usar el rol actualizado de la base de datos si está disponible
+      if (rolActual) {
+        user.rol = rolActual;
+      }
       console.log('[AUTH] 🔐 Permisos cargados para', user.email, ':', permisos.length, 'permisos');
     } catch (permissionError) {
       console.error('[AUTH] ⚠️ Error cargando permisos RBAC:', permissionError.message);
@@ -330,8 +347,8 @@ router.post('/login', async function(req, res, next) {
       console.log('[AUTH] 🎯 Redirigiendo a:', redirectTo || '/user-dashboard');
       
       // Redirigir según el rol del usuario
-      if (user.rol === 'instructor') {
-        console.log('[AUTH] 📚 Redirigiendo instructor al dashboard');
+      if (user.rol === 'SuperAdmin' || user.rol === 'Admin' || user.rol === 'instructor') {
+        console.log('[AUTH] � Redirigiendo administrador/instructor al dashboard');
         res.redirect(redirectTo || '/dashboard');
       } else if (user.rol === 'user' || user.rol === 'estudiante') {
         console.log('[AUTH] 👨‍🎓 Redirigiendo estudiante al dashboard de usuario');
@@ -527,8 +544,16 @@ router.post('/change-password', async function(req, res, next) {
     let permisos = [];
     
     try {
-      permisos = await cargarPermisosUsuario(tempUser.id, db);
+      const { permisos: permisosArray, rol: rolActual } = await cargarPermisosUsuario(tempUser.id, db);
+      permisos = permisosArray;
+      
+      // Usar el rol actualizado de la base de datos si está disponible
+      if (rolActual) {
+        tempUser.rol = rolActual;
+      }
+      
       console.log('[AUTH] 🔐 Permisos cargados tras cambio de contraseña para', tempUser.email, ':', permisos.length, 'permisos');
+      console.log('[AUTH] 👑 Rol actualizado:', tempUser.rol);
     } catch (permissionError) {
       console.error('[AUTH] ⚠️ Error cargando permisos RBAC:', permissionError.message);
     }

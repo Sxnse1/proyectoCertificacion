@@ -1,33 +1,29 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{title}} - StartEducation Admin</title>
-    
+    <title>{{title}} - StartEducation</title>
+
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="/images/favicon.svg">
-    <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.svg">
-    <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.svg">
-    <link rel="apple-touch-icon" href="/images/favicon.svg">
 
     <!-- Bootstrap 5.3 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
-    <!-- Font Awesome -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
         :root {
-            --sidebar-width: 220px;
             --primary-color: #ea580c;
             --primary-hover: #c2410c;
             --success-color: #10b981;
             --warning-color: #f59e0b;
             --danger-color: #ef4444;
+            --info-color: #3b82f6;
             --text-dark: #1f2937;
             --text-muted: #6b7280;
             --border-color: #e5e7eb;
@@ -39,128 +35,297 @@
         }
 
         body {
-            background-color: #ffffff;
-            overflow-x: hidden;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            color: var(--text-dark);
+            min-height: 100vh;
         }
 
-        /* Sidebar Styles */
-        .sidebar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            height: 100vh;
-            width: var(--sidebar-width);
-            background: linear-gradient(180deg, #1e293b 0%, #334155 100%);
-            color: white;
-            z-index: 1000;
-            overflow-y: auto;
-            transition: transform 0.3s ease;
+        .main-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1.5rem;
         }
 
-        .sidebar-header {
-            padding: 1.2rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        .header-section {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--border-color);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
         }
 
-        .sidebar-brand {
-            font-size: 1.2rem;
+        .page-title {
+            color: var(--primary-color);
             font-weight: 700;
-            color: white;
-            text-decoration: none;
+            font-size: 1.8rem;
+            margin-bottom: 0.4rem;
             display: flex;
             align-items: center;
-            gap: 0.6rem;
+            gap: 0.75rem;
         }
 
-        .sidebar-brand i {
+        .page-subtitle {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 0;
+        }
+
+        .stats-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 0.8rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 10px;
+            padding: 1.2rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--border-color);
+            text-align: center;
+            transition: transform 0.2s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .stat-icon {
+            font-size: 1.6rem;
+            margin-bottom: 0.4rem;
+        }
+
+        .stat-number {
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin-bottom: 0.2rem;
+        }
+
+        .stat-label {
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+        }
+
+        .stat-roles {
             color: var(--primary-color);
         }
 
-        /* Main Content */
-        .main-content {
-            margin-left: var(--sidebar-width);
-            min-height: 100vh;
-            padding: 2rem;
-            background-color: var(--bg-light);
+        .stat-permisos {
+            color: var(--success-color);
         }
 
-        /* Cards */
-        .card {
-            border: none;
+        .stat-modulos {
+            color: var(--info-color);
+        }
+
+        .stat-sistema {
+            color: #8b5cf6;
+        }
+
+        .content-section {
+            background: white;
             border-radius: 12px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--border-color);
+            overflow: hidden;
         }
 
-        .card-header {
-            background-color: white;
-            border-bottom: 1px solid var(--border-color);
-            border-radius: 12px 12px 0 0 !important;
+        .section-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
+            color: white;
+            padding: 1.2rem 1.5rem;
+            display: flex;
+            justify-content: between;
+            align-items: center;
         }
 
-        /* Badges */
-        .badge {
-            font-weight: 500;
-            padding: 0.35em 0.65em;
-        }
-
-        /* Buttons */
-        .btn {
-            border-radius: 8px;
-            font-weight: 500;
-            transition: all 0.2s ease;
-        }
-
-        .btn-primary {
-            background-color: var(--primary-color);
-            border-color: var(--primary-color);
-        }
-
-        .btn-primary:hover {
-            background-color: var(--primary-hover);
-            border-color: var(--primary-hover);
-        }
-
-        /* Statistics cards */
-        .border-left-primary {
-            border-left: 4px solid var(--primary-color) !important;
-        }
-
-        .border-left-success {
-            border-left: 4px solid var(--success-color) !important;
-        }
-
-        .border-left-info {
-            border-left: 4px solid #17a2b8 !important;
-        }
-
-        .border-left-warning {
-            border-left: 4px solid var(--warning-color) !important;
-        }
-
-        /* Table styles */
-        .table th {
-            border-top: none;
+        .section-title {
             font-weight: 600;
-            color: var(--text-dark);
-            background-color: var(--bg-light);
+            font-size: 1rem;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
         }
 
-        .table-hover tbody tr:hover {
+        .btn-custom {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            font-weight: 500;
+            padding: 0.4rem 0.8rem;
+            font-size: 0.85rem;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-custom:hover {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.5);
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        .filters-section {
+            padding: 1.2rem 1.5rem;
+            background: var(--bg-light);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .table-section {
+            padding: 0;
+        }
+
+        .table {
+            margin: 0;
+        }
+
+        .table th {
+            background: var(--bg-light);
+            color: var(--text-dark);
+            font-weight: 600;
+            border: none;
+            padding: 0.8rem;
+            font-size: 0.85rem;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .table td {
+            padding: 0.8rem;
+            border-color: var(--border-color);
+            vertical-align: middle;
+            font-size: 0.85rem;
+        }
+
+        .table tbody tr:hover {
             background-color: rgba(234, 88, 12, 0.05);
         }
 
-        /* Modal improvements */
-        .modal-header {
-            border-bottom: 1px solid var(--border-color);
+        .rol-card {
+            display: flex;
+            gap: 0.8rem;
+            align-items: center;
         }
 
-        .modal-footer {
-            border-top: 1px solid var(--border-color);
+        .rol-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 1rem;
+            flex-shrink: 0;
         }
 
-        /* Accordion improvements */
-        .accordion-button {
+        .rol-info {
+            flex-grow: 1;
+        }
+
+        .rol-nombre {
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 0.2rem;
+            font-size: 0.85rem;
+        }
+
+        .rol-descripcion {
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            margin-bottom: 0;
+        }
+
+        .badge-custom {
+            padding: 0.3rem 0.6rem;
+            border-radius: 15px;
+            font-size: 0.65rem;
             font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+        }
+
+        .badge-permisos {
+            background: rgba(16, 185, 129, 0.1);
+            color: #059669;
+        }
+
+        .badge-estado {
+            font-size: 0.65rem;
+            padding: 0.2rem 0.6rem;
+        }
+
+        .status-activo {
+            background: rgba(16, 185, 129, 0.1);
+            color: #059669;
+        }
+
+        .status-inactivo {
+            background: rgba(245, 158, 11, 0.1);
+            color: #d97706;
+        }
+
+        .btn-action {
+            padding: 0.3rem 0.5rem;
+            border-radius: 5px;
+            border: none;
+            font-size: 0.75rem;
+            transition: all 0.2s ease;
+            margin: 0 0.1rem;
+        }
+
+        .btn-view {
+            background: rgba(59, 130, 246, 0.1);
+            color: #1d4ed8;
+        }
+
+        .btn-view:hover {
+            background: rgba(59, 130, 246, 0.2);
+            color: #1e40af;
+        }
+
+        .btn-edit {
+            background: rgba(245, 158, 11, 0.1);
+            color: #d97706;
+        }
+
+        .btn-edit:hover {
+            background: rgba(245, 158, 11, 0.2);
+            color: #b45309;
+        }
+
+        .btn-delete {
+            background: rgba(239, 68, 68, 0.1);
+            color: #dc2626;
+        }
+
+        .btn-delete:hover {
+            background: rgba(239, 68, 68, 0.2);
+            color: #b91c1c;
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(234, 88, 12, 0.25);
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
+            color: white;
+            border-bottom: none;
+        }
+
+        .modal-header .btn-close {
+            filter: invert(1);
         }
 
         .accordion-button:not(.collapsed) {
@@ -168,717 +333,1025 @@
             color: var(--primary-color);
         }
 
-        /* Form improvements */
-        .form-control:focus,
-        .form-select:focus {
+        .accordion-button:focus {
             border-color: var(--primary-color);
             box-shadow: 0 0 0 0.2rem rgba(234, 88, 12, 0.25);
         }
 
-        /* Alert improvements */
-        .alert {
-            border-radius: 8px;
-            border: none;
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1.5rem;
+            color: var(--text-muted);
         }
 
-        /* Responsive */
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 0.8rem;
+            opacity: 0.5;
+        }
+
+        .permiso-modulo {
+            background: var(--bg-light);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 0.8rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .permiso-modulo h6 {
+            color: var(--primary-color);
+            font-weight: 600;
+            margin-bottom: 0.6rem;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .permiso-item {
+            display: flex;
+            align-items: center;
+            padding: 0.4rem 0;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .permiso-item:last-child {
+            border-bottom: none;
+        }
+
+        .permiso-nombre {
+            font-weight: 500;
+            color: var(--text-dark);
+        }
+
+        .permiso-descripcion {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            margin-top: 0.1rem;
+        }
+
         @media (max-width: 768px) {
-            .sidebar {
-                transform: translateX(-100%);
+            .main-container {
+                padding: 0.8rem;
             }
-            
-            .main-content {
-                margin-left: 0;
+
+            .page-title {
+                font-size: 1.5rem;
+            }
+
+            .table-responsive {
+                font-size: 0.75rem;
+            }
+
+            .rol-card {
+                flex-direction: column;
+                gap: 0.4rem;
+            }
+
+            .btn-action {
+                padding: 0.25rem 0.4rem;
+                font-size: 0.65rem;
+            }
+
+            .stats-cards {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.6rem;
+            }
+
+            .header-section,
+            .filters-section {
                 padding: 1rem;
+            }
+
+            .rol-avatar {
+                width: 32px;
+                height: 32px;
+                font-size: 0.85rem;
             }
         }
     </style>
 </head>
 
 <body>
-    <!-- Sidebar -->
-    <div class="sidebar">
-        <div class="sidebar-header">
-            <a href="/dashboard" class="sidebar-brand">
-                <i class="fas fa-graduation-cap"></i>
-                <span>StartEducation</span>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg" style="background: white; box-shadow: 0 2px 10px rgba(0,0,0,0.1); border-bottom: 1px solid var(--border-color);">
+        <div class="container-fluid" style="max-width: 1200px;">
+            <a class="navbar-brand d-flex align-items-center" href="/admin/dashboard" style="color: var(--primary-color); font-weight: 700; font-size: 1.4rem;">
+                <i class="bi bi-mortarboard-fill me-2"></i>
+                StartEducation
             </a>
-        </div>
-        
-        <!-- Quick navigation for roles -->
-        <div class="p-3">
-            <div class="d-grid gap-2">
-                <a href="/dashboard" class="btn btn-outline-light btn-sm">
-                    <i class="fas fa-arrow-left"></i> Volver al Dashboard
-                </a>
-                <a href="/admin/usuarios" class="btn btn-outline-light btn-sm">
-                    <i class="fas fa-users"></i> Gestionar Usuarios
-                </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin/dashboard" style="color: var(--text-muted); font-weight: 500;">
+                            <i class="bi bi-speedometer2 me-1"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin/usuarios" style="color: var(--text-muted); font-weight: 500;">
+                            <i class="bi bi-people me-1"></i> Usuarios
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/admin/roles" style="color: var(--primary-color); font-weight: 600;">
+                            <i class="bi bi-shield-lock me-1"></i> Roles
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin/cursos" style="color: var(--text-muted); font-weight: 500;">
+                            <i class="bi bi-book me-1"></i> Cursos
+                        </a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" style="color: var(--text-muted); font-weight: 500;">
+                            <i class="bi bi-person-circle me-1"></i> Admin
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/perfil"><i class="bi bi-person me-2"></i> Mi Perfil</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="/logout"><i class="bi bi-box-arrow-right me-2"></i> Cerrar Sesión</a></li>
+                        </ul>
+                    </li>
+                </ul>
             </div>
         </div>
-    </div>
+    </nav>
 
-    <!-- Main Content -->
-    <div class="main-content">
-        <div class="container-fluid">
-  {{!-- Header --}}
-  <div class="row">
-    <div class="col-12">
-      <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-          <h1 class="h3 mb-0 text-gray-800">
-            <i class="fas fa-user-shield text-primary"></i>
-            Gestión de Roles y Permisos
-          </h1>
-          <p class="text-muted mt-1">Administra los roles del sistema y sus permisos asociados</p>
-        </div>
-        <div class="btn-group">
-          <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalNuevoRol">
-            <i class="fas fa-plus"></i> Nuevo Rol
-          </button>
-          <a href="/admin/roles/dashboard" class="btn btn-outline-info">
-            <i class="fas fa-chart-bar"></i> Dashboard
-          </a>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  {{!-- Alertas --}}
-  <div id="alertContainer"></div>
-
-  {{!-- Estadísticas Rápidas --}}
-  <div class="row mb-4">
-    <div class="col-xl-3 col-md-6">
-      <div class="card border-left-primary shadow h-100 py-2">
-        <div class="card-body">
-          <div class="row no-gutters align-items-center">
-            <div class="col mr-2">
-              <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                Total Roles Activos
-              </div>
-              <div class="h5 mb-0 font-weight-bold text-gray-800">{{roles.length}}</div>
-            </div>
-            <div class="col-auto">
-              <i class="fas fa-users fa-2x text-gray-300"></i>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="col-xl-3 col-md-6">
-      <div class="card border-left-success shadow h-100 py-2">
-        <div class="card-body">
-          <div class="row no-gutters align-items-center">
-            <div class="col mr-2">
-              <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                Total Permisos
-              </div>
-              <div class="h5 mb-0 font-weight-bold text-gray-800">{{permisos.length}}</div>
-            </div>
-            <div class="col-auto">
-              <i class="fas fa-key fa-2x text-gray-300"></i>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="col-xl-3 col-md-6">
-      <div class="card border-left-info shadow h-100 py-2">
-        <div class="card-body">
-          <div class="row no-gutters align-items-center">
-            <div class="col mr-2">
-              <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
-                Módulos de Permisos
-              </div>
-              <div class="h5 mb-0 font-weight-bold text-gray-800">{{countModulos permisosPorModulo}}</div>
-            </div>
-            <div class="col-auto">
-              <i class="fas fa-layer-group fa-2x text-gray-300"></i>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="col-xl-3 col-md-6">
-      <div class="card border-left-warning shadow h-100 py-2">
-        <div class="card-body">
-          <div class="row no-gutters align-items-center">
-            <div class="col mr-2">
-              <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                Sistema RBAC
-              </div>
-              <div class="h6 mb-0 font-weight-bold text-success">Activo</div>
-            </div>
-            <div class="col-auto">
-              <i class="fas fa-shield-alt fa-2x text-gray-300"></i>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  {{!-- Tabla de Roles --}}
-  <div class="card shadow mb-4">
-    <div class="card-header py-3 d-flex justify-content-between">
-      <h6 class="m-0 font-weight-bold text-primary">
-        <i class="fas fa-list"></i> Lista de Roles
-      </h6>
-      <div class="d-flex align-items-center">
-        <input type="text" id="searchRoles" class="form-control form-control-sm" placeholder="Buscar roles..." style="width: 200px;">
-      </div>
-    </div>
-    <div class="card-body">
-      <div class="table-responsive">
-        <table class="table table-bordered table-hover" id="rolesTable">
-          <thead class="thead-light">
-            <tr>
-              <th>ID</th>
-              <th>Nombre del Rol</th>
-              <th>Descripción</th>
-              <th>Permisos</th>
-              <th>Estado</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            {{#each roles}}
-            <tr>
-              <td>{{this.RolID}}</td>
-              <td>
-                <span class="font-weight-bold text-dark">{{this.NombreRol}}</span>
-              </td>
-              <td>
-                <span class="text-muted">{{this.Descripcion}}</span>
-              </td>
-              <td>
-                <span class="badge badge-info">{{this.TotalPermisos}} permisos</span>
-              </td>
-              <td>
-                {{#if this.Activo}}
-                  <span class="badge badge-success">Activo</span>
-                {{else}}
-                  <span class="badge badge-secondary">Inactivo</span>
-                {{/if}}
-              </td>
-              <td>
-                <div class="btn-group btn-group-sm">
-                  <button type="button" class="btn btn-outline-info btn-sm" 
-                          onclick="verPermisos({{this.RolID}}, '{{this.NombreRol}}')" 
-                          data-bs-toggle="tooltip" 
-                          title="Ver permisos">
-                    <i class="fas fa-eye"></i>
-                  </button>
-                  <button type="button" class="btn btn-outline-warning btn-sm" 
-                          onclick="editarRol({{this.RolID}})" 
-                          data-bs-toggle="tooltip" 
-                          title="Editar rol">
-                    <i class="fas fa-edit"></i>
-                  </button>
-                  <button type="button" class="btn btn-outline-danger btn-sm" 
-                          onclick="eliminarRol({{this.RolID}}, '{{this.NombreRol}}')" 
-                          data-bs-toggle="tooltip" 
-                          title="Eliminar rol">
-                    <i class="fas fa-trash"></i>
-                  </button>
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Header Section -->
+        <div class="header-section">
+            <div class="d-flex justify-content-between align-items-center flex-wrap">
+                <div>
+                    <h1 class="page-title">
+                        <i class="bi bi-shield-lock"></i>
+                        Gestión de Roles y Permisos
+                    </h1>
+                    <p class="page-subtitle">Administra los roles de usuario y sus permisos asociados</p>
                 </div>
-              </td>
-            </tr>
-            {{/each}}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-        </div> <!-- /container-fluid -->
-    </div> <!-- /main-content -->
-
-{{!-- Modal: Nuevo Rol --}}
-<div class="modal fade" id="modalNuevoRol" tabindex="-1" aria-labelledby="modalNuevoRolLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="modalNuevoRolLabel">
-          <i class="fas fa-plus text-primary"></i> Crear Nuevo Rol
-        </h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <form id="formNuevoRol">
-        <div class="modal-body">
-          <div class="row">
-            <div class="col-md-6">
-              <div class="mb-3">
-                <label for="nombreRol" class="form-label">Nombre del Rol *</label>
-                <input type="text" class="form-control" id="nombreRol" name="nombreRol" required 
-                       placeholder="Ej: Editor de Contenido">
-              </div>
+                <div class="d-flex gap-2 flex-wrap">
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#crearRolModal">
+                        <i class="bi bi-plus-circle me-2"></i>
+                        Nuevo Rol
+                    </button>
+                </div>
             </div>
-            <div class="col-md-6">
-              <div class="mb-3">
-                <label for="activo" class="form-label">Estado</label>
-                <select class="form-select" id="activo" name="activo">
-                  <option value="1" selected>Activo</option>
-                  <option value="0">Inactivo</option>
-                </select>
-              </div>
-            </div>
-          </div>
-          
-          <div class="mb-3">
-            <label for="descripcion" class="form-label">Descripción</label>
-            <textarea class="form-control" id="descripcion" name="descripcion" rows="3" 
-                      placeholder="Describe las responsabilidades y alcance de este rol..."></textarea>
-          </div>
+        </div>
 
-          <hr>
-          
-          <h6 class="mb-3">
-            <i class="fas fa-key text-warning"></i> Permisos del Rol
-          </h6>
-          
-          <div class="accordion" id="permisosAccordion">
-            {{#each permisosPorModulo}}
-              <div class="accordion-item">
-                <h2 class="accordion-header" id="heading{{@key}}">
-                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
-                          data-bs-target="#collapse{{@key}}" aria-expanded="false" aria-controls="collapse{{@key}}">
-                    <i class="fas fa-layer-group me-2"></i>
-                    <strong>{{@key}}</strong>
-                    <span class="badge bg-secondary ms-2">{{this.length}} permisos</span>
-                  </button>
+        <!-- Statistics Cards -->
+        <div class="stats-cards">
+            <div class="stat-card stat-roles">
+                <div class="stat-icon">
+                    <i class="bi bi-shield-check"></i>
+                </div>
+                <div class="stat-number">{{roles.length}}</div>
+                <div class="stat-label">Total Roles</div>
+            </div>
+            
+            <div class="stat-card stat-permisos">
+                <div class="stat-icon">
+                    <i class="bi bi-key"></i>
+                </div>
+                <div class="stat-number">{{totalPermisos}}</div>
+                <div class="stat-label">Total Permisos</div>
+            </div>
+            
+            <div class="stat-card stat-modulos">
+                <div class="stat-icon">
+                    <i class="bi bi-grid-3x3-gap"></i>
+                </div>
+                <div class="stat-number">8</div>
+                <div class="stat-label">Módulos Sistema</div>
+            </div>
+            
+            <div class="stat-card stat-sistema">
+                <div class="stat-icon">
+                    <i class="bi bi-people"></i>
+                </div>
+                <div class="stat-number">{{usuariosConRoles}}</div>
+                <div class="stat-label">Usuarios con Roles</div>
+            </div>
+        </div>
+
+        <!-- Main Content Section -->
+        <div class="content-section">
+            <!-- Section Header -->
+            <div class="section-header">
+                <h2 class="section-title">
+                    <i class="bi bi-list-ul"></i>
+                    Lista de Roles del Sistema
                 </h2>
-                <div id="collapse{{@key}}" class="accordion-collapse collapse" 
-                     aria-labelledby="heading{{@key}}" data-bs-parent="#permisosAccordion">
-                  <div class="accordion-body">
-                    <div class="row">
-                      {{#each this}}
-                        <div class="col-md-6">
-                          <div class="form-check mb-2">
-                            <input class="form-check-input" type="checkbox" name="permisos" 
-                                   value="{{this.PermisoID}}" id="permiso{{this.PermisoID}}">
-                            <label class="form-check-label" for="permiso{{this.PermisoID}}">
-                              <strong>{{this.NombrePermiso}}</strong>
-                              {{#if this.Descripcion}}
-                                <br><small class="text-muted">{{this.Descripcion}}</small>
-                              {{/if}}
-                            </label>
-                          </div>
+                <button type="button" class="btn btn-custom" onclick="exportarRoles()">
+                    <i class="bi bi-download me-1"></i>
+                    Exportar
+                </button>
+            </div>
+
+            <!-- Filters Section -->
+            <div class="filters-section">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <div class="input-group">
+                            <span class="input-group-text" style="background: var(--bg-light); border-color: var(--border-color);">
+                                <i class="bi bi-search"></i>
+                            </span>
+                            <input type="text" class="form-control" placeholder="Buscar roles..." id="searchRoles">
                         </div>
-                      {{/each}}
                     </div>
-                  </div>
+                    <div class="col-md-3">
+                        <select class="form-select" id="filterEstado">
+                            <option value="">Todos los estados</option>
+                            <option value="activo">Activos</option>
+                            <option value="inactivo">Inactivos</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-select" id="filterPermisos">
+                            <option value="">Todos los permisos</option>
+                            <option value="completo">Permisos completos</option>
+                            <option value="limitado">Permisos limitados</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <button type="button" class="btn btn-outline-secondary w-100" onclick="limpiarFiltros()">
+                            <i class="bi bi-funnel"></i> Limpiar
+                        </button>
+                    </div>
                 </div>
-              </div>
-            {{/each}}
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-          <button type="submit" class="btn btn-primary">
-            <i class="fas fa-save"></i> Crear Rol
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
-</div>
-
-{{!-- Modal: Ver Permisos --}}
-<div class="modal fade" id="modalVerPermisos" tabindex="-1" aria-labelledby="modalVerPermisosLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="modalVerPermisosLabel">
-          <i class="fas fa-eye text-info"></i> Permisos del Rol
-        </h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <div id="permisosContent">
-          <div class="text-center">
-            <div class="spinner-border text-primary" role="status">
-              <span class="visually-hidden">Cargando...</span>
             </div>
-          </div>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-      </div>
-    </div>
-  </div>
-</div>
 
-{{!-- Modal: Editar Rol --}}
-<div class="modal fade" id="modalEditarRol" tabindex="-1" aria-labelledby="modalEditarRolLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="modalEditarRolLabel">
-          <i class="fas fa-edit text-warning"></i> Editar Rol
-        </h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <form id="formEditarRol">
-        <input type="hidden" id="editRolId" name="rolId">
-        <div class="modal-body">
-          <div class="row">
-            <div class="col-md-6">
-              <div class="mb-3">
-                <label for="editNombreRol" class="form-label">Nombre del Rol *</label>
-                <input type="text" class="form-control" id="editNombreRol" name="nombreRol" required>
-              </div>
-            </div>
-            <div class="col-md-6">
-              <div class="mb-3">
-                <label for="editActivo" class="form-label">Estado</label>
-                <select class="form-select" id="editActivo" name="activo">
-                  <option value="1">Activo</option>
-                  <option value="0">Inactivo</option>
-                </select>
-              </div>
-            </div>
-          </div>
-          
-          <div class="mb-3">
-            <label for="editDescripcion" class="form-label">Descripción</label>
-            <textarea class="form-control" id="editDescripcion" name="descripcion" rows="3"></textarea>
-          </div>
-
-          <hr>
-          
-          <h6 class="mb-3">
-            <i class="fas fa-key text-warning"></i> Permisos del Rol
-          </h6>
-          
-          <div id="editPermisosContent">
-            <div class="text-center">
-              <div class="spinner-border text-primary" role="status">
-                <span class="visually-hidden">Cargando permisos...</span>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-          <button type="submit" class="btn btn-warning">
-            <i class="fas fa-save"></i> Actualizar Rol
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
-</div>
-
-{{!-- Scripts específicos --}}
-<script>
-// Variables globales
-let currentRolId = null;
-
-// Función para mostrar alertas
-function showAlert(message, type = 'success') {
-  const alertHtml = `
-    <div class="alert alert-${type} alert-dismissible fade show" role="alert">
-      <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-triangle'}"></i>
-      ${message}
-      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>`;
-  document.getElementById('alertContainer').innerHTML = alertHtml;
-  
-  // Scroll hacia arriba para mostrar la alerta
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
-// Función para ver permisos de un rol
-async function verPermisos(rolId, nombreRol) {
-  currentRolId = rolId;
-  
-  // Actualizar título del modal
-  document.getElementById('modalVerPermisosLabel').innerHTML = 
-    `<i class="fas fa-eye text-info"></i> Permisos del Rol: ${nombreRol}`;
-  
-  // Mostrar loading
-  document.getElementById('permisosContent').innerHTML = `
-    <div class="text-center">
-      <div class="spinner-border text-primary" role="status">
-        <span class="visually-hidden">Cargando permisos...</span>
-      </div>
-    </div>`;
-  
-  try {
-    const response = await fetch(`/admin/roles/${rolId}/permisos`);
-    const data = await response.json();
-    
-    if (data.success) {
-      // Agrupar permisos por módulo
-      const permisosPorModulo = {};
-      data.permisos.forEach(permiso => {
-        if (!permisosPorModulo[permiso.Modulo]) {
-          permisosPorModulo[permiso.Modulo] = [];
-        }
-        permisosPorModulo[permiso.Modulo].push(permiso);
-      });
-      
-      // Generar HTML
-      let html = '';
-      Object.keys(permisosPorModulo).forEach(modulo => {
-        const permisosModulo = permisosPorModulo[modulo];
-        const permisosAsignados = permisosModulo.filter(p => p.Asignado).length;
-        
-        html += `
-          <div class="mb-4">
-            <h6 class="border-bottom pb-2">
-              <i class="fas fa-layer-group text-primary"></i> 
-              ${modulo}
-              <span class="badge bg-${permisosAsignados > 0 ? 'success' : 'secondary'} ms-2">
-                ${permisosAsignados}/${permisosModulo.length}
-              </span>
-            </h6>
-            <div class="row">`;
-        
-        permisosModulo.forEach(permiso => {
-          const checked = permiso.Asignado ? 'checked' : '';
-          const badgeClass = permiso.Asignado ? 'success' : 'light';
-          
-          html += `
-            <div class="col-md-6">
-              <div class="form-check mb-2">
-                <input class="form-check-input" type="checkbox" ${checked} disabled>
-                <label class="form-check-label">
-                  <span class="badge bg-${badgeClass}">${permiso.NombrePermiso}</span>
-                  ${permiso.Descripcion ? `<br><small class="text-muted">${permiso.Descripcion}</small>` : ''}
-                </label>
-              </div>
-            </div>`;
-        });
-        
-        html += `
-            </div>
-          </div>`;
-      });
-      
-      document.getElementById('permisosContent').innerHTML = html;
-      
-      // Mostrar modal
-      new bootstrap.Modal(document.getElementById('modalVerPermisos')).show();
-      
-    } else {
-      showAlert(data.message || 'Error cargando permisos', 'danger');
-    }
-  } catch (error) {
-    console.error('Error:', error);
-    showAlert('Error de conexión al cargar permisos', 'danger');
-  }
-}
-
-// Función para editar rol
-async function editarRol(rolId) {
-  currentRolId = rolId;
-  
-  // Cargar datos del rol
-  try {
-    const response = await fetch(`/admin/roles/${rolId}/permisos`);
-    const data = await response.json();
-    
-    if (data.success) {
-      // Buscar información del rol en la tabla
-      const rolData = {{{json roles}}}.find(r => r.RolID === rolId);
-      
-      // Llenar formulario básico
-      document.getElementById('editRolId').value = rolId;
-      document.getElementById('editNombreRol').value = rolData.NombreRol;
-      document.getElementById('editDescripcion').value = rolData.Descripcion || '';
-      document.getElementById('editActivo').value = rolData.Activo ? '1' : '0';
-      
-      // Generar permisos por módulo
-      const permisosPorModulo = {};
-      data.permisos.forEach(permiso => {
-        if (!permisosPorModulo[permiso.Modulo]) {
-          permisosPorModulo[permiso.Modulo] = [];
-        }
-        permisosPorModulo[permiso.Modulo].push(permiso);
-      });
-      
-      // Generar HTML de permisos
-      let html = '<div class="accordion" id="editPermisosAccordion">';
-      Object.keys(permisosPorModulo).forEach(modulo => {
-        const permisosModulo = permisosPorModulo[modulo];
-        
-        html += `
-          <div class="accordion-item">
-            <h2 class="accordion-header" id="editHeading${modulo}">
-              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
-                      data-bs-target="#editCollapse${modulo}" aria-expanded="false" aria-controls="editCollapse${modulo}">
-                <i class="fas fa-layer-group me-2"></i>
-                <strong>${modulo}</strong>
-                <span class="badge bg-secondary ms-2">${permisosModulo.length} permisos</span>
-              </button>
-            </h2>
-            <div id="editCollapse${modulo}" class="accordion-collapse collapse" 
-                 aria-labelledby="editHeading${modulo}" data-bs-parent="#editPermisosAccordion">
-              <div class="accordion-body">
-                <div class="row">`;
-        
-        permisosModulo.forEach(permiso => {
-          const checked = permiso.Asignado ? 'checked' : '';
-          
-          html += `
-            <div class="col-md-6">
-              <div class="form-check mb-2">
-                <input class="form-check-input" type="checkbox" name="permisos" 
-                       value="${permiso.PermisoID}" id="editPermiso${permiso.PermisoID}" ${checked}>
-                <label class="form-check-label" for="editPermiso${permiso.PermisoID}">
-                  <strong>${permiso.NombrePermiso}</strong>
-                  ${permiso.Descripcion ? `<br><small class="text-muted">${permiso.Descripcion}</small>` : ''}
-                </label>
-              </div>
-            </div>`;
-        });
-        
-        html += `
+            <!-- Table Section -->
+            <div class="table-section">
+                <div class="table-responsive">
+                    <table class="table table-hover" id="rolesTable">
+                        <thead>
+                            <tr>
+                                <th style="width: 35%;">Rol</th>
+                                <th style="width: 25%;">Permisos</th>
+                                <th style="width: 15%;">Estado</th>
+                                <th style="width: 15%;">Usuarios</th>
+                                <th style="width: 10%;">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {{#each roles}}
+                            <tr>
+                                <td>
+                                    <div class="rol-card">
+                                        <div class="rol-avatar">
+                                            {{substring this.NombreRol 0 1}}
+                                        </div>
+                                        <div class="rol-info">
+                                            <div class="rol-nombre">{{this.NombreRol}}</div>
+                                            <div class="rol-descripcion">{{this.Descripcion}}</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge badge-permisos badge-custom">
+                                        {{this.TotalPermisos}} permisos
+                                    </span>
+                                </td>
+                                <td>
+                                    {{#if this.Activo}}
+                                        <span class="badge status-activo badge-custom">Activo</span>
+                                    {{else}}
+                                        <span class="badge status-inactivo badge-custom">Inactivo</span>
+                                    {{/if}}
+                                </td>
+                                <td>
+                                    <span class="text-muted">0 usuarios</span>
+                                </td>
+                                <td>
+                                    <div class="d-flex gap-1">
+                                        <button type="button" class="btn-action btn-view" onclick="verRol({{this.RolID}})" title="Ver detalles">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                        <button type="button" class="btn-action btn-edit" onclick="editarRol({{this.RolID}})" title="Editar">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                        {{#unless (eq this.NombreRol "Super Admin")}}
+                                        <button type="button" class="btn-action btn-delete" onclick="eliminarRol({{this.RolID}})" title="Eliminar">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                        {{/unless}}
+                                    </div>
+                                </td>
+                            </tr>
+                            {{/each}}
+                        </tbody>
+                    </table>
+                    
+                    {{#unless roles}}
+                    <div class="empty-state">
+                        <i class="bi bi-shield-exclamation"></i>
+                        <h5>No hay roles registrados</h5>
+                        <p>Comienza creando el primer rol del sistema para gestionar permisos de usuarios.</p>
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#crearRolModal">
+                            <i class="bi bi-plus-circle me-2"></i>
+                            Crear Primer Rol
+                        </button>
+                    </div>
+                    {{/unless}}
                 </div>
-              </div>
             </div>
-          </div>`;
-      });
-      html += '</div>';
-      
-      document.getElementById('editPermisosContent').innerHTML = html;
-      
-      // Mostrar modal
-      new bootstrap.Modal(document.getElementById('modalEditarRol')).show();
-      
-    } else {
-      showAlert(data.message || 'Error cargando datos del rol', 'danger');
-    }
-  } catch (error) {
-    console.error('Error:', error);
-    showAlert('Error de conexión al cargar datos del rol', 'danger');
-  }
-}
+        </div>
+    </div>
 
-// Función para eliminar rol
-async function eliminarRol(rolId, nombreRol) {
-  if (confirm(`¿Estás seguro de que deseas eliminar el rol "${nombreRol}"?\n\nEsta acción no se puede deshacer.`)) {
-    try {
-      const response = await fetch(`/admin/roles/${rolId}`, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json'
+    <!-- Alertas -->
+    <div id="alertContainer" class="position-fixed" style="top: 80px; right: 20px; z-index: 1050;"></div>
+
+    <!-- Modal: Crear Nuevo Rol -->
+    <div class="modal fade" id="crearRolModal" tabindex="-1" aria-labelledby="crearRolModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content" style="border: none; border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.15);">
+                <div class="modal-header" style="background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%); color: white; border: none; border-radius: 12px 12px 0 0;">
+                    <h5 class="modal-title" id="crearRolModalLabel" style="font-weight: 600; display: flex; align-items: center; gap: 0.5rem;">
+                        <i class="bi bi-shield-plus"></i>
+                        Crear Nuevo Rol
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="filter: invert(1);"></button>
+                </div>
+                <form id="formCrearRol">
+                    <div class="modal-body" style="padding: 2rem;">
+                        <!-- Información Básica del Rol -->
+                        <div class="mb-4">
+                            <h6 style="color: var(--primary-color); font-weight: 600; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                                <i class="bi bi-info-circle"></i>
+                                Información Básica
+                            </h6>
+                            <div class="row g-3">
+                                <div class="col-md-8">
+                                    <label for="nombreRol" class="form-label" style="font-weight: 500; color: var(--text-dark);">
+                                        Nombre del Rol <span style="color: var(--danger-color);">*</span>
+                                    </label>
+                                    <input type="text" class="form-control" id="nombreRol" name="nombreRol" required 
+                                           placeholder="Ej: Editor de Contenido, Administrador de Cursos..."
+                                           style="border-radius: 8px; padding: 0.75rem;">
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="estadoRol" class="form-label" style="font-weight: 500; color: var(--text-dark);">Estado</label>
+                                    <select class="form-select" id="estadoRol" name="activo" style="border-radius: 8px; padding: 0.75rem;">
+                                        <option value="1" selected>Activo</option>
+                                        <option value="0">Inactivo</option>
+                                    </select>
+                                </div>
+                                <div class="col-12">
+                                    <label for="descripcionRol" class="form-label" style="font-weight: 500; color: var(--text-dark);">Descripción</label>
+                                    <textarea class="form-control" id="descripcionRol" name="descripcion" rows="3" 
+                                              placeholder="Describe las responsabilidades, alcance y funciones principales de este rol..."
+                                              style="border-radius: 8px; padding: 0.75rem;"></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Selección de Permisos -->
+                        <div class="mb-4">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h6 style="color: var(--primary-color); font-weight: 600; margin-bottom: 0; display: flex; align-items: center; gap: 0.5rem;">
+                                    <i class="bi bi-shield-lock"></i>
+                                    Asignación de Permisos
+                                </h6>
+                                <div class="d-flex gap-2">
+                                    <button type="button" class="btn btn-outline-success btn-sm" onclick="seleccionarTodosPermisos()">
+                                        <i class="bi bi-check-all"></i> Seleccionar Todos
+                                    </button>
+                                    <button type="button" class="btn btn-outline-danger btn-sm" onclick="deseleccionarTodosPermisos()">
+                                        <i class="bi bi-x-lg"></i> Deseleccionar Todos
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Módulos de Permisos -->
+                        <div class="row g-3">
+                            {{#each permisosPorModulo}}
+                                <div class="col-md-6">
+                                    <div class="permiso-modulo">
+                                        <h6>
+                                            <i class="bi bi-folder2-open"></i>
+                                            {{@key}}
+                                            <span class="badge badge-custom badge-permisos">{{this.length}} permisos</span>
+                                        </h6>
+                                        {{#each this}}
+                                            <div class="permiso-item">
+                                                <div class="form-check" style="flex-grow: 1;">
+                                                    <input class="form-check-input" type="checkbox" name="permisos" 
+                                                           value="{{this.PermisoID}}" id="permiso{{this.PermisoID}}"
+                                                           style="margin-top: 0.2rem;">
+                                                    <label class="form-check-label" for="permiso{{this.PermisoID}}" style="flex-grow: 1;">
+                                                        <div class="permiso-nombre">{{this.NombrePermiso}}</div>
+                                                        {{#if this.Descripcion}}
+                                                            <div class="permiso-descripcion">{{this.Descripcion}}</div>
+                                                        {{/if}}
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        {{/each}}
+                                    </div>
+                                </div>
+                            {{/each}}
+                        </div>
+                    </div>
+                    <div class="modal-footer" style="border: none; padding: 1.5rem 2rem; background: var(--bg-light); border-radius: 0 0 12px 12px;">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" style="border-radius: 8px; padding: 0.75rem 1.5rem;">
+                            <i class="bi bi-x-circle"></i> Cancelar
+                        </button>
+                        <button type="submit" class="btn btn-primary" style="border-radius: 8px; padding: 0.75rem 1.5rem; background: var(--primary-color); border-color: var(--primary-color);">
+                            <i class="bi bi-shield-check"></i> Crear Rol
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Ver Detalles del Rol -->
+    <div class="modal fade" id="verRolModal" tabindex="-1" aria-labelledby="verRolModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content" style="border: none; border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.15);">
+                <div class="modal-header" style="background: linear-gradient(135deg, var(--info-color) 0%, #1e40af 100%); color: white; border: none; border-radius: 12px 12px 0 0;">
+                    <h5 class="modal-title" id="verRolModalLabel" style="font-weight: 600; display: flex; align-items: center; gap: 0.5rem;">
+                        <i class="bi bi-shield-exclamation"></i>
+                        Detalles del Rol
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="filter: invert(1);"></button>
+                </div>
+                <div class="modal-body" style="padding: 2rem;">
+                    <!-- Información del Rol -->
+                    <div class="mb-4">
+                        <div class="row g-3">
+                            <div class="col-md-8">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="rol-avatar" style="width: 60px; height: 60px; font-size: 1.5rem;" id="rolAvatarDetalle">
+                                        R
+                                    </div>
+                                    <div>
+                                        <h4 style="margin: 0; color: var(--text-dark); font-weight: 600;" id="rolNombreDetalle">-</h4>
+                                        <p style="margin: 0; color: var(--text-muted); font-size: 0.9rem;" id="rolDescripcionDetalle">-</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 text-end">
+                                <div class="mb-2">
+                                    <span class="badge badge-custom" id="rolEstadoDetalle">-</span>
+                                </div>
+                                <div>
+                                    <small class="text-muted">ID: <span id="rolIdDetalle">-</span></small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Estadísticas del Rol -->
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-4">
+                            <div class="text-center p-3" style="background: var(--bg-light); border-radius: 8px;">
+                                <div style="color: var(--success-color); font-size: 1.5rem; font-weight: 700;" id="totalPermisosDetalle">0</div>
+                                <div style="color: var(--text-muted); font-size: 0.8rem;">Permisos Asignados</div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="text-center p-3" style="background: var(--bg-light); border-radius: 8px;">
+                                <div style="color: var(--info-color); font-size: 1.5rem; font-weight: 700;" id="modulosDetalle">0</div>
+                                <div style="color: var(--text-muted); font-size: 0.8rem;">Módulos</div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="text-center p-3" style="background: var(--bg-light); border-radius: 8px;">
+                                <div style="color: var(--warning-color); font-size: 1.5rem; font-weight: 700;" id="usuariosDetalle">0</div>
+                                <div style="color: var(--text-muted); font-size: 0.8rem;">Usuarios</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Lista de Permisos -->
+                    <div>
+                        <h6 style="color: var(--primary-color); font-weight: 600; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                            <i class="bi bi-key"></i>
+                            Permisos Asignados
+                        </h6>
+                        <div id="permisosDetalleContainer">
+                            <div class="text-center py-4">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Cargando permisos...</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer" style="border: none; padding: 1.5rem 2rem; background: var(--bg-light); border-radius: 0 0 12px 12px;">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" style="border-radius: 8px; padding: 0.75rem 1.5rem;">
+                        <i class="bi bi-x-circle"></i> Cerrar
+                    </button>
+                    <button type="button" class="btn btn-primary" onclick="editarRolDesdeDetalle()" style="border-radius: 8px; padding: 0.75rem 1.5rem; background: var(--primary-color); border-color: var(--primary-color);">
+                        <i class="bi bi-pencil"></i> Editar Rol
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Editar Rol -->
+    <div class="modal fade" id="editarRolModal" tabindex="-1" aria-labelledby="editarRolModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content" style="border: none; border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.15);">
+                <div class="modal-header" style="background: linear-gradient(135deg, var(--warning-color) 0%, #d97706 100%); color: white; border: none; border-radius: 12px 12px 0 0;">
+                    <h5 class="modal-title" id="editarRolModalLabel" style="font-weight: 600; display: flex; align-items: center; gap: 0.5rem;">
+                        <i class="bi bi-pencil-square"></i>
+                        Editar Rol
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="filter: invert(1);"></button>
+                </div>
+                <form id="formEditarRol">
+                    <input type="hidden" id="editRolId" name="rolId">
+                    <div class="modal-body" style="padding: 2rem;">
+                        <!-- Información Básica del Rol -->
+                        <div class="mb-4">
+                            <h6 style="color: var(--warning-color); font-weight: 600; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                                <i class="bi bi-info-circle"></i>
+                                Información Básica
+                            </h6>
+                            <div class="row g-3">
+                                <div class="col-md-8">
+                                    <label for="editNombreRol" class="form-label" style="font-weight: 500; color: var(--text-dark);">
+                                        Nombre del Rol <span style="color: var(--danger-color);">*</span>
+                                    </label>
+                                    <input type="text" class="form-control" id="editNombreRol" name="nombreRol" required 
+                                           style="border-radius: 8px; padding: 0.75rem;">
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="editEstadoRol" class="form-label" style="font-weight: 500; color: var(--text-dark);">Estado</label>
+                                    <select class="form-select" id="editEstadoRol" name="activo" style="border-radius: 8px; padding: 0.75rem;">
+                                        <option value="1">Activo</option>
+                                        <option value="0">Inactivo</option>
+                                    </select>
+                                </div>
+                                <div class="col-12">
+                                    <label for="editDescripcionRol" class="form-label" style="font-weight: 500; color: var(--text-dark);">Descripción</label>
+                                    <textarea class="form-control" id="editDescripcionRol" name="descripcion" rows="3" 
+                                              style="border-radius: 8px; padding: 0.75rem;"></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Selección de Permisos -->
+                        <div class="mb-4">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h6 style="color: var(--warning-color); font-weight: 600; margin-bottom: 0; display: flex; align-items: center; gap: 0.5rem;">
+                                    <i class="bi bi-shield-lock"></i>
+                                    Modificar Permisos
+                                </h6>
+                                <div class="d-flex gap-2">
+                                    <button type="button" class="btn btn-outline-success btn-sm" onclick="seleccionarTodosPermisosEdit()">
+                                        <i class="bi bi-check-all"></i> Seleccionar Todos
+                                    </button>
+                                    <button type="button" class="btn btn-outline-danger btn-sm" onclick="deseleccionarTodosPermisosEdit()">
+                                        <i class="bi bi-x-lg"></i> Deseleccionar Todos
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Contenedor de Permisos -->
+                        <div id="editPermisosContainer">
+                            <div class="text-center py-4">
+                                <div class="spinner-border text-warning" role="status">
+                                    <span class="visually-hidden">Cargando permisos...</span>
+                                </div>
+                                <p class="text-muted mt-2">Cargando permisos del rol...</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer" style="border: none; padding: 1.5rem 2rem; background: var(--bg-light); border-radius: 0 0 12px 12px;">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" style="border-radius: 8px; padding: 0.75rem 1.5rem;">
+                            <i class="bi bi-x-circle"></i> Cancelar
+                        </button>
+                        <button type="submit" class="btn" style="border-radius: 8px; padding: 0.75rem 1.5rem; background: var(--warning-color); border-color: var(--warning-color); color: white;">
+                            <i class="bi bi-check2-circle"></i> Actualizar Rol
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts JavaScript -->
+    <script>
+        // Variables globales
+        let currentRolId = null;
+        let currentRolData = null;
+
+        // Función para mostrar alertas con estilo moderno
+        function showAlert(message, type = 'success') {
+            const iconClass = {
+                'success': 'bi-check-circle-fill',
+                'danger': 'bi-exclamation-triangle-fill',
+                'warning': 'bi-exclamation-circle-fill',
+                'info': 'bi-info-circle-fill'
+            };
+
+            const alertHtml = `
+                <div class="alert alert-${type} alert-dismissible fade show" role="alert" 
+                     style="border: none; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                    <i class="bi ${iconClass[type]} me-2"></i>
+                    ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>`;
+            
+            document.getElementById('alertContainer').innerHTML = alertHtml;
+            
+            // Auto-hide después de 5 segundos
+            setTimeout(() => {
+                const alert = document.querySelector('#alertContainer .alert');
+                if (alert) {
+                    bootstrap.Alert.getOrCreateInstance(alert).close();
+                }
+            }, 5000);
         }
-      });
-      
-      const data = await response.json();
-      
-      if (data.success) {
-        showAlert(data.message, 'success');
-        setTimeout(() => location.reload(), 1500);
-      } else {
-        showAlert(data.message || 'Error eliminando rol', 'danger');
-      }
-    } catch (error) {
-      console.error('Error:', error);
-      showAlert('Error de conexión al eliminar rol', 'danger');
-    }
-  }
-}
 
-// Event listeners
-document.addEventListener('DOMContentLoaded', function() {
-  // Formulario nuevo rol
-  document.getElementById('formNuevoRol').addEventListener('submit', async function(e) {
-    e.preventDefault();
-    
-    const formData = new FormData(this);
-    const permisos = Array.from(formData.getAll('permisos'));
-    
-    const data = {
-      nombreRol: formData.get('nombreRol'),
-      descripcion: formData.get('descripcion'),
-      activo: formData.get('activo') === '1',
-      permisos: permisos
-    };
-    
-    try {
-      const response = await fetch('/admin/roles', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-      });
-      
-      const result = await response.json();
-      
-      if (result.success) {
-        showAlert(result.message, 'success');
-        bootstrap.Modal.getInstance(document.getElementById('modalNuevoRol')).hide();
-        setTimeout(() => location.reload(), 1500);
-      } else {
-        showAlert(result.message || 'Error creando rol', 'danger');
-      }
-    } catch (error) {
-      console.error('Error:', error);
-      showAlert('Error de conexión al crear rol', 'danger');
-    }
-  });
-  
-  // Formulario editar rol
-  document.getElementById('formEditarRol').addEventListener('submit', async function(e) {
-    e.preventDefault();
-    
-    const formData = new FormData(this);
-    const permisos = Array.from(formData.getAll('permisos'));
-    const rolId = formData.get('rolId');
-    
-    const data = {
-      nombreRol: formData.get('nombreRol'),
-      descripcion: formData.get('descripcion'),
-      activo: formData.get('activo') === '1',
-      permisos: permisos
-    };
-    
-    try {
-      const response = await fetch(`/admin/roles/${rolId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-      });
-      
-      const result = await response.json();
-      
-      if (result.success) {
-        showAlert(result.message, 'success');
-        bootstrap.Modal.getInstance(document.getElementById('modalEditarRol')).hide();
-        setTimeout(() => location.reload(), 1500);
-      } else {
-        showAlert(result.message || 'Error actualizando rol', 'danger');
-      }
-    } catch (error) {
-      console.error('Error:', error);
-      showAlert('Error de conexión al actualizar rol', 'danger');
-    }
-  });
-  
-  // Búsqueda en tiempo real
-  document.getElementById('searchRoles').addEventListener('input', function() {
-    const searchTerm = this.value.toLowerCase();
-    const rows = document.querySelectorAll('#rolesTable tbody tr');
-    
-    rows.forEach(row => {
-      const text = row.textContent.toLowerCase();
-      row.style.display = text.includes(searchTerm) ? '' : 'none';
-    });
-  });
-  
-  // Inicializar tooltips
-  var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-  tooltipTriggerList.map(function (tooltipTriggerEl) {
-    return new bootstrap.Tooltip(tooltipTriggerEl);
-  });
-});
-</script>
+        // Función mejorada para ver detalles del rol
+        async function verRol(rolId) {
+            currentRolId = rolId;
+            
+            try {
+                const response = await fetch(`/admin/roles/${rolId}/permisos`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Buscar información del rol
+                    const rolesData = {{{json roles}}};
+                    const rolData = rolesData.find(r => r.RolID === rolId);
+                    currentRolData = rolData;
+                    
+                    // Actualizar información básica
+                    document.getElementById('rolNombreDetalle').textContent = rolData.NombreRol;
+                    document.getElementById('rolDescripcionDetalle').textContent = rolData.Descripcion || 'Sin descripción';
+                    document.getElementById('rolIdDetalle').textContent = rolData.RolID;
+                    document.getElementById('rolAvatarDetalle').textContent = rolData.NombreRol.charAt(0).toUpperCase();
+                    
+                    // Estado del rol
+                    const estadoBadge = document.getElementById('rolEstadoDetalle');
+                    if (rolData.Activo) {
+                        estadoBadge.className = 'badge badge-custom status-activo';
+                        estadoBadge.textContent = 'Activo';
+                    } else {
+                        estadoBadge.className = 'badge badge-custom status-inactivo';
+                        estadoBadge.textContent = 'Inactivo';
+                    }
+                    
+                    // Estadísticas
+                    const permisosAsignados = data.permisos.filter(p => p.Asignado).length;
+                    const modulosUnicos = [...new Set(data.permisos.map(p => p.Modulo))].length;
+                    
+                    document.getElementById('totalPermisosDetalle').textContent = permisosAsignados;
+                    document.getElementById('modulosDetalle').textContent = modulosUnicos;
+                    document.getElementById('usuariosDetalle').textContent = '0';
+                    
+                    // Generar lista de permisos por módulo
+                    const permisosPorModulo = {};
+                    data.permisos.filter(p => p.Asignado).forEach(permiso => {
+                        if (!permisosPorModulo[permiso.Modulo]) {
+                            permisosPorModulo[permiso.Modulo] = [];
+                        }
+                        permisosPorModulo[permiso.Modulo].push(permiso);
+                    });
+                    
+                    let permisosHtml = '';
+                    Object.keys(permisosPorModulo).forEach(modulo => {
+                        const permisosModulo = permisosPorModulo[modulo];
+                        
+                        permisosHtml += `
+                            <div class="permiso-modulo">
+                                <h6>
+                                    <i class="bi bi-folder2-open"></i>
+                                    ${modulo}
+                                    <span class="badge badge-custom badge-permisos">${permisosModulo.length} permisos</span>
+                                </h6>`;
+                        
+                        permisosModulo.forEach(permiso => {
+                            permisosHtml += `
+                                <div class="permiso-item">
+                                    <div style="flex-grow: 1;">
+                                        <div class="permiso-nombre">${permiso.NombrePermiso}</div>
+                                        ${permiso.Descripcion ? `<div class="permiso-descripcion">${permiso.Descripcion}</div>` : ''}
+                                    </div>
+                                    <i class="bi bi-check-circle" style="color: var(--success-color);"></i>
+                                </div>`;
+                        });
+                        
+                        permisosHtml += '</div>';
+                    });
+                    
+                    if (permisosHtml === '') {
+                        permisosHtml = `
+                            <div class="text-center py-4 text-muted">
+                                <i class="bi bi-shield-x" style="font-size: 2rem; opacity: 0.5;"></i>
+                                <p class="mt-2">Este rol no tiene permisos asignados</p>
+                            </div>`;
+                    }
+                    
+                    document.getElementById('permisosDetalleContainer').innerHTML = permisosHtml;
+                    
+                    // Mostrar modal
+                    new bootstrap.Modal(document.getElementById('verRolModal')).show();
+                    
+                } else {
+                    showAlert(data.message || 'Error cargando datos del rol', 'danger');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showAlert('Error de conexión al cargar datos del rol', 'danger');
+            }
+        }
 
-<!-- Bootstrap JS -->
+        // Función para editar rol desde el modal de detalles
+        function editarRolDesdeDetalle() {
+            bootstrap.Modal.getInstance(document.getElementById('verRolModal')).hide();
+            setTimeout(() => editarRol(currentRolId), 300);
+        }
+
+        // Función mejorada para editar rol
+        async function editarRol(rolId) {
+            currentRolId = rolId;
+            
+            try {
+                const response = await fetch(`/admin/roles/${rolId}/permisos`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Buscar información del rol
+                    const rolesData = {{{json roles}}};
+                    const rolData = rolesData.find(r => r.RolID === rolId);
+                    
+                    // Llenar formulario básico
+                    document.getElementById('editRolId').value = rolId;
+                    document.getElementById('editNombreRol').value = rolData.NombreRol;
+                    document.getElementById('editDescripcionRol').value = rolData.Descripcion || '';
+                    document.getElementById('editEstadoRol').value = rolData.Activo ? '1' : '0';
+                    
+                    // Generar permisos por módulo con diseño moderno
+                    const permisosPorModulo = {};
+                    data.permisos.forEach(permiso => {
+                        if (!permisosPorModulo[permiso.Modulo]) {
+                            permisosPorModulo[permiso.Modulo] = [];
+                        }
+                        permisosPorModulo[permiso.Modulo].push(permiso);
+                    });
+                    
+                    let html = '<div class="row g-3">';
+                    Object.keys(permisosPorModulo).forEach(modulo => {
+                        const permisosModulo = permisosPorModulo[modulo];
+                        
+                        html += `
+                            <div class="col-md-6">
+                                <div class="permiso-modulo">
+                                    <h6>
+                                        <i class="bi bi-folder2-open"></i>
+                                        ${modulo}
+                                        <span class="badge badge-custom badge-permisos">${permisosModulo.length} permisos</span>
+                                    </h6>`;
+                        
+                        permisosModulo.forEach(permiso => {
+                            const checked = permiso.Asignado ? 'checked' : '';
+                            
+                            html += `
+                                <div class="permiso-item">
+                                    <div class="form-check" style="flex-grow: 1;">
+                                        <input class="form-check-input" type="checkbox" name="permisos" 
+                                               value="${permiso.PermisoID}" id="editPermiso${permiso.PermisoID}" ${checked}
+                                               style="margin-top: 0.2rem;">
+                                        <label class="form-check-label" for="editPermiso${permiso.PermisoID}" style="flex-grow: 1;">
+                                            <div class="permiso-nombre">${permiso.NombrePermiso}</div>
+                                            ${permiso.Descripcion ? `<div class="permiso-descripcion">${permiso.Descripcion}</div>` : ''}
+                                        </label>
+                                    </div>
+                                </div>`;
+                        });
+                        
+                        html += '</div></div>';
+                    });
+                    html += '</div>';
+                    
+                    document.getElementById('editPermisosContainer').innerHTML = html;
+                    
+                    // Mostrar modal
+                    new bootstrap.Modal(document.getElementById('editarRolModal')).show();
+                    
+                } else {
+                    showAlert(data.message || 'Error cargando datos del rol', 'danger');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showAlert('Error de conexión al cargar datos del rol', 'danger');
+            }
+        }
+
+        // Función para eliminar rol con confirmación moderna
+        async function eliminarRol(rolId) {
+            const rolesData = {{{json roles}}};
+            const rolData = rolesData.find(r => r.RolID === rolId);
+            const nombreRol = rolData ? rolData.NombreRol : 'este rol';
+            
+            if (confirm(`⚠️ ¿Estás seguro de eliminar "${nombreRol}"?\n\n• Esta acción no se puede deshacer\n• Se removerán todos los permisos asociados\n• Los usuarios perderán este rol\n\n¿Continuar?`)) {
+                try {
+                    const response = await fetch(`/admin/roles/${rolId}`, {
+                        method: 'DELETE',
+                        headers: { 'Content-Type': 'application/json' }
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        showAlert(`✅ ${data.message}`, 'success');
+                        setTimeout(() => location.reload(), 2000);
+                    } else {
+                        showAlert(`❌ ${data.message || 'Error eliminando rol'}`, 'danger');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    showAlert('❌ Error de conexión al eliminar rol', 'danger');
+                }
+            }
+        }
+
+        // Funciones auxiliares para permisos
+        function seleccionarTodosPermisos() {
+            document.querySelectorAll('#crearRolModal input[name="permisos"]').forEach(checkbox => {
+                checkbox.checked = true;
+            });
+        }
+
+        function deseleccionarTodosPermisos() {
+            document.querySelectorAll('#crearRolModal input[name="permisos"]').forEach(checkbox => {
+                checkbox.checked = false;
+            });
+        }
+
+        function seleccionarTodosPermisosEdit() {
+            document.querySelectorAll('#editarRolModal input[name="permisos"]').forEach(checkbox => {
+                checkbox.checked = true;
+            });
+        }
+
+        function deseleccionarTodosPermisosEdit() {
+            document.querySelectorAll('#editarRolModal input[name="permisos"]').forEach(checkbox => {
+                checkbox.checked = false;
+            });
+        }
+
+        // Función para limpiar filtros
+        function limpiarFiltros() {
+            document.getElementById('searchRoles').value = '';
+            document.getElementById('filterEstado').value = '';
+            document.getElementById('filterPermisos').value = '';
+            
+            // Mostrar todas las filas
+            document.querySelectorAll('#rolesTable tbody tr').forEach(row => {
+                row.style.display = '';
+            });
+        }
+
+        // Función para exportar roles (placeholder)
+        function exportarRoles() {
+            showAlert('🚧 Función de exportación en desarrollo', 'info');
+        }
+
+        // Event listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            // Formulario crear rol
+            document.getElementById('formCrearRol').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const formData = new FormData(this);
+                const permisos = Array.from(formData.getAll('permisos'));
+                
+                const data = {
+                    nombreRol: formData.get('nombreRol'),
+                    descripcion: formData.get('descripcion'),
+                    activo: formData.get('activo') === '1',
+                    permisos: permisos
+                };
+                
+                try {
+                    const response = await fetch('/admin/roles', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(data)
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        showAlert(`✅ ${result.message}`, 'success');
+                        bootstrap.Modal.getInstance(document.getElementById('crearRolModal')).hide();
+                        setTimeout(() => location.reload(), 2000);
+                    } else {
+                        showAlert(`❌ ${result.message || 'Error creando rol'}`, 'danger');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    showAlert('❌ Error de conexión al crear rol', 'danger');
+                }
+            });
+            
+            // Formulario editar rol
+            document.getElementById('formEditarRol').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const formData = new FormData(this);
+                const permisos = Array.from(formData.getAll('permisos'));
+                const rolId = formData.get('rolId');
+                
+                const data = {
+                    nombreRol: formData.get('nombreRol'),
+                    descripcion: formData.get('descripcion'),
+                    activo: formData.get('activo') === '1',
+                    permisos: permisos
+                };
+                
+                try {
+                    const response = await fetch(`/admin/roles/${rolId}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(data)
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        showAlert(`✅ ${result.message}`, 'success');
+                        bootstrap.Modal.getInstance(document.getElementById('editarRolModal')).hide();
+                        setTimeout(() => location.reload(), 2000);
+                    } else {
+                        showAlert(`❌ ${result.message || 'Error actualizando rol'}`, 'danger');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    showAlert('❌ Error de conexión al actualizar rol', 'danger');
+                }
+            });
+            
+            // Búsqueda y filtros mejorados
+            document.getElementById('searchRoles').addEventListener('input', function() {
+                aplicarFiltros();
+            });
+            
+            document.getElementById('filterEstado').addEventListener('change', function() {
+                aplicarFiltros();
+            });
+            
+            document.getElementById('filterPermisos').addEventListener('change', function() {
+                aplicarFiltros();
+            });
+            
+            function aplicarFiltros() {
+                const searchTerm = document.getElementById('searchRoles').value.toLowerCase();
+                const estadoFilter = document.getElementById('filterEstado').value;
+                const permisosFilter = document.getElementById('filterPermisos').value;
+                const rows = document.querySelectorAll('#rolesTable tbody tr');
+                
+                rows.forEach(row => {
+                    const text = row.textContent.toLowerCase();
+                    const estadoBadge = row.querySelector('.badge');
+                    const permisosBadge = row.querySelector('.badge-permisos');
+                    
+                    let showRow = true;
+                    
+                    // Filtro de búsqueda
+                    if (searchTerm && !text.includes(searchTerm)) {
+                        showRow = false;
+                    }
+                    
+                    // Filtro de estado
+                    if (estadoFilter) {
+                        const isActivo = estadoBadge && estadoBadge.textContent.includes('Activo');
+                        if (estadoFilter === 'activo' && !isActivo) showRow = false;
+                        if (estadoFilter === 'inactivo' && isActivo) showRow = false;
+                    }
+                    
+                    // Filtro de permisos
+                    if (permisosFilter && permisosBadge) {
+                        const numPermisos = parseInt(permisosBadge.textContent.match(/\d+/)[0]);
+                        if (permisosFilter === 'completo' && numPermisos < 20) showRow = false;
+                        if (permisosFilter === 'limitado' && numPermisos >= 20) showRow = false;
+                    }
+                    
+                    row.style.display = showRow ? '' : 'none';
+                });
+            }
+        });
+    </script>
+
+    <!-- Bootstrap 5.3 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>

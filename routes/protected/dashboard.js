@@ -9,7 +9,7 @@ router.get('/', function(req, res, next) {
   console.log('[DASHBOARD] 🎯 Acceso al dashboard:', user.email, '- Rol:', user.rol);
   
   // Redirigir según el rol
-  if (user.rol === 'instructor') {
+  if (user.rol === 'instructor' || user.rol === 'SuperAdmin' || user.rol === 'Admin') {
     res.render('admin/admin-dashboard', {
       title: 'Dashboard Administrativo - StartEducation',
       userName: user.nombre,

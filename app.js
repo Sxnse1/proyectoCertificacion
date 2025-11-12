@@ -104,15 +104,15 @@ if (process.env.DB_SERVER && process.env.DB_SERVER !== 'localhost') {
 }
 
 // Importar middleware de autenticación
-const { requireAuth, requireRole, injectUserData, injectAdminCounts, logAccess, ensureAdmin } = require('./middleware/auth');
+const { requireAuth, requireRole, injectUserData, injectAdminCounts, logAccess } = require('./middleware/auth');
 
 // Aplicar middleware global
 app.use(injectUserData);
 app.use(injectAdminCounts);
 app.use(logAccess);
 
-// Proteger todas las rutas /admin/* con middleware de administrador
-app.use('/admin', ensureAdmin);
+// Proteger todas las rutas /admin/* con autenticación básica (RBAC granular en cada ruta)
+app.use('/admin', requireAuth);
 
 // ============================================================
 // 🚀 CONFIGURAR TODAS LAS RUTAS DE LA APLICACIÓN

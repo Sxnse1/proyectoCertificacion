@@ -131,13 +131,13 @@ class TwoFactorService {
   }
 
   /**
-   * Validar que el usuario requiere 2FA
+   * Verificar si un rol requiere 2FA
    * @param {string} userRole - Rol del usuario
    * @returns {boolean} Requiere 2FA
    */
   requires2FA(userRole) {
     // Solo instructores y admins requieren 2FA por ahora
-    return ['instructor', 'admin'].includes(userRole);
+    return ['instructor', 'admin', 'SuperAdmin', 'Admin'].includes(userRole);
   }
 
   /**

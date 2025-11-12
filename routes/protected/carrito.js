@@ -1,3 +1,8 @@
+/**
+ * Carrito - Funcionalidad del carrito de compras
+ * Maneja eliminación, guardado, cupones y procesamiento de pagos
+ */
+
 var express = require('express');
 var router = express.Router();
 
@@ -33,7 +38,7 @@ router.get('/', async function(req, res, next) {
     `;
 
     const carritoResult = await db.executeQuery(carritoQuery, { 
-      userId: user.id_usuario 
+      userId: user.id 
     });
 
     const items = carritoResult.recordset || [];
@@ -44,6 +49,18 @@ router.get('/', async function(req, res, next) {
 
     console.log('[CARRITO] ✅ Items encontrados:', items.length, '- Total: $', total);
 
+    // Verificar parámetros de pago en la URL
+    const pagoStatus = req.query.pago;
+    let pagoMessage = null;
+    
+    if (pagoStatus === 'success') {
+      pagoMessage = { type: 'success', text: '¡Pago completado exitosamente! Tus cursos están disponibles.' };
+    } else if (pagoStatus === 'failure') {
+      pagoMessage = { type: 'error', text: 'El pago no pudo ser procesado. Intenta nuevamente.' };
+    } else if (pagoStatus === 'pending') {
+      pagoMessage = { type: 'info', text: 'Tu pago está siendo procesado. Te notificaremos cuando esté listo.' };
+    }
+
     res.render('estudiante/carrito', {
       title: 'Mi Carrito - StartEducation',
       items: items,
@@ -53,6 +70,7 @@ router.get('/', async function(req, res, next) {
       userName: user.nombre,
       userEmail: user.email,
       userRole: user.rol,
+      pagoMessage: pagoMessage,
       layout: 'layouts/main'  // Layout corregido sin referencias req.get
     });
 
@@ -103,7 +121,7 @@ router.post('/agregar/:cursoId', async function(req, res, next) {
     `;
     
     const compraResult = await db.executeQuery(compraQuery, { 
-      userId: user.id_usuario,
+      userId: user.id,
       cursoId: parseInt(cursoId)
     });
 
@@ -122,7 +140,7 @@ router.post('/agregar/:cursoId', async function(req, res, next) {
     `;
     
     const carritoExistResult = await db.executeQuery(carritoExistQuery, { 
-      userId: user.id_usuario,
+      userId: user.id,
       cursoId: parseInt(cursoId)
     });
 
@@ -138,7 +156,7 @@ router.post('/agregar/:cursoId', async function(req, res, next) {
         `;
         
         await db.executeQuery(updateQuery, { 
-          userId: user.id_usuario,
+          userId: user.id,
           cursoId: parseInt(cursoId)
         });
         
@@ -152,7 +170,7 @@ router.post('/agregar/:cursoId', async function(req, res, next) {
         `;
         
         await db.executeQuery(updateQuery, { 
-          userId: user.id_usuario,
+          userId: user.id,
           cursoId: parseInt(cursoId)
         });
         
@@ -166,7 +184,7 @@ router.post('/agregar/:cursoId', async function(req, res, next) {
       `;
       
       await db.executeQuery(insertQuery, { 
-        userId: user.id_usuario,
+        userId: user.id,
         cursoId: parseInt(cursoId)
       });
       
@@ -223,7 +241,7 @@ router.get('/agregar/:cursoId', async function(req, res, next) {
     `;
     
     const compraResult = await db.executeQuery(compraQuery, { 
-      userId: user.id_usuario,
+      userId: user.id,
       cursoId: parseInt(cursoId)
     });
 
@@ -243,7 +261,7 @@ router.get('/agregar/:cursoId', async function(req, res, next) {
     `;
     
     const carritoExistResult = await db.executeQuery(carritoExistQuery, { 
-      userId: user.id_usuario,
+      userId: user.id,
       cursoId: parseInt(cursoId)
     });
 
@@ -257,7 +275,7 @@ router.get('/agregar/:cursoId', async function(req, res, next) {
           SET estatus = 'activo', fecha_agregado = GETDATE()
           WHERE id_usuario = @userId AND id_curso = @cursoId
         `, { 
-          userId: user.id_usuario,
+          userId: user.id,
           cursoId: parseInt(cursoId)
         });
         
@@ -279,7 +297,7 @@ router.get('/agregar/:cursoId', async function(req, res, next) {
       `;
       
       await db.executeQuery(insertQuery, { 
-        userId: user.id_usuario,
+        userId: user.id,
         cursoId: parseInt(cursoId)
       });
       
@@ -318,7 +336,7 @@ router.delete('/eliminar/:carritoId', async function(req, res, next) {
     
     const result = await db.executeQuery(deleteQuery, { 
       carritoId: parseInt(carritoId),
-      userId: user.id_usuario
+      userId: user.id
     });
 
     if (result.rowsAffected[0] > 0) {

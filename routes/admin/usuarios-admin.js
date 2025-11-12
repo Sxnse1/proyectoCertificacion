@@ -12,7 +12,7 @@ router.get('/', hasPermission('gestionar_usuarios'), async function(req, res, ne
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
     const search = req.query.search || '';
-    const rolFilter = req.query.rol || '';
+    const rolFilter = req.query.rolId || req.query.rol || '';
     const estatusFilter = req.query.estatus || '';
     const offset = (page - 1) * limit;
 
@@ -28,8 +28,14 @@ router.get('/', hasPermission('gestionar_usuarios'), async function(req, res, ne
     }
     
     if (rolFilter) {
-      whereConditions.push('u.rol = @rol');
-      params.rol = rolFilter;
+      // Si es un número, filtrar por RolID, si no por el campo rol legacy
+      if (!isNaN(rolFilter)) {
+        whereConditions.push('u.RolID = @rolId');
+        params.rolId = parseInt(rolFilter);
+      } else {
+        whereConditions.push('u.rol = @rol');
+        params.rol = rolFilter;
+      }
     }
     
     if (estatusFilter) {
@@ -39,7 +45,7 @@ router.get('/', hasPermission('gestionar_usuarios'), async function(req, res, ne
 
     const whereClause = whereConditions.length > 0 ? 'WHERE ' + whereConditions.join(' AND ') : '';
 
-    // Consulta principal con información relacionada
+    // Consulta principal con información relacionada usando RBAC
     const query = `
       SELECT 
         u.id_usuario,
@@ -48,20 +54,26 @@ router.get('/', hasPermission('gestionar_usuarios'), async function(req, res, ne
         u.nombre_usuario,
         u.email,
         u.rol,
+        u.RolID,
+        r.NombreRol as rolNombre,
+        r.Descripcion as rolDescripcion,
         u.estatus,
         u.fecha_registro,
         FORMAT(u.fecha_registro, 'dd/MM/yyyy HH:mm') as fecha_registro_formateada,
-        COUNT(CASE WHEN u.rol = 'instructor' THEN c.id_curso END) as cursos_creados,
-        COUNT(CASE WHEN u.rol = 'user' THEN p.id_progreso END) as cursos_en_progreso,
+        COUNT(CASE WHEN r.NombreRol = 'Instructor' THEN c.id_curso END) as cursos_creados,
+        COUNT(CASE WHEN r.NombreRol NOT IN ('Instructor', 'SuperAdmin', 'Admin') THEN p.id_progreso END) as cursos_en_progreso,
         COUNT(comp.id_compra) as compras_realizadas
       FROM Usuarios u
-      LEFT JOIN Cursos c ON u.id_usuario = c.id_usuario AND u.rol = 'instructor'
-      LEFT JOIN Progreso p ON u.id_usuario = p.id_usuario AND u.rol = 'user'
+      LEFT JOIN Roles r ON u.RolID = r.RolID
+      LEFT JOIN Cursos c ON u.id_usuario = c.id_usuario AND r.NombreRol = 'Instructor'
+      LEFT JOIN Progreso p ON u.id_usuario = p.id_usuario AND r.NombreRol NOT IN ('Instructor', 'SuperAdmin', 'Admin')
       LEFT JOIN Compras comp ON u.id_usuario = comp.id_usuario
       ${whereClause}
-      GROUP BY u.id_usuario, u.nombre, u.apellido, u.nombre_usuario, u.email, u.rol, u.estatus, u.fecha_registro
+      GROUP BY u.id_usuario, u.nombre, u.apellido, u.nombre_usuario, u.email, u.rol, u.RolID, r.NombreRol, r.Descripcion, u.estatus, u.fecha_registro
       ORDER BY 
-        CASE WHEN u.rol = 'instructor' THEN 1 ELSE 2 END,
+        CASE WHEN r.NombreRol IN ('SuperAdmin', 'Admin') THEN 1 
+             WHEN r.NombreRol = 'Instructor' THEN 2 
+             ELSE 3 END,
         u.fecha_registro DESC
       OFFSET @offset ROWS FETCH NEXT @limit ROWS ONLY
     `;
@@ -93,19 +105,37 @@ router.get('/', hasPermission('gestionar_usuarios'), async function(req, res, ne
         (SELECT COUNT(*) FROM Usuarios WHERE estatus = 'activo') as usuarios_activos,
         (SELECT COUNT(*) FROM Usuarios WHERE estatus = 'inactivo') as usuarios_inactivos,
         (SELECT COUNT(*) FROM Usuarios WHERE estatus = 'baneado') as usuarios_baneados,
-        (SELECT COUNT(*) FROM Usuarios WHERE rol = 'instructor') as total_instructores,
-        (SELECT COUNT(*) FROM Usuarios WHERE rol = 'user') as total_estudiantes,
+        (SELECT COUNT(*) FROM Usuarios u INNER JOIN Roles r ON u.RolID = r.RolID WHERE r.NombreRol = 'Instructor') as total_instructores,
+        (SELECT COUNT(*) FROM Usuarios u INNER JOIN Roles r ON u.RolID = r.RolID WHERE r.NombreRol IN ('user', 'User')) as total_estudiantes,
         (SELECT COUNT(*) FROM Usuarios WHERE fecha_registro >= DATEADD(month, -1, GETDATE())) as nuevos_mes_actual
     `;
 
     const statsResult = await db.executeQuery(statsQuery);
     const stats = statsResult.recordset[0];
 
+    // Obtener roles disponibles para los selectores
+    const rolesQuery = `
+      SELECT RolID, NombreRol, Descripcion
+      FROM Roles 
+      WHERE Activo = 1
+      ORDER BY 
+        CASE 
+          WHEN NombreRol = 'SuperAdmin' THEN 1
+          WHEN NombreRol = 'Admin' THEN 2
+          WHEN NombreRol = 'Instructor' THEN 3
+          ELSE 4
+        END,
+        NombreRol
+    `;
+    const rolesResult = await db.executeQuery(rolesQuery);
+    const rolesDisponibles = rolesResult.recordset;
+
     console.log(`[USUARIOS] ✅ Consulta exitosa - ${result.recordset.length} usuarios encontrados`);
 
     res.render('admin/usuarios-admin', {
       title: 'Gestión de Usuarios',
       usuarios: result.recordset,
+      rolesDisponibles: rolesDisponibles,
       currentPage: page,
       totalPages: totalPages,
       totalRecords: totalRecords,
@@ -132,7 +162,7 @@ router.get('/', hasPermission('gestionar_usuarios'), async function(req, res, ne
 router.post('/', hasPermission('crear_usuarios'), async function(req, res, next) {
   try {
     const db = req.app.locals.db;
-    const { nombre, apellido, nombre_usuario, email, rol, estatus } = req.body;
+    const { nombre, apellido, nombre_usuario, email, rolId, rolNombre, estatus } = req.body;
 
     // Validaciones
     if (!nombre || nombre.trim().length === 0) {
@@ -200,13 +230,26 @@ router.post('/', hasPermission('crear_usuarios'), async function(req, res, next)
       });
     }
 
-    // Validar rol
-    if (!['user', 'instructor'].includes(rol)) {
+    // Validar rolId
+    if (!rolId || isNaN(parseInt(rolId))) {
       return res.status(400).json({
         success: false,
-        message: 'El rol debe ser "user" o "instructor"'
+        message: 'Debe seleccionar un rol válido'
       });
     }
+
+    // Verificar que el rol existe y está activo
+    const rolExistsQuery = 'SELECT RolID, NombreRol FROM Roles WHERE RolID = @rolId AND Activo = 1';
+    const rolExistsResult = await db.executeQuery(rolExistsQuery, { rolId: parseInt(rolId) });
+    
+    if (rolExistsResult.recordset.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'El rol seleccionado no es válido'
+      });
+    }
+
+    const rolSeleccionado = rolExistsResult.recordset[0];
 
     // Validar estatus
     if (!['activo', 'inactivo', 'baneado'].includes(estatus)) {
@@ -244,11 +287,11 @@ router.post('/', hasPermission('crear_usuarios'), async function(req, res, next)
     const passwordTemporal = generarPasswordTemporal();
     const hashedPassword = await bcrypt.hash(passwordTemporal, 10);
 
-    // Crear el usuario con contraseña temporal
+    // Crear el usuario con contraseña temporal y RBAC
     const insertQuery = `
-      INSERT INTO Usuarios (nombre, apellido, nombre_usuario, email, password, rol, estatus, fecha_registro, tiene_password_temporal, fecha_password_temporal)
-      OUTPUT INSERTED.id_usuario, INSERTED.nombre, INSERTED.apellido, INSERTED.nombre_usuario, INSERTED.email, INSERTED.rol, INSERTED.estatus, INSERTED.fecha_registro
-      VALUES (@nombre, @apellido, @nombre_usuario, @email, @password, @rol, @estatus, GETDATE(), 1, GETDATE())
+      INSERT INTO Usuarios (nombre, apellido, nombre_usuario, email, password, rol, RolID, estatus, fecha_registro, tiene_password_temporal, fecha_password_temporal)
+      OUTPUT INSERTED.id_usuario, INSERTED.nombre, INSERTED.apellido, INSERTED.nombre_usuario, INSERTED.email, INSERTED.rol, INSERTED.RolID, INSERTED.estatus, INSERTED.fecha_registro
+      VALUES (@nombre, @apellido, @nombre_usuario, @email, @password, @rolNombre, @rolId, @estatus, GETDATE(), 1, GETDATE())
     `;
 
     const result = await db.executeQuery(insertQuery, {
@@ -257,7 +300,8 @@ router.post('/', hasPermission('crear_usuarios'), async function(req, res, next)
       nombre_usuario: nombre_usuario.trim(),
       email: email.trim(),
       password: hashedPassword,
-      rol: rol,
+      rolNombre: rolSeleccionado.NombreRol,
+      rolId: parseInt(rolId),
       estatus: estatus
     });
 
@@ -277,6 +321,7 @@ router.post('/', hasPermission('crear_usuarios'), async function(req, res, next)
             apellido: newUsuario.apellido,
             email: newUsuario.email,
             rol: newUsuario.rol,
+            rolId: newUsuario.RolID,
             estatus: newUsuario.estatus
           },
           admin_creador: req.session.user.email,
@@ -321,6 +366,7 @@ router.post('/', hasPermission('crear_usuarios'), async function(req, res, next)
         nombre_usuario: newUsuario.nombre_usuario,
         email: newUsuario.email,
         rol: newUsuario.rol,
+        rolId: newUsuario.RolID,
         estatus: newUsuario.estatus
       }
     });
@@ -365,19 +411,23 @@ router.get('/:id', hasPermission('ver_usuarios'), async function(req, res, next)
         u.nombre_usuario,
         u.email,
         u.rol,
+        u.RolID,
+        r.NombreRol as rolNombre,
+        r.Descripcion as rolDescripcion,
         u.estatus,
         u.fecha_registro,
-        COUNT(CASE WHEN u.rol = 'instructor' THEN c.id_curso END) as cursos_creados,
-        COUNT(CASE WHEN u.rol = 'user' THEN p.id_progreso END) as cursos_en_progreso,
+        COUNT(CASE WHEN r.NombreRol = 'Instructor' THEN c.id_curso END) as cursos_creados,
+        COUNT(CASE WHEN r.NombreRol NOT IN ('Instructor', 'SuperAdmin', 'Admin') THEN p.id_progreso END) as cursos_en_progreso,
         COUNT(comp.id_compra) as compras_realizadas,
         COUNT(cert.id_certificado) as certificados_obtenidos
       FROM Usuarios u
-      LEFT JOIN Cursos c ON u.id_usuario = c.id_usuario AND u.rol = 'instructor'
-      LEFT JOIN Progreso p ON u.id_usuario = p.id_usuario AND u.rol = 'user'
+      LEFT JOIN Roles r ON u.RolID = r.RolID
+      LEFT JOIN Cursos c ON u.id_usuario = c.id_usuario AND r.NombreRol = 'Instructor'
+      LEFT JOIN Progreso p ON u.id_usuario = p.id_usuario AND r.NombreRol NOT IN ('Instructor', 'SuperAdmin', 'Admin')
       LEFT JOIN Compras comp ON u.id_usuario = comp.id_usuario
       LEFT JOIN Certificados cert ON u.id_usuario = cert.id_usuario
       WHERE u.id_usuario = @id
-      GROUP BY u.id_usuario, u.nombre, u.apellido, u.nombre_usuario, u.email, u.rol, u.estatus, u.fecha_registro
+      GROUP BY u.id_usuario, u.nombre, u.apellido, u.nombre_usuario, u.email, u.rol, u.RolID, r.NombreRol, r.Descripcion, u.estatus, u.fecha_registro
     `;
 
     const result = await db.executeQuery(query, { id: usuarioId });
@@ -411,7 +461,7 @@ router.put('/:id', hasPermission('editar_usuarios'), async function(req, res, ne
   try {
     const db = req.app.locals.db;
     const usuarioId = parseInt(req.params.id);
-    const { nombre, apellido, nombre_usuario, email, rol, estatus } = req.body;
+    const { nombre, apellido, nombre_usuario, email, rolId, rolNombre, estatus } = req.body;
 
     if (isNaN(usuarioId)) {
       return res.status(400).json({
@@ -480,12 +530,25 @@ router.put('/:id', hasPermission('editar_usuarios'), async function(req, res, ne
     }
 
     // Validar rol y estatus
-    if (!['user', 'instructor'].includes(rol)) {
+    if (!rolId || isNaN(parseInt(rolId))) {
       return res.status(400).json({
         success: false,
-        message: 'El rol debe ser "user" o "instructor"'
+        message: 'Debe seleccionar un rol válido'
       });
     }
+
+    // Verificar que el rol existe y está activo
+    const rolExistsQuery = 'SELECT RolID, NombreRol FROM Roles WHERE RolID = @rolId AND Activo = 1';
+    const rolExistsResult = await db.executeQuery(rolExistsQuery, { rolId: parseInt(rolId) });
+    
+    if (rolExistsResult.recordset.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'El rol seleccionado no es válido'
+      });
+    }
+
+    const rolSeleccionado = rolExistsResult.recordset[0];
 
     if (!['activo', 'inactivo', 'baneado'].includes(estatus)) {
       return res.status(400).json({
@@ -551,9 +614,10 @@ router.put('/:id', hasPermission('editar_usuarios'), async function(req, res, ne
         apellido = @apellido,
         nombre_usuario = @nombre_usuario,
         email = @email,
-        rol = @rol,
+        rol = @rolNombre,
+        RolID = @rolId,
         estatus = @estatus
-      OUTPUT INSERTED.id_usuario, INSERTED.nombre, INSERTED.apellido, INSERTED.nombre_usuario, INSERTED.email, INSERTED.rol, INSERTED.estatus
+      OUTPUT INSERTED.id_usuario, INSERTED.nombre, INSERTED.apellido, INSERTED.nombre_usuario, INSERTED.email, INSERTED.rol, INSERTED.RolID, INSERTED.estatus
       WHERE id_usuario = @id
     `;
 
@@ -563,7 +627,8 @@ router.put('/:id', hasPermission('editar_usuarios'), async function(req, res, ne
       apellido: apellido.trim(),
       nombre_usuario: nombre_usuario.trim(),
       email: email.trim(),
-      rol: rol,
+      rolNombre: rolSeleccionado.NombreRol,
+      rolId: parseInt(rolId),
       estatus: estatus
     });
 
@@ -653,6 +718,133 @@ router.post('/:id/status', hasPermission('cambiar_estado_usuarios'), async funct
 
   } catch (error) {
     console.error('[USUARIOS] ❌ Error cambiando estado del usuario:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error interno del servidor'
+    });
+  }
+});
+
+/* POST - Cambiar rol de usuario */
+router.post('/:id/role', hasPermission('cambiar_roles_usuarios'), async function(req, res, next) {
+  try {
+    const db = req.app.locals.db;
+    const usuarioId = parseInt(req.params.id);
+    const { newRoleId, newRoleName, currentRoleId, reason } = req.body;
+
+    if (isNaN(usuarioId)) {
+      return res.status(400).json({
+        success: false,
+        message: 'ID de usuario inválido'
+      });
+    }
+
+    if (!newRoleId || isNaN(parseInt(newRoleId))) {
+      return res.status(400).json({
+        success: false,
+        message: 'Debe seleccionar un rol válido'
+      });
+    }
+
+    console.log(`[USUARIOS] Cambiando rol del usuario ID: ${usuarioId} a RolID: ${newRoleId}`);
+
+    // Verificar que el usuario existe
+    const userQuery = `
+      SELECT u.id_usuario, u.nombre, u.apellido, u.email, u.RolID, r.NombreRol as rolActual
+      FROM Usuarios u
+      LEFT JOIN Roles r ON u.RolID = r.RolID
+      WHERE u.id_usuario = @id
+    `;
+    const userResult = await db.executeQuery(userQuery, { id: usuarioId });
+
+    if (userResult.recordset.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: 'Usuario no encontrado'
+      });
+    }
+
+    const usuario = userResult.recordset[0];
+
+    // Verificar que el rol nuevo existe y está activo
+    const roleQuery = 'SELECT RolID, NombreRol, Descripcion FROM Roles WHERE RolID = @roleId AND Activo = 1';
+    const roleResult = await db.executeQuery(roleQuery, { roleId: parseInt(newRoleId) });
+
+    if (roleResult.recordset.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'El rol seleccionado no es válido'
+      });
+    }
+
+    const nuevoRol = roleResult.recordset[0];
+
+    // Verificar que no sea el mismo rol
+    if (parseInt(newRoleId) === usuario.RolID) {
+      return res.status(400).json({
+        success: false,
+        message: 'El usuario ya tiene ese rol asignado'
+      });
+    }
+
+    // Actualizar el rol del usuario
+    const updateQuery = `
+      UPDATE Usuarios 
+      SET RolID = @newRoleId, rol = @newRoleName
+      WHERE id_usuario = @id
+    `;
+
+    await db.executeQuery(updateQuery, {
+      id: usuarioId,
+      newRoleId: parseInt(newRoleId),
+      newRoleName: nuevoRol.NombreRol
+    });
+
+    console.log(`[USUARIOS] ✅ Rol del usuario "${usuario.nombre} ${usuario.apellido}" cambiado de "${usuario.rolActual}" a "${nuevoRol.NombreRol}"`);
+
+    // 🔍 REGISTRAR AUDITORÍA - Cambio de rol
+    try {
+      await auditService.logAction({
+        usuarioId: req.session.user.id_usuario,
+        accion: auditService.AUDIT_ACTIONS.USUARIO_ACTUALIZADO,
+        entidad: auditService.AUDIT_ENTITIES.USUARIO,
+        entidadId: usuarioId,
+        detalles: {
+          tipo_actualizacion: 'cambio_rol',
+          usuario_afectado: {
+            id: usuario.id_usuario,
+            nombre: usuario.nombre,
+            apellido: usuario.apellido,
+            email: usuario.email
+          },
+          cambio_rol: {
+            rol_anterior: {
+              id: usuario.RolID,
+              nombre: usuario.rolActual
+            },
+            rol_nuevo: {
+              id: parseInt(newRoleId),
+              nombre: nuevoRol.NombreRol
+            }
+          },
+          motivo: reason || 'Sin motivo especificado',
+          admin_responsable: req.session.user.email
+        },
+        ip: req.ip
+      }, db);
+      console.log('[USUARIOS] ✅ Auditoría registrada para cambio de rol');
+    } catch (auditError) {
+      console.error('[USUARIOS] ⚠️ Error registrando auditoría:', auditError.message);
+      // No fallar la operación principal si falla la auditoría
+    }
+
+    res.json({
+      success: true,
+      message: `Rol del usuario "${usuario.nombre} ${usuario.apellido}" cambiado exitosamente de "${usuario.rolActual}" a "${nuevoRol.NombreRol}"`
+    });
+
+  } catch (error) {
+    console.error('[USUARIOS] ❌ Error cambiando rol del usuario:', error);
     res.status(500).json({
       success: false,
       message: 'Error interno del servidor'

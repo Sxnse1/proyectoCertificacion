@@ -279,9 +279,40 @@
             color: #1d4ed8;
         }
 
-        .badge-rol.instructor {
+        .badge-rol.SuperAdmin {
+            background: rgba(220, 38, 38, 0.1);
+            color: #dc2626;
+            border: 1px solid rgba(220, 38, 38, 0.2);
+        }
+
+        .badge-rol.Admin {
+            background: rgba(234, 88, 12, 0.1);
+            color: #ea580c;
+            border: 1px solid rgba(234, 88, 12, 0.2);
+        }
+
+        .badge-rol.Instructor {
             background: rgba(168, 85, 247, 0.1);
             color: #7c3aed;
+            border: 1px solid rgba(168, 85, 247, 0.2);
+        }
+
+        .badge-rol.Editor {
+            background: rgba(16, 185, 129, 0.1);
+            color: #059669;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .badge-rol.Finanzas {
+            background: rgba(245, 158, 11, 0.1);
+            color: #d97706;
+            border: 1px solid rgba(245, 158, 11, 0.2);
+        }
+
+        .badge-rol.Soporte {
+            background: rgba(59, 130, 246, 0.1);
+            color: #1d4ed8;
+            border: 1px solid rgba(59, 130, 246, 0.2);
         }
 
         .badge-estatus {
@@ -543,11 +574,13 @@
                     </div>
                     <div class="col-md-2">
                         <label for="rol" class="form-label">Rol</label>
-                        <select class="form-select" id="rol" name="rol">
+                        <select class="form-select" id="rol" name="rolId">
                             <option value="">Todos los roles</option>
-                            <option value="user" {{#if (eq rolFilter 'user' )}}selected{{/if}}>Estudiante</option>
-                            <option value="instructor" {{#if (eq rolFilter 'instructor' )}}selected{{/if}}>Instructor
+                            {{#each rolesDisponibles}}
+                            <option value="{{RolID}}" {{#if (eq ../rolFilter RolID)}}selected{{/if}}>
+                                {{NombreRol}}
                             </option>
+                            {{/each}}
                         </select>
                     </div>
                     <div class="col-md-2">
@@ -611,13 +644,21 @@
                                     </div>
                                 </td>
                                 <td>
-                                    <span class="badge badge-custom badge-rol {{rol}}">
-                                        {{#if (eq rol 'instructor')}}
+                                    <span class="badge badge-custom badge-rol {{rolNombre}}" title="{{rolDescripcion}}">
+                                        {{#if (or (eq rolNombre 'SuperAdmin') (eq rolNombre 'Admin'))}}
+                                        <i class="bi bi-shield-fill-check"></i>
+                                        {{else if (eq rolNombre 'Instructor')}}
                                         <i class="bi bi-mortarboard"></i>
+                                        {{else if (eq rolNombre 'Editor')}}
+                                        <i class="bi bi-pencil-square"></i>
+                                        {{else if (eq rolNombre 'Finanzas')}}
+                                        <i class="bi bi-currency-dollar"></i>
+                                        {{else if (eq rolNombre 'Soporte')}}
+                                        <i class="bi bi-headset"></i>
                                         {{else}}
                                         <i class="bi bi-person"></i>
                                         {{/if}}
-                                        {{#if (eq rol 'instructor')}}Instructor{{else}}Estudiante{{/if}}
+                                        {{rolNombre}}
                                     </span>
                                 </td>
                                 <td>
@@ -637,7 +678,7 @@
                                 </td>
                                 <td>
                                     <div class="stats-grid">
-                                        {{#if (eq rol 'instructor')}}
+                                        {{#if (eq rolNombre 'Instructor')}}
                                         <div class="stat-item stat-cursos" title="Cursos creados">
                                             <i class="bi bi-mortarboard"></i><br>
                                             <strong>{{cursos_creados}}</strong><br>
@@ -697,6 +738,13 @@
                                                         <i class="bi bi-check-circle text-success me-2"></i>Desbanear
                                                     </a></li>
                                                 {{/if}}
+                                                <li>
+                                                    <hr class="dropdown-divider">
+                                                </li>
+                                                <li><a class="dropdown-item" href="#"
+                                                        onclick="changeUserRole({{id_usuario}}, {{RolID}}, '{{nombre}} {{apellido}}')">
+                                                        <i class="bi bi-shield-check me-2"></i>Cambiar Rol
+                                                    </a></li>
                                                 <li>
                                                     <hr class="dropdown-divider">
                                                 </li>
@@ -802,10 +850,13 @@
                             </div>
                             <div class="col-md-6">
                                 <label for="create_rol" class="form-label">Rol *</label>
-                                <select class="form-select" id="create_rol" name="rol" required>
+                                <select class="form-select" id="create_rol" name="rolId" required>
                                     <option value="">Seleccionar rol...</option>
-                                    <option value="user">Estudiante</option>
-                                    <option value="instructor">Instructor</option>
+                                    {{#each rolesDisponibles}}
+                                    <option value="{{RolID}}" data-nombre="{{NombreRol}}" title="{{Descripcion}}">
+                                        {{NombreRol}} - {{Descripcion}}
+                                    </option>
+                                    {{/each}}
                                 </select>
                             </div>
                             <div class="col-md-6">
@@ -867,9 +918,12 @@
                             </div>
                             <div class="col-md-6">
                                 <label for="edit_rol" class="form-label">Rol *</label>
-                                <select class="form-select" id="edit_rol" name="rol" required>
-                                    <option value="user">Estudiante</option>
-                                    <option value="instructor">Instructor</option>
+                                <select class="form-select" id="edit_rol" name="rolId" required>
+                                    {{#each rolesDisponibles}}
+                                    <option value="{{RolID}}" data-nombre="{{NombreRol}}" title="{{Descripcion}}">
+                                        {{NombreRol}} - {{Descripcion}}
+                                    </option>
+                                    {{/each}}
                                 </select>
                             </div>
                             <div class="col-md-6">
@@ -913,6 +967,64 @@
         </div>
     </div>
 
+    <!-- Modal Cambiar Rol -->
+    <div class="modal fade" id="changeRoleModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="bi bi-shield-check"></i> Cambiar Rol de Usuario
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="changeRoleForm">
+                    <input type="hidden" id="change_role_user_id" name="userId">
+                    <input type="hidden" id="change_role_current_role_id" name="currentRoleId">
+                    <div class="modal-body">
+                        <div class="alert alert-warning">
+                            <i class="bi bi-exclamation-triangle"></i>
+                            <strong>¡Atención!</strong> Cambiar el rol de un usuario modificará inmediatamente sus permisos en el sistema.
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label"><strong>Usuario:</strong></label>
+                            <p id="change_role_user_name" class="form-control-plaintext"></p>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label"><strong>Rol Actual:</strong></label>
+                            <p id="change_role_current_role" class="form-control-plaintext text-muted"></p>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="change_role_new_role" class="form-label"><strong>Nuevo Rol *</strong></label>
+                            <select class="form-select" id="change_role_new_role" name="newRoleId" required>
+                                <option value="">Seleccionar nuevo rol...</option>
+                                {{#each rolesDisponibles}}
+                                <option value="{{RolID}}" data-nombre="{{NombreRol}}" title="{{Descripcion}}">
+                                    {{NombreRol}} - {{Descripcion}}
+                                </option>
+                                {{/each}}
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="change_role_reason" class="form-label">Motivo del cambio (opcional)</label>
+                            <textarea class="form-control" id="change_role_reason" name="reason" rows="3" 
+                                placeholder="Describe el motivo de este cambio de rol..."></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-warning">
+                            <i class="bi bi-shield-check"></i> Cambiar Rol
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <!-- Bootstrap 5.3 JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
@@ -923,6 +1035,13 @@
 
             const formData = new FormData(this);
             const data = Object.fromEntries(formData);
+            
+            // Agregar el nombre del rol basado en la selección
+            const rolSelect = document.getElementById('create_rol');
+            const selectedOption = rolSelect.options[rolSelect.selectedIndex];
+            if (selectedOption && selectedOption.dataset.nombre) {
+                data.rolNombre = selectedOption.dataset.nombre;
+            }
 
             try {
                 const response = await fetch('/admin/usuarios', {
@@ -1040,7 +1159,7 @@
                     document.getElementById('edit_apellido').value = usuario.apellido;
                     document.getElementById('edit_nombre_usuario').value = usuario.nombre_usuario;
                     document.getElementById('edit_email').value = usuario.email;
-                    document.getElementById('edit_rol').value = usuario.rol;
+                    document.getElementById('edit_rol').value = usuario.RolID || usuario.rolId;
                     document.getElementById('edit_estatus').value = usuario.estatus;
 
                     const modal = new bootstrap.Modal(document.getElementById('editUsuarioModal'));
@@ -1060,6 +1179,13 @@
             const formData = new FormData(this);
             const data = Object.fromEntries(formData);
             const id = data.id_usuario;
+            
+            // Agregar el nombre del rol basado en la selección
+            const rolSelect = document.getElementById('edit_rol');
+            const selectedOption = rolSelect.options[rolSelect.selectedIndex];
+            if (selectedOption && selectedOption.dataset.nombre) {
+                data.rolNombre = selectedOption.dataset.nombre;
+            }
 
             try {
                 const response = await fetch(`/admin/usuarios/${id}`, {
@@ -1144,6 +1270,73 @@
                     });
             }
         }
+
+        // Cambiar rol de usuario
+        function changeUserRole(userId, currentRoleId, userName) {
+            document.getElementById('change_role_user_id').value = userId;
+            document.getElementById('change_role_current_role_id').value = currentRoleId;
+            document.getElementById('change_role_user_name').textContent = userName;
+            
+            // Buscar el nombre del rol actual
+            const roleSelect = document.getElementById('change_role_new_role');
+            let currentRoleName = 'Desconocido';
+            for (let option of roleSelect.options) {
+                if (option.value == currentRoleId) {
+                    currentRoleName = option.dataset.nombre + ' - ' + option.title;
+                    break;
+                }
+            }
+            document.getElementById('change_role_current_role').textContent = currentRoleName;
+            
+            // Resetear el formulario
+            document.getElementById('change_role_new_role').value = '';
+            document.getElementById('change_role_reason').value = '';
+            
+            const modal = new bootstrap.Modal(document.getElementById('changeRoleModal'));
+            modal.show();
+        }
+
+        document.getElementById('changeRoleForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData);
+            
+            if (data.newRoleId === data.currentRoleId) {
+                showAlert('warning', 'El nuevo rol debe ser diferente al rol actual');
+                return;
+            }
+
+            // Agregar el nombre del nuevo rol
+            const roleSelect = document.getElementById('change_role_new_role');
+            const selectedOption = roleSelect.options[roleSelect.selectedIndex];
+            if (selectedOption && selectedOption.dataset.nombre) {
+                data.newRoleName = selectedOption.dataset.nombre;
+            }
+
+            try {
+                const response = await fetch(`/admin/usuarios/${data.userId}/role`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    showAlert('success', result.message);
+                    bootstrap.Modal.getInstance(document.getElementById('changeRoleModal')).hide();
+                    setTimeout(() => location.reload(), 1500);
+                } else {
+                    showAlert('danger', result.message);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showAlert('danger', 'Error al cambiar el rol del usuario');
+            }
+        });
 
         // Función para mostrar alertas
         function showAlert(type, message) {

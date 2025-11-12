@@ -183,8 +183,16 @@ router.post('/verify', async function(req, res, next) {
     let permisos = [];
     
     try {
-      permisos = await cargarPermisosUsuario(user.id_usuario, db);
+      const { permisos: permisosArray, rol: rolActual } = await cargarPermisosUsuario(user.id_usuario, db);
+      permisos = permisosArray;
+      
+      // Usar el rol actualizado de la base de datos si está disponible
+      if (rolActual) {
+        user.rol = rolActual;
+      }
+      
       console.log('[2FA-LOGIN] 🔐 Permisos cargados tras 2FA para', user.email, ':', permisos.length, 'permisos');
+      console.log('[2FA-LOGIN] 👑 Rol actualizado:', user.rol);
     } catch (permissionError) {
       console.error('[2FA-LOGIN] ⚠️ Error cargando permisos RBAC:', permissionError.message);
     }

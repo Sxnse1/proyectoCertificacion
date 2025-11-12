@@ -189,7 +189,7 @@ router.get('/:cursoId', async function(req, res, next) {
     
     // Obtener módulos y videos del curso según permisos
     let videoCountFilter;
-    if (rol === 'instructor' || rol === 'admin') {
+    if (rol === 'instructor' || rol === 'admin' || rol === 'SuperAdmin' || rol === 'Admin') {
       // Instructores y admins ven: publicados y borradores
       videoCountFilter = "AND v.estatus IN ('publicado', 'borrador')";
     } else {
@@ -213,7 +213,7 @@ router.get('/:cursoId', async function(req, res, next) {
     for (let modulo of modulos) {
       // Determinar filtro de estado según el rol del usuario
       let estatusFilter;
-      if (rol === 'instructor' || rol === 'admin') {
+      if (rol === 'instructor' || rol === 'admin' || rol === 'SuperAdmin' || rol === 'Admin') {
         // Instructores y admins ven: publicados y borradores (no archivados)
         estatusFilter = "AND v.estatus IN ('publicado', 'borrador')";
       } else {

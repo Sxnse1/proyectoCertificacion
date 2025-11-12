@@ -201,11 +201,17 @@ const hasPermission = (permisoRequerido) => {
       if (!req.session.user.permisos || !Array.isArray(req.session.user.permisos)) {
         console.log('[RBAC MIDDLEWARE] ⚠️ Usuario sin permisos cargados, recargando...');
         
-        // Intentar recargar permisos desde base de datos
+        // Intentar recargar permisos y rol desde base de datos
         try {
           const db = req.app?.locals?.db;
-          const permisos = await cargarPermisosUsuario(req.session.user.id, db);
+          const { permisos, rol } = await cargarPermisosUsuario(req.session.user.id, db);
           req.session.user.permisos = permisos;
+          
+          // Actualizar rol si cambió
+          if (rol && rol !== req.session.user.rol) {
+            console.log(`[RBAC MIDDLEWARE] 🔄 Actualizando rol de ${req.session.user.rol} a ${rol}`);
+            req.session.user.rol = rol;
+          }
         } catch (error) {
           console.log('[RBAC MIDDLEWARE] ❌ Error recargando permisos:', error.message);
           return res.status(500).json({ 
@@ -282,7 +288,7 @@ async function cargarPermisosUsuario(userId, db = null) {
     const dbInstance = db || require('../config/database');
     
     const query = `
-      SELECT DISTINCT p.NombrePermiso
+      SELECT DISTINCT p.NombrePermiso, r.NombreRol
       FROM Usuarios u
       INNER JOIN Roles r ON u.RolID = r.RolID
       INNER JOIN RolPermiso rp ON r.RolID = rp.RolID
@@ -295,9 +301,12 @@ async function cargarPermisosUsuario(userId, db = null) {
     const result = await dbInstance.executeQuery(query, { userId: userId });
 
     const permisos = result.recordset.map(row => row.NombrePermiso);
-    console.log(`[RBAC] 🔄 Permisos recargados para usuario ${userId}:`, permisos);
+    const rolActual = result.recordset.length > 0 ? result.recordset[0].NombreRol : null;
     
-    return permisos;
+    console.log(`[RBAC] 🔄 Permisos recargados para usuario ${userId}:`, permisos);
+    console.log(`[RBAC] 👑 Rol actual del usuario ${userId}:`, rolActual);
+    
+    return { permisos, rol: rolActual };
   } catch (error) {
     console.error('[RBAC] ❌ Error cargando permisos:', error);
     throw error;
@@ -305,16 +314,11 @@ async function cargarPermisosUsuario(userId, db = null) {
 }
 
 /**
- * 🔧 MIDDLEWARE DE COMPATIBILIDAD: ensureAdmin (DEPRECATED)
- * =========================================================
- * Mantener por compatibilidad hacia atrás, pero marcado como obsoleto
+ * 🔧 MIDDLEWARE DE COMPATIBILIDAD: ensureAdmin (ELIMINADO)
+ * ========================================================
+ * Reemplazado completamente por sistema RBAC granular
+ * Las rutas específicas ahora usan hasPermission() directamente
  */
-const ensureAdmin = (req, res, next) => {
-  console.log('[RBAC MIDDLEWARE] ⚠️ ADVERTENCIA: ensureAdmin está obsoleto, usar hasPermission()');
-  
-  // Usar el nuevo sistema RBAC con permiso de superadmin
-  return hasPermission('gestionar_roles')(req, res, next);
-};
 
 /**
  * 🔄 MIDDLEWARE: Verificar múltiples permisos (OR logic)
@@ -392,7 +396,7 @@ module.exports = {
   injectUserData,
   logAccess,
   injectAdminCounts,
-  ensureAdmin, // DEPRECATED - usar hasPermission('gestionar_roles')
+  // ensureAdmin eliminado - usar hasPermission() con permisos específicos
   
   // Nuevo sistema RBAC
   hasPermission,
