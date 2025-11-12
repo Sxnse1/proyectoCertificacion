@@ -62,15 +62,59 @@ router.post('/crear-preferencia', async function(req, res, next) {
 
     const items = carritoResult.recordset;
     
+    // --- INICIO DE VALIDACIÓN DE DOBLE PAGO ---
+    const id_usuario = user.id_usuario;
+    let itemsParaPagar = [...items]; // Clonamos los items para poder filtrarlos
+    
+    console.log(`[PAGOS] 🛒 Items en carrito antes de filtrar: ${items.length}`);
+
+    // Verificación 1: ¿El usuario tiene una suscripción activa?
+    const subsQuery = await db.executeQuery("SELECT COUNT(*) AS count FROM Suscripciones WHERE id_usuario = @id_usuario AND estatus = 'activa'", { id_usuario });
+    const tieneSuscripcionActiva = subsQuery.recordset[0].count > 0;
+
+    if (tieneSuscripcionActiva) {
+        // Si tiene suscripción, no debe comprar cursos individuales.
+        console.log(`[PAGOS] 🛡️ Usuario ${id_usuario} tiene suscripción activa. No se procesarán compras individuales.`);
+        itemsParaPagar = []; // Vaciamos la lista
+    } else {
+        // Verificación 2: No tiene suscripción. Filtrar cursos que YA compró.
+        const comprasQuery = await db.executeQuery("SELECT id_curso FROM Compras WHERE id_usuario = @id_usuario", { id_usuario });
+        
+        // Creamos un Set para búsqueda rápida
+        const cursosCompradosIds = new Set(comprasQuery.recordset.map(c => c.id_curso));
+
+        if (cursosCompradosIds.size > 0) {
+            const itemsOriginales = itemsParaPagar.length;
+            // Filtramos la lista: nos quedamos solo con items que NO estén en el Set de cursosCompradosIds
+            itemsParaPagar = itemsParaPagar.filter(item => !cursosCompradosIds.has(item.id_curso));
+            
+            if (itemsParaPagar.length < itemsOriginales) {
+                console.log(`[PAGOS] 🛡️ Se filtraron ${itemsOriginales - itemsParaPagar.length} cursos que el usuario ya posee.`);
+            }
+        }
+    }
+
+    // Verificación 3: Comprobar si queda algo por pagar
+    if (itemsParaPagar.length === 0) {
+      console.log(`[PAGOS] 🛑 No hay items válidos para pagar.`);
+      return res.status(400).json({
+          success: false,
+          message: 'El carrito está vacío o ya posees acceso a todos los cursos en él.'
+      });
+    }
+    
+    console.log(`[PAGOS] 🛒 Items en carrito después de filtrar: ${itemsParaPagar.length}`);
+    // --- FIN DE VALIDACIÓN DE DOBLE PAGO ---
+    
     // Calcular total
-    const total = items.reduce((sum, item) => {
+    const total = itemsParaPagar.reduce((sum, item) => {
       return sum + (parseFloat(item.precio) * parseInt(item.cantidad));
     }, 0);
 
     console.log(`[PAGOS] 🛒 Carrito: ${items.length} items, Total: $${total}`);
 
     // Crear items para Mercado Pago
-    const mpItems = items.map(item => {
+    const mpItems = itemsParaPagar.map(item => {
       const precio = parseFloat(item.precio);
       console.log(`[PAGOS] 💰 Item: ${item.titulo} - Precio: $${precio}`);
       

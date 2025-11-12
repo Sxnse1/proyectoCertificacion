@@ -5,6 +5,7 @@
 
 const express = require('express');
 const router = express.Router();
+const { requireAuth } = require('../../middleware/auth');
 
 /**
  * GET /suscripciones - Vista de planes de suscripción para estudiantes
@@ -299,6 +300,64 @@ router.post('/subscribe', async function(req, res, next) {
       message: 'Ocurrió un error interno. Intenta nuevamente.'
     });
   }
+});
+
+/**
+ * POST /suscripciones/cancelar/:id_suscripcion
+ * Permite a un usuario cancelar su propia suscripción activa.
+ * La suscripción pasa a estado 'cancelada' y expirará en la fecha_vencimiento.
+ */
+router.post('/cancelar/:id_suscripcion', requireAuth, async (req, res) => {
+    try {
+        const { id_suscripcion } = req.params;
+        const id_usuario = req.session.user.id_usuario; // De la sesión
+        const db = req.app.locals.db;
+
+        if (!id_suscripcion || !id_usuario) {
+            return res.status(400).json({
+                success: false,
+                message: 'Solicitud inválida.'
+            });
+        }
+
+        // ¡Validación de seguridad crítica!
+        // Asegurarse de que el usuario solo cancele SUS propias suscripciones
+        // y que la suscripción esté 'activa'.
+        const updateQuery = `
+            UPDATE Suscripciones
+            SET estatus = 'cancelada'
+            WHERE 
+                id_suscripcion = @id_suscripcion 
+                AND id_usuario = @id_usuario 
+                AND estatus = 'activa'
+        `;
+
+        const result = await db.executeQuery(updateQuery, { 
+            id_suscripcion: parseInt(id_suscripcion, 10), 
+            id_usuario: id_usuario 
+        });
+
+        if (result.rowsAffected[0] > 0) {
+            // Éxito
+            return res.json({
+                success: true,
+                message: 'Tu suscripción ha sido cancelada. Seguirás teniendo acceso hasta la fecha de vencimiento.'
+            });
+        } else {
+            // Falla (no se encontró, no le pertenece, o no estaba activa)
+            return res.status(400).json({
+                success: false,
+                message: 'No se pudo cancelar la suscripción. Es posible que ya estuviera inactiva o no te pertenezca.'
+            });
+        }
+        
+    } catch (error) {
+        console.error('Error al cancelar suscripción:', error);
+        return res.status(500).json({
+            success: false,
+            message: 'Ocurrió un error al procesar tu solicitud.'
+        });
+    }
 });
 
 module.exports = router;
