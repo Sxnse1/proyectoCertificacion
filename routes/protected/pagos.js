@@ -50,7 +50,7 @@ router.post('/crear-preferencia', async function(req, res, next) {
     `;
 
     const carritoResult = await db.executeQuery(carritoQuery, {
-      userId: user.id
+      userId: user.id_usuario
     });
 
     if (!carritoResult.recordset || carritoResult.recordset.length === 0) {
@@ -115,7 +115,7 @@ router.post('/crear-preferencia', async function(req, res, next) {
         surname: user.nombre.split(' ').slice(1).join(' ') || 'StartEducation', 
         email: user.email,
       },
-      external_reference: user.id.toString(),
+      external_reference: user.id_usuario.toString(),
       statement_descriptor: 'StartEducation'
     };
 
@@ -123,7 +123,7 @@ router.post('/crear-preferencia', async function(req, res, next) {
       items: mpItems.length,
       total: total,
       email: user.email,
-      external_reference: user.id,
+      external_reference: user.id_usuario,
       baseUrl: baseUrl
     });
     
@@ -227,22 +227,21 @@ router.post('/webhook', async function(req, res, next) {
           return res.status(200).send('OK');
         }
 
-        // Mover items a tabla Compras con precios correctos
+        // Reemplazar el bucle de INSERT con esto:
         for (const item of items) {
           await transaction.request()
             .input('userId', userId)
             .input('cursoId', item.id_curso)
-            .input('cantidad', item.cantidad)
-            .input('precio', parseFloat(item.precio))
+            .input('monto', parseFloat(item.precio)) // Columna correcta: monto
             .input('metodoPago', 'mercadopago')
-            .input('transactionId', paymentId)
+            .input('descripcion', `Pago MP: ${paymentId}`) // Columna correcta: descripcion
             .query(`
               INSERT INTO Compras (
-                id_usuario, id_curso, cantidad, precio_pagado, 
-                metodo_pago, transaction_id, fecha_compra, estatus
+                id_usuario, id_curso, monto, 
+                metodo_pago, descripcion, fecha_compra
               ) VALUES (
-                @userId, @cursoId, @cantidad, @precio,
-                @metodoPago, @transactionId, GETDATE(), 'completada'
+                @userId, @cursoId, @monto,
+                @metodoPago, @descripcion, GETDATE()
               )
             `);
         }
@@ -255,20 +254,6 @@ router.post('/webhook', async function(req, res, next) {
             SET estatus = 'comprado', fecha_modificacion = GETDATE()
             WHERE id_usuario = @userId AND estatus = 'activo'
           `);
-
-        // Crear inscripciones automáticas
-        for (const item of items) {
-          await transaction.request()
-            .input('userId', userId)
-            .input('cursoId', item.id_curso)
-            .query(`
-              IF NOT EXISTS (SELECT 1 FROM inscripciones WHERE id_usuario = @userId AND id_curso = @cursoId)
-              BEGIN
-                INSERT INTO inscripciones (id_usuario, id_curso, fecha_inscripcion, progreso, estatus)
-                VALUES (@userId, @cursoId, GETDATE(), 0, 'activa')
-              END
-            `);
-        }
 
         await transaction.commit();
         
@@ -318,6 +303,145 @@ router.get('/status/:paymentId', async function(req, res, next) {
       message: 'Error consultando estado del pago'
     });
   }
+});
+
+/**
+ * POST /pagos/webhook-suscripcion
+ * Webhook para recibir notificaciones de PAGOS DE SUSCRIPCIONES
+ */
+router.post('/webhook-suscripcion', async (req, res) => {
+    const { type, data } = req.body;
+
+    // Solo procesar notificaciones de pagos
+    if (type !== 'payment') {
+        console.log('[MP Webhook Subs]: Ignorando notificación tipo:', type);
+        return res.status(200).send('Evento no procesado');
+    }
+
+    const paymentId = data.id;
+    if (!paymentId) {
+        console.log('[MP Webhook Subs]: ⚠️ ID de pago no encontrado');
+        return res.status(400).send('Payment ID missing');
+    }
+    
+    console.log(`[MP Webhook Subs]: 🔔 Recibido pago ID: ${paymentId}`);
+
+    try {
+        // Usamos el 'client' de MercadoPagoConfig definido al inicio de este archivo
+        const payment = new Payment(client);
+        const paymentInfo = await payment.get({ id: paymentId });
+
+        console.log(`[MP Webhook Subs]: 📄 Info del pago:`, {
+            id: paymentInfo.id,
+            status: paymentInfo.status,
+            external_reference: paymentInfo.external_reference
+        });
+
+        // Solo procesar pagos aprobados
+        if (paymentInfo.status === 'approved') {
+            const userId = parseInt(paymentInfo.external_reference, 10);
+            
+            // Los items de la suscripción están en additional_info
+            const items = paymentInfo.additional_info ? paymentInfo.additional_info.items : null;
+
+            if (!items || items.length === 0) {
+                console.error('[MP Webhook Subs]: ❌ No se encontraron "items" en additional_info. No se puede activar la membresía.');
+                throw new Error('No hay items en la información del pago.');
+            }
+
+            // Asumimos una sola membresía por pago
+            const id_membresia = parseInt(items[0].id, 10);
+            const monto = parseFloat(items[0].unit_price);
+
+            if (!userId || isNaN(userId) || !id_membresia || isNaN(id_membresia)) {
+                console.error(`[MP Webhook Subs]: ❌ Datos inválidos: userId=${userId}, id_membresia=${id_membresia}`);
+                throw new Error(`Datos inválidos: userId=${userId}, id_membresia=${id_membresia}`);
+            }
+
+            // Obtener la instancia de BD (como en el otro webhook)
+            const db = req.app.locals.db;
+            if (!db) {
+                console.error('[MP Webhook Subs]: ❌ La conexión a la base de datos (db) no está disponible en req.app.locals');
+                throw new Error('Conexión DB no disponible');
+            }
+
+            // Iniciar transacción (como en el otro webhook)
+            const transaction = db.transaction();
+            
+            try {
+                await transaction.begin();
+
+                // 1. Obtener detalles de la membresía para calcular la fecha de vencimiento
+                const membresiaResult = await transaction.request()
+                    .input('id_membresia', id_membresia)
+                    .query('SELECT tipo_periodo FROM Membresias WHERE id_membresia = @id_membresia');
+                
+                if (membresiaResult.recordset.length === 0) {
+                    throw new Error(`Membresía con ID ${id_membresia} no encontrada.`);
+                }
+
+                const tipo_periodo = membresiaResult.recordset[0].tipo_periodo;
+                let fecha_vencimiento_sql;
+
+                // Calcular fecha de vencimiento
+                switch (tipo_periodo) {
+                    case 'mensual':
+                        fecha_vencimiento_sql = "DATEADD(month, 1, GETDATE())";
+                        break;
+                    case 'anual':
+                        fecha_vencimiento_sql = "DATEADD(year, 1, GETDATE())";
+                        break;
+                    case 'vitalicio':
+                        fecha_vencimiento_sql = "'9999-12-31'"; // Fecha "infinita"
+                        break;
+                    default:
+                        throw new Error(`Tipo de periodo desconocido: ${tipo_periodo}`);
+                }
+
+                // 2. Insertar la nueva suscripción
+                const insertSuscripcionResult = await transaction.request()
+                    .input('id_usuario', userId)
+                    .input('id_membresia', id_membresia)
+                    .query(`
+                        INSERT INTO Suscripciones (id_usuario, id_membresia, fecha_compra, fecha_vencimiento, estatus)
+                        OUTPUT INSERTED.id_suscripcion -- Devolver el ID recién creado
+                        VALUES (@id_usuario, @id_membresia, GETDATE(), ${fecha_vencimiento_sql}, 'activa')
+                    `);
+                
+                const id_suscripcion = insertSuscripcionResult.recordset[0].id_suscripcion;
+
+                // 3. Insertar en el historial de pagos
+                await transaction.request()
+                    .input('id_usuario', userId)
+                    .input('id_suscripcion', id_suscripcion)
+                    .input('monto', monto)
+                    .input('estatus', 'exitoso')
+                    .query(`
+                        INSERT INTO Historial_Pagos (id_usuario, id_suscripcion, id_compra, monto, fecha_pago, estatus)
+                        VALUES (@id_usuario, @id_suscripcion, NULL, @monto, GETDATE(), @estatus)
+                    `);
+                
+                await transaction.commit();
+                console.log(`[MP Webhook Subs]: ✅ Suscripción ${id_suscripcion} activada para usuario ${userId}.`);
+
+            } catch (err) {
+                await transaction.rollback();
+                console.error('[MP Webhook Subs] ❌ Error en transacción DB:', err.message);
+                // Devolvemos 500 para que MercadoPago reintente
+                return res.status(500).send('Error procesando el pago (transacción DB)');
+            }
+        } else {
+            console.log(`[MP Webhook Subs]: ℹ️ Pago ${paymentId} no aprobado (estatus: ${paymentInfo.status}). No se procesa.`);
+        }
+
+        // Devolvemos 200 OK para que MercadoPago no reintente
+        res.status(200).send('Webhook recibido');
+
+    } catch (error) {
+        console.error(`[MP Webhook Subs] ❌ Error fatal al procesar pago ${paymentId}:`, error.message);
+        // Devolvemos 500 para que MercadoPago reintente
+        res.status(500).send('Error procesando el pago (fetch MP)');
+    }
 });
 
 module.exports = router;

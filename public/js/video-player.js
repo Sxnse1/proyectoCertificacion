@@ -33,12 +33,11 @@ function initializeVideoPlayer(videoId, courseStructure, videoDuration) {
 
             if (progressSaveTimer) clearTimeout(progressSaveTimer);
             progressSaveTimer = setTimeout(async () => {
-                await fetch('/video/progress', {
+                await fetch(`/video/progress/${videoId}`, {
                     method: 'POST',
                     credentials: 'same-origin',
                     headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
                     body: JSON.stringify({ 
-                        videoId: videoId,
                         seconds: lastKnownTime,
                         completado: isComplete
                     })

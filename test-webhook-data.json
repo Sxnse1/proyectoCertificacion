@@ -1,0 +1,6 @@
+{
+  "type": "payment",
+  "data": {
+    "id": "test_payment_123"
+  }
+}

@@ -12,7 +12,7 @@ const { getPool } = require('../config/database'); // Importa el pool de conexi�
  */
 const checkVideoAccess = async (req, res, next) => {
     try {
-        const id_usuario = req.session.user.id; // Obtenido de la sesión después de login
+        const id_usuario = req.session.user.id_usuario; // Obtenido de la sesión después de login
         const id_video = req.params.videoId || req.params.id_video;   // Obtenido de la URL (compatible con ambas rutas)
 
         if (!id_usuario || !id_video) {
