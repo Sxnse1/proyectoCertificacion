@@ -1,8 +1,11 @@
 var express = require('express');
 var router = express.Router();
+const { checkVideoAccess } = require('../../middleware/checkAccess');
 
 /* GET video player by ID (database ID or bunny ID) */
-router.get('/:videoId', async function(req, res, next) {
+router.get('/:videoId', 
+  checkVideoAccess,     // Verifica acceso por suscripción o compra individual
+  async function(req, res, next) {
   try {
     const { videoId } = req.params;
     const user = req.session.user;

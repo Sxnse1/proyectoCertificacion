@@ -79,8 +79,9 @@ app.get('/favicon.ico', function (req, res) {
 });
 
 // Conectar a la base de datos al iniciar la aplicación
-if (process.env.DB_SERVER && process.env.DB_SERVER !== 'localhost') {
-  // Solo conectar a base de datos si está configurada (producción)
+// Intentar conectar si tenemos configuración básica de servidor
+if (process.env.DB_SERVER || process.env.NODE_ENV === 'production') {
+  // Conectar a base de datos 
   db.connect()
     .then(() => {
       console.log('[APP] Base de datos lista');
@@ -89,27 +90,46 @@ if (process.env.DB_SERVER && process.env.DB_SERVER !== 'localhost') {
     })
     .catch(err => {
       console.error('[APP] Error iniciando la aplicación:', err.message);
-      // En producción, continuar sin base de datos para debugging
-      if (process.env.NODE_ENV === 'production') {
-        console.log('[APP] Continuando sin base de datos para debugging...');
-        app.locals.db = null;
-      } else {
-        process.exit(1);
-      }
+      // En desarrollo, continuar sin base de datos para debugging
+      console.log('[APP] Continuando sin base de datos para debugging...');
+      app.locals.db = null;
     });
 } else {
-  // Desarrollo local o sin base de datos configurada
-  console.log('[APP] Iniciando sin conexión a base de datos (desarrollo)');
+  // Sin configuración de base de datos
+  console.log('[APP] Iniciando sin conexión a base de datos (variables no configuradas)');
   app.locals.db = null;
 }
 
 // Importar middleware de autenticación
 const { requireAuth, requireRole, injectUserData, injectAdminCounts, logAccess } = require('./middleware/auth');
 
+// Importar dependencias para tareas programadas
+const cron = require('node-cron');
+const { getPool } = require('./config/database');
+
 // Aplicar middleware global
 app.use(injectUserData);
 app.use(injectAdminCounts);
 app.use(logAccess);
+
+// Tarea programada para actualizar suscripciones vencidas
+// Se ejecuta todos los días a las 00:01 (un minuto después de medianoche)
+cron.schedule('1 0 * * *', async () => {
+    console.log('[CRON] 🕐 Ejecutando tarea programada: Actualizando suscripciones vencidas...');
+    try {
+        const pool = getPool();
+        const request = pool.request();
+        const result = await request.query(
+            "UPDATE Suscripciones SET estatus = 'expirada' WHERE fecha_vencimiento < GETDATE() AND estatus = 'activa'"
+        );
+        console.log(`[CRON] ✅ Suscripciones vencidas actualizadas. Filas afectadas: ${result.rowsAffected[0]}`);
+    } catch (error) {
+        console.error('[CRON] ❌ Error en la tarea programada de suscripciones:', error);
+    }
+}, {
+    scheduled: true,
+    timezone: "America/Mexico_City" // Ajusta esto a tu zona horaria local
+});
 
 // Proteger todas las rutas /admin/* con autenticación básica (RBAC granular en cada ruta)
 app.use('/admin', requireAuth);

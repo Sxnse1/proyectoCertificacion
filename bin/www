@@ -86,5 +86,7 @@ function onListening() {
   var bind = typeof addr === 'string'
     ? 'pipe ' + addr
     : 'port ' + addr.port;
-  debug('Listening on ' + bind);  
+  debug('Listening on ' + bind);
+  console.log('🚀 [SERVER] Servidor iniciado exitosamente en puerto ' + addr.port);
+  console.log('🌐 [SERVER] Accede a: http://localhost:' + addr.port);
 }

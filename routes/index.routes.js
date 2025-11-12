@@ -80,7 +80,7 @@ function configureRoutes(app) {
   const cursosAdminRouter = require('./admin/cursos-admin');
   const videosAdminRouter = require('./admin/videos-admin');
   const usuariosAdminRouter = require('./admin/usuarios-admin');
-  const rolesAdminRouter = require('./admin/roles-admin');
+  // const rolesAdminRouter = require('./admin/roles-admin'); // Temporalmente deshabilitado
   
   app.use('/admin/categorias', categoriasAdminRouter);
   app.use('/admin/etiquetas', etiquetasAdminRouter);
@@ -88,7 +88,7 @@ function configureRoutes(app) {
   app.use('/admin/cursos', cursosAdminRouter);
   app.use('/admin/videos', videosAdminRouter);
   app.use('/admin/usuarios', usuariosAdminRouter);
-  app.use('/admin/roles', rolesAdminRouter);
+  // app.use('/admin/roles', rolesAdminRouter); // Temporalmente deshabilitado
   
   // Analytics y Reportes
   const analyticsAdminRouter = require('./admin/analytics-admin');
@@ -122,12 +122,12 @@ function configureRoutes(app) {
   
   // Configuración del Sistema y Auditoría
   const configuracionAdminRouter = require('./admin/configuracion-admin');
-  const logsAdminRouter = require('./admin/logs-admin');
-  const securityAlertsRouter = require('./admin/security-alerts');
+  // const logsAdminRouter = require('./admin/logs-admin'); // Temporalmente deshabilitado
+  // const securityAlertsRouter = require('./admin/security-alerts'); // Temporalmente deshabilitado
   
   app.use('/admin/configuracion', configuracionAdminRouter);
-  app.use('/admin/logs', logsAdminRouter);
-  app.use('/admin/security', securityAlertsRouter);
+  // app.use('/admin/logs', logsAdminRouter); // Temporalmente deshabilitado
+  // app.use('/admin/security', securityAlertsRouter); // Temporalmente deshabilitado
   
   // ============================================================
   // 🔧 RUTA DE SISTEMA (legacy)

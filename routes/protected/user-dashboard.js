@@ -84,85 +84,149 @@ router.get('/', async function(req, res, next) {
         }
       }
 
-      // --- 2. OBTENER ESTADÍSTICAS Y CURSOS EN PROGRESO ---
-      if (existingTables.some(table => table.toLowerCase().includes('inscripciones'))) {
+      // --- 2. OBTENER ESTADÍSTICAS Y CURSOS EN PROGRESO (SOLO CON ACCESO LEGÍTIMO) ---
+      
+      // Primero verificar si tiene suscripción activa
+      let tieneSuscripcionActiva = false;
+      let cursosConAcceso = [];
+      
+      if (existingTables.some(table => table.toLowerCase().includes('suscripciones'))) {
         try {
-          const cursosResult = await db.executeQuery(`SELECT COUNT(*) as total FROM inscripciones WHERE id_usuario = @userId`, { userId: user.id });
-          if (cursosResult && cursosResult.recordset.length > 0) cursosInscritos = cursosResult.recordset[0].total || 0;
-
-          const completadosResult = await db.executeQuery(`SELECT COUNT(*) as total FROM inscripciones WHERE id_usuario = @userId AND progreso = 100`, { userId: user.id });
-          if (completadosResult && completadosResult.recordset.length > 0) cursosCompletados = completadosResult.recordset[0].total || 0;
+          const suscripcionResult = await db.executeQuery(`
+            SELECT COUNT(*) as count FROM Suscripciones 
+            WHERE id_usuario = @userId AND estatus = 'activa' AND fecha_vencimiento > GETDATE()
+          `, { userId: user.id });
           
-          if (existingTables.some(table => table.toLowerCase().includes('cursos'))) {
+          tieneSuscripcionActiva = suscripcionResult.recordset[0].count > 0;
+          console.log('[USER-DASHBOARD] 🔍 Suscripción activa:', tieneSuscripcionActiva);
+        } catch (suscError) {
+          console.error('[USER-DASHBOARD] ⚠️ Error verificando suscripción:', suscError.message);
+        }
+      }
+      
+      // Si tiene suscripción activa, tiene acceso a TODOS los cursos
+      if (tieneSuscripcionActiva && existingTables.some(table => table.toLowerCase().includes('cursos'))) {
+        try {
+          const todosLosCursos = await db.executeQuery(`
+            SELECT id_curso, titulo AS nombre, miniatura 
+            FROM Cursos WHERE estatus = 'publicado'
+          `);
+          cursosConAcceso = todosLosCursos.recordset || [];
+          cursosInscritos = cursosConAcceso.length;
+          console.log('[USER-DASHBOARD] ✅ Acceso completo por suscripción:', cursosInscritos, 'cursos');
+        } catch (cursosError) {
+          console.error('[USER-DASHBOARD] ⚠️ Error obteniendo cursos con suscripción:', cursosError.message);
+        }
+      } else {
+        // Sin suscripción, verificar compras individuales
+        if (existingTables.some(table => table.toLowerCase().includes('compras'))) {
+          try {
+            const comprasResult = await db.executeQuery(`
+              SELECT DISTINCT c.id_curso, c.titulo AS nombre, c.miniatura
+              FROM Compras comp
+              INNER JOIN Cursos c ON comp.id_curso = c.id_curso  
+              WHERE comp.id_usuario = @userId AND c.estatus = 'publicado'
+            `, { userId: user.id });
+            
+            cursosConAcceso = comprasResult.recordset || [];
+            cursosInscritos = cursosConAcceso.length;
+            console.log('[USER-DASHBOARD] 💰 Acceso por compras individuales:', cursosInscritos, 'cursos');
+          } catch (comprasError) {
+            console.error('[USER-DASHBOARD] ⚠️ Error verificando compras:', comprasError.message);
+          }
+        }
+      }
+      
+      // Ahora obtener el progreso SOLO de los cursos con acceso legítimo
+      if (cursosConAcceso.length > 0 && existingTables.some(table => table.toLowerCase().includes('progreso'))) {
+        try {
+          for (let curso of cursosConAcceso) {
+            // Obtener progreso real del curso
             const progresoResult = await db.executeQuery(`
               SELECT 
-                c.id_curso,
-                c.titulo AS nombre, 
-                c.miniatura, 
-                i.progreso
-              FROM inscripciones i
-              INNER JOIN Cursos c ON i.id_curso = c.id_curso
-              WHERE i.id_usuario = @userId AND i.progreso > 0 AND i.progreso < 100
-            `, { userId: user.id });
-            if (progresoResult && progresoResult.recordset) {
-              cursosEnProgreso = progresoResult.recordset;
-              
-              // Para cada curso en progreso, obtener el último video visto
-              for (let curso of cursosEnProgreso) {
-                try {
-                  // Buscar el último video con progreso en este curso
-                  const ultimoVideoResult = await db.executeQuery(`
-                    SELECT TOP 1 
-                      v.id_video,
-                      v.titulo as video_titulo,
-                      p.minuto_actual,
-                      p.completado
-                    FROM Progreso p
-                    INNER JOIN Video v ON p.id_video = v.id_video
-                    INNER JOIN Modulos m ON v.id_modulo = m.id_modulo
-                    WHERE m.id_curso = @cursoId AND p.id_usuario = @userId
-                    ORDER BY p.fecha_modificacion DESC
-                  `, { cursoId: curso.id_curso, userId: user.id });
-                  
-                  if (ultimoVideoResult && ultimoVideoResult.recordset && ultimoVideoResult.recordset.length > 0) {
-                    const ultimoVideo = ultimoVideoResult.recordset[0];
-                    curso.ultimo_video_id = ultimoVideo.id_video;
-                    curso.ultimo_video_titulo = ultimoVideo.video_titulo;
-                    curso.minuto_actual = ultimoVideo.minuto_actual;
-                    curso.video_completado = ultimoVideo.completado;
-                  } else {
-                    // Si no hay progreso de video, obtener el primer video del curso
-                    const primerVideoResult = await db.executeQuery(`
-                      SELECT TOP 1 
-                        v.id_video,
-                        v.titulo as video_titulo
-                      FROM Video v
-                      INNER JOIN Modulos m ON v.id_modulo = m.id_modulo
-                      WHERE m.id_curso = @cursoId AND v.estatus = 'publicado'
-                      ORDER BY m.orden ASC, v.orden ASC
-                    `, { cursoId: curso.id_curso });
-                    
-                    if (primerVideoResult && primerVideoResult.recordset && primerVideoResult.recordset.length > 0) {
-                      const primerVideo = primerVideoResult.recordset[0];
-                      curso.ultimo_video_id = primerVideo.id_video;
-                      curso.ultimo_video_titulo = primerVideo.video_titulo;
-                      curso.minuto_actual = 0;
-                      curso.video_completado = false;
-                    }
-                  }
-                } catch (videoError) {
-                  console.error(`[USER-DASHBOARD] ⚠️ Error obteniendo último video del curso ${curso.id_curso}:`, videoError.message);
-                }
-                
-                // También corregimos las URLs de las miniaturas
-                if (curso.miniatura) {
-                  curso.imagen_url = bunnyService.getBunnyCdnUrl(curso.miniatura);
-                }
-              }
+                COUNT(*) as total_videos,
+                COUNT(CASE WHEN p.completado = 1 THEN 1 END) as videos_completados
+              FROM Video v
+              INNER JOIN Modulos m ON v.id_modulo = m.id_modulo
+              LEFT JOIN Progreso p ON v.id_video = p.id_video AND p.id_usuario = @userId
+              WHERE m.id_curso = @cursoId AND v.estatus = 'publicado'
+            `, { userId: user.id, cursoId: curso.id_curso });
+            
+            const stats = progresoResult.recordset[0];
+            const progreso = stats.total_videos > 0 ? Math.round((stats.videos_completados / stats.total_videos) * 100) : 0;
+            curso.progreso = progreso;
+            
+            // Si el curso tiene progreso entre 1% y 99%, es un "curso en progreso"
+            if (progreso > 0 && progreso < 100) {
+              cursosEnProgreso.push(curso);
+            } else if (progreso === 100) {
+              cursosCompletados++;
             }
           }
-        } catch (inscripcionesError) {
-          console.error('[USER-DASHBOARD] ⚠️ Error consultando inscripciones:', inscripcionesError.message);
+          
+          console.log('[USER-DASHBOARD] 📊 Cursos en progreso legítimos:', cursosEnProgreso.length);
+        } catch (progresoError) {
+          console.error('[USER-DASHBOARD] ⚠️ Error calculando progreso:', progresoError.message);
+        }
+      }
+      
+      // Obtener último video visto para cursos en progreso
+      if (cursosEnProgreso.length > 0) {
+        try {
+          // Para cada curso en progreso, obtener el último video visto
+          for (let curso of cursosEnProgreso) {
+            try {
+              // Buscar el último video con progreso en este curso
+              const ultimoVideoResult = await db.executeQuery(`
+                SELECT TOP 1 
+                  v.id_video,
+                  v.titulo as video_titulo,
+                  p.minuto_actual,
+                  p.completado
+                FROM Progreso p
+                INNER JOIN Video v ON p.id_video = v.id_video
+                INNER JOIN Modulos m ON v.id_modulo = m.id_modulo
+                WHERE m.id_curso = @cursoId AND p.id_usuario = @userId
+                ORDER BY p.fecha_modificacion DESC
+              `, { cursoId: curso.id_curso, userId: user.id });
+              
+              if (ultimoVideoResult && ultimoVideoResult.recordset && ultimoVideoResult.recordset.length > 0) {
+                const ultimoVideo = ultimoVideoResult.recordset[0];
+                curso.ultimo_video_id = ultimoVideo.id_video;
+                curso.ultimo_video_titulo = ultimoVideo.video_titulo;
+                curso.minuto_actual = ultimoVideo.minuto_actual;
+                curso.video_completado = ultimoVideo.completado;
+              } else {
+                // Si no hay progreso de video, obtener el primer video del curso
+                const primerVideoResult = await db.executeQuery(`
+                  SELECT TOP 1 
+                    v.id_video,
+                    v.titulo as video_titulo
+                  FROM Video v
+                  INNER JOIN Modulos m ON v.id_modulo = m.id_modulo
+                  WHERE m.id_curso = @cursoId AND v.estatus = 'publicado'
+                  ORDER BY m.orden ASC, v.orden ASC
+                `, { cursoId: curso.id_curso });
+                
+                if (primerVideoResult && primerVideoResult.recordset && primerVideoResult.recordset.length > 0) {
+                  const primerVideo = primerVideoResult.recordset[0];
+                  curso.ultimo_video_id = primerVideo.id_video;
+                  curso.ultimo_video_titulo = primerVideo.video_titulo;
+                  curso.minuto_actual = 0;
+                  curso.video_completado = false;
+                }
+              }
+            } catch (videoError) {
+              console.error(`[USER-DASHBOARD] ⚠️ Error obteniendo último video del curso ${curso.id_curso}:`, videoError.message);
+            }
+            
+            // También corregimos las URLs de las miniaturas
+            if (curso.miniatura) {
+              curso.imagen_url = bunnyService.getBunnyCdnUrl(curso.miniatura);
+            }
+          }
+        } catch (progresoVideoError) {
+          console.error('[USER-DASHBOARD] ⚠️ Error obteniendo videos de cursos en progreso:', progresoVideoError.message);
         }
       }
       

@@ -43,20 +43,23 @@ router.post('/login', async function(req, res, next) {
     }
     
     console.log('[AUTH] 🔐 Intento de login para:', email);
+    console.log('[AUTH] 🔍 Email normalizado:', email.toLowerCase());
     
-    // Buscar usuario en la base de datos incluyendo información de contraseña temporal
-    const result = await db.executeQuery(
-      `SELECT u.id_usuario, u.nombre, u.apellido, u.nombre_usuario, u.email, u.password, 
-              r.NombreRol as rol, u.estatus, 
+    const sqlQuery = `SELECT u.id_usuario, u.nombre, u.apellido, u.nombre_usuario, u.email, u.password, 
+              u.rol, u.estatus, 
               ISNULL(u.tiene_password_temporal, 0) as tiene_password_temporal, 
               u.fecha_password_temporal
        FROM Usuarios u
-       INNER JOIN Roles r ON u.RolID = r.RolID 
-       WHERE u.email = @email`,
-      { email: email.toLowerCase() }
-    );
+       WHERE u.email = @email`;
+    
+    console.log('[AUTH] 📝 Ejecutando consulta SQL:', sqlQuery);
+    console.log('[AUTH] 📋 Parámetros:', { email: email.toLowerCase() });
+    
+    // Buscar usuario en la base de datos incluyendo información de contraseña temporal
+    const result = await db.executeQuery(sqlQuery, { email: email.toLowerCase() });
     
     console.log('[AUTH] 📊 Consulta ejecutada, resultados encontrados:', result.recordset.length);
+    console.log('[AUTH] 📊 Resultado completo:', result.recordset);
     
     if (result.recordset.length === 0) {
       console.log('[AUTH] ❌ Usuario no encontrado:', email);
