@@ -5,6 +5,8 @@
 
 var express = require('express');
 var router = express.Router();
+const { requireAuth } = require('../../middleware/auth');
+const { requireAuth } = require('../../middleware/auth');
 
 /* GET carrito page */
 router.get('/', async function(req, res, next) {
@@ -86,14 +88,116 @@ router.get('/', async function(req, res, next) {
   }
 });
 
+/**
+ * POST /carrito/add
+ * Añade un curso al carrito, con validaciones completas de acceso.
+ */
+router.post('/add', requireAuth, async (req, res) => {
+    try {
+        const { id_curso } = req.body;
+        const id_usuario = req.session.user.id_usuario || req.session.user.id;
+        const db = req.app.locals.db;
+
+        if (!id_curso) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'ID del curso no proporcionado.' 
+            });
+        }
+
+        console.log(`[CARRITO] 🛒 Validando acceso para curso ${id_curso} - Usuario: ${id_usuario}`);
+
+        // --- INICIO DE VALIDACIÓN DE ACCESO ---
+        
+        // Verificación 1: ¿Suscripción activa?
+        const subsQuery = await db.executeQuery("SELECT COUNT(*) AS count FROM Suscripciones WHERE id_usuario = @id_usuario AND estatus = 'activa'", { id_usuario });
+        if (subsQuery.recordset[0].count > 0) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'Ya tienes acceso a todos los cursos con tu suscripción activa.' 
+            });
+        }
+
+        // Verificación 2: ¿Curso ya comprado?
+        const comprasQuery = await db.executeQuery("SELECT COUNT(*) AS count FROM Compras WHERE id_usuario = @id_usuario AND id_curso = @id_curso", { id_usuario, id_curso: parseInt(id_curso, 10) });
+        if (comprasQuery.recordset[0].count > 0) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'Ya has comprado este curso anteriormente.' 
+            });
+        }
+        
+        // Verificación 3: ¿Ya está en el carrito activo?
+        const carritoQuery = await db.executeQuery("SELECT COUNT(*) AS count FROM Carrito_Compras WHERE id_usuario = @id_usuario AND id_curso = @id_curso AND estatus = 'activo'", { id_usuario, id_curso: parseInt(id_curso, 10) });
+        if (carritoQuery.recordset[0].count > 0) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'Este curso ya se encuentra en tu carrito.' 
+            });
+        }
+        // --- FIN DE VALIDACIÓN DE ACCESO ---
+
+        console.log(`[CARRITO] ✅ Validaciones pasadas, agregando curso al carrito`);
+
+        // Si pasa todas las validaciones, lo insertamos:
+        const insertQuery = `
+            INSERT INTO Carrito_Compras (id_usuario, id_curso, fecha_agregado, estatus)
+            VALUES (@id_usuario, @id_curso, GETDATE(), 'activo')
+        `;
+        await db.executeQuery(insertQuery, { 
+            id_usuario: id_usuario, 
+            id_curso: parseInt(id_curso, 10) 
+        });
+
+        console.log(`[CARRITO] ✅ Curso ${id_curso} agregado exitosamente al carrito del usuario ${id_usuario}`);
+        res.json({ success: true, message: 'Curso añadido al carrito.' });
+
+    } catch (error) {
+        console.error('[CARRITO] ❌ Error al añadir al carrito:', error);
+        res.status(500).json({ success: false, message: 'Error interno del servidor.' });
+    }
+});
+
 /* POST agregar curso al carrito */
 router.post('/agregar/:cursoId', async function(req, res, next) {
   try {
     const { cursoId } = req.params;
     const user = req.session.user;
+    const id_usuario = user.id_usuario || user.id;
     const db = req.app.locals.db;
     
-    console.log('[CARRITO] ➕ Agregando curso al carrito:', cursoId, '- Usuario:', user.email);
+    console.log('[CARRITO] ➡️ Agregando curso al carrito (legacy):', cursoId, '- Usuario:', user.email);
+
+    // --- INICIO DE VALIDACIÓN DE ACCESO COMPLETA ---
+        
+    // Verificación 1: ¿Suscripción activa?
+    const subsQuery = await db.executeQuery("SELECT COUNT(*) AS count FROM Suscripciones WHERE id_usuario = @id_usuario AND estatus = 'activa'", { id_usuario });
+    if (subsQuery.recordset[0].count > 0) {
+        return res.status(400).json({ 
+            success: false, 
+            message: 'Ya tienes acceso a todos los cursos con tu suscripción activa.' 
+        });
+    }
+
+    // Verificación 2: ¿Curso ya comprado?
+    const comprasQuery = await db.executeQuery("SELECT COUNT(*) AS count FROM Compras WHERE id_usuario = @id_usuario AND id_curso = @id_curso", { id_usuario, id_curso: parseInt(cursoId, 10) });
+    if (comprasQuery.recordset[0].count > 0) {
+        return res.status(400).json({ 
+            success: false, 
+            message: 'Ya has comprado este curso anteriormente.' 
+        });
+    }
+        
+    // Verificación 3: ¿Ya está en el carrito activo?
+    const carritoQuery = await db.executeQuery("SELECT COUNT(*) AS count FROM Carrito_Compras WHERE id_usuario = @id_usuario AND id_curso = @id_curso AND estatus = 'activo'", { id_usuario, id_curso: parseInt(cursoId, 10) });
+    if (carritoQuery.recordset[0].count > 0) {
+        return res.status(400).json({ 
+            success: false, 
+            message: 'Este curso ya se encuentra en tu carrito.' 
+        });
+    }
+    
+    // --- FIN DE VALIDACIÓN DE ACCESO ---
 
     // Verificar que el curso existe y está publicado
     const cursoQuery = `
@@ -210,9 +314,44 @@ router.get('/agregar/:cursoId', async function(req, res, next) {
   try {
     const { cursoId } = req.params;
     const user = req.session.user;
+    const id_usuario = user.id_usuario || user.id;
     const db = req.app.locals.db;
     
     console.log('[CARRITO] ➕ Agregando curso via GET:', cursoId, '- Usuario:', user.email);
+
+    // --- INICIO DE VALIDACIÓN DE ACCESO COMPLETA ---
+        
+    // Verificación 1: ¿Suscripción activa?
+    const subsQuery = await db.executeQuery("SELECT COUNT(*) AS count FROM Suscripciones WHERE id_usuario = @id_usuario AND estatus = 'activa'", { id_usuario });
+    if (subsQuery.recordset[0].count > 0) {
+        req.session.message = { 
+            type: 'info', 
+            text: 'Ya tienes acceso a todos los cursos con tu suscripción activa.' 
+        };
+        return res.redirect('/cursos');
+    }
+
+    // Verificación 2: ¿Curso ya comprado?
+    const comprasQuery = await db.executeQuery("SELECT COUNT(*) AS count FROM Compras WHERE id_usuario = @id_usuario AND id_curso = @id_curso", { id_usuario, id_curso: parseInt(cursoId, 10) });
+    if (comprasQuery.recordset[0].count > 0) {
+        req.session.message = { 
+            type: 'info', 
+            text: 'Ya has comprado este curso anteriormente.' 
+        };
+        return res.redirect(`/curso/${cursoId}`);
+    }
+        
+    // Verificación 3: ¿Ya está en el carrito activo?
+    const carritoQuery = await db.executeQuery("SELECT COUNT(*) AS count FROM Carrito_Compras WHERE id_usuario = @id_usuario AND id_curso = @id_curso AND estatus = 'activo'", { id_usuario, id_curso: parseInt(cursoId, 10) });
+    if (carritoQuery.recordset[0].count > 0) {
+        req.session.message = { 
+            type: 'info', 
+            text: 'Este curso ya se encuentra en tu carrito.' 
+        };
+        return res.redirect('/carrito');
+    }
+    
+    // --- FIN DE VALIDACIÓN DE ACCESO ---
 
     // Verificar que el curso existe y está publicado
     const cursoQuery = `
@@ -233,79 +372,21 @@ router.get('/agregar/:cursoId', async function(req, res, next) {
       return res.redirect('/cursos');
     }
 
-    // Verificar que el usuario no ya compró el curso
-    const compraQuery = `
-      SELECT id_compra 
-      FROM Compras 
-      WHERE id_usuario = @userId AND id_curso = @cursoId
+    // Si llega aquí, todas las validaciones pasaron - agregar al carrito directamente
+    const insertQuery = `
+      INSERT INTO Carrito_Compras (id_usuario, id_curso, fecha_agregado, estatus)
+      VALUES (@userId, @cursoId, GETDATE(), 'activo')
     `;
     
-    const compraResult = await db.executeQuery(compraQuery, { 
-      userId: user.id,
+    await db.executeQuery(insertQuery, { 
+      userId: id_usuario,
       cursoId: parseInt(cursoId)
     });
-
-    if (compraResult.recordset && compraResult.recordset.length > 0) {
-      req.session.message = { 
-        type: 'info', 
-        text: 'Ya tienes acceso a este curso' 
-      };
-      return res.redirect(`/curso/${cursoId}`);
-    }
-
-    // Verificar si el curso ya está en el carrito
-    const carritoExistQuery = `
-      SELECT id_carrito, estatus 
-      FROM Carrito_Compras 
-      WHERE id_usuario = @userId AND id_curso = @cursoId
-    `;
     
-    const carritoExistResult = await db.executeQuery(carritoExistQuery, { 
-      userId: user.id,
-      cursoId: parseInt(cursoId)
-    });
-
-    if (carritoExistResult.recordset && carritoExistResult.recordset.length > 0) {
-      const itemExistente = carritoExistResult.recordset[0];
-      
-      if (itemExistente.estatus === 'eliminado') {
-        // Reactivar item eliminado
-        await db.executeQuery(`
-          UPDATE Carrito_Compras 
-          SET estatus = 'activo', fecha_agregado = GETDATE()
-          WHERE id_usuario = @userId AND id_curso = @cursoId
-        `, { 
-          userId: user.id,
-          cursoId: parseInt(cursoId)
-        });
-        
-        req.session.message = { 
-          type: 'success', 
-          text: 'Curso agregado al carrito exitosamente' 
-        };
-      } else {
-        req.session.message = { 
-          type: 'info', 
-          text: 'Este curso ya está en tu carrito' 
-        };
-      }
-    } else {
-      // Agregar al carrito
-      const insertQuery = `
-        INSERT INTO Carrito_Compras (id_usuario, id_curso, fecha_agregado, estatus)
-        VALUES (@userId, @cursoId, GETDATE(), 'activo')
-      `;
-      
-      await db.executeQuery(insertQuery, { 
-        userId: user.id,
-        cursoId: parseInt(cursoId)
-      });
-      
-      req.session.message = { 
-        type: 'success', 
-        text: 'Curso agregado al carrito exitosamente' 
-      };
-    }
+    req.session.message = { 
+      type: 'success', 
+      text: 'Curso agregado al carrito exitosamente' 
+    };
 
     res.redirect('/carrito');
 

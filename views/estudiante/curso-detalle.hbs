@@ -4,6 +4,10 @@
     <title>{{title}}</title>
     <link rel='stylesheet' href='/stylesheets/style.css' />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome para iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         .curso-detail-page {
             min-height: 100vh;
@@ -329,14 +333,35 @@
                         </div>
                     </div>
                     <div class="curso-card-detail">
-                        <div class="precio-grande">{{curso.precio}}</div>
-                        <p style="margin: 0; color: var(--text-light);">Precio del curso completo</p>
-                        <button class="btn-inscribir" onclick="inscribirse()">
-                            🎓 Inscribirse Ahora
-                        </button>
-                        <button class="btn-carrito" onclick="agregarAlCarrito()">
-                            🛒 Agregar al Carrito
-                        </button>
+                        {{#if tieneAcceso}}
+                            {{! 1. Si el usuario YA tiene acceso }}
+                            <div class="d-grid gap-2 mt-3">
+                                <a href="/video/{{curso.primerVideoId}}" class="btn btn-success btn-lg btn-inscribir" style="text-decoration: none; background: #28a745;">
+                                    <i class="fas fa-play-circle me-2"></i>🎬 Ir al Curso
+                                </a>
+                                <p class="text-center text-muted small mt-2" style="font-size: 0.9rem; color: var(--text-light);">
+                                    ✅ Ya tienes acceso a este curso
+                                </p>
+                            </div>
+                        {{else}}
+                            {{! 2. Si el usuario NO tiene acceso, mostrar botones de compra }}
+                            <div class="precio-grande">{{curso.precio}}</div>
+                            <p style="margin: 0; color: var(--text-light);">Precio del curso completo</p>
+                            
+                            <div class="d-grid gap-2 mt-3">
+                                <button class="btn-carrito" 
+                                        id="btnAnadirAlCarrito" 
+                                        data-curso-id="{{curso.id_curso}}" 
+                                        onclick="anadirAlCarrito('{{curso.id_curso}}')">
+                                    <i class="fas fa-shopping-cart me-2"></i>🛒 Añadir al Carrito
+                                </button>
+                                
+                                <button class="btn-inscribir" onclick="comprarAhora('{{curso.id_curso}}')">
+                                    🎓 Comprar Ahora
+                                </button>
+                            </div>
+                        {{/if}}
+                        
                         <p style="font-size: 0.9rem; margin-top: 10px; color: var(--text-light);">
                             ✅ Acceso de por vida<br>
                             ✅ Certificado incluido<br>
@@ -465,8 +490,8 @@
             window.location.href = '/cursos/mis-cursos?user={{userName}}&email={{userEmail}}&rol={{userRole}}&id={{userId}}';
         }
 
-        function agregarAlCarrito() {
-            fetch('/carrito/agregar/{{curso.id}}', {
+        function anadirAlCarrito(cursoId) {
+            fetch('/carrito/agregar/' + cursoId, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -477,14 +502,16 @@
                 if (data.success) {
                     alert('✅ Curso agregado al carrito exitosamente');
                     // Opcional: cambiar el texto del botón temporalmente
-                    const btn = event.target;
-                    const originalText = btn.innerHTML;
-                    btn.innerHTML = '✅ Agregado';
-                    btn.disabled = true;
-                    setTimeout(() => {
-                        btn.innerHTML = originalText;
-                        btn.disabled = false;
-                    }, 2000);
+                    const btn = document.getElementById('btnAnadirAlCarrito');
+                    if (btn) {
+                        const originalText = btn.innerHTML;
+                        btn.innerHTML = '✅ Agregado';
+                        btn.disabled = true;
+                        setTimeout(() => {
+                            btn.innerHTML = originalText;
+                            btn.disabled = false;
+                        }, 2000);
+                    }
                 } else {
                     alert('❌ Error: ' + (data.message || 'No se pudo agregar al carrito'));
                 }
@@ -493,6 +520,34 @@
                 console.error('Error:', error);
                 alert('❌ Error de conexión. Intenta nuevamente.');
             });
+        }
+
+        function comprarAhora(cursoId) {
+            // Agregar al carrito y redirigir directamente al checkout
+            fetch('/carrito/agregar/' + cursoId, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Redirigir al carrito para proceder al pago
+                    window.location.href = '/carrito';
+                } else {
+                    alert('❌ Error: ' + (data.message || 'No se pudo procesar la compra'));
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('❌ Error de conexión. Intenta nuevamente.');
+            });
+        }
+
+        // Función legacy mantenida para compatibilidad
+        function agregarAlCarrito() {
+            anadirAlCarrito('{{curso.id}}');
         }
 
         // Cerrar modal al hacer clic fuera

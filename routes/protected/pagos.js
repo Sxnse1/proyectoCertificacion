@@ -235,9 +235,12 @@ router.post('/webhook', async function(req, res, next) {
     if (paymentInfo.status === 'approved') {
       const userId = parseInt(paymentInfo.external_reference);
       
-      if (!userId) {
-        console.log('[PAGOS] ⚠️ Usuario no identificado en external_reference');
-        return res.status(200).send('OK');
+      // ¡Corrección Clave! Usar los items de MP, no el carrito
+      const itemsPagados = paymentInfo.additional_info ? paymentInfo.additional_info.items : null;
+
+      if (!userId || !itemsPagados || itemsPagados.length === 0) {
+          console.log('[PAGOS] ⚠️ Pago aprobado pero sin external_reference o sin items. No se puede procesar:', paymentId);
+          return res.status(200).send('OK (nada que procesar)');
       }
 
       const db = req.app.locals.db;
@@ -247,47 +250,26 @@ router.post('/webhook', async function(req, res, next) {
       await transaction.begin();
 
       try {
-        // Obtener items del carrito activo con precios correctos
-        const carritoQuery = `
-          SELECT 
-            cc.id_carrito,
-            cc.id_curso,
-            1 as cantidad,
-            c.precio
-          FROM Carrito_Compras cc
-          INNER JOIN Cursos c ON cc.id_curso = c.id_curso
-          WHERE cc.id_usuario = @userId AND cc.estatus = 'activo'
-        `;
-        
-        const carritoResult = await transaction.request()
-          .input('userId', userId)
-          .query(carritoQuery);
+        // Iteramos sobre los items que SÍ se pagaron
+        for (const item of itemsPagados) {
+            const id_curso = parseInt(item.id, 10);
+            const monto_pagado = parseFloat(item.unit_price);
 
-        const items = carritoResult.recordset;
-        
-        if (items.length === 0) {
-          console.log('[PAGOS] ⚠️ No hay items en carrito para usuario:', userId);
-          await transaction.rollback();
-          return res.status(200).send('OK');
-        }
-
-        // Reemplazar el bucle de INSERT con esto:
-        for (const item of items) {
-          await transaction.request()
-            .input('userId', userId)
-            .input('cursoId', item.id_curso)
-            .input('monto', parseFloat(item.precio)) // Columna correcta: monto
-            .input('metodoPago', 'mercadopago')
-            .input('descripcion', `Pago MP: ${paymentId}`) // Columna correcta: descripcion
-            .query(`
-              INSERT INTO Compras (
-                id_usuario, id_curso, monto, 
-                metodo_pago, descripcion, fecha_compra
-              ) VALUES (
-                @userId, @cursoId, @monto,
-                @metodoPago, @descripcion, GETDATE()
-              )
-            `);
+            await transaction.request()
+                .input('userId', userId)
+                .input('cursoId', id_curso)
+                .input('monto', monto_pagado)
+                .input('metodoPago', 'mercadopago')
+                .input('descripcion', `Pago MP: ${paymentId}`)
+                .query(`
+                    INSERT INTO Compras (
+                        id_usuario, id_curso, monto, 
+                        metodo_pago, descripcion, fecha_compra
+                    ) VALUES (
+                        @userId, @cursoId, @monto,
+                        @metodoPago, @descripcion, GETDATE()
+                    )
+                `);
         }
 
         // Actualizar carrito a 'comprado'
@@ -301,7 +283,7 @@ router.post('/webhook', async function(req, res, next) {
 
         await transaction.commit();
         
-        console.log(`[PAGOS] ✅ Pago procesado exitosamente - Usuario: ${userId}, Items: ${items.length}`);
+        console.log(`[PAGOS] ✅ Pago procesado exitosamente - Usuario: ${userId}, Items: ${itemsPagados.length}`);
 
       } catch (dbError) {
         await transaction.rollback();
