@@ -602,7 +602,7 @@
                 .catch(error => {
                     showLoading(false);
                     console.error('Error:', error);
-                    alert('Error al cargar los datos de la membresía');
+                    showErrorToast('Error al cargar los datos de la membresía');
                 });
         }
 
@@ -619,16 +619,16 @@
                 .then(data => {
                     showLoading(false);
                     if (data.success) {
-                        alert('Membresía eliminada exitosamente');
+                        showSuccessToast('Membresía eliminada exitosamente');
                         location.reload();
                     } else {
-                        alert('Error: ' + data.message);
+                        showErrorToast('Error: ' + data.message);
                     }
                 })
                 .catch(error => {
                     showLoading(false);
                     console.error('Error:', error);
-                    alert('Error al eliminar la membresía');
+                    showErrorToast('Error al eliminar la membresía');
                 });
             }
         }
@@ -650,16 +650,16 @@
             .then(data => {
                 showLoading(false);
                 if (data.success) {
-                    alert('Membresía guardada exitosamente');
+                    showSuccessToast('Membresía guardada exitosamente');
                     location.reload();
                 } else {
-                    alert('Error: ' + data.message);
+                    showErrorToast('Error: ' + data.message);
                 }
             })
             .catch(error => {
                 showLoading(false);
                 console.error('Error:', error);
-                alert('Error al guardar la membresía');
+                showErrorToast('Error al guardar la membresía');
             });
         }
     </script>

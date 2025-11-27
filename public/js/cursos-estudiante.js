@@ -71,11 +71,16 @@ class CursosEstudianteManager {
     // Función para agregar al carrito desde la lista
     async agregarAlCarritoLista(cursoId, buttonElement) {
         try {
-            const response = await fetch('/carrito/agregar/' + cursoId, {
+            const response = await fetch('/carrito/add', {
                 method: 'POST',
+                credentials: 'same-origin',
                 headers: {
+                    'Accept': 'application/json',
                     'Content-Type': 'application/json'
-                }
+                },
+                body: JSON.stringify({
+                    id_curso: cursoId
+                })
             });
 
             const data = await response.json();

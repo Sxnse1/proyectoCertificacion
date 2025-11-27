@@ -50,7 +50,7 @@ router.post('/crear-preferencia', async function(req, res, next) {
     `;
 
     const carritoResult = await db.executeQuery(carritoQuery, {
-      userId: user.id_usuario
+      userId: user.id_usuario || user.id
     });
 
     if (!carritoResult.recordset || carritoResult.recordset.length === 0) {
@@ -63,7 +63,7 @@ router.post('/crear-preferencia', async function(req, res, next) {
     const items = carritoResult.recordset;
     
     // --- INICIO DE VALIDACIÓN DE DOBLE PAGO ---
-    const id_usuario = user.id_usuario;
+    const id_usuario = user.id_usuario || user.id;
     let itemsParaPagar = [...items]; // Clonamos los items para poder filtrarlos
     
     console.log(`[PAGOS] 🛒 Items en carrito antes de filtrar: ${items.length}`);
@@ -159,7 +159,7 @@ router.post('/crear-preferencia', async function(req, res, next) {
         surname: user.nombre.split(' ').slice(1).join(' ') || 'StartEducation', 
         email: user.email,
       },
-      external_reference: user.id_usuario.toString(),
+      external_reference: (user.id_usuario || user.id).toString(),
       statement_descriptor: 'StartEducation'
     };
 
@@ -167,7 +167,7 @@ router.post('/crear-preferencia', async function(req, res, next) {
       items: mpItems.length,
       total: total,
       email: user.email,
-      external_reference: user.id_usuario,
+      external_reference: user.id_usuario || user.id,
       baseUrl: baseUrl
     });
     

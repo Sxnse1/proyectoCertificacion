@@ -56,22 +56,25 @@ class SuscripcionesManager {
             confirmButton.disabled = true;
 
             try {
-                const response = await fetch('/suscripciones/subscribe', {
+                const response = await fetch('/suscripciones/crear-preferencia-membresia', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        membershipId: this.selectedMembershipId,
-                        planName: this.selectedPlanName,
-                        price: this.selectedPrice
+                        id_membresia: this.selectedMembershipId
                     })
                 });
 
                 const data = await response.json();
 
                 if (data.success) {
-                    this.showSuccessMessage(data);
+                    // Redirigir directamente a MercadoPago
+                    if (data.initPoint) {
+                        window.location.href = data.initPoint;
+                    } else {
+                        this.showSuccessMessage(data);
+                    }
                 } else {
                     throw new Error(data.message || 'Error en la suscripción');
                 }

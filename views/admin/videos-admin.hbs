@@ -725,7 +725,7 @@
             const videoCard = document.querySelector(`[data-video-id="${videoId}"]`);
             if (!videoCard) {
                 console.error('❌ No se encontró el video con ID:', videoId);
-                alert('Error: No se encontró el video');
+                showErrorToast('Error: No se encontró el video');
                 return;
             }
 
@@ -769,7 +769,7 @@
             const modalElement = document.getElementById('editVideoModal');
             if (!modalElement) {
                 console.error('❌ No se encontró el elemento del modal');
-                alert('Error: Modal no encontrado');
+                showErrorToast('Error: Modal no encontrado');
                 return;
             }
 
@@ -783,7 +783,7 @@
                 console.log('✅ Modal de edición mostrado con eventos configurados');
             } catch (error) {
                 console.error('❌ Error al mostrar el modal:', error);
-                alert('Error al abrir el modal: ' + error.message);
+                showErrorToast('Error al abrir el modal: ' + error.message);
             }
         }
 
@@ -814,12 +814,12 @@
                         if (data.success) {
                             location.reload();
                         } else {
-                            alert('Error al cambiar el estado del video');
+                            showErrorToast('Error al cambiar el estado del video');
                         }
                     })
                     .catch(error => {
                         console.error('Error:', error);
-                        alert('Error al cambiar el estado del video');
+                        showErrorToast('Error al cambiar el estado del video');
                     });
             }
         }
@@ -834,12 +834,12 @@
                         if (data.success) {
                             location.reload();
                         } else {
-                            alert('Error al eliminar el video');
+                            showErrorToast('Error al eliminar el video');
                         }
                     })
                     .catch(error => {
                         console.error('Error:', error);
-                        alert('Error al eliminar el video');
+                        showErrorToast('Error al eliminar el video');
                     });
             }
         }

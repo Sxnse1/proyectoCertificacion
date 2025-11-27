@@ -28,6 +28,10 @@ function configureRoutes(app) {
   app.use('/two-factor', twoFactorRouter);
   app.use('/contact', contactRouter);
   
+  // Ruta pública para ver membresías
+  const suscripcionesRouter = require('./protected/suscripciones');
+  app.use('/membresias', suscripcionesRouter);
+  
   // ============================================================
   // 🔒 RUTAS PROTEGIDAS (requieren autenticación)
   // ============================================================
@@ -41,7 +45,6 @@ function configureRoutes(app) {
   const videoRouter = require('./protected/video');
   const usuariosRouter = require('./protected/usuarios');
   const perfilRouter = require('./perfil');
-  const suscripcionesRouter = require('./protected/suscripciones');
   const carritoRouter = require('./protected/carrito');
   const cursoDetalleRouter = require('./protected/curso-detalle');
   const pagosRouter = require('./protected/pagos');
@@ -56,7 +59,7 @@ function configureRoutes(app) {
   app.use('/usuarios', requireRole(['instructor', 'admin']), usuariosRouter);
   app.use('/perfil', requireAuth, perfilRouter);
   app.use('/suscripciones', requireAuth, suscripcionesRouter);
-  app.use('/carrito', requireAuth, carritoRouter);
+  app.use('/carrito', carritoRouter);
   app.use('/curso', requireAuth, cursoDetalleRouter);
   
   // ============================================================
@@ -82,7 +85,7 @@ function configureRoutes(app) {
   const cursosAdminRouter = require('./admin/cursos-admin');
   const videosAdminRouter = require('./admin/videos-admin');
   const usuariosAdminRouter = require('./admin/usuarios-admin');
-  // const rolesAdminRouter = require('./admin/roles-admin'); // Temporalmente deshabilitado
+  const rolesAdminRouter = require('./admin/roles-admin');
   
   app.use('/admin/categorias', categoriasAdminRouter);
   app.use('/admin/etiquetas', etiquetasAdminRouter);
@@ -90,7 +93,8 @@ function configureRoutes(app) {
   app.use('/admin/cursos', cursosAdminRouter);
   app.use('/admin/videos', videosAdminRouter);
   app.use('/admin/usuarios', usuariosAdminRouter);
-  // app.use('/admin/roles', rolesAdminRouter); // Temporalmente deshabilitado
+  // Gestión de Roles (requiere autenticación)
+  app.use('/admin/roles', requireAuth, rolesAdminRouter);
   
   // Analytics y Reportes
   const analyticsAdminRouter = require('./admin/analytics-admin');

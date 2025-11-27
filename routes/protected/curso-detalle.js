@@ -60,8 +60,32 @@ router.get('/:cursoId', requireAuth, async function(req, res, next) {
     const curso = cursoResult.recordset[0];
     const tieneAcceso = curso.ya_comprado || curso.tiene_suscripcion_activa;
 
+    // Verificar si el curso ya está en el carrito activo del usuario
+    let enCarrito = false;
+    if (!tieneAcceso) {
+      console.log('[CURSO-DETALLE] 🔍 Verificando carrito para usuario:', user.id_usuario, 'curso:', cursoId);
+      console.log('[CURSO-DETALLE] 🔍 user.id_usuario tipo:', typeof user.id_usuario, 'cursoId tipo:', typeof cursoId);
+      const carritoQuery = `
+        SELECT COUNT(*) as count 
+        FROM Carrito_Compras 
+        WHERE id_usuario = @userId AND id_curso = @cursoId AND estatus = 'activo'
+      `;
+      
+      const carritoResult = await db.executeQuery(carritoQuery, { 
+        userId: user.id_usuario,
+        cursoId: parseInt(cursoId)
+      });
+      
+      enCarrito = carritoResult.recordset[0].count > 0;
+      console.log('[CURSO-DETALLE] 🛒 Resultado consulta carrito:', carritoResult.recordset[0].count);
+      console.log('[CURSO-DETALLE] 🛒 enCarrito final:', enCarrito);
+    } else {
+      console.log('[CURSO-DETALLE] 🚫 Usuario tiene acceso, NO verificando carrito');
+    }
+
     console.log('[CURSO-DETALLE] ✅ Curso encontrado:', curso.titulo);
-    console.log('[CURSO-DETALLE] 👤 Usuario:', user.email, '- Acceso:', tieneAcceso ? 'SÍ' : 'NO');
+    console.log('[CURSO-DETALLE] 👤 Usuario:', user.email, '- ID:', user.id_usuario, '- Acceso:', tieneAcceso ? 'SÍ' : 'NO');
+    console.log('[CURSO-DETALLE] 🛒 En carrito:', enCarrito ? 'SÍ' : 'NO');
 
     // Obtener módulos y videos del curso
     const modulosQuery = `
@@ -187,6 +211,13 @@ router.get('/:cursoId', requireAuth, async function(req, res, next) {
     }
 
     console.log('[CURSO-DETALLE] 📊 Progreso:', progreso);
+    console.log('[CURSO-DETALLE] 🎫 Suscripción activa:', curso.tiene_suscripcion_activa ? 'SÍ' : 'NO');
+    console.log('[CURSO-DETALLE] 💰 Curso comprado:', curso.ya_comprado ? 'SÍ' : 'NO');
+    console.log('[CURSO-DETALLE] 🏷️ Variables finales para template:');
+    console.log('  - tieneAcceso:', tieneAcceso);
+    console.log('  - tieneSuscripcionActiva:', curso.tiene_suscripcion_activa === 1);
+    console.log('  - yaComprado:', curso.ya_comprado === 1);
+    console.log('  - enCarrito:', enCarrito);
 
     const backUrl = req.get('referer') || '/user-dashboard';
 
@@ -195,6 +226,9 @@ router.get('/:cursoId', requireAuth, async function(req, res, next) {
       curso: curso,
       modulos: modulos,
       tieneAcceso: tieneAcceso,
+      tieneSuscripcionActiva: curso.tiene_suscripcion_activa === 1,
+      yaComprado: curso.ya_comprado === 1,
+      enCarrito: enCarrito,
       progreso: progreso,
       userName: user.nombre,
       userEmail: user.email,

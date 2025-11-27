@@ -7,6 +7,12 @@ const express = require('express');
 const router = express.Router();
 const { requireAuth } = require('../../middleware/auth');
 
+// SDK de Mercado Pago para pagos reales
+const { MercadoPagoConfig, Preference } = require('mercadopago');
+const client = new MercadoPagoConfig({
+    accessToken: process.env.MERCADOPAGO_ACCESS_TOKEN
+});
+
 /**
  * GET /suscripciones - Vista de planes de suscripción para estudiantes
  */
@@ -222,84 +228,170 @@ router.get('/', async function(req, res, next) {
 });
 
 /**
- * POST /suscripciones/subscribe - Procesar suscripción
+ * POST /suscripciones/crear-preferencia-membresia
+ * Crea una preferencia de pago en Mercado Pago para una membresía
  */
-router.post('/subscribe', async function(req, res, next) {
-  try {
-    const user = req.session.user;
-    const { membershipId, planName, price } = req.body;
-    
-    if (!user) {
-      return res.status(401).json({ error: 'Usuario no autenticado' });
-    }
-
-    const db = req.app.locals.db;
-    
-    if (!db) {
-      return res.status(503).json({ error: 'Sistema en mantenimiento' });
-    }
-
-    console.log('[SUSCRIPCIONES] 🛒 Nueva suscripción:', {
-      userId: user.id,
-      membershipId: membershipId,
-      planName: planName,
-      price: price
-    });
-
+router.post('/crear-preferencia-membresia', requireAuth, async (req, res) => {
     try {
-      // Verificar si la tabla Suscripciones existe
-      const tablesResult = await db.executeQuery(`
-        SELECT TABLE_NAME 
-        FROM INFORMATION_SCHEMA.TABLES 
-        WHERE TABLE_TYPE = 'BASE TABLE' 
-        AND TABLE_NAME = 'Suscripciones'
-      `);
-      
-      if (tablesResult.recordset && tablesResult.recordset.length > 0) {
-        // Cancelar suscripción activa anterior si existe
-        await db.executeQuery(`
-          UPDATE Suscripciones 
-          SET estatus = 'cancelada' 
-          WHERE id_usuario = @userId 
-          AND estatus = 'activa'
-        `, { userId: user.id });
+        console.log('[SUSCRIPCIONES] 🎯 Iniciando creación de preferencia');
+        console.log('[SUSCRIPCIONES] 📦 Body recibido:', req.body);
+        
+        const { id_membresia } = req.body;
+        const user = req.session.user;
+        const db = req.app.locals.db;
+        
+        console.log('[SUSCRIPCIONES] 👤 Usuario:', user.email);
+        console.log('[SUSCRIPCIONES] 🏷️ ID Membresía:', id_membresia);
 
-        // Crear nueva suscripción
-        const fechaVencimiento = new Date();
-        fechaVencimiento.setMonth(fechaVencimiento.getMonth() + 1); // 30 días
+        if (!id_membresia) {
+            console.log('[SUSCRIPCIONES] ❌ ID de membresía no proporcionado');
+            return res.status(400).json({ success: false, message: 'ID de membresía no proporcionado.' });
+        }
 
-        await db.executeQuery(`
-          INSERT INTO Suscripciones (id_usuario, id_membresia, fecha_compra, fecha_vencimiento, estatus)
-          VALUES (@userId, @membershipId, GETDATE(), @fechaVencimiento, 'activa')
-        `, { 
-          userId: user.id, 
-          membershipId: membershipId,
-          fechaVencimiento: fechaVencimiento.toISOString().split('T')[0]
+        // 1. Obtener los datos de la membresía de la BD
+        console.log('[SUSCRIPCIONES] 🔍 Consultando membresía en BD...');
+        const membresiaQuery = "SELECT nombre, precio, descripcion FROM Membresias WHERE id_membresia = @id_membresia";
+        const membresiaResult = await db.executeQuery(membresiaQuery, { id_membresia });
+        console.log('[SUSCRIPCIONES] 📊 Resultado membresía:', membresiaResult.recordset);
+
+        if (membresiaResult.recordset.length === 0) {
+            console.log('[SUSCRIPCIONES] ❌ Membresía no encontrada');
+            return res.status(404).json({ success: false, message: 'Membresía no encontrada.' });
+        }
+
+        const membresia = membresiaResult.recordset[0];
+        const precio = parseFloat(membresia.precio);
+        console.log('[SUSCRIPCIONES] 💰 Precio calculado:', precio);
+
+        // 2. Crear el item para Mercado Pago
+        const mpItems = [{
+            id: id_membresia.toString(),
+            title: membresia.nombre,
+            description: membresia.descripcion || `Suscripción a ${membresia.nombre}`,
+            quantity: 1,
+            currency_id: 'MXN', // Asegúrate que sea tu moneda
+            unit_price: precio
+        }];
+        console.log('[SUSCRIPCIONES] 🛍️ Items para MP:', JSON.stringify(mpItems, null, 2));
+
+        // 3. Configurar la preferencia de pago
+        console.log('[SUSCRIPCIONES] 🔧 Creando preferencia de MercadoPago...');
+        console.log('[SUSCRIPCIONES] 🔐 Token MP:', process.env.MERCADOPAGO_ACCESS_TOKEN ? 'Configurado' : 'NO CONFIGURADO');
+        console.log('[SUSCRIPCIONES] 👤 Usuario completo:', JSON.stringify(user, null, 2));
+        
+        // Validar campos del usuario
+        const userEmail = user.email || 'default@example.com';
+        const userName = user.nombre || 'Usuario';
+        const userSurname = user.apellido || 'Sin Apellido';
+        const userId = user.id_usuario || user.id;
+        
+        console.log('[SUSCRIPCIONES] ✅ Campos validados - Email:', userEmail, 'Nombre:', userName, 'Apellido:', userSurname, 'ID:', userId);
+        
+        // Construir URLs de retorno
+        const baseUrl = process.env.BASE_URL || 'http://localhost:3000';
+        const backUrls = {
+            success: `${baseUrl}/suscripciones?pago=success`,
+            failure: `${baseUrl}/suscripciones?pago=failure`, 
+            pending: `${baseUrl}/suscripciones?pago=pending`
+        };
+        
+        console.log('[SUSCRIPCIONES] 🔗 URLs de retorno:', backUrls);
+        
+        // Estructura MÍNIMA de la preferencia para debugging
+        const preferenceBody = {
+            items: mpItems,
+            payer: {
+                email: userEmail,
+                name: userName,
+                surname: userSurname
+            },
+            external_reference: userId.toString()
+        };
+        
+        console.log('[SUSCRIPCIONES] 📝 Cuerpo de preferencia completo:', JSON.stringify(preferenceBody, null, 2));
+        
+        const preference = new Preference(client);
+        const result = await preference.create({
+            body: preferenceBody
         });
 
-        console.log('[SUSCRIPCIONES] ✅ Suscripción creada exitosamente');
-      } else {
-        console.log('[SUSCRIPCIONES] ⚠️ Tabla Suscripciones no existe, simulando suscripción');
-      }
-    } catch (dbError) {
-      console.error('[SUSCRIPCIONES] ❌ Error en base de datos:', dbError.message);
-      // Continuar como si fuera exitoso para la demostración
+        console.log(`[SUSCRIPCIONES] ✅ Preferencia de pago creada: ${result.id}`);
+        console.log(`[SUSCRIPCIONES] 🔗 Init point: ${result.init_point}`);
+        
+        res.json({
+            success: true,
+            preferenceId: result.id,
+            initPoint: result.init_point // La URL de pago
+        });
+
+    } catch (error) {
+        console.error('[SUSCRIPCIONES] ❌ Error completo:', error);
+        console.error('[SUSCRIPCIONES] ❌ Stack trace:', error.stack);
+        res.status(500).json({ success: false, message: 'Error al procesar el pago.' });
     }
+});
 
-    res.json({ 
-      success: true, 
-      message: `Suscripción al ${planName} procesada exitosamente`,
-      redirectUrl: '/user-dashboard?success=suscripcion_exitosa'
-    });
+/**
+ * GET /suscripciones/mis-suscripciones
+ * Vista de las suscripciones del usuario actual
+ */
+router.get('/mis-suscripciones', requireAuth, async (req, res) => {
+    try {
+        const user = req.session.user;
+        const db = req.app.locals.db;
 
-  } catch (error) {
-    console.error('[SUSCRIPCIONES] ❌ Error procesando suscripción:', error);
-    res.status(500).json({ 
-      success: false, 
-      error: 'Error procesando suscripción',
-      message: 'Ocurrió un error interno. Intenta nuevamente.'
-    });
-  }
+        console.log('[MIS SUSCRIPCIONES] Usuario accediendo:', user.email);
+
+        // Obtener suscripciones del usuario
+        const suscripcionesQuery = `
+            SELECT 
+                s.id_suscripcion,
+                s.fecha_compra,
+                s.fecha_vencimiento,
+                s.estatus,
+                m.nombre as plan_nombre,
+                m.descripcion as plan_descripcion,
+                m.precio
+            FROM Suscripciones s
+            INNER JOIN Membresias m ON s.id_membresia = m.id_membresia
+            WHERE s.id_usuario = @id_usuario
+            ORDER BY s.fecha_compra DESC
+        `;
+
+        const result = await db.executeQuery(suscripcionesQuery, { 
+            id_usuario: user.id_usuario 
+        });
+
+        const suscripciones = result.recordset || [];
+
+        // Verificar mensajes de estado del pago
+        const paymentStatus = req.query.pago;
+        let statusMessage = null;
+        
+        if (paymentStatus === 'success') {
+            statusMessage = { type: 'success', text: '¡Pago procesado exitosamente! Tu suscripción está activa.' };
+        } else if (paymentStatus === 'failure') {
+            statusMessage = { type: 'error', text: 'El pago no pudo ser procesado. Intenta nuevamente.' };
+        } else if (paymentStatus === 'pending') {
+            statusMessage = { type: 'warning', text: 'Tu pago está pendiente de confirmación.' };
+        }
+
+        res.render('estudiante/mis-suscripciones', {
+            title: 'Mis Suscripciones - StartEducation',
+            user: user,
+            suscripciones: suscripciones,
+            statusMessage: statusMessage,
+            layout: false
+        });
+
+    } catch (error) {
+        console.error('[MIS SUSCRIPCIONES] Error:', error);
+        res.render('error', {
+            title: 'Error',
+            message: 'Error al cargar tus suscripciones',
+            error: error
+        });
+    }
 });
 
 /**

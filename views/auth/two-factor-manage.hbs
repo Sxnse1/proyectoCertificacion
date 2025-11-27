@@ -406,11 +406,11 @@
                     showBackupCodes(data.backupCodes, true);
                     
                 } else {
-                    alert('❌ Error: ' + data.error);
+                    showErrorToast('❌ Error: ' + data.error);
                 }
             } catch (error) {
                 loadingOverlay.style.display = 'none';
-                alert('❌ Error regenerando códigos: ' + error.message);
+                showErrorToast('❌ Error regenerando códigos: ' + error.message);
             }
         }
         
@@ -434,7 +434,7 @@
         async function showCurrentCodes() {
             // Esta función mostraría los códigos actuales del usuario
             // Por seguridad, no implementamos esto completamente
-            alert('🔐 Por seguridad, no mostramos los códigos actuales.\n\nSi necesitas nuevos códigos, usa "Generar Nuevos Códigos" y guárdalos de inmediato.');
+            showInfoToast('🔐 Por seguridad, no mostramos los códigos actuales.\n\nSi necesitas nuevos códigos, usa "Generar Nuevos Códigos" y guárdalos de inmediato.', 'info', 6000);
         }
         
         function downloadCodes(codes, isNew = false) {
@@ -476,7 +476,7 @@ Para regenerar códigos o más ayuda:
             document.body.removeChild(a);
             window.URL.revokeObjectURL(url);
             
-            alert('📥 Códigos descargados exitosamente!\n\n🔐 Guarda el archivo en lugar seguro.');
+            showSuccessToast('📥 Códigos descargados exitosamente!\n\n🔐 Guarda el archivo en lugar seguro.', 5000);
         }
     </script>
 </body>

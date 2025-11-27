@@ -4,6 +4,7 @@ var bcrypt = require('bcryptjs');
 
 /* GET registro de usuario */
 router.get('/', function(req, res, next) {
+  console.log('[REGISTER] 📝 GET /register - Mostrando formulario de registro');
   res.render('auth/register-bootstrap', { 
     title: 'Registro de Usuario',
     redirectTo: req.query.redirect || '',
@@ -13,6 +14,9 @@ router.get('/', function(req, res, next) {
 
 /* POST crear cuenta pública */
 router.post('/', async function(req, res, next) {
+  console.log('[REGISTER] 📝 POST /register - Intento de registro');
+  console.log('[REGISTER] 📦 Body:', req.body);
+  
   const { nombre, apellido, email, password, redirectTo } = req.body;
 
   // Validaciones básicas

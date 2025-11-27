@@ -560,10 +560,10 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        alert('Suscripción renovada exitosamente');
+                        showSuccessToast('Suscripción renovada exitosamente');
                         location.reload();
                     } else {
-                        alert('Error: ' + data.message);
+                        showErrorToast('Error: ' + data.message);
                     }
                 });
             }
@@ -582,7 +582,7 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        alert('Fecha actualizada exitosamente');
+                        showSuccessToast('Fecha actualizada exitosamente');
                         location.reload();
                     } else {
                         alert('Error: ' + data.message);
@@ -602,7 +602,7 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        alert('Suscripción pausada exitosamente');
+                        showSuccessToast('Suscripción pausada exitosamente');
                         location.reload();
                     } else {
                         alert('Error: ' + data.message);
@@ -622,7 +622,7 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        alert('Suscripción reanudada exitosamente');
+                        showSuccessToast('Suscripción reanudada exitosamente');
                         location.reload();
                     } else {
                         alert('Error: ' + data.message);
@@ -644,7 +644,7 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        alert(`Suscripción extendida ${dias} días exitosamente`);
+                        showSuccessToast(`Suscripción extendida ${dias} días exitosamente`);
                         location.reload();
                     } else {
                         alert('Error: ' + data.message);
@@ -664,7 +664,7 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        alert('Suscripción cancelada exitosamente');
+                        showSuccessToast('Suscripción cancelada exitosamente');
                         location.reload();
                     } else {
                         alert('Error: ' + data.message);

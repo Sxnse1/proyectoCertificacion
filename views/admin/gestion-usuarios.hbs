@@ -583,12 +583,12 @@
                         document.getElementById('rol').value = data.usuario.Rol;
                         document.getElementById('usuarioModal').style.display = 'block';
                     } else {
-                        alert('Error al cargar datos del usuario');
+                        showErrorToast('Error al cargar datos del usuario');
                     }
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    alert('Error de conexión');
+                    showErrorToast('Error de conexión');
                 });
         }
         
@@ -626,15 +626,15 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        alert('Usuario actualizado exitosamente');
+                        showSuccessToast('Usuario actualizado exitosamente');
                         location.reload();
                     } else {
-                        alert('Error: ' + data.message);
+                        showErrorToast('Error: ' + data.message);
                     }
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    alert('Error de conexión');
+                    showErrorToast('Error de conexión');
                 });
             } else {
                 // Crear nuevo usuario
@@ -653,15 +653,15 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        alert('Usuario creado exitosamente');
+                        showSuccessToast('Usuario creado exitosamente');
                         location.reload();
                     } else {
-                        alert('Error: ' + data.message);
+                        showErrorToast('Error: ' + data.message);
                     }
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    alert('Error de conexión');
+                    showErrorToast('Error de conexión');
                 });
             }
         });

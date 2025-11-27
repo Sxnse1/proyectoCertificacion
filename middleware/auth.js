@@ -11,12 +11,24 @@ const { executeQuery } = require('../config/database');
 
 // Middleware básico de autenticación
 const requireAuth = (req, res, next) => {
+  // Debug log
+  console.log('[AUTH DEBUG] 🔍 Verificando autenticación para:', req.method, req.path);
+  console.log('[AUTH DEBUG] 👤 Usuario en sesión:', req.session && req.session.user ? req.session.user.email : 'NO LOGUEADO');
+  console.log('[AUTH DEBUG] 🕒 Sesión completa:', JSON.stringify(req.session, null, 2));
+  console.log('[AUTH DEBUG] 🆔 Session ID:', req.sessionID);
+  console.log('[AUTH DEBUG] 🎯 Headers Accept:', req.headers['accept']);
+  console.log('[AUTH DEBUG] 🔗 Headers X-Requested-With:', req.headers['x-requested-with']);
+  
   // Verificar si el usuario está autenticado mediante sesión
   if (req.session && req.session.user) {
-    const twoFactorService = require('../services/twoFactorService');
+    console.log('[AUTH DEBUG] ✅ Usuario autenticado:', req.session.user.email);
     
-    // Verificar si es instructor/admin y necesita 2FA
-    if (twoFactorService.requires2FA(req.session.user.rol)) {
+    // SIMPLIFICAR: Solo verificar 2FA para instructores/admin EN PRODUCCIÓN
+    const twoFactorService = require('../services/twoFactorService');
+    const isProduction = process.env.NODE_ENV === 'production';
+    
+    // Solo aplicar 2FA en producción para instructores/admin
+    if (isProduction && twoFactorService.requires2FA(req.session.user.rol)) {
       // Verificar si tiene 2FA configurado y verificado
       if (!req.session.user.two_factor_enabled || !req.session.user.two_factor_verified) {
         // Permitir acceso a rutas de configuración de 2FA
@@ -34,7 +46,8 @@ const requireAuth = (req, res, next) => {
       }
     }
     
-    // Usuario autenticado y con 2FA completo (si es necesario), continuar
+    // Usuario autenticado, continuar
+    console.log('[AUTH DEBUG] ✅ Permitiendo acceso');
     return next();
   }
   
@@ -51,6 +64,12 @@ const requireAuth = (req, res, next) => {
     return res.status(401).json({ success: false, message: 'No autenticado' });
   }
 
+  // Debug: Por qué no está autenticado
+  console.log('[AUTH DEBUG] ❌ Usuario no autenticado - Redirigiendo al login');
+  console.log('[AUTH DEBUG] 📍 Ruta intentada:', req.originalUrl);
+  console.log('[AUTH DEBUG] 🍪 Tiene sesión:', !!req.session);
+  console.log('[AUTH DEBUG] 👤 Tiene usuario en sesión:', !!(req.session && req.session.user));
+  
   return res.redirect('/auth/login?error=sesion_expirada');
 };
 

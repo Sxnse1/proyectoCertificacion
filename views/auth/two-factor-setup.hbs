@@ -484,7 +484,7 @@
             const code = document.getElementById('verificationCode').value;
             
             if (code.length !== 6) {
-                alert('Por favor ingresa un código de 6 dígitos');
+                showWarningToast('Por favor ingresa un código de 6 dígitos');
                 return;
             }
 
@@ -508,15 +508,15 @@
                 loadingOverlay.style.display = 'none';
 
                 if (result.success) {
-                    alert('¡2FA configurado exitosamente! Ahora tu cuenta está más segura.');
+                    showSuccessToast('¡2FA configurado exitosamente! Ahora tu cuenta está más segura.');
                     window.location.href = '/dashboard';
                 } else {
-                    alert('Error: ' + result.error);
+                    showErrorToast('Error: ' + result.error);
                 }
             } catch (error) {
                 console.error('Error:', error);
                 loadingOverlay.style.display = 'none';
-                alert('Error de conexión. Inténtalo nuevamente.');
+                showErrorToast('Error de conexión. Inténtalo nuevamente.');
             }
         });
 

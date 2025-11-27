@@ -365,15 +365,15 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        alert('Valoración actualizada exitosamente');
+                        showSuccessToast('Valoración actualizada exitosamente');
                         location.reload();
                     } else {
-                        alert('Error: ' + data.message);
+                        showErrorToast('Error: ' + data.message);
                     }
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    alert('Error al actualizar valoración');
+                    showErrorToast('Error al actualizar valoración');
                 });
             }
         }
@@ -389,15 +389,15 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        alert('Valoración eliminada exitosamente');
+                        showSuccessToast('Valoración eliminada exitosamente');
                         location.reload();
                     } else {
-                        alert('Error: ' + data.message);
+                        showErrorToast('Error: ' + data.message);
                     }
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    alert('Error al eliminar valoración');
+                    showErrorToast('Error al eliminar valoración');
                 });
             }
         }

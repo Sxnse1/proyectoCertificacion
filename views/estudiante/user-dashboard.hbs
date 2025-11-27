@@ -718,7 +718,13 @@
                         </span>
                         Mis Favoritos
                     </a>
-                    {{!-- Acceso rápido al carrito removido por diseño (no corresponde en el dashboard) --}}
+                    <a href="/carrito" class="action-btn px-2 py-1" style="font-size:0.95rem; min-width:170px; position:relative;">
+                        <span class="action-icon info" style="width:32px;height:32px;font-size:1.2rem;">
+                            <i class="bi bi-cart"></i>
+                        </span>
+                        Mi Carrito
+                        <span id="carrito-badge" class="badge bg-danger" style="position:absolute; top:-2px; right:5px; font-size:0.7rem; min-width:18px; height:18px; line-height:18px; border-radius:50%; display:none;">0</span>
+                    </a>
                 </div>
             </div>
         </div>

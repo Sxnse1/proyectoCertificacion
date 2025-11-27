@@ -274,7 +274,7 @@
                 submitBtn.classList.remove('btn-save');
                 submitBtn.classList.add('btn-danger');
                 
-                alert('Error al actualizar el video: ' + error.message);
+                showErrorToast('Error al actualizar el video: ' + error.message);
                 
                 // Restaurar botón después de un momento
                 setTimeout(() => {

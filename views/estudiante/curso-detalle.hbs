@@ -140,6 +140,20 @@
             transform: translateY(-2px);
         }
         
+        .btn-carrito:disabled,
+        .btn-inscribir:disabled {
+            background: #6c757d !important;
+            cursor: not-allowed;
+            transform: none;
+            opacity: 0.7;
+        }
+        
+        .btn-carrito:disabled:hover,
+        .btn-inscribir:disabled:hover {
+            background: #6c757d !important;
+            transform: none;
+        }
+        
         .content-section {
             background: white;
             padding: 40px;
@@ -473,12 +487,12 @@
                 if (data.success) {
                     document.getElementById('inscripcionModal').style.display = 'block';
                 } else {
-                    alert('Error en la inscripción: ' + data.message);
+                    showErrorToast('Error en la inscripción: ' + data.message);
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('Error de conexión. Intenta nuevamente.');
+                showErrorToast('Error de conexión. Intenta nuevamente.');
             });
         }
 
@@ -491,57 +505,115 @@
         }
 
         function anadirAlCarrito(cursoId) {
-            fetch('/carrito/agregar/' + cursoId, {
+            // Mostrar estado de carga
+            const btn = document.getElementById('btnAnadirAlCarrito');
+            let originalText = '';
+            if (btn) {
+                originalText = btn.innerHTML;
+                btn.innerHTML = '🔄 Agregando...';
+                btn.disabled = true;
+            }
+            
+            fetch('/carrito/add', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
-                }
+                },
+                body: JSON.stringify({ id_curso: cursoId })
             })
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    alert('✅ Curso agregado al carrito exitosamente');
-                    // Opcional: cambiar el texto del botón temporalmente
-                    const btn = document.getElementById('btnAnadirAlCarrito');
-                    if (btn) {
-                        const originalText = btn.innerHTML;
-                        btn.innerHTML = '✅ Agregado';
-                        btn.disabled = true;
-                        setTimeout(() => {
-                            btn.innerHTML = originalText;
-                            btn.disabled = false;
-                        }, 2000);
+                    // Actualizar contador global del carrito
+                    if (window.refreshCarritoCount) {
+                        window.refreshCarritoCount();
+                    }
+                    
+                    // Mejorada UX: Confirmar siguiente paso en lugar de solo alert
+                    if (confirm('✅ Curso agregado al carrito. ¿Deseas ir al carrito para pagar?')) {
+                        window.location.href = '/carrito';
+                    } else {
+                        // El usuario hizo clic en "Cancelar", se queda en la página.
+                        // Deshabilitar el botón temporalmente para feedback visual
+                        const btn = document.getElementById('btnAnadirAlCarrito');
+                        if (btn) {
+                            const originalText = btn.innerHTML;
+                            btn.innerHTML = '✅ Agregado';
+                            btn.disabled = true;
+                            setTimeout(() => {
+                                btn.innerHTML = originalText;
+                                btn.disabled = false;
+                            }, 2000);
+                        }
                     }
                 } else {
-                    alert('❌ Error: ' + (data.message || 'No se pudo agregar al carrito'));
+                    showErrorToast('❌ Error: ' + (data.message || 'No se pudo agregar al carrito'));
+                    // Restaurar botón en caso de error
+                    if (btn && originalText) {
+                        btn.innerHTML = originalText;
+                        btn.disabled = false;
+                    }
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('❌ Error de conexión. Intenta nuevamente.');
+                showErrorToast('❌ Error de conexión. Intenta nuevamente.');
+                // Restaurar botón en caso de error
+                if (btn && originalText) {
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                }
             });
         }
 
         function comprarAhora(cursoId) {
+            // Mostrar estado de carga en botón "Comprar Ahora"
+            const btnComprar = event.target;
+            const originalText = btnComprar ? btnComprar.innerHTML : '';
+            if (btnComprar) {
+                btnComprar.innerHTML = '🔄 Procesando...';
+                btnComprar.disabled = true;
+            }
+            
             // Agregar al carrito y redirigir directamente al checkout
-            fetch('/carrito/agregar/' + cursoId, {
+            fetch('/carrito/add', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
-                }
+                },
+                body: JSON.stringify({ id_curso: cursoId })
             })
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
+                    // Actualizar contador global del carrito
+                    if (window.refreshCarritoCount) {
+                        window.refreshCarritoCount();
+                    }
+                    
+                    // Mensaje de feedback antes de redirigir
+                    showSuccessToast('✅ Curso agregado al carrito. Redirigiendo al carrito...');
                     // Redirigir al carrito para proceder al pago
-                    window.location.href = '/carrito';
+                    setTimeout(() => {
+                        window.location.href = '/carrito';
+                    }, 500);
                 } else {
-                    alert('❌ Error: ' + (data.message || 'No se pudo procesar la compra'));
+                    showErrorToast('❌ Error: ' + (data.message || 'No se pudo procesar la compra'));
+                    // Restaurar botón en caso de error
+                    if (btnComprar && originalText) {
+                        btnComprar.innerHTML = originalText;
+                        btnComprar.disabled = false;
+                    }
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('❌ Error de conexión. Intenta nuevamente.');
+                showErrorToast('❌ Error de conexión. Intenta nuevamente.');
+                // Restaurar botón en caso de error
+                if (btnComprar && originalText) {
+                    btnComprar.innerHTML = originalText;
+                    btnComprar.disabled = false;
+                }
             });
         }
 

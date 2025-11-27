@@ -49,18 +49,33 @@ console.log('[SESSION CONFIG] 💻 Es desarrollo local:', isLocalDevelopment);
 
 app.use(session({
   secret: process.env.SESSION_SECRET || 'fallback-secret-key-change-in-production',
-  resave: false,
-  saveUninitialized: false,
+  resave: true, // Cambiar a true para forzar guardar sesión
+  saveUninitialized: true, // Cambiar a true para debugging
   name: 'sessionId', // Nombre personalizado para la cookie
   cookie: {
-    secure: isHeroku, // true solo en Heroku con HTTPS
+    secure: false, // Forzar a false en desarrollo
     httpOnly: true,
     maxAge: 24 * 60 * 60 * 1000, // 24 horas
-    sameSite: isHeroku ? 'none' : 'lax' // Para funcionar con HTTPS en Heroku
-  }
+    sameSite: 'lax' // Simplificar para desarrollo
+  },
+  // Agregar debugging de sesiones
+  rolling: true // Renovar la cookie en cada request
 }));
 
 console.log('[SESSION CONFIG] ✅ Sesiones configuradas - secure:', isHeroku);
+
+// Middleware temporal para debug de sesiones
+app.use((req, res, next) => {
+  if (req.path.includes('/carrito') || req.path.includes('/auth')) {
+    console.log('[SESSION DEBUG] 🔍 Request a:', req.method, req.path);
+    console.log('[SESSION DEBUG] 🆔 Session ID:', req.sessionID);
+    console.log('[SESSION DEBUG] 👤 Usuario:', req.session.user ? req.session.user.email : 'NO LOGUEADO');
+    console.log('[SESSION DEBUG] 🍪 Cookies:', req.headers.cookie);
+    console.log('[SESSION DEBUG] 📦 Body:', req.body);
+    console.log('[SESSION DEBUG] 🎯 Headers Accept:', req.headers.accept);
+  }
+  next();
+});
 
 app.use(logger('dev'));
 app.use(express.json());
