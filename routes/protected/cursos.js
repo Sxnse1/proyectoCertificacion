@@ -1,75 +1,10 @@
 var express = require('express');
 var router = express.Router();
 
-// Datos de ejemplo de cursos
-const cursosEjemplo = [
-  {
-    id: 1,
-    titulo: "Curso Básico de Barbería",
-    descripcion: "Aprende las técnicas fundamentales de barbería desde cero",
-    precio: "$2,500 MXN",
-    duracion: "8 semanas",
-    nivel: "Principiante",
-    instructor: "Carlos Mendoza",
-    icon: "✂️",
-    categoria: "basico",
-    modulos: [
-      "Introducción a la barbería profesional",
-      "Herramientas básicas y mantenimiento",
-      "Técnicas de corte fundamentales",
-      "Afeitado clásico con navaja",
-      "Atención al cliente",
-      "Higiene y seguridad",
-      "Práctica supervisada",
-      "Evaluación final"
-    ]
-  },
-  {
-    id: 2,
-    titulo: "Técnicas Avanzadas de Corte",
-    descripcion: "Perfecciona tus habilidades con técnicas profesionales avanzadas",
-    precio: "$3,500 MXN",
-    duracion: "12 semanas",
-    nivel: "Avanzado",
-    instructor: "Miguel Rodriguez",
-    icon: "🎯",
-    categoria: "avanzado",
-    modulos: [
-      "Análisis facial y recomendaciones",
-      "Cortes de tendencia actuales",
-      "Técnicas de degradado avanzado",
-      "Uso de herramientas especializadas",
-      "Colorimetría básica",
-      "Barbería artística",
-      "Fotografía de trabajos",
-      "Portfolio profesional"
-    ]
-  },
-  {
-    id: 3,
-    titulo: "Barbería Clásica y Moderna",
-    descripcion: "Combina lo mejor de ambos mundos en un curso completo",
-    precio: "$4,000 MXN",
-    duracion: "16 semanas",
-    nivel: "Intermedio",
-    instructor: "Juan López",
-    icon: "👑",
-    categoria: "completo",
-    modulos: [
-      "Historia de la barbería",
-      "Técnicas clásicas tradicionales",
-      "Tendencias modernas",
-      "Gestión de barbería",
-      "Marketing y redes sociales",
-      "Servicio al cliente VIP",
-      "Certificación profesional",
-      "Práctica en barbería real"
-    ]
-  }
-];
-
-// CORREGIDO: Datos ficticios eliminados - ahora se consultan desde la base de datos
-// Las inscripciones se almacenan permanentemente en la tabla Inscripciones
+// 🗃️ MIGRADO A BASE DE DATOS - DATOS DINÁMICOS
+// ============================================
+// Todas las rutas ahora consultan la base de datos real
+// Eliminados arrays estáticos (cursosEjemplo) para evitar inconsistencias
 
 /* GET cursos page - Plataforma de cursos para estudiantes */
 router.get('/', async function(req, res, next) {
@@ -436,26 +371,200 @@ router.get('/mis-cursos', async function(req, res, next) {
 });
 
 /* GET lecciones de un curso */
-router.get('/lecciones/:cursoId', function(req, res, next) {
+router.get('/lecciones/:cursoId', async function(req, res, next) {
   const { user, email, rol, id } = req.query;
   const cursoId = parseInt(req.params.cursoId);
   
   if (!user || !email || !rol) {
     return res.redirect('/auth/login');
   }
-  
-  // Buscar el curso
-  const curso = cursosEjemplo.find(c => c.id === cursoId);
-  if (!curso) {
-    return res.status(404).render('error', {
-      message: 'Curso no encontrado',
-      error: { status: 404 }
+
+  try {
+    // 🔄 MIGRACIÓN A BASE DE DATOS - DATOS DINÁMICOS
+    // ==============================================
+    // Verificar que el curso existe en la base de datos
+    const cursoQuery = `
+      SELECT 
+        c.id_curso,
+        c.titulo,
+        c.descripcion,
+        c.precio,
+        c.nivel,
+        c.duracion_estimada,
+        c.estatus,
+        u.nombre as instructor_nombre,
+        u.apellido as instructor_apellido,
+        cat.nombre as categoria_nombre,
+        -- Estadísticas del curso
+        (SELECT COUNT(*) FROM Modulos m WHERE m.id_curso = c.id_curso) as total_modulos,
+        (SELECT COUNT(*) FROM Video v 
+         INNER JOIN Modulos m ON v.id_modulo = m.id_modulo 
+         WHERE m.id_curso = c.id_curso AND v.estatus = 'publicado') as total_videos
+      FROM Cursos c
+      INNER JOIN Usuarios u ON c.id_usuario = u.id_usuario
+      LEFT JOIN Categorias cat ON c.id_categoria = cat.id_categoria
+      WHERE c.id_curso = @cursoId AND c.estatus = 'publicado'
+    `;
+
+    const db = req.app.get('db');
+    const cursoResult = await db.executeQuery(cursoQuery, { cursoId });
+
+    if (!cursoResult.recordset || cursoResult.recordset.length === 0) {
+      console.log(`[LECCIONES] ❌ Curso ID ${cursoId} no encontrado en base de datos`);
+      return res.status(404).render('error', {
+        title: 'Curso No Encontrado',
+        message: 'El curso solicitado no existe o no está disponible',
+        error: { status: 404, message: 'Verifica que el curso esté publicado' },
+        layout: false
+      });
+    }
+
+    const curso = cursoResult.recordset[0];
+    console.log(`[LECCIONES] ✅ Curso encontrado: "${curso.titulo}" (ID: ${cursoId})`);
+
+    // Verificar que el usuario está inscrito al curso
+    const inscripcionQuery = `
+      SELECT 
+        i.id_inscripcion,
+        i.estado,
+        i.progreso,
+        i.fecha_inscripcion,
+        i.fecha_finalizacion
+      FROM Inscripciones i
+      WHERE i.id_usuario = @userId AND i.id_curso = @cursoId
+    `;
+
+    const inscripcionResult = await db.executeQuery(inscripcionQuery, { 
+      userId: parseInt(id), 
+      cursoId 
+    });
+
+    if (!inscripcionResult.recordset || inscripcionResult.recordset.length === 0) {
+      console.log(`[LECCIONES] ⚠️ Usuario ${id} no inscrito en curso ${cursoId}`);
+      return res.redirect(`/cursos/curso-detalle/${cursoId}?user=${encodeURIComponent(user)}&email=${encodeURIComponent(email)}&rol=${rol}&id=${id}&mensaje=Debes inscribirte al curso primero`);
+    }
+
+    const inscripcion = inscripcionResult.recordset[0];
+    console.log(`[LECCIONES] 📚 Inscripción válida - Estado: ${inscripcion.estado}, Progreso: ${inscripcion.progreso}%`);
+
+    // Obtener módulos y lecciones (videos) del curso
+    const leccionesQuery = `
+      SELECT 
+        m.id_modulo,
+        m.titulo as modulo_titulo,
+        m.descripcion as modulo_descripcion,
+        m.orden as modulo_orden,
+        v.id_video,
+        v.titulo as video_titulo,
+        v.descripcion as video_descripcion,
+        v.orden as video_orden,
+        v.duracion_segundos,
+        v.estatus as video_estatus,
+        -- Verificar si el usuario ya vio este video
+        CASE 
+          WHEN vp.id_progreso IS NOT NULL THEN 1 
+          ELSE 0 
+        END as visto
+      FROM Modulos m
+      LEFT JOIN Video v ON m.id_modulo = v.id_modulo AND v.estatus = 'publicado'
+      LEFT JOIN Video_Progreso vp ON v.id_video = vp.id_video AND vp.id_usuario = @userId
+      WHERE m.id_curso = @cursoId
+      ORDER BY m.orden ASC, v.orden ASC
+    `;
+
+    const leccionesResult = await db.executeQuery(leccionesQuery, { 
+      cursoId, 
+      userId: parseInt(id) 
+    });
+
+    // Estructurar datos para el template
+    const modulosConLecciones = {};
+    let totalLecciones = 0;
+    let leccionesVistas = 0;
+
+    if (leccionesResult.recordset) {
+      leccionesResult.recordset.forEach(row => {
+        if (!modulosConLecciones[row.id_modulo]) {
+          modulosConLecciones[row.id_modulo] = {
+            id: row.id_modulo,
+            titulo: row.modulo_titulo,
+            descripcion: row.modulo_descripcion,
+            orden: row.modulo_orden,
+            lecciones: []
+          };
+        }
+
+        if (row.id_video) {
+          const leccion = {
+            id: row.id_video,
+            titulo: row.video_titulo,
+            descripcion: row.video_descripcion,
+            orden: row.video_orden,
+            duracion_segundos: row.duracion_segundos,
+            duracion_formateada: formatearDuracion(row.duracion_segundos),
+            visto: row.visto === 1,
+            estatus: row.video_estatus
+          };
+          
+          modulosConLecciones[row.id_modulo].lecciones.push(leccion);
+          totalLecciones++;
+          if (leccion.visto) leccionesVistas++;
+        }
+      });
+    }
+
+    const modulos = Object.values(modulosConLecciones).sort((a, b) => a.orden - b.orden);
+    
+    console.log(`[LECCIONES] 📊 Estadísticas: ${modulos.length} módulos, ${totalLecciones} lecciones, ${leccionesVistas} vistas`);
+
+    // Renderizar vista de lecciones (crear nueva vista)
+    res.render('estudiante/lecciones', {
+      title: `Lecciones - ${curso.titulo}`,
+      curso: {
+        id: curso.id_curso,
+        titulo: curso.titulo,
+        descripcion: curso.descripcion,
+        instructor: `${curso.instructor_nombre} ${curso.instructor_apellido}`,
+        categoria: curso.categoria_nombre,
+        total_modulos: curso.total_modulos,
+        total_videos: curso.total_videos
+      },
+      inscripcion: {
+        estado: inscripcion.estado,
+        progreso: Math.round(inscripcion.progreso),
+        fecha_inscripcion: new Date(inscripcion.fecha_inscripcion).toLocaleDateString('es-MX')
+      },
+      modulos,
+      estadisticas: {
+        total_lecciones: totalLecciones,
+        lecciones_vistas: leccionesVistas,
+        progreso_porcentaje: totalLecciones > 0 ? Math.round((leccionesVistas / totalLecciones) * 100) : 0
+      },
+      userName: user,
+      userEmail: email,
+      userRole: rol,
+      userId: id,
+      layout: false
+    });
+
+  } catch (error) {
+    console.error('[LECCIONES] ❌ Error consultando lecciones:', error.message);
+    res.status(500).render('error', {
+      title: 'Error - Lecciones',
+      message: 'No se pudieron cargar las lecciones del curso',
+      error: req.app.get('env') === 'development' ? error : {},
+      layout: false
     });
   }
-  
-  // Redirigir a mis cursos con mensaje (función en desarrollo)
-  res.redirect(`/cursos/mis-cursos?user=${user}&email=${email}&rol=${rol}&id=${id}&mensaje=Función en desarrollo`);
 });
+
+// Función auxiliar para formatear duración en segundos
+function formatearDuracion(segundos) {
+  if (!segundos) return '0:00';
+  const minutos = Math.floor(segundos / 60);
+  const segundosRestantes = segundos % 60;
+  return `${minutos}:${segundosRestantes.toString().padStart(2, '0')}`;
+}
 
 /* GET certificado de un curso */
 router.get('/certificado/:cursoId', async function(req, res, next) {
@@ -497,40 +606,44 @@ router.get('/certificado/:cursoId', async function(req, res, next) {
     }
     
     const inscripcion = inscripcionResult.recordset[0];
-    // Generar certificado (simulado)
-    res.setHeader('Content-Type', 'text/html');
-    res.send(`
-      <html>
-        <head>
-          <title>Certificado - ${curso.titulo}</title>
-          <style>
-            body { font-family: Arial, sans-serif; text-align: center; padding: 50px; }
-            .certificado { border: 5px solid #2c5aa0; padding: 40px; margin: 20px; }
-            h1 { color: #2c5aa0; font-size: 2.5rem; }
-            .nombre { font-size: 2rem; color: #e67e22; margin: 20px 0; }
-            .curso { font-size: 1.5rem; margin: 20px 0; }
-          </style>
-        </head>
-        <body>
-          <div class="certificado">
-            <h1>🏆 CERTIFICADO DE FINALIZACIÓN</h1>
-            <p>Se certifica que</p>
-            <div class="nombre">${user}</div>
-            <p>ha completado satisfactoriamente el curso</p>
-            <div class="curso">"${curso.titulo}"</div>
-            <p>Fecha de finalización: ${new Date(inscripcion.fecha_finalizacion).toLocaleDateString('es-MX')}</p>
-            <br>
-            <p><strong>StartEducation - StarEducation</strong></p>
-            <p>Fecha de emisión: ${new Date().toLocaleDateString('es-MX')}</p>
-          </div>
-          <script>window.print();</script>
-        </body>
-      </html>
-    `);
+    
+    // 🎨 CERTIFICADO PROFESIONAL - TEMPLATE SEPARADO
+    // ==============================================
+    // Preparar datos para el template de certificado
+    const certificadoData = {
+      usuario: {
+        nombre: req.session.user.nombre || user,
+        apellido: req.session.user.apellido || ''
+      },
+      curso: {
+        titulo: curso.titulo,
+        id: curso.id
+      },
+      fechas: {
+        finalizacion: new Date(inscripcion.fecha_finalizacion).toLocaleDateString('es-MX', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric'
+        }),
+        emision: new Date().toLocaleDateString('es-MX', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric'
+        })
+      }
+    };
+
+    // Renderizar template profesional en lugar de HTML hardcodeado
+    res.render('estudiante/certificado', certificadoData);
     
   } catch (error) {
-    console.error('Error al generar certificado:', error);
-    res.status(500).send('Error interno del servidor');
+    console.error('[CERTIFICADO] ❌ Error al generar certificado:', error.message);
+    res.status(500).render('error', {
+      title: 'Error - Certificado',
+      message: 'No se pudo generar el certificado',
+      error: req.app.get('env') === 'development' ? error : {},
+      layout: false
+    });
   }
 });
 

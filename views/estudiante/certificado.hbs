@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Certificado - {{curso.titulo}}</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body { 
+      font-family: 'Georgia', 'Times New Roman', serif; 
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .certificado-container {
+      background: #ffffff;
+      border: 8px solid #2c5aa0;
+      border-radius: 15px;
+      padding: 60px 40px;
+      max-width: 800px;
+      width: 100%;
+      position: relative;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    }
+
+    .certificado-container::before {
+      content: '';
+      position: absolute;
+      top: 15px;
+      left: 15px;
+      right: 15px;
+      bottom: 15px;
+      border: 2px solid #e67e22;
+      border-radius: 8px;
+      pointer-events: none;
+    }
+
+    .certificado-header {
+      margin-bottom: 40px;
+    }
+
+    .certificado-title {
+      color: #2c5aa0;
+      font-size: 3rem;
+      font-weight: bold;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+    }
+
+    .certificado-emoji {
+      font-size: 4rem;
+      margin-bottom: 20px;
+      display: block;
+    }
+
+    .certificado-subtitle {
+      font-size: 1.2rem;
+      color: #666;
+      margin-bottom: 30px;
+    }
+
+    .estudiante-info {
+      margin: 40px 0;
+    }
+
+    .estudiante-nombre {
+      font-size: 2.5rem;
+      color: #e67e22;
+      font-weight: bold;
+      margin: 20px 0;
+      text-decoration: underline;
+      text-decoration-color: #e67e22;
+    }
+
+    .curso-info {
+      margin: 40px 0;
+    }
+
+    .curso-titulo {
+      font-size: 1.8rem;
+      color: #2c5aa0;
+      font-weight: bold;
+      margin: 20px 0;
+      font-style: italic;
+      line-height: 1.4;
+    }
+
+    .fechas-info {
+      margin: 40px 0;
+      padding: 20px;
+      background: #f8f9fa;
+      border-radius: 10px;
+      border-left: 5px solid #e67e22;
+    }
+
+    .fecha-item {
+      margin: 10px 0;
+      font-size: 1.1rem;
+      color: #555;
+    }
+
+    .fecha-label {
+      font-weight: bold;
+      color: #2c5aa0;
+    }
+
+    .institucion-footer {
+      margin-top: 50px;
+      padding-top: 30px;
+      border-top: 3px solid #2c5aa0;
+    }
+
+    .institucion-nombre {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #2c5aa0;
+      margin-bottom: 10px;
+    }
+
+    .institucion-slogan {
+      font-size: 1rem;
+      color: #666;
+      font-style: italic;
+    }
+
+    .logo-placeholder {
+      width: 80px;
+      height: 80px;
+      background: #2c5aa0;
+      border-radius: 50%;
+      margin: 0 auto 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+      font-size: 1.5rem;
+    }
+
+    /* Estilos para impresión */
+    @media print {
+      body {
+        background: white !important;
+        padding: 0 !important;
+      }
+      
+      .certificado-container {
+        box-shadow: none !important;
+        border: 8px solid #2c5aa0 !important;
+        margin: 0 !important;
+        max-width: none !important;
+      }
+    }
+
+    /* Responsivo */
+    @media (max-width: 768px) {
+      .certificado-container {
+        padding: 40px 20px;
+        border: 6px solid #2c5aa0;
+      }
+      
+      .certificado-title {
+        font-size: 2.2rem;
+        letter-spacing: 2px;
+      }
+      
+      .estudiante-nombre {
+        font-size: 2rem;
+      }
+      
+      .curso-titulo {
+        font-size: 1.5rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .certificado-title {
+        font-size: 1.8rem;
+        letter-spacing: 1px;
+      }
+      
+      .estudiante-nombre {
+        font-size: 1.6rem;
+      }
+      
+      .curso-titulo {
+        font-size: 1.3rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="certificado-container">
+    <!-- Logo institucional -->
+    <div class="logo-placeholder">SE</div>
+    
+    <!-- Header del certificado -->
+    <div class="certificado-header">
+      <span class="certificado-emoji">🏆</span>
+      <h1 class="certificado-title">Certificado de Finalización</h1>
+      <p class="certificado-subtitle">Otorgado por haber completado satisfactoriamente</p>
+    </div>
+
+    <!-- Información del estudiante -->
+    <div class="estudiante-info">
+      <p>Se certifica que</p>
+      <div class="estudiante-nombre">{{usuario.nombre}} {{usuario.apellido}}</div>
+      <p>ha demostrado competencia y dedicación al completar</p>
+    </div>
+
+    <!-- Información del curso -->
+    <div class="curso-info">
+      <p>el curso de</p>
+      <div class="curso-titulo">"{{curso.titulo}}"</div>
+    </div>
+
+    <!-- Información de fechas -->
+    <div class="fechas-info">
+      <div class="fecha-item">
+        <span class="fecha-label">📅 Fecha de finalización:</span> 
+        {{fechas.finalizacion}}
+      </div>
+      <div class="fecha-item">
+        <span class="fecha-label">📋 Fecha de emisión:</span> 
+        {{fechas.emision}}
+      </div>
+    </div>
+
+    <!-- Footer institucional -->
+    <div class="institucion-footer">
+      <div class="institucion-nombre">StartEducation</div>
+      <div class="institucion-slogan">Transformando el futuro a través de la educación</div>
+    </div>
+  </div>
+
+  <!-- Script para impresión automática -->
+  <script>
+    // Esperar a que todo esté cargado antes de imprimir
+    window.addEventListener('load', function() {
+      // Pequeña pausa para asegurar que los estilos se han aplicado
+      setTimeout(function() {
+        window.print();
+      }, 500);
+    });
+
+    // Cerrar ventana después de imprimir o cancelar
+    window.addEventListener('afterprint', function() {
+      setTimeout(function() {
+        window.close();
+      }, 1000);
+    });
+  </script>
+</body>
+</html>

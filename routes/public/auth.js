@@ -3,6 +3,20 @@ var router = express.Router();
 var bcrypt = require('bcryptjs');
 const auditService = require('../../services/auditService');
 
+// 🛡️ PROTECCIÓN CONTRA SESSION FIXATION IMPLEMENTADA
+// =================================================
+// Todas las rutas de autenticación usan req.session.regenerate()
+// para prevenir ataques de fijación de sesión:
+// 
+// ✅ Login exitoso (línea ~283)
+// ✅ Configuración 2FA (línea ~309) 
+// ✅ Login con contraseña temporal (línea ~394)
+// ✅ Cambio exitoso de contraseña (línea ~706)
+// ✅ Logout seguro con session.destroy()
+//
+// Esto garantiza que cada sesión autenticada tenga un ID único
+// imposible de predecir por atacantes.
+
 /* GET login page */
 router.get('/login', function(req, res, next) {
   res.render('auth/login-bootstrap', { 
@@ -280,57 +294,92 @@ router.post('/login', async function(req, res, next) {
           console.error('[AUTH] ⚠️ Error cargando permisos RBAC:', permissionError.message);
         }
         
-        req.session.user = {
-          id: user.id_usuario,
-          nombre: `${user.nombre} ${user.apellido}`,
-          email: user.email,
-          rol: user.rol,
-          permisos: permisos,
-          two_factor_enabled: false,
-          two_factor_verified: false,
-          loginTime: new Date().toISOString()
-        };
+        // 🛡️ PROTECCIÓN CONTRA SESSION FIXATION
+        // =====================================
+        // Regenerar ID de sesión para prevenir ataques de fijación
+        req.session.regenerate((err) => {
+          if (err) {
+            console.error('[AUTH] ❌ Error regenerando sesión:', err);
+            return res.render('auth/login-bootstrap', {
+              title: 'Iniciar Sesión',
+              error: 'Error de seguridad. Intenta nuevamente.',
+              email: email,
+              layout: false
+            });
+          }
+
+          // Crear sesión limpia con datos del usuario autenticado
+          req.session.user = {
+            id: user.id_usuario,
+            nombre: `${user.nombre} ${user.apellido}`,
+            email: user.email,
+            rol: user.rol,
+            permisos: permisos,
+            two_factor_enabled: false,
+            two_factor_verified: false,
+            loginTime: new Date().toISOString()
+          };
+          
+          console.log('[AUTH] ✅ Sesión regenerada y creada para:', user.email);
+          console.log('[AUTH] 🔒 Nuevo ID de sesión asignado por seguridad');
         
-        console.log('[AUTH] ✅ Sesión creada para:', user.email);
+          // Redirigir según el rol
+          if (user.rol === 'instructor' || user.rol === 'admin' || user.rol === 'SuperAdmin' || user.rol === 'Admin') {
+            return res.redirect('/dashboard');
+          } else {
+            return res.redirect('/user-dashboard');
+          }
+        }); // Cierre del regenerate callback
         
-        // Redirigir según el rol
-        if (user.rol === 'instructor' || user.rol === 'admin' || user.rol === 'SuperAdmin' || user.rol === 'Admin') {
-          return res.redirect('/dashboard');
-        } else {
-          return res.redirect('/user-dashboard');
-        }
-      }
+        return; // Salir del flujo principal
       
       if (!twoFactorData.two_factor_enabled || !twoFactorData.two_factor_verified) {
         // Usuario necesita configurar 2FA
         console.log('[AUTH] 🔐 Usuario requiere configurar 2FA:', email);
         
-        // Crear sesión temporal para configurar 2FA (sin permisos aún)
-        req.session.user = {
-          id: user.id_usuario,
-          nombre: `${user.nombre} ${user.apellido}`,
-          email: user.email,
-          rol: user.rol,
-          permisos: [], // Sin permisos hasta completar 2FA
-          two_factor_enabled: false,
-          two_factor_verified: false,
-          loginTime: new Date().toISOString()
-        };
-        
-        req.session.save((err) => {
+        // 🛡️ PROTECCIÓN CONTRA SESSION FIXATION (2FA)
+        // ==========================================
+        // Regenerar ID de sesión incluso para configuración 2FA
+        req.session.regenerate((err) => {
           if (err) {
-            console.error('[AUTH] ❌ Error guardando sesión:', err);
+            console.error('[AUTH] ❌ Error regenerando sesión (2FA):', err);
             return res.render('auth/login-bootstrap', {
               title: 'Iniciar Sesión',
-              error: 'Error interno. Intenta nuevamente.',
+              error: 'Error de seguridad. Intenta nuevamente.',
               email: email,
               layout: false
             });
           }
+
+          // Crear sesión temporal para configurar 2FA (sin permisos aún)
+          req.session.user = {
+            id: user.id_usuario,
+            nombre: `${user.nombre} ${user.apellido}`,
+            email: user.email,
+            rol: user.rol,
+            permisos: [], // Sin permisos hasta completar 2FA
+            two_factor_enabled: false,
+            two_factor_verified: false,
+            loginTime: new Date().toISOString()
+          };
           
-          console.log('[AUTH] 🔐 Redirigiendo a configuración de 2FA');
-          res.redirect('/two-factor/setup');
-        });
+          console.log('[AUTH] 🔐 Sesión temporal regenerada para configurar 2FA:', email);
+
+          req.session.save((err) => {
+            if (err) {
+              console.error('[AUTH] ❌ Error guardando sesión:', err);
+              return res.render('auth/login-bootstrap', {
+                title: 'Iniciar Sesión',
+                error: 'Error interno. Intenta nuevamente.',
+                email: email,
+                layout: false
+              });
+            }
+            
+            console.log('[AUTH] 🔐 Redirigiendo a configuración de 2FA');
+            res.redirect('/two-factor/setup');
+          });
+        }); // Cierre del regenerate callback
         return;
       } else {
         // Usuario tiene 2FA configurado - necesita verificarlo
@@ -391,50 +440,52 @@ router.post('/login', async function(req, res, next) {
       // Continuar sin permisos - para compatibilidad con sistema anterior
     }
     
-    req.session.user = {
-      id: user.id_usuario,
-      nombre: nombreCompleto,
-      email: user.email,
-      rol: user.rol,
-      permisos: permisos, // 🆕 Agregamos los permisos al objeto de sesión
-      two_factor_enabled: false,
-      two_factor_verified: false,
-      loginTime: new Date().toISOString()
-    };
-    
-    // Guardar sesión antes de redirigir
-    req.session.save((err) => {
+    // 🛡️ PROTECCIÓN CONTRA SESSION FIXATION (PASSWORD TEMPORAL)
+    // ========================================================
+    // Regenerar sesión antes de asignar datos de usuario con contraseña temporal
+    req.session.regenerate((err) => {
       if (err) {
-        console.error('[AUTH] ❌ Error guardando sesión:', err);
+        console.error('[AUTH] ❌ Error regenerando sesión (temporal):', err);
         return res.render('auth/login-bootstrap', {
           title: 'Iniciar Sesión',
-          error: 'Error interno. Intenta nuevamente.',
+          error: 'Error de seguridad. Intenta nuevamente.',
           email: email,
           layout: false
         });
       }
+
+      req.session.user = {
+        id: user.id_usuario,
+        nombre: nombreCompleto,
+        email: user.email,
+        rol: user.rol,
+        permisos: permisos, // 🆕 Agregamos los permisos al objeto de sesión
+        two_factor_enabled: false,
+        two_factor_verified: false,
+        loginTime: new Date().toISOString()
+      };
       
-      console.log('[AUTH] 💾 Sesión creada exitosamente para:', email);
-      console.log('[AUTH] 👤 Usuario en sesión:', req.session.user);
-      console.log('[AUTH] 🎯 Redirigiendo a:', redirectTo || '/user-dashboard');
-      
-      // Redirigir según el rol del usuario
-      if (user.rol === 'SuperAdmin' || user.rol === 'Admin' || user.rol === 'instructor') {
-        console.log('[AUTH] � Redirigiendo administrador/instructor al dashboard');
-        res.redirect(redirectTo || '/dashboard');
-      } else if (user.rol === 'user' || user.rol === 'estudiante') {
-        console.log('[AUTH] 👨‍🎓 Redirigiendo estudiante al dashboard de usuario');
-        res.redirect(redirectTo || '/user-dashboard');
-      } else {
-        console.log('[AUTH] ⚠️ Rol no reconocido:', user.rol);
-        return res.render('auth/login-bootstrap', {
-          title: 'Iniciar Sesión',
-          error: 'Rol de usuario no válido. Contacta al administrador.',
-          email: email,
-          layout: false
-        });
-      }
-    });
+      console.log('[AUTH] 🔒 Sesión regenerada para login con contraseña temporal:', email);
+
+      // Guardar sesión antes de redirigir
+      req.session.save((err) => {
+        if (err) {
+          console.error('[AUTH] ❌ Error guardando sesión:', err);
+          return res.render('auth/login-bootstrap', {
+            title: 'Iniciar Sesión',
+            error: 'Error interno. Intenta nuevamente.',
+            email: email,
+            layout: false
+          });
+        }
+        
+        console.log('[AUTH] 💾 Sesión creada exitosamente para:', email);
+        console.log('[AUTH] 👤 Usuario en sesión:', req.session.user);
+        console.log('[AUTH] 🎯 Redirigiendo a cambio de contraseña');
+        
+        res.redirect('/auth/change-password');
+      });
+    }); // Cierre del regenerate callback
     
   } catch (error) {
     console.error('[AUTH] ❌ Error en login:', error.message);
@@ -703,41 +754,74 @@ router.post('/change-password', async function(req, res, next) {
       console.error('[AUTH] ⚠️ Error cargando permisos RBAC:', permissionError.message);
     }
     
-    req.session.user = {
-      id: tempUser.id,
-      nombre: tempUser.nombre,
-      email: tempUser.email,
-      rol: tempUser.rol,
-      permisos: permisos,
-      two_factor_enabled: false,
-      two_factor_verified: false,
-      loginTime: new Date().toISOString()
-    };
-    
-    // Limpiar sesión temporal
-    delete req.session.tempUser;
-    
-    req.session.save((err) => {
+    // 🛡️ PROTECCIÓN CONTRA SESSION FIXATION (CAMBIO PASSWORD)
+    // ======================================================
+    // Regenerar sesión después del cambio exitoso de contraseña
+    req.session.regenerate((err) => {
       if (err) {
-        console.error('[AUTH] ❌ Error guardando sesión completa:', err);
+        console.error('[AUTH] ❌ Error regenerando sesión (cambio password):', err);
         return res.render('auth/change-password', {
           title: 'Cambiar Contraseña',
           userName: tempUser.nombre,
           email: tempUser.email,
-          error: 'Error interno. Contacta al administrador.',
+          error: 'Error de seguridad. Contacta al administrador.',
           layout: false
         });
       }
+
+      req.session.user = {
+        id: tempUser.id,
+        nombre: tempUser.nombre,
+        email: tempUser.email,
+        rol: tempUser.rol,
+        permisos: permisos,
+        two_factor_enabled: false,
+        two_factor_verified: false,
+        loginTime: new Date().toISOString()
+      };
       
-      console.log('[AUTH] 💾 Sesión completa creada para:', tempUser.email);
+      // Limpiar sesión temporal (ya no necesaria tras regeneración)
+      // delete req.session.tempUser; // Ya no existe tras regenerate()
       
-      // Redirigir según el rol
-      if (tempUser.rol === 'instructor') {
-        res.redirect('/dashboard?success=Contraseña actualizada correctamente');
-      } else {
-        res.redirect('/cursos?success=Contraseña actualizada correctamente');
-      }
-    });
+      console.log('[AUTH] 🔒 Sesión regenerada tras cambio exitoso de contraseña:', tempUser.email);
+
+      req.session.save((err) => {
+        if (err) {
+          console.error('[AUTH] ❌ Error guardando sesión completa:', err);
+          return res.render('auth/change-password', {
+            title: 'Cambiar Contraseña',
+            userName: tempUser.nombre,
+            email: tempUser.email,
+            error: 'Error interno. Contacta al administrador.',
+            layout: false
+          });
+        }
+
+        console.log('[AUTH] ✅ Contraseña cambiada y sesión regenerada para:', tempUser.email);
+
+        // Registrar evento de cambio exitoso en auditoría
+        auditService.logAction({
+          usuarioId: tempUser.id,
+          accion: 'PASSWORD_CAMBIADO',
+          entidad: 'Usuario',
+          entidadId: tempUser.id,
+          detalles: {
+            email: tempUser.email,
+            cambio_forzoso: true,
+            regeneracion_sesion: true,
+            timestamp: new Date().toISOString()
+          },
+          ip: req.ip
+        }, db).catch(err => console.error('[AUTH] Error en auditoría:', err));
+
+        // Redirigir según el rol
+        if (tempUser.rol === 'instructor' || tempUser.rol === 'admin' || tempUser.rol === 'SuperAdmin') {
+          res.redirect('/dashboard?success=' + encodeURIComponent('Contraseña cambiada exitosamente'));
+        } else {
+          res.redirect('/user-dashboard?success=' + encodeURIComponent('Contraseña cambiada exitosamente'));
+        }
+      });
+    }); // Cierre del regenerate callback
     
   } catch (error) {
     console.error('[AUTH] ❌ Error en cambio de contraseña:', error.message);

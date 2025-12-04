@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{title}} - StartEducation</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <style>
+    body {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .main-container {
+      padding: 2rem 0;
+    }
+
+    .course-header {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 15px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    }
+
+    .course-title {
+      color: #2c5aa0;
+      font-size: 2rem;
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+    }
+
+    .course-meta {
+      color: #666;
+      margin-bottom: 1rem;
+    }
+
+    .progress-section {
+      background: rgba(46, 90, 160, 0.1);
+      border-radius: 10px;
+      padding: 1rem;
+      margin-top: 1rem;
+    }
+
+    .progress-bar-custom {
+      height: 8px;
+      border-radius: 5px;
+    }
+
+    .module-card {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 15px;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+    }
+
+    .module-header {
+      background: linear-gradient(135deg, #2c5aa0 0%, #1e3d72 100%);
+      color: white;
+      padding: 1.5rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .module-header:hover {
+      background: linear-gradient(135deg, #1e3d72 0%, #2c5aa0 100%);
+    }
+
+    .module-title {
+      font-size: 1.3rem;
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+    }
+
+    .module-stats {
+      font-size: 0.9rem;
+      opacity: 0.9;
+    }
+
+    .lessons-list {
+      padding: 0;
+    }
+
+    .lesson-item {
+      border-bottom: 1px solid #e9ecef;
+      padding: 1rem 1.5rem;
+      transition: all 0.2s ease;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .lesson-item:last-child {
+      border-bottom: none;
+    }
+
+    .lesson-item:hover {
+      background: rgba(46, 90, 160, 0.05);
+    }
+
+    .lesson-content {
+      display: flex;
+      align-items: center;
+      flex: 1;
+    }
+
+    .lesson-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 1rem;
+      font-size: 1.2rem;
+    }
+
+    .lesson-icon.completed {
+      background: #28a745;
+      color: white;
+    }
+
+    .lesson-icon.pending {
+      background: #6c757d;
+      color: white;
+    }
+
+    .lesson-info {
+      flex: 1;
+    }
+
+    .lesson-title {
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 0.2rem;
+    }
+
+    .lesson-description {
+      color: #666;
+      font-size: 0.9rem;
+      margin-bottom: 0.2rem;
+    }
+
+    .lesson-duration {
+      color: #2c5aa0;
+      font-size: 0.8rem;
+      font-weight: 500;
+    }
+
+    .lesson-status {
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 500;
+    }
+
+    .status-completed {
+      background: #d4edda;
+      color: #155724;
+    }
+
+    .status-pending {
+      background: #f8f9fa;
+      color: #6c757d;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .stat-card {
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 10px;
+      padding: 1rem;
+      text-align: center;
+      border-left: 4px solid #2c5aa0;
+    }
+
+    .stat-number {
+      font-size: 2rem;
+      font-weight: bold;
+      color: #2c5aa0;
+    }
+
+    .stat-label {
+      color: #666;
+      font-size: 0.9rem;
+    }
+
+    .btn-back {
+      background: linear-gradient(135deg, #e67e22 0%, #d35400 100%);
+      border: none;
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border-radius: 25px;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn-back:hover {
+      background: linear-gradient(135deg, #d35400 0%, #e67e22 100%);
+      color: white;
+      transform: translateY(-2px);
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 3rem 2rem;
+      color: #666;
+    }
+
+    .empty-state i {
+      font-size: 4rem;
+      color: #ddd;
+      margin-bottom: 1rem;
+    }
+
+    @media (max-width: 768px) {
+      .course-title {
+        font-size: 1.5rem;
+      }
+
+      .module-header {
+        padding: 1rem;
+      }
+
+      .lesson-item {
+        padding: 0.75rem 1rem;
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .lesson-content {
+        margin-bottom: 0.5rem;
+      }
+
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container-fluid main-container">
+    <div class="container">
+      <!-- Header del curso -->
+      <div class="course-header">
+        <div class="d-flex justify-content-between align-items-start mb-3">
+          <div>
+            <h1 class="course-title">{{curso.titulo}}</h1>
+            <div class="course-meta">
+              <i class="fas fa-user me-2"></i>{{curso.instructor}}
+              {{#if curso.categoria}}
+              <span class="mx-2">•</span>
+              <i class="fas fa-tag me-2"></i>{{curso.categoria}}
+              {{/if}}
+            </div>
+            {{#if curso.descripcion}}
+            <p class="text-muted mt-2">{{curso.descripcion}}</p>
+            {{/if}}
+          </div>
+          <a href="/cursos/mis-cursos?user={{userName}}&email={{userEmail}}&rol={{userRole}}&id={{userId}}" class="btn-back">
+            <i class="fas fa-arrow-left"></i>
+            Volver a Mis Cursos
+          </a>
+        </div>
+
+        <!-- Progreso del curso -->
+        <div class="progress-section">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <span class="fw-bold">Progreso del Curso</span>
+            <span class="badge bg-primary">{{inscripcion.progreso}}% Completado</span>
+          </div>
+          <div class="progress progress-bar-custom">
+            <div class="progress-bar bg-success" role="progressbar" 
+                 style="width: {{inscripcion.progreso}}%" 
+                 aria-valuenow="{{inscripcion.progreso}}" 
+                 aria-valuemin="0" 
+                 aria-valuemax="100">
+            </div>
+          </div>
+
+          <!-- Estadísticas -->
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-number">{{curso.total_modulos}}</div>
+              <div class="stat-label">Módulos</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-number">{{estadisticas.total_lecciones}}</div>
+              <div class="stat-label">Lecciones</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-number">{{estadisticas.lecciones_vistas}}</div>
+              <div class="stat-label">Completadas</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-number">{{estadisticas.progreso_porcentaje}}%</div>
+              <div class="stat-label">Avance</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Módulos y lecciones -->
+      {{#if modulos}}
+        {{#each modulos}}
+        <div class="module-card">
+          <div class="module-header" data-bs-toggle="collapse" data-bs-target="#modulo-{{id}}" aria-expanded="true">
+            <div class="module-title">
+              <i class="fas fa-folder-open me-2"></i>
+              Módulo {{orden}}: {{titulo}}
+            </div>
+            <div class="module-stats">
+              <i class="fas fa-play-circle me-1"></i>
+              {{lecciones.length}} lecciones
+              {{#if descripcion}}
+              <span class="mx-2">•</span>
+              {{descripcion}}
+              {{/if}}
+            </div>
+            <i class="fas fa-chevron-down float-end"></i>
+          </div>
+          
+          <div class="collapse show" id="modulo-{{id}}">
+            <div class="lessons-list">
+              {{#if lecciones}}
+                {{#each lecciones}}
+                <div class="lesson-item" onclick="reproducirLeccion({{id}}, '{{titulo}}')">
+                  <div class="lesson-content">
+                    <div class="lesson-icon {{#if visto}}completed{{else}}pending{{/if}}">
+                      {{#if visto}}
+                        <i class="fas fa-check"></i>
+                      {{else}}
+                        <i class="fas fa-play"></i>
+                      {{/if}}
+                    </div>
+                    <div class="lesson-info">
+                      <div class="lesson-title">{{orden}}. {{titulo}}</div>
+                      {{#if descripcion}}
+                      <div class="lesson-description">{{descripcion}}</div>
+                      {{/if}}
+                      <div class="lesson-duration">
+                        <i class="fas fa-clock me-1"></i>{{duracion_formateada}}
+                      </div>
+                    </div>
+                  </div>
+                  <div class="lesson-status {{#if visto}}status-completed{{else}}status-pending{{/if}}">
+                    {{#if visto}}Completada{{else}}Pendiente{{/if}}
+                  </div>
+                </div>
+                {{/each}}
+              {{else}}
+                <div class="empty-state">
+                  <i class="fas fa-video"></i>
+                  <h5>Sin lecciones disponibles</h5>
+                  <p>Este módulo aún no tiene lecciones publicadas.</p>
+                </div>
+              {{/if}}
+            </div>
+          </div>
+        </div>
+        {{/each}}
+      {{else}}
+        <div class="module-card">
+          <div class="empty-state">
+            <i class="fas fa-graduation-cap"></i>
+            <h4>Curso en desarrollo</h4>
+            <p>Este curso aún no tiene módulos o lecciones disponibles.<br>
+            Pronto se publicará el contenido educativo.</p>
+          </div>
+        </div>
+      {{/if}}
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <script>
+    function reproducirLeccion(videoId, titulo) {
+      // Construir URL para reproducir el video
+      const params = new URLSearchParams({
+        user: '{{userName}}',
+        email: '{{userEmail}}',
+        rol: '{{userRole}}',
+        id: '{{userId}}'
+      });
+      
+      const url = `/video/${videoId}?${params.toString()}`;
+      
+      // Abrir en nueva pestaña o navegar
+      window.open(url, '_blank');
+      
+      // Opcional: actualizar estado visualmente
+      console.log('🎬 Reproduciendo:', titulo, '(ID:', videoId, ')');
+    }
+
+    // Mejorar la experiencia de colapso
+    document.addEventListener('DOMContentLoaded', function() {
+      const moduleHeaders = document.querySelectorAll('.module-header');
+      
+      moduleHeaders.forEach(header => {
+        header.addEventListener('click', function() {
+          const chevron = this.querySelector('.fa-chevron-down');
+          const targetId = this.getAttribute('data-bs-target');
+          const target = document.querySelector(targetId);
+          
+          if (target) {
+            const isCollapsed = !target.classList.contains('show');
+            chevron.style.transform = isCollapsed ? 'rotate(0deg)' : 'rotate(-180deg)';
+          }
+        });
+      });
+    });
+
+    // Animaciones suaves para elementos
+    document.addEventListener('DOMContentLoaded', function() {
+      const lessonItems = document.querySelectorAll('.lesson-item');
+      
+      lessonItems.forEach((item, index) => {
+        item.style.opacity = '0';
+        item.style.transform = 'translateY(20px)';
+        
+        setTimeout(() => {
+          item.style.transition = 'all 0.3s ease';
+          item.style.opacity = '1';
+          item.style.transform = 'translateY(0)';
+        }, index * 50);
+      });
+    });
+  </script>
+</body>
+</html>
