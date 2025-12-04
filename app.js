@@ -27,6 +27,7 @@ registerHandlebarsHelpers();
 
 // Configurar express-session para autenticación segura
 var session = require('express-session');
+var MSSQLStore = require('connect-mssql-v2');
 
 // Configurar proxy de confianza para Heroku
 if (process.env.NODE_ENV === 'production') {
@@ -47,22 +48,71 @@ console.log('[SESSION CONFIG] 🌍 Entorno:', process.env.NODE_ENV || 'developme
 console.log('[SESSION CONFIG] 🏠 Es Heroku:', isHeroku);
 console.log('[SESSION CONFIG] 💻 Es desarrollo local:', isLocalDevelopment);
 
+// Configurar store de sesiones con MSSQL para persistencia
+let sessionStore;
+try {
+  console.log('[SESSION STORE] 🔧 Configurando MSSQLStore...');
+  sessionStore = new MSSQLStore({
+    server: process.env.DB_SERVER,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_DATABASE,
+    port: parseInt(process.env.DB_PORT) || 1433,
+    options: {
+      encrypt: process.env.DB_ENCRYPT === 'true',
+      trustServerCertificate: process.env.DB_TRUST_CERT === 'true',
+      enableArithAbort: true,
+      requestTimeout: 30000
+    },
+    table: 'Sessions', // Tabla donde se almacenarán las sesiones
+    autoRemove: 'interval', // Limpiar sesiones expiradas automáticamente
+    autoRemoveInterval: 300000, // Limpiar cada 5 minutos (5 * 60 * 1000)
+    ttl: 24 * 60 * 60 * 1000, // TTL de 24 horas
+    autoRemoveCallback: function() {
+      console.log('[SESSION STORE] 🧹 Sesiones expiradas limpiadas automáticamente');
+    }
+  });
+
+  // Manejar eventos del store
+  sessionStore.on('connect', function() {
+    console.log('[SESSION STORE] ✅ MSSQLStore conectado exitosamente');
+  });
+
+  sessionStore.on('disconnect', function() {
+    console.log('[SESSION STORE] ⚠️ MSSQLStore desconectado');
+  });
+
+  sessionStore.on('error', function(error) {
+    console.error('[SESSION STORE] ❌ Error en MSSQLStore:', error.message);
+  });
+
+  console.log('[SESSION STORE] ✅ MSSQLStore configurado para usar tabla Sessions');
+
+} catch (error) {
+  console.error('[SESSION STORE] ❌ Error configurando MSSQLStore:', error.message);
+  console.log('[SESSION STORE] 🔄 Usando MemoryStore como fallback (NO RECOMENDADO PARA PRODUCCIÓN)');
+  sessionStore = null; // Usar MemoryStore por defecto
+}
+
 app.use(session({
   secret: process.env.SESSION_SECRET || 'fallback-secret-key-change-in-production',
-  resave: true, // Cambiar a true para forzar guardar sesión
-  saveUninitialized: true, // Cambiar a true para debugging
+  store: sessionStore, // Usar MSSQLStore si está disponible, sino MemoryStore
+  resave: false, // Optimizado: no guardar sesiones no modificadas
+  saveUninitialized: false, // Optimizado: no guardar sesiones vacías (evita memory leaks)
   name: 'sessionId', // Nombre personalizado para la cookie
   cookie: {
-    secure: false, // Forzar a false en desarrollo
-    httpOnly: true,
+    secure: isHeroku, // HTTPS en producción, HTTP en desarrollo
+    httpOnly: true, // Prevenir acceso desde JavaScript del cliente
     maxAge: 24 * 60 * 60 * 1000, // 24 horas
-    sameSite: 'lax' // Simplificar para desarrollo
+    sameSite: isHeroku ? 'strict' : 'lax' // Más seguro en producción
   },
-  // Agregar debugging de sesiones
-  rolling: true // Renovar la cookie en cada request
+  rolling: true // Renovar la cookie en cada request activo (evita logout automático)
 }));
 
-console.log('[SESSION CONFIG] ✅ Sesiones configuradas - secure:', isHeroku);
+console.log('[SESSION CONFIG] ✅ Sesiones configuradas exitosamente');
+console.log('[SESSION CONFIG] 🛡️ Store:', sessionStore ? 'MSSQLStore (Persistente)' : 'MemoryStore (Temporal)');
+console.log('[SESSION CONFIG] 🔒 Secure cookies:', isHeroku);
+console.log('[SESSION CONFIG] 📊 Configuración optimizada: resave=false, saveUninitialized=false');
 
 // Middleware temporal para debug de sesiones
 app.use((req, res, next) => {
@@ -118,33 +168,33 @@ if (process.env.DB_SERVER || process.env.NODE_ENV === 'production') {
 // Importar middleware de autenticación
 const { requireAuth, requireRole, injectUserData, injectAdminCounts, logAccess } = require('./middleware/auth');
 
-// Importar dependencias para tareas programadas
-const cron = require('node-cron');
-const { getPool } = require('./config/database');
-
 // Aplicar middleware global
 app.use(injectUserData);
 app.use(injectAdminCounts);
 app.use(logAccess);
 
-// Tarea programada para actualizar suscripciones vencidas
-// Se ejecuta todos los días a las 00:01 (un minuto después de medianoche)
-cron.schedule('1 0 * * *', async () => {
-    console.log('[CRON] 🕐 Ejecutando tarea programada: Actualizando suscripciones vencidas...');
-    try {
-        const pool = getPool();
-        const request = pool.request();
-        const result = await request.query(
-            "UPDATE Suscripciones SET estatus = 'expirada' WHERE fecha_vencimiento < GETDATE() AND estatus = 'activa'"
-        );
-        console.log(`[CRON] ✅ Suscripciones vencidas actualizadas. Filas afectadas: ${result.rowsAffected[0]}`);
-    } catch (error) {
-        console.error('[CRON] ❌ Error en la tarea programada de suscripciones:', error);
-    }
-}, {
-    scheduled: true,
-    timezone: "America/Mexico_City" // Ajusta esto a tu zona horaria local
-});
+// Inicializar tareas programadas (solo en instancia designada)
+let schedulerJobs = [];
+if (process.env.RUN_CRON_JOBS === 'true') {
+  console.log('[APP] 📅 Inicializando tareas programadas en esta instancia...');
+  const { initializeScheduler, stopScheduler } = require('./config/scheduler');
+  schedulerJobs = initializeScheduler();
+  
+  // Graceful shutdown para detener tareas programadas
+  process.on('SIGTERM', () => {
+    console.log('[APP] 🛈 Señal SIGTERM recibida. Deteniendo tareas programadas...');
+    stopScheduler(schedulerJobs);
+    process.exit(0);
+  });
+  
+  process.on('SIGINT', () => {
+    console.log('[APP] 🛈 Señal SIGINT recibida. Deteniendo tareas programadas...');
+    stopScheduler(schedulerJobs);
+    process.exit(0);
+  });
+} else {
+  console.log('[APP] ⏭️ Tareas programadas deshabilitadas en esta instancia (RUN_CRON_JOBS != true)');
+}
 
 // Proteger todas las rutas /admin/* con autenticación básica (RBAC granular en cada ruta)
 app.use('/admin', requireAuth);

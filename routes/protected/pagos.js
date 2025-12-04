@@ -5,6 +5,7 @@
 
 const express = require('express');
 const router = express.Router();
+const crypto = require('crypto');
 const { MercadoPagoConfig, Preference, Payment } = require('mercadopago');
 
 // Configurar Mercado Pago
@@ -15,6 +16,71 @@ const client = new MercadoPagoConfig({
     idempotencyKey: 'abc'
   }
 });
+
+/**
+ * Valida la firma criptográfica del webhook de Mercado Pago
+ * @param {Object} req - Request object
+ * @param {string} body - Raw body del request
+ * @returns {boolean} - true si la firma es válida
+ */
+function validateWebhookSignature(req, body) {
+  try {
+    const signature = req.headers['x-signature'];
+    const requestId = req.headers['x-request-id'];
+    
+    if (!signature || !requestId) {
+      console.log('[WEBHOOK SECURITY] ❌ Headers x-signature o x-request-id faltantes');
+      return false;
+    }
+
+    const secret = process.env.MERCADOPAGO_WEBHOOK_SECRET;
+    if (!secret) {
+      console.log('[WEBHOOK SECURITY] ❌ MERCADOPAGO_WEBHOOK_SECRET no configurado');
+      return false;
+    }
+
+    // Extraer el hash de la firma (formato: "ts=timestamp,v1=hash")
+    const parts = signature.split(',');
+    let timestamp, hash;
+    
+    for (const part of parts) {
+      const [key, value] = part.split('=');
+      if (key === 'ts') timestamp = value;
+      if (key === 'v1') hash = value;
+    }
+
+    if (!timestamp || !hash) {
+      console.log('[WEBHOOK SECURITY] ❌ Formato de firma inválido');
+      return false;
+    }
+
+    // Generar la firma esperada
+    const manifest = `id:${requestId};request-id:${requestId};ts:${timestamp};`;
+    const expectedSignature = crypto
+      .createHmac('sha256', secret)
+      .update(manifest)
+      .digest('hex');
+
+    // Comparar firmas de forma segura
+    const isValid = crypto.timingSafeEqual(
+      Buffer.from(hash, 'hex'),
+      Buffer.from(expectedSignature, 'hex')
+    );
+
+    if (!isValid) {
+      console.log('[WEBHOOK SECURITY] ❌ Firma inválida - posible ataque');
+      console.log('[WEBHOOK SECURITY] 🔍 Esperada:', expectedSignature);
+      console.log('[WEBHOOK SECURITY] 🔍 Recibida:', hash);
+    } else {
+      console.log('[WEBHOOK SECURITY] ✅ Firma válida - webhook auténtico');
+    }
+
+    return isValid;
+  } catch (error) {
+    console.error('[WEBHOOK SECURITY] ❌ Error validando firma:', error.message);
+    return false;
+  }
+}
 
 /**
  * POST /pagos/crear-preferencia
@@ -204,9 +270,19 @@ router.post('/crear-preferencia', async function(req, res, next) {
  */
 router.post('/webhook', async function(req, res, next) {
   try {
+    // VALIDACIÓN DE SEGURIDAD: Verificar firma criptográfica
+    const rawBody = JSON.stringify(req.body);
+    if (!validateWebhookSignature(req, rawBody)) {
+      console.log('[PAGOS] 🛡️ Webhook rechazado: firma inválida');
+      return res.status(401).json({
+        success: false,
+        message: 'Firma de webhook inválida'
+      });
+    }
+
     const { type, data } = req.body;
     
-    console.log('[PAGOS] 🔔 Webhook recibido:', { type, data });
+    console.log('[PAGOS] 🔔 Webhook recibido (firma válida):', { type, data });
 
     // Solo procesar notificaciones de pagos
     if (type !== 'payment') {
@@ -235,7 +311,9 @@ router.post('/webhook', async function(req, res, next) {
     if (paymentInfo.status === 'approved') {
       const userId = parseInt(paymentInfo.external_reference);
       
-      // ¡Corrección Clave! Usar los items de MP, no el carrito
+      // ¡Corrección Clave! Usar los items de MP, no el carrito completo
+      // IMPORTANTE: Solo actualizar items específicos que fueron pagados
+      // para evitar conflictos si el usuario agregó nuevos items mientras pagaba
       const itemsPagados = paymentInfo.additional_info ? paymentInfo.additional_info.items : null;
 
       if (!userId || !itemsPagados || itemsPagados.length === 0) {
@@ -272,14 +350,34 @@ router.post('/webhook', async function(req, res, next) {
                 `);
         }
 
-        // Actualizar carrito a 'comprado'
-        await transaction.request()
-          .input('userId', userId)
-          .query(`
+        // CORREGIDO: Actualizar solo los items específicos que fueron pagados
+        // En lugar de limpiar todo el carrito activo del usuario
+        if (itemsPagados.length > 0) {
+          // Crear lista de IDs de cursos pagados para el WHERE IN
+          const cursosPagados = itemsPagados.map(item => parseInt(item.id, 10));
+          console.log(`[PAGOS] 🛒 Actualizando carrito para cursos específicos:`, cursosPagados);
+          
+          // Construir placeholders para el WHERE IN
+          const placeholders = cursosPagados.map((_, index) => `@cursoId${index}`).join(',');
+          
+          // Crear el request con todos los parámetros
+          const updateRequest = transaction.request().input('userId', userId);
+          cursosPagados.forEach((cursoId, index) => {
+            updateRequest.input(`cursoId${index}`, cursoId);
+          });
+
+          await updateRequest.query(`
             UPDATE Carrito_Compras 
             SET estatus = 'comprado', fecha_modificacion = GETDATE()
-            WHERE id_usuario = @userId AND estatus = 'activo'
+            WHERE id_usuario = @userId 
+              AND id_curso IN (${placeholders})
+              AND estatus = 'activo'
           `);
+          
+          console.log(`[PAGOS] ✅ Carrito actualizado para ${cursosPagados.length} items específicos`);
+        } else {
+          console.log(`[PAGOS] ⚠️ No hay items pagados para actualizar en el carrito`);
+        }
 
         await transaction.commit();
         
@@ -336,6 +434,16 @@ router.get('/status/:paymentId', async function(req, res, next) {
  * Webhook para recibir notificaciones de PAGOS DE SUSCRIPCIONES
  */
 router.post('/webhook-suscripcion', async (req, res) => {
+    // VALIDACIÓN DE SEGURIDAD: Verificar firma criptográfica
+    const rawBody = JSON.stringify(req.body);
+    if (!validateWebhookSignature(req, rawBody)) {
+      console.log('[PAGOS] 🛡️ Webhook suscripción rechazado: firma inválida');
+      return res.status(401).json({
+        success: false,
+        message: 'Firma de webhook inválida'
+      });
+    }
+
     const { type, data } = req.body;
 
     // Solo procesar notificaciones de pagos

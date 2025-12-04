@@ -147,43 +147,85 @@ const logAccess = (req, res, next) => {
 
 // [ELIMINADO] ensureAdmin - ahora se usa hasPermission() con RBAC
 
-// Middleware para inyectar contadores del sidebar de admin
+// Middleware para inyectar contadores del sidebar de admin (CON CACHÉ OPTIMIZADO)
 const injectAdminCounts = async (req, res, next) => {
   try {
-    // Verificar si el usuario es administrador
-    if (req.session?.user?.rol === 'admin') {
-      const db = req.app.locals.db;
-      
-      // Verificar si la conexión a BD existe
-      if (db) {
-        // Ejecutar consultas en paralelo para mejor rendimiento
-        const [cursosResult, usuariosResult] = await Promise.all([
-          db.request().query('SELECT COUNT(*) as totalCursos FROM Cursos'),
-          db.request().query('SELECT COUNT(*) as totalUsuarios FROM Usuarios')
-        ]);
-        
-        // Extraer los resultados y guardarlos en res.locals
-        const totalCursos = cursosResult.recordset[0].totalCursos;
-        const totalUsuarios = usuariosResult.recordset[0].totalUsuarios;
-        
-        res.locals.sidebarCounts = {
-          cursos: totalCursos,
-          usuarios: totalUsuarios
-        };
-        
-        console.log(`[ADMIN COUNTS] 📊 Cursos: ${totalCursos}, Usuarios: ${totalUsuarios}`);
-      } else {
-        res.locals.sidebarCounts = null;
-        console.log('[ADMIN COUNTS] ⚠️ Base de datos no disponible');
-      }
-    } else {
-      // No es admin, no necesita contadores
+    // OPTIMIZACIÓN 1: Evitar ejecutar en peticiones AJAX/API
+    const isAjaxRequest = req.xhr || req.headers['x-requested-with'] === 'XMLHttpRequest';
+    const acceptsJson = req.headers.accept && req.headers.accept.includes('application/json');
+    
+    if (isAjaxRequest || acceptsJson) {
+      console.log('[ADMIN COUNTS] ⏭️ Saltando contadores para petición AJAX/API:', req.path);
       res.locals.sidebarCounts = null;
+      return next();
     }
+    
+    // OPTIMIZACIÓN 2: Solo ejecutar para administradores
+    if (req.session?.user?.rol !== 'admin') {
+      res.locals.sidebarCounts = null;
+      return next();
+    }
+    
+    const now = Date.now();
+    const CACHE_DURATION = 5 * 60 * 1000; // 5 minutos en millisegundos
+    
+    // OPTIMIZACIÓN 3: Verificar caché en sesión
+    if (req.session.adminCountsCache && 
+        req.session.adminCountsCache.timestamp &&
+        (now - req.session.adminCountsCache.timestamp) < CACHE_DURATION) {
+      
+      // Usar datos del caché
+      res.locals.sidebarCounts = req.session.adminCountsCache.data;
+      console.log('[ADMIN COUNTS] 🚀 Usando caché - Cursos:', 
+        req.session.adminCountsCache.data.cursos, 
+        'Usuarios:', req.session.adminCountsCache.data.usuarios);
+      return next();
+    }
+    
+    // OPTIMIZACIÓN 4: Obtener datos frescos solo si es necesario
+    const db = req.app.locals.db;
+    if (!db) {
+      console.log('[ADMIN COUNTS] ⚠️ Base de datos no disponible');
+      res.locals.sidebarCounts = null;
+      return next();
+    }
+    
+    console.log('[ADMIN COUNTS] 🔄 Actualizando caché - consultando BD...');
+    
+    // Ejecutar consultas en paralelo para mejor rendimiento
+    const [cursosResult, usuariosResult] = await Promise.all([
+      db.request().query('SELECT COUNT(*) as totalCursos FROM Cursos'),
+      db.request().query('SELECT COUNT(*) as totalUsuarios FROM Usuarios')
+    ]);
+    
+    // Extraer los resultados
+    const totalCursos = cursosResult.recordset[0].totalCursos;
+    const totalUsuarios = usuariosResult.recordset[0].totalUsuarios;
+    
+    const countsData = {
+      cursos: totalCursos,
+      usuarios: totalUsuarios
+    };
+    
+    // OPTIMIZACIÓN 5: Guardar en caché de sesión
+    req.session.adminCountsCache = {
+      data: countsData,
+      timestamp: now
+    };
+    
+    res.locals.sidebarCounts = countsData;
+    
+    console.log(`[ADMIN COUNTS] ✅ Caché actualizado - Cursos: ${totalCursos}, Usuarios: ${totalUsuarios}`);
+    
   } catch (error) {
-    console.error('[ADMIN COUNTS] ❌ Error al obtener contadores:', error);
+    console.error('[ADMIN COUNTS] ❌ Error al obtener contadores:', error.message);
     // En caso de error, inicializar como null para evitar crashes
     res.locals.sidebarCounts = null;
+    
+    // Limpiar caché corrupto si existe
+    if (req.session.adminCountsCache) {
+      delete req.session.adminCountsCache;
+    }
   }
   
   // Continuar con la siguiente función middleware
@@ -407,6 +449,33 @@ const hasAllPermissions = (permisosRequeridos) => {
   };
 };
 
+/**
+ * 🧹 FUNCIÓN AUXILIAR: Limpiar caché de contadores de admin
+ * ========================================================
+ * Usar después de operaciones que modifiquen usuarios o cursos
+ */
+const clearAdminCountsCache = (req) => {
+  if (req.session && req.session.adminCountsCache) {
+    delete req.session.adminCountsCache;
+    console.log('[ADMIN COUNTS] 🧹 Caché de contadores limpiado');
+  }
+};
+
+/**
+ * 🔄 MIDDLEWARE: Limpiar caché después de operaciones de modificación
+ * =================================================================
+ * Usar en rutas POST/PUT/DELETE que modifiquen usuarios o cursos
+ */
+const invalidateAdminCountsCache = (req, res, next) => {
+  // Limpiar caché al finalizar la respuesta
+  res.on('finish', () => {
+    if (res.statusCode >= 200 && res.statusCode < 300) {
+      clearAdminCountsCache(req);
+    }
+  });
+  next();
+};
+
 module.exports = {
   // Middleware existente (mantener compatibilidad)
   requireAuth,
@@ -421,5 +490,9 @@ module.exports = {
   hasPermission,
   hasAnyPermission,
   hasAllPermissions,
-  cargarPermisosUsuario
+  cargarPermisosUsuario,
+  
+  // Utilidades de caché para admin counts
+  clearAdminCountsCache,
+  invalidateAdminCountsCache
 };
