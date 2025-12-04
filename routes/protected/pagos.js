@@ -340,14 +340,47 @@ router.post('/webhook', async function(req, res, next) {
                 .input('metodoPago', 'mercadopago')
                 .input('descripcion', `Pago MP: ${paymentId}`)
                 .query(`
+                    -- 💳 PASO 1: Registrar la compra
                     INSERT INTO Compras (
                         id_usuario, id_curso, monto, 
                         metodo_pago, descripcion, fecha_compra
                     ) VALUES (
                         @userId, @cursoId, @monto,
                         @metodoPago, @descripcion, GETDATE()
+                    );
+                    
+                    -- 🎓 PASO 2: INSCRIPCIÓN AUTOMÁTICA TRAS COMPRA
+                    -- ============================================
+                    -- Solución a inconsistencia: checkVideoAccess usa Compras
+                    -- pero /lecciones usa Inscripciones. Crear inscripción automática.
+                    IF NOT EXISTS (
+                        SELECT 1 FROM Inscripciones 
+                        WHERE id_usuario = @userId AND id_curso = @cursoId
                     )
+                    BEGIN
+                        INSERT INTO Inscripciones (
+                            id_usuario, id_curso, estado, progreso, 
+                            fecha_inscripcion, fecha_modificacion
+                        ) VALUES (
+                            @userId, @cursoId, 'activo', 0, 
+                            GETDATE(), GETDATE()
+                        )
+                        
+                        PRINT 'Inscripción automática creada para usuario ' + CAST(@userId AS VARCHAR) + ' en curso ' + CAST(@cursoId AS VARCHAR)
+                    END
+                    ELSE
+                    BEGIN
+                        -- Si ya existe, asegurar que esté activa
+                        UPDATE Inscripciones 
+                        SET estado = 'activo', fecha_modificacion = GETDATE()
+                        WHERE id_usuario = @userId AND id_curso = @cursoId
+                        
+                        PRINT 'Inscripción existente reactivada para usuario ' + CAST(@userId AS VARCHAR) + ' en curso ' + CAST(@cursoId AS VARCHAR)
+                    END
                 `);
+                
+            console.log(`[PAGOS] ✅ Compra registrada para usuario ${userId} en curso ${id_curso}`);
+            console.log(`[PAGOS] 🎓 Inscripción automática procesada para curso ${id_curso}`);
         }
 
         // CORREGIDO: Actualizar solo los items específicos que fueron pagados

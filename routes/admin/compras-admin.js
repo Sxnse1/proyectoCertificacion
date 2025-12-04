@@ -137,8 +137,33 @@ router.post('/', async (req, res) => {
       .input('descripcion', sql.NVarChar, descripcion || null)
       .input('metodo_pago', sql.NVarChar, metodo_pago || null)
       .query(`
+        -- 💳 Registrar compra manual desde admin
         INSERT INTO Compras (id_usuario, id_curso, monto, descripcion, metodo_pago, fecha_compra)
-        VALUES (@id_usuario, @id_curso, @monto, @descripcion, @metodo_pago, GETDATE())
+        VALUES (@id_usuario, @id_curso, @monto, @descripcion, @metodo_pago, GETDATE());
+        
+        -- 🎓 INSCRIPCIÓN AUTOMÁTICA (COMPRA MANUAL)
+        -- =========================================
+        -- Mantener consistencia: Compra manual también debe crear inscripción
+        IF NOT EXISTS (
+            SELECT 1 FROM Inscripciones 
+            WHERE id_usuario = @id_usuario AND id_curso = @id_curso
+        )
+        BEGIN
+            INSERT INTO Inscripciones (
+                id_usuario, id_curso, estado, progreso, 
+                fecha_inscripcion, fecha_modificacion
+            ) VALUES (
+                @id_usuario, @id_curso, 'activo', 0, 
+                GETDATE(), GETDATE()
+            )
+        END
+        ELSE
+        BEGIN
+            -- Si ya existe, asegurar que esté activa
+            UPDATE Inscripciones 
+            SET estado = 'activo', fecha_modificacion = GETDATE()
+            WHERE id_usuario = @id_usuario AND id_curso = @id_curso
+        END
       `);
     
     res.json({ success: true, message: 'Compra registrada exitosamente' });

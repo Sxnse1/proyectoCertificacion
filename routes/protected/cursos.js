@@ -422,30 +422,78 @@ router.get('/lecciones/:cursoId', async function(req, res, next) {
     const curso = cursoResult.recordset[0];
     console.log(`[LECCIONES] ✅ Curso encontrado: "${curso.titulo}" (ID: ${cursoId})`);
 
-    // Verificar que el usuario está inscrito al curso
-    const inscripcionQuery = `
+    // 🔄 VERIFICACIÓN HÍBRIDA DE ACCESO AL CURSO
+    // ==========================================
+    // Verificar inscripción Y compra para máxima compatibilidad
+    const accesoQuery = `
       SELECT 
         i.id_inscripcion,
-        i.estado,
+        i.estado as estado_inscripcion,
         i.progreso,
         i.fecha_inscripcion,
-        i.fecha_finalizacion
+        i.fecha_finalizacion,
+        -- Verificar también si hay compra (respaldo)
+        (SELECT COUNT(*) FROM Compras c 
+         WHERE c.id_usuario = @userId AND c.id_curso = @cursoId) as tiene_compra
       FROM Inscripciones i
       WHERE i.id_usuario = @userId AND i.id_curso = @cursoId
+      
+      UNION ALL
+      
+      -- Si no hay inscripción pero sí compra, crear registro temporal
+      SELECT 
+        NULL as id_inscripcion,
+        'activo' as estado_inscripcion,
+        0 as progreso,
+        GETDATE() as fecha_inscripcion,
+        NULL as fecha_finalizacion,
+        1 as tiene_compra
+      FROM Compras c
+      WHERE c.id_usuario = @userId AND c.id_curso = @cursoId
+        AND NOT EXISTS (
+          SELECT 1 FROM Inscripciones i2 
+          WHERE i2.id_usuario = @userId AND i2.id_curso = @cursoId
+        )
     `;
 
-    const inscripcionResult = await db.executeQuery(inscripcionQuery, { 
+    const accesoResult = await db.executeQuery(accesoQuery, { 
       userId: parseInt(id), 
       cursoId 
     });
 
-    if (!inscripcionResult.recordset || inscripcionResult.recordset.length === 0) {
-      console.log(`[LECCIONES] ⚠️ Usuario ${id} no inscrito en curso ${cursoId}`);
+    if (!accesoResult.recordset || accesoResult.recordset.length === 0) {
+      console.log(`[LECCIONES] ❌ Usuario ${id} sin acceso al curso ${cursoId} (ni inscripción ni compra)`);
       return res.redirect(`/cursos/curso-detalle/${cursoId}?user=${encodeURIComponent(user)}&email=${encodeURIComponent(email)}&rol=${rol}&id=${id}&mensaje=Debes inscribirte al curso primero`);
     }
 
-    const inscripcion = inscripcionResult.recordset[0];
-    console.log(`[LECCIONES] 📚 Inscripción válida - Estado: ${inscripcion.estado}, Progreso: ${inscripcion.progreso}%`);
+    const acceso = accesoResult.recordset[0];
+    
+    // Si tiene compra pero no inscripción, crear inscripción automática
+    if (!acceso.id_inscripcion && acceso.tiene_compra > 0) {
+      console.log(`[LECCIONES] 🔄 Creando inscripción automática para usuario ${id} en curso ${cursoId}`);
+      try {
+        await db.executeQuery(`
+          INSERT INTO Inscripciones (
+            id_usuario, id_curso, estado, progreso, 
+            fecha_inscripcion, fecha_modificacion
+          ) VALUES (
+            @userId, @cursoId, 'activo', 0, 
+            GETDATE(), GETDATE()
+          )
+        `, { userId: parseInt(id), cursoId });
+        
+        // Actualizar datos de acceso
+        acceso.id_inscripcion = 1; // Simular que ya tiene inscripción
+        acceso.estado_inscripcion = 'activo';
+        acceso.progreso = 0;
+        
+        console.log(`[LECCIONES] ✅ Inscripción automática creada`);
+      } catch (inscripError) {
+        console.log(`[LECCIONES] ⚠️ Error creando inscripción automática:`, inscripError.message);
+      }
+    }
+
+    console.log(`[LECCIONES] 📚 Acceso válido - Estado: ${acceso.estado_inscripcion}, Progreso: ${acceso.progreso}%`);
 
     // Obtener módulos y lecciones (videos) del curso
     const leccionesQuery = `
@@ -530,9 +578,9 @@ router.get('/lecciones/:cursoId', async function(req, res, next) {
         total_videos: curso.total_videos
       },
       inscripcion: {
-        estado: inscripcion.estado,
-        progreso: Math.round(inscripcion.progreso),
-        fecha_inscripcion: new Date(inscripcion.fecha_inscripcion).toLocaleDateString('es-MX')
+        estado: acceso.estado_inscripcion,
+        progreso: Math.round(acceso.progreso),
+        fecha_inscripcion: new Date(acceso.fecha_inscripcion).toLocaleDateString('es-MX')
       },
       modulos,
       estadisticas: {
