@@ -75,20 +75,29 @@ router.get('/', async function(req, res, next) {
           u.nombre + ' ' + u.apellido as instructor_nombre,
           cat.nombre as categoria_nombre,
           ISNULL((SELECT AVG(CAST(calificacion AS FLOAT)) FROM Valoraciones v WHERE v.id_curso = c.id_curso), 0) as calificacion_promedio,
-          ISNULL((SELECT COUNT(*) FROM Valoraciones v WHERE v.id_curso = c.id_curso), 0) as total_valoraciones
+          ISNULL((SELECT COUNT(*) FROM Valoraciones v WHERE v.id_curso = c.id_curso), 0) as total_valoraciones,
+          CASE WHEN EXISTS (
+            SELECT 1 FROM Carrito_Compras cc 
+            WHERE cc.id_curso = c.id_curso 
+              AND cc.id_usuario = @userId 
+              AND cc.estatus = 'activo'
+          ) THEN 1 ELSE 0 END as en_carrito
         FROM Cursos c
         INNER JOIN Usuarios u ON c.id_usuario = u.id_usuario
         INNER JOIN Categorias cat ON c.id_categoria = cat.id_categoria
         WHERE c.estatus = 'publicado'
         ORDER BY c.fecha_creacion DESC
-      `);
+      `, {
+        userId: user.id_usuario || user.id
+      });
 
       if (cursosResult && cursosResult.recordset) {
         cursos = cursosResult.recordset.map(curso => ({
           ...curso,
           precio_formato: curso.precio ? `$${curso.precio.toLocaleString('es-MX')} MXN` : 'Gratis',
           calificacion_promedio: Math.round(curso.calificacion_promedio * 10) / 10,
-          fecha_creacion_formato: new Date(curso.fecha_creacion).toLocaleDateString('es-MX')
+          fecha_creacion_formato: new Date(curso.fecha_creacion).toLocaleDateString('es-MX'),
+          en_carrito: curso.en_carrito === 1
         }));
       }
 
@@ -108,12 +117,42 @@ router.get('/', async function(req, res, next) {
       // Continuar con datos por defecto
     }
 
+    // Verificar si el usuario tiene suscripción activa
+    let tieneSuscripcionActiva = false;
+    try {
+      const userId = user.id_usuario || user.id;
+      console.log('[CURSOS] 🔍 Verificando suscripción para usuario ID:', userId);
+      
+      const suscripcionResult = await db.executeQuery(`
+        SELECT TOP 1 id_suscripcion, fecha_vencimiento, estatus
+        FROM Suscripciones
+        WHERE id_usuario = @id_usuario
+          AND estatus = 'activa'
+          AND fecha_vencimiento > GETDATE()
+        ORDER BY fecha_vencimiento DESC
+      `, {
+        id_usuario: userId
+      });
+
+      console.log('[CURSOS] 📋 Resultado suscripción:', suscripcionResult?.recordset);
+
+      if (suscripcionResult && suscripcionResult.recordset && suscripcionResult.recordset.length > 0) {
+        tieneSuscripcionActiva = true;
+        console.log('[CURSOS] 💎 Usuario tiene suscripción activa');
+      } else {
+        console.log('[CURSOS] ⭕ Usuario NO tiene suscripción activa');
+      }
+    } catch (subError) {
+      console.error('[CURSOS] ⚠️ Error verificando suscripción:', subError.message);
+    }
+
     console.log('[CURSOS] 📊 Estadísticas:', {
       totalCursos,
       cursosBasicos,
       cursosIntermedios,
       cursosAvanzados,
-      cursosPublicados
+      cursosPublicados,
+      tieneSuscripcionActiva
     });
 
     res.render('estudiante/cursos-estudiante', {
@@ -121,6 +160,7 @@ router.get('/', async function(req, res, next) {
       user: user,
       cursos: cursos,
       categorias: categorias,
+      tieneSuscripcionActiva: tieneSuscripcionActiva,
       stats: {
         totalCursos,
         cursosBasicos,

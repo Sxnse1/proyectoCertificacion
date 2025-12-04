@@ -176,9 +176,15 @@ router.post('/login', async function(req, res, next) {
     
     // Login exitoso - verificar si tiene contraseña temporal
     console.log('[AUTH] ✅ Login exitoso para:', email, '- Rol:', user.rol);
+    console.log('[AUTH] 🔍 Verificando contraseña temporal...');
+    console.log('[AUTH] 📊 tiene_password_temporal (valor):', user.tiene_password_temporal);
+    console.log('[AUTH] 📊 tiene_password_temporal (tipo):', typeof user.tiene_password_temporal);
+    console.log('[AUTH] 📊 Evaluación booleana:', !!user.tiene_password_temporal);
+    console.log('[AUTH] 📊 Comparación === true:', user.tiene_password_temporal === true);
+    console.log('[AUTH] 📊 Comparación === 1:', user.tiene_password_temporal === 1);
     
-    // Verificar si el usuario tiene contraseña temporal
-    if (user.tiene_password_temporal) {
+    // Verificar si el usuario tiene contraseña temporal (comparación estricta)
+    if (user.tiene_password_temporal === true || user.tiene_password_temporal === 1) {
       console.log('[AUTH] 🔐 Usuario tiene contraseña temporal, requiere cambio');
       
       // 🔍 AUDIT: Registrar login exitoso con contraseña temporal
@@ -332,6 +338,7 @@ router.post('/login', async function(req, res, next) {
         }); // Cierre del regenerate callback
         
         return; // Salir del flujo principal
+      } // Cierre del catch (columnError)
       
       if (!twoFactorData.two_factor_enabled || !twoFactorData.two_factor_verified) {
         // Usuario necesita configurar 2FA
@@ -440,12 +447,12 @@ router.post('/login', async function(req, res, next) {
       // Continuar sin permisos - para compatibilidad con sistema anterior
     }
     
-    // 🛡️ PROTECCIÓN CONTRA SESSION FIXATION (PASSWORD TEMPORAL)
-    // ========================================================
-    // Regenerar sesión antes de asignar datos de usuario con contraseña temporal
+    // 🛡️ PROTECCIÓN CONTRA SESSION FIXATION (LOGIN NORMAL)
+    // ====================================================
+    // Regenerar sesión antes de asignar datos de usuario
     req.session.regenerate((err) => {
       if (err) {
-        console.error('[AUTH] ❌ Error regenerando sesión (temporal):', err);
+        console.error('[AUTH] ❌ Error regenerando sesión:', err);
         return res.render('auth/login-bootstrap', {
           title: 'Iniciar Sesión',
           error: 'Error de seguridad. Intenta nuevamente.',
@@ -454,18 +461,20 @@ router.post('/login', async function(req, res, next) {
         });
       }
 
+      // Crear sesión completa del usuario
       req.session.user = {
         id: user.id_usuario,
         nombre: nombreCompleto,
         email: user.email,
         rol: user.rol,
-        permisos: permisos, // 🆕 Agregamos los permisos al objeto de sesión
+        permisos: permisos,
         two_factor_enabled: false,
         two_factor_verified: false,
         loginTime: new Date().toISOString()
       };
       
-      console.log('[AUTH] 🔒 Sesión regenerada para login con contraseña temporal:', email);
+      console.log('[AUTH] 🔒 Sesión regenerada para login normal:', email);
+      console.log('[AUTH] ✅ Login completado exitosamente');
 
       // Guardar sesión antes de redirigir
       req.session.save((err) => {
@@ -481,9 +490,15 @@ router.post('/login', async function(req, res, next) {
         
         console.log('[AUTH] 💾 Sesión creada exitosamente para:', email);
         console.log('[AUTH] 👤 Usuario en sesión:', req.session.user);
-        console.log('[AUTH] 🎯 Redirigiendo a cambio de contraseña');
         
-        res.redirect('/auth/change-password');
+        // Redirigir según el rol
+        if (user.rol === 'instructor' || user.rol === 'admin' || user.rol === 'SuperAdmin' || user.rol === 'Admin') {
+          console.log('[AUTH] 🎯 Redirigiendo al dashboard de administrador');
+          res.redirect('/dashboard');
+        } else {
+          console.log('[AUTH] 🎯 Redirigiendo al dashboard de usuario');
+          res.redirect('/user-dashboard');
+        }
       });
     }); // Cierre del regenerate callback
     
@@ -586,24 +601,85 @@ router.get('/logout', function(req, res, next) {
 });
 
 /* GET - Formulario de cambio de contraseña obligatorio */
-router.get('/change-password', function(req, res, next) {
-  // Verificar que el usuario tenga una sesión temporal válida
-  if (!req.session.tempUser || !req.session.tempUser.requirePasswordChange) {
+router.get('/change-password', async function(req, res, next) {
+  try {
+    // CASO 1: Usuario con sesión temporal (acaba de loguearse con password temporal)
+    if (req.session.tempUser && req.session.tempUser.requirePasswordChange) {
+      const tempUser = req.session.tempUser;
+      console.log('[AUTH] 📄 Mostrando formulario de cambio de contraseña para:', tempUser.email);
+      
+      return res.render('auth/change-password', {
+        title: 'Cambiar Contraseña',
+        userName: tempUser.nombre,
+        email: tempUser.email,
+        error: req.query.error ? decodeURIComponent(req.query.error) : null,
+        success: req.query.success ? decodeURIComponent(req.query.success) : null,
+        layout: false
+      });
+    }
+    
+    // CASO 2: Usuario ya logueado que quiere cambiar su contraseña
+    if (req.session.user) {
+      const user = req.session.user;
+      console.log('[AUTH] 📄 Usuario logueado accediendo a cambio de contraseña:', user.email);
+      
+      // Verificar si tiene contraseña temporal activa
+      const db = req.app.locals.db;
+      const result = await db.executeQuery(
+        `SELECT tiene_password_temporal, fecha_password_temporal 
+         FROM Usuarios 
+         WHERE id_usuario = @id`,
+        { id: user.id }
+      );
+      
+      if (result.recordset.length > 0 && result.recordset[0].tiene_password_temporal) {
+        // Tiene password temporal, permitir cambio
+        console.log('[AUTH] ⚠️ Usuario con contraseña temporal activa');
+        
+        // Crear sesión temporal para el flujo
+        req.session.tempUser = {
+          id: user.id,
+          nombre: user.nombre,
+          email: user.email,
+          rol: user.rol,
+          permisos: user.permisos || [],
+          requirePasswordChange: true,
+          loginTime: user.loginTime
+        };
+        
+        // Limpiar sesión principal temporalmente
+        delete req.session.user;
+        
+        await new Promise((resolve, reject) => {
+          req.session.save((err) => {
+            if (err) reject(err);
+            else resolve();
+          });
+        });
+        
+        return res.render('auth/change-password', {
+          title: 'Cambiar Contraseña',
+          userName: req.session.tempUser.nombre,
+          email: req.session.tempUser.email,
+          error: req.query.error ? decodeURIComponent(req.query.error) : null,
+          success: req.query.success ? decodeURIComponent(req.query.success) : null,
+          layout: false
+        });
+      } else {
+        // No tiene password temporal, redirigir al dashboard
+        console.log('[AUTH] ℹ️ Usuario sin contraseña temporal, redirigiendo al perfil');
+        return res.redirect('/perfil?tab=seguridad&message=Usa la opción de cambio de contraseña en tu perfil');
+      }
+    }
+    
+    // CASO 3: Sin ninguna sesión válida
     console.log('[AUTH] ⚠️ Intento de acceso a cambio de contraseña sin sesión válida');
     return res.redirect('/auth/login?error=Sesión no válida');
+    
+  } catch (error) {
+    console.error('[AUTH] ❌ Error en GET /change-password:', error);
+    return res.redirect('/auth/login?error=Error interno');
   }
-  
-  const tempUser = req.session.tempUser;
-  console.log('[AUTH] 📄 Mostrando formulario de cambio de contraseña para:', tempUser.email);
-  
-  res.render('auth/change-password', {
-    title: 'Cambiar Contraseña',
-    userName: tempUser.nombre,
-    email: tempUser.email,
-    error: req.query.error ? decodeURIComponent(req.query.error) : null,
-    success: req.query.success ? decodeURIComponent(req.query.success) : null,
-    layout: false
-  });
 });
 
 /* POST - Procesar cambio de contraseña obligatorio */

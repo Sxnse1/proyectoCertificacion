@@ -20,6 +20,7 @@ document.getElementById('profile-form').addEventListener('submit', async functio
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'csrf-token': window.csrfHelper ? window.csrfHelper.getToken() : ''
       },
       body: JSON.stringify(data)
     });

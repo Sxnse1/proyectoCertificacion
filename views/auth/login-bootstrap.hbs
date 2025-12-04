@@ -347,6 +347,9 @@
             {{/if}}
 
             <form action="/auth/login" method="POST" id="loginForm">
+                {{!-- CSRF Token --}}
+                <input type="hidden" name="_csrf" value="{{csrfToken}}">
+                
                 <div class="form-floating">
                     <input type="email" 
                            class="form-control" 

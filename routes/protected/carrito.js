@@ -178,21 +178,50 @@ router.post('/add', requireAuth, async (req, res) => {
 
         console.log(`[CARRITO] ✅ Validaciones pasadas, agregando curso al carrito`);
 
-        // Si pasa todas las validaciones, lo insertamos:
-        const insertQuery = `
-            INSERT INTO Carrito_Compras (id_usuario, id_curso, fecha_agregado, estatus)
-            VALUES (@id_usuario, @id_curso, GETDATE(), 'activo')
-        `;
-        await db.executeQuery(insertQuery, { 
-            id_usuario: id_usuario, 
-            id_curso: parseInt(id_curso, 10) 
-        });
+        // Verificar si existe un registro eliminado que podamos reactivar
+        const eliminadoQuery = await db.executeQuery(
+            "SELECT id_carrito FROM Carrito_Compras WHERE id_usuario = @id_usuario AND id_curso = @id_curso AND estatus = 'eliminado'", 
+            { id_usuario, id_curso: parseInt(id_curso, 10) }
+        );
 
-        console.log(`[CARRITO] ✅ Curso ${id_curso} agregado exitosamente al carrito del usuario ${id_usuario}`);
+        if (eliminadoQuery.recordset.length > 0) {
+            // Reactivar el registro existente
+            const reactivarQuery = `
+                UPDATE Carrito_Compras 
+                SET estatus = 'activo', fecha_agregado = GETDATE()
+                WHERE id_usuario = @id_usuario AND id_curso = @id_curso AND estatus = 'eliminado'
+            `;
+            await db.executeQuery(reactivarQuery, { 
+                id_usuario: id_usuario, 
+                id_curso: parseInt(id_curso, 10) 
+            });
+            console.log(`[CARRITO] ♻️ Curso ${id_curso} reactivado en el carrito del usuario ${id_usuario}`);
+        } else {
+            // Insertar nuevo registro
+            const insertQuery = `
+                INSERT INTO Carrito_Compras (id_usuario, id_curso, fecha_agregado, estatus)
+                VALUES (@id_usuario, @id_curso, GETDATE(), 'activo')
+            `;
+            await db.executeQuery(insertQuery, { 
+                id_usuario: id_usuario, 
+                id_curso: parseInt(id_curso, 10) 
+            });
+            console.log(`[CARRITO] ✅ Curso ${id_curso} agregado exitosamente al carrito del usuario ${id_usuario}`);
+        }
+
         res.json({ success: true, message: 'Curso añadido al carrito.' });
 
     } catch (error) {
         console.error('[CARRITO] ❌ Error al añadir al carrito:', error);
+        
+        // Manejar error de duplicado específicamente
+        if (error.number === 2627) { // Error de UNIQUE KEY constraint
+            return res.status(400).json({ 
+                success: false, 
+                message: 'Este curso ya se encuentra en tu carrito.' 
+            });
+        }
+        
         res.status(500).json({ success: false, message: 'Error interno del servidor.' });
     }
 });
@@ -203,8 +232,9 @@ router.delete('/eliminar/:carritoId', requireAuth, async function(req, res, next
     const { carritoId } = req.params;
     const user = req.session.user;
     const db = req.app.locals.db;
+    const userId = user.id_usuario || user.id;
     
-    console.log('[CARRITO] 🗑️ Eliminando item:', carritoId, '- Usuario:', user.email);
+    console.log('[CARRITO] 🗑️ Eliminando item:', carritoId, '- Usuario:', user.email, '- UserId:', userId);
 
     const deleteQuery = `
       UPDATE Carrito_Compras 
@@ -214,7 +244,7 @@ router.delete('/eliminar/:carritoId', requireAuth, async function(req, res, next
     
     const result = await db.executeQuery(deleteQuery, { 
       carritoId: parseInt(carritoId),
-      userId: user.id_usuario
+      userId: userId
     });
 
     if (result.rowsAffected[0] > 0) {
@@ -244,8 +274,9 @@ router.delete('/eliminar/curso/:cursoId', requireAuth, async function(req, res, 
     const { cursoId } = req.params;
     const user = req.session.user;
     const db = req.app.locals.db;
+    const userId = user.id_usuario || user.id;
     
-    console.log('[CARRITO] 🗑️ Eliminando curso:', cursoId, '- Usuario:', user.email);
+    console.log('[CARRITO] 🗑️ Eliminando curso:', cursoId, '- Usuario:', user.email, '- UserId:', userId);
 
     const deleteQuery = `
       UPDATE Carrito_Compras 
@@ -255,7 +286,7 @@ router.delete('/eliminar/curso/:cursoId', requireAuth, async function(req, res, 
     
     const result = await db.executeQuery(deleteQuery, { 
       cursoId: parseInt(cursoId),
-      userId: user.id_usuario
+      userId: userId
     });
 
     if (result.rowsAffected[0] > 0) {

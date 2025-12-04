@@ -56,7 +56,8 @@ async function comprarCurso(cursoId) {
             credentials: 'same-origin',
             headers: {
                 'Accept': 'application/json',
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'csrf-token': window.csrfHelper ? window.csrfHelper.getToken() : ''
             },
             body: JSON.stringify({
                 id_curso: cursoId

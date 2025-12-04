@@ -430,7 +430,7 @@
                     </h1>
                     <p class="page-subtitle">
                         {{#if items}}
-                            {{itemCount}} curso{{#gt itemCount 1}}s{{/gt}} seleccionado{{#gt itemCount 1}}s{{/gt}} para comprar
+                            {{itemCount}} curso{{#if (gt itemCount 1)}}s{{/if}} seleccionado{{#if (gt itemCount 1)}}s{{/if}} para comprar
                         {{else}}
                             Tu carrito está vacío
                         {{/if}}
@@ -457,7 +457,7 @@
                         <i class="bi bi-list-ul"></i>
                         Cursos Seleccionados
                     </h2>
-                    <span class="badge bg-light text-dark">{{itemCount}} curso{{#gt itemCount 1}}s{{/gt}}</span>
+                    <span class="badge bg-light text-dark">{{itemCount}} curso{{#if (gt itemCount 1)}}s{{/if}}</span>
                 </div>
 
                 {{#each items}}
@@ -514,7 +514,7 @@
                 
                 <div class="summary-body">
                     <div class="summary-row">
-                        <span>Subtotal ({{itemCount}} curso{{#gt itemCount 1}}s{{/gt}}):</span>
+                        <span>Subtotal ({{itemCount}} curso{{#if (gt itemCount 1)}}s{{/if}}):</span>
                         <span>${{subtotal}}</span>
                     </div>
                     

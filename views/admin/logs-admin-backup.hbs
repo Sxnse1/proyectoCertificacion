@@ -361,6 +361,7 @@ StartEducation con filtros, paginación y exportación
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <form action="/admin/logs/export" method="POST">
+                    <input type="hidden" name="_csrf" value="{{csrfToken}}">
                     <div class="modal-body">
                         <div class="mb-3">
                             <label class="form-label">Formato de Exportación</label>

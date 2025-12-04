@@ -97,15 +97,40 @@ class FavoritosManager {
 
     // Función para eliminar favorito
     async eliminarFavorito(cursoId) {
-        if (!confirm('¿Estás seguro de que quieres eliminar este curso de tus favoritos?')) {
+        // Usar SweetAlert2 para confirmación moderna
+        const result = await Swal.fire({
+            title: '¿Eliminar de favoritos?',
+            text: '¿Estás seguro de que quieres eliminar este curso de tus favoritos?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#ea580c',
+            cancelButtonColor: '#6b7280',
+            confirmButtonText: '<i class="fas fa-heart-broken"></i> Sí, eliminar',
+            cancelButtonText: '<i class="fas fa-times"></i> Cancelar',
+            reverseButtons: true
+        });
+
+        if (!result.isConfirmed) {
             return;
         }
+
+        // Mostrar loading
+        Swal.fire({
+            title: 'Eliminando...',
+            text: 'Por favor espera',
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
 
         try {
             const response = await fetch('/favoritos/eliminar', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'csrf-token': window.csrfHelper ? window.csrfHelper.getToken() : ''
                 },
                 body: JSON.stringify({ cursoId: cursoId })
             });
@@ -113,19 +138,30 @@ class FavoritosManager {
             const result = await response.json();
 
             if (result.success) {
-                // Mostrar mensaje de éxito
-                this.showToast('Curso eliminado de favoritos exitosamente', 'success');
-                
-                // Recargar la página después de un breve delay
-                setTimeout(() => {
-                    window.location.reload();
-                }, 1500);
+                await Swal.fire({
+                    icon: 'success',
+                    title: '¡Eliminado!',
+                    text: 'El curso ha sido eliminado de tus favoritos',
+                    timer: 1500,
+                    showConfirmButton: false
+                });
+                window.location.reload();
             } else {
-                this.showToast(result.message || 'Error al eliminar el curso de favoritos', 'error');
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: result.message || 'Error al eliminar el curso de favoritos',
+                    confirmButtonColor: '#ea580c'
+                });
             }
         } catch (error) {
             console.error('Error:', error);
-            this.showToast('Error de conexión. Inténtalo de nuevo.', 'error');
+            Swal.fire({
+                icon: 'error',
+                title: 'Error de conexión',
+                text: 'Inténtalo de nuevo más tarde',
+                confirmButtonColor: '#ea580c'
+            });
         }
     }
 

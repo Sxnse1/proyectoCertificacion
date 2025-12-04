@@ -23,6 +23,7 @@
     <meta name="description" content="StartEducation - Tu plataforma de cursos online. Aprende nuevas habilidades con nuestros cursos especializados.">
     <meta name="keywords" content="cursos online, educación, aprendizaje, certificados, StartEducation">
     <meta name="author" content="StartEducation">
+    <meta name="csrf-token" content="{{csrfToken}}">
     
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
@@ -220,6 +221,27 @@
     
     <!-- jQuery (if needed) -->
     <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <!-- CSRF Helper (debe cargarse primero) -->
+    <script src="/js/csrf-helper.js"></script>
+    
+    <!-- Debug CSRF Token -->
+    <script>
+        // Verificar que el token CSRF está disponible
+        document.addEventListener('DOMContentLoaded', function() {
+            const metaTag = document.querySelector('meta[name="csrf-token"]');
+            const token = metaTag ? metaTag.getAttribute('content') : null;
+            
+            console.log('=== DEBUG CSRF ===');
+            console.log('Meta tag encontrado:', !!metaTag);
+            console.log('Token en meta tag:', token);
+            console.log('Token desde csrfHelper:', window.csrfHelper ? window.csrfHelper.getToken() : 'csrfHelper no disponible');
+            console.log('===================');
+        });
+    </script>
     
     <!-- Custom JS -->
     <script src="/js/main-layout.js"></script>

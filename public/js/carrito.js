@@ -15,53 +15,127 @@ class CarritoManager {
 
     // Función para eliminar item del carrito
     async eliminarDelCarrito(carritoId) {
-        if (!confirm('¿Estás seguro de que deseas eliminar este curso del carrito?')) {
+        // Usar SweetAlert2 para confirmación moderna
+        const result = await Swal.fire({
+            title: '¿Eliminar curso?',
+            text: '¿Estás seguro de que deseas eliminar este curso del carrito?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#ea580c',
+            cancelButtonColor: '#6b7280',
+            confirmButtonText: '<i class="fas fa-trash-alt"></i> Sí, eliminar',
+            cancelButtonText: '<i class="fas fa-times"></i> Cancelar',
+            reverseButtons: true,
+            customClass: {
+                popup: 'swal2-modern',
+                confirmButton: 'btn-modern-confirm',
+                cancelButton: 'btn-modern-cancel'
+            }
+        });
+
+        if (!result.isConfirmed) {
             return;
         }
+
+        // Mostrar loading
+        Swal.fire({
+            title: 'Eliminando...',
+            text: 'Por favor espera',
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
 
         try {
             const response = await fetch(`/carrito/eliminar/${carritoId}`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
+                    'csrf-token': window.csrfHelper ? window.csrfHelper.getToken() : ''
                 }
             });
 
             const data = await response.json();
 
             if (data.success) {
-                this.showMessage('Curso eliminado del carrito', 'success');
-                setTimeout(() => location.reload(), 1000);
+                await Swal.fire({
+                    icon: 'success',
+                    title: '¡Eliminado!',
+                    text: 'El curso ha sido eliminado del carrito',
+                    timer: 1500,
+                    showConfirmButton: false
+                });
+                location.reload();
             } else {
-                this.showMessage('Error al eliminar el curso: ' + data.message, 'error');
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: data.message || 'No se pudo eliminar el curso',
+                    confirmButtonColor: '#ea580c'
+                });
             }
         } catch (error) {
             console.error('Error:', error);
-            this.showMessage('Error al comunicarse con el servidor', 'error');
+            Swal.fire({
+                icon: 'error',
+                title: 'Error de conexión',
+                text: 'No se pudo comunicar con el servidor',
+                confirmButtonColor: '#ea580c'
+            });
         }
     }
 
     // Función para guardar para después
     async guardarParaDespues(idCurso) {
+        // Mostrar loading
+        Swal.fire({
+            title: 'Guardando...',
+            text: 'Moviendo curso a guardados',
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+
         try {
             const response = await fetch(`/carrito/${idCurso}/guardar`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'csrf-token': window.csrfHelper ? window.csrfHelper.getToken() : ''
                 }
             });
 
             const data = await response.json();
 
             if (data.success) {
-                this.showMessage('Curso guardado para después', 'success');
-                setTimeout(() => location.reload(), 1000);
+                await Swal.fire({
+                    icon: 'success',
+                    title: '¡Guardado!',
+                    text: 'El curso se ha guardado para después',
+                    timer: 1500,
+                    showConfirmButton: false
+                });
+                location.reload();
             } else {
-                this.showMessage('Error: ' + data.message, 'error');
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: data.message || 'No se pudo guardar el curso',
+                    confirmButtonColor: '#ea580c'
+                });
             }
         } catch (error) {
             console.error('Error:', error);
-            this.showMessage('Error al guardar el curso', 'error');
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'No se pudo guardar el curso',
+                confirmButtonColor: '#ea580c'
+            });
         }
     }
 
@@ -81,6 +155,7 @@ class CarritoManager {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'csrf-token': window.csrfHelper ? window.csrfHelper.getToken() : ''
                 }
             });
 

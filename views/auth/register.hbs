@@ -28,6 +28,9 @@
         {{/if}}
 
         <form method="POST" action="/register">
+            {{!-- CSRF Token --}}
+            <input type="hidden" name="_csrf" value="{{csrfToken}}">
+            
             <div class="form-group">
                 <label>Nombre completo</label>
                 <input type="text" name="nombre" value="{{nombre}}" required />

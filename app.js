@@ -133,6 +133,104 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// ============================================================
+// 🛡️ PROTECCIÓN CSRF (Cross-Site Request Forgery)
+// ============================================================
+const csrf = require('csurf');
+
+// Configurar CSRF protection
+// Nota: El token se enviará en el body (_csrf) o en headers (x-csrf-token, csrf-token)
+const csrfProtection = csrf({ 
+  cookie: true // Usar cookies para almacenar el secret, pero el token se envía en headers/body
+});
+
+// Aplicar protección CSRF solo a rutas que lo necesiten
+// Excluyendo webhooks y APIs externas que no pueden enviar tokens CSRF
+app.use((req, res, next) => {
+  // Lista de rutas excluidas de la protección CSRF
+  const excludedRoutes = [
+    '/webhook', // Webhooks de MercadoPago
+    '/api/webhook', // APIs externas
+    '/health', // Health checks
+    '/favicon.ico' // Favicon
+  ];
+  
+  // Verificar si la ruta debe ser excluida
+  const shouldExclude = excludedRoutes.some(route => req.path.startsWith(route));
+  
+  if (shouldExclude) {
+    console.log('[CSRF] ⏭️ Ruta excluida de protección CSRF:', req.path);
+    return next();
+  }
+  
+  // Aplicar protección CSRF
+  csrfProtection(req, res, (err) => {
+    if (err) {
+      console.error('[CSRF] ❌ Error de protección CSRF:', err.message);
+      console.log('[CSRF] 📍 Ruta afectada:', req.method, req.path);
+      console.log('[CSRF] 🔍 Headers:', req.headers);
+      
+      // En desarrollo, mostrar error detallado
+      if (req.app.get('env') === 'development') {
+        return res.status(403).json({
+          error: 'CSRF Token inválido o faltante',
+          message: err.message,
+          path: req.path,
+          method: req.method,
+          help: 'Asegúrate de incluir el token CSRF en tus formularios'
+        });
+      }
+      
+      // En producción, error genérico
+      return res.status(403).render('shared/error', {
+        title: 'Error de Seguridad',
+        message: 'Solicitud no válida. Por favor, actualiza la página e intenta nuevamente.',
+        error: { status: 403 }
+      });
+    }
+    
+    // Si no hay error, continuar
+    next();
+  });
+});
+
+// Middleware global para hacer disponible el token CSRF en todas las vistas
+app.use((req, res, next) => {
+  // Solo generar token si la protección CSRF está activa
+  try {
+    if (req.csrfToken) {
+      res.locals.csrfToken = req.csrfToken();
+      console.log('[CSRF] 🔑 Token CSRF generado para:', req.method, req.path);
+    }
+  } catch (err) {
+    // Si hay error generando el token, continuar sin él
+    console.log('[CSRF] ⚠️ No se pudo generar token CSRF para:', req.path);
+    res.locals.csrfToken = null;
+  }
+  next();
+});
+
+console.log('[CSRF] ✅ Protección CSRF configurada exitosamente');
+console.log('[CSRF] 🛡️ Modo seguro:', isHeroku ? 'HTTPS' : 'HTTP');
+console.log('[CSRF] 🍪 Usando cookies para almacenar tokens');
+
+// Ruta auxiliar para obtener token CSRF (útil para SPAs)
+app.get('/csrf-token', (req, res) => {
+  try {
+    res.json({ 
+      csrfToken: req.csrfToken(),
+      success: true,
+      message: 'Token CSRF generado exitosamente'
+    });
+  } catch (error) {
+    console.error('[CSRF] ❌ Error generando token CSRF:', error.message);
+    res.status(500).json({
+      error: 'No se pudo generar token CSRF',
+      success: false
+    });
+  }
+});
+
 // Fallback route for browsers that request /favicon.ico directly.
 // Some browsers still request /favicon.ico even when an <link rel="icon"> is present.
 // Serve the SVG favicon from the public/images folder as a fallback.

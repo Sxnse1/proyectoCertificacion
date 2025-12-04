@@ -28,11 +28,13 @@ const { getPool } = require('../config/database'); // Importa el pool de conexi�
  */
 const checkVideoAccess = async (req, res, next) => {
     try {
-        const id_usuario = req.session.user.id_usuario; // Obtenido de la sesión después de login
+        const id_usuario = req.session.user.id_usuario || req.session.user.id; // Obtenido de la sesión después de login
         const id_video = req.params.videoId || req.params.id_video;   // Obtenido de la URL (compatible con ambas rutas)
 
         if (!id_usuario || !id_video) {
             console.log('[CHECK ACCESS] ❌ Solicitud inválida - Usuario o Video faltante');
+            console.log('[CHECK ACCESS] 🔍 Debug - id_usuario:', id_usuario, 'id_video:', id_video);
+            console.log('[CHECK ACCESS] 🔍 Debug - req.session.user:', req.session.user);
             return res.redirect('/?error=' + encodeURIComponent('Solicitud inválida'));
         }
 
@@ -88,7 +90,7 @@ const checkVideoAccess = async (req, res, next) => {
                 (SELECT COUNT(*) FROM Compras 
                  WHERE id_usuario = @id_usuario AND id_curso = @id_curso) as tiene_compra,
                 (SELECT COUNT(*) FROM Inscripciones 
-                 WHERE id_usuario = @id_usuario AND id_curso = @id_curso AND estado = 'activo') as tiene_inscripcion
+                 WHERE id_usuario = @id_usuario AND id_curso = @id_curso) as tiene_inscripcion
         `);
 
         const result = accessQuery.recordset[0];
@@ -106,11 +108,11 @@ const checkVideoAccess = async (req, res, next) => {
                 try {
                     await accessRequest.query(`
                         INSERT INTO Inscripciones (
-                            id_usuario, id_curso, estado, progreso, 
-                            fecha_inscripcion, fecha_modificacion
+                            id_usuario, id_curso, progreso, 
+                            fecha_inscripcion
                         ) VALUES (
-                            @id_usuario, @id_curso, 'activo', 0, 
-                            GETDATE(), GETDATE()
+                            @id_usuario, @id_curso, 0, 
+                            GETDATE()
                         )
                     `);
                     console.log(`[CHECK ACCESS] ✅ Inscripción automática creada`);

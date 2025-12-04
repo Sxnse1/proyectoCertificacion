@@ -379,6 +379,9 @@
             {{/if}}
 
             <form action="/register" method="POST" id="registerForm">
+                {{!-- CSRF Token --}}
+                <input type="hidden" name="_csrf" value="{{csrfToken}}">
+                
                 <div class="form-floating">
                     <input type="text" 
                            class="form-control" 

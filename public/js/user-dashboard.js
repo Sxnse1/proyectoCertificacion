@@ -36,12 +36,18 @@ class UserDashboard {
                 btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Agregando...';
 
                 try {
+                    // Obtener token CSRF
+                    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+                    
                     const res = await fetch('/carrito/add', {
                         method: 'POST',
                         credentials: 'same-origin',
                         headers: {
                             'Accept': 'application/json',
-                            'Content-Type': 'application/json'
+                            'Content-Type': 'application/json',
+                            'csrf-token': csrfToken || '',
+                            'x-csrf-token': csrfToken || '',
+                            'x-xsrf-token': csrfToken || ''
                         },
                         body: JSON.stringify({
                             id_curso: cursoId
@@ -54,13 +60,22 @@ class UserDashboard {
                         // For non-2xx responses try to parse JSON, otherwise show generic message
                         if (contentType.includes('application/json')) {
                             const errData = await res.json().catch(()=>null);
-                            showErrorToast(errData?.message || 'No se pudo agregar al carrito');
+                            await Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: errData?.message || 'No se pudo agregar al carrito',
+                                confirmButtonText: 'Entendido',
+                                confirmButtonColor: '#ea580c'
+                            });
                         } else {
                             // Probably a redirect to login (HTML)
-                            console.log('DEBUG: Respuesta no es JSON, status:', res.status);
-                            console.log('DEBUG: Content-Type:', res.headers.get('content-type'));
-                            showWarningToast('Debes iniciar sesión para agregar cursos al carrito');
-                            // Optionally redirect to login
+                            await Swal.fire({
+                                icon: 'warning',
+                                title: 'Sesión Expirada',
+                                text: 'Debes iniciar sesión para agregar cursos al carrito',
+                                confirmButtonText: 'Ir a Login',
+                                confirmButtonColor: '#ea580c'
+                            });
                             window.location.href = '/auth/login?error=sesion_expirada';
                         }
                         btn.disabled = false;
@@ -73,9 +88,13 @@ class UserDashboard {
                         data = await res.json().catch(()=>null);
                     } else {
                         // Not JSON (likely HTML redirect). Treat as failure requiring login.
-                        console.log('DEBUG 2: Respuesta no es JSON, status:', res.status);
-                        console.log('DEBUG 2: Content-Type:', contentType);
-                        showWarningToast('Debes iniciar sesión para agregar cursos al carrito');
+                        await Swal.fire({
+                            icon: 'warning',
+                            title: 'Sesión Expirada',
+                            text: 'Debes iniciar sesión para agregar cursos al carrito',
+                            confirmButtonText: 'Ir a Login',
+                            confirmButtonColor: '#ea580c'
+                        });
                         window.location.href = '/auth/login?error=sesion_expirada';
                         btn.disabled = false;
                         btn.innerHTML = originalHtml;
@@ -84,18 +103,40 @@ class UserDashboard {
 
                     if (data && data.success) {
                         btn.innerHTML = '<i class="bi bi-check2-circle"></i> Agregado';
+                        
+                        await Swal.fire({
+                            icon: 'success',
+                            title: '¡Agregado!',
+                            text: 'El curso se ha agregado al carrito exitosamente',
+                            showConfirmButton: false,
+                            timer: 1500,
+                            timerProgressBar: true
+                        });
+                        
                         setTimeout(() => { btn.style.display = 'none'; }, 1200);
                         
                         // Actualizar badge del carrito
                         self.updateCartBadge();
                     } else {
-                        showErrorToast(data?.message || 'No se pudo agregar al carrito');
+                        await Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: data?.message || 'No se pudo agregar al carrito',
+                            confirmButtonText: 'Entendido',
+                            confirmButtonColor: '#ea580c'
+                        });
                         btn.disabled = false;
                         btn.innerHTML = originalHtml;
                     }
                 } catch (err) {
                     console.error(err);
-                    showErrorToast('Error al agregar al carrito');
+                    await Swal.fire({
+                        icon: 'error',
+                        title: 'Error de Conexión',
+                        text: 'No se pudo conectar con el servidor. Intenta nuevamente.',
+                        confirmButtonText: 'Entendido',
+                        confirmButtonColor: '#ea580c'
+                    });
                     btn.disabled = false;
                     btn.innerHTML = originalHtml;
                 }

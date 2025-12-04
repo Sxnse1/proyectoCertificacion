@@ -71,12 +71,20 @@ class CursosEstudianteManager {
     // Función para agregar al carrito desde la lista
     async agregarAlCarritoLista(cursoId, buttonElement) {
         try {
+            // Obtener token CSRF
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+            
+            console.log('[Carrito] 🔑 Token CSRF:', csrfToken ? 'encontrado' : 'NO ENCONTRADO');
+            
             const response = await fetch('/carrito/add', {
                 method: 'POST',
                 credentials: 'same-origin',
                 headers: {
                     'Accept': 'application/json',
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'csrf-token': csrfToken || '',
+                    'x-csrf-token': csrfToken || '',
+                    'x-xsrf-token': csrfToken || ''
                 },
                 body: JSON.stringify({
                     id_curso: cursoId
@@ -93,20 +101,39 @@ class CursosEstudianteManager {
                 buttonElement.classList.add('btn-outline-success');
                 buttonElement.disabled = true;
 
+                await Swal.fire({
+                    icon: 'success',
+                    title: '¡Agregado!',
+                    text: 'El curso se ha agregado al carrito exitosamente',
+                    showConfirmButton: false,
+                    timer: 1500,
+                    timerProgressBar: true
+                });
+
                 setTimeout(() => {
                     buttonElement.innerHTML = originalHtml;
                     buttonElement.classList.remove('btn-outline-success');
                     buttonElement.classList.add('btn-success');
                     buttonElement.disabled = false;
                 }, 2000);
-
-                alert('✅ Curso agregado al carrito exitosamente');
             } else {
-                alert('❌ Error: ' + (data.message || 'No se pudo agregar al carrito'));
+                await Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: data.message || 'No se pudo agregar el curso al carrito',
+                    confirmButtonText: 'Entendido',
+                    confirmButtonColor: '#ea580c'
+                });
             }
         } catch (error) {
             console.error('Error:', error);
-            alert('❌ Error de conexión. Intenta nuevamente.');
+            await Swal.fire({
+                icon: 'error',
+                title: 'Error de Conexión',
+                text: 'No se pudo conectar con el servidor. Intenta nuevamente.',
+                confirmButtonText: 'Entendido',
+                confirmButtonColor: '#ea580c'
+            });
         }
     }
 }

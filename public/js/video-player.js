@@ -36,7 +36,11 @@ function initializeVideoPlayer(videoId, courseStructure, videoDuration) {
                 await fetch(`/video/progress/${videoId}`, {
                     method: 'POST',
                     credentials: 'same-origin',
-                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                    headers: { 
+                        'Content-Type': 'application/json', 
+                        'Accept': 'application/json',
+                        'csrf-token': window.csrfHelper ? window.csrfHelper.getToken() : ''
+                    },
                     body: JSON.stringify({ 
                         seconds: lastKnownTime,
                         completado: isComplete

@@ -65,13 +65,22 @@ router.get('/', async function(req, res, next) {
               WHERE estatus = 'publicado'
             )
             SELECT
-              id_curso, titulo AS nombre, descripcion, miniatura, nivel
-            FROM RankedCursos
-            WHERE rn = 1 AND nivel IN ('básico', 'intermedio', 'avanzado');
-          `);
+              c.id_curso, c.titulo AS nombre, c.descripcion, c.miniatura, c.nivel,
+              CASE WHEN EXISTS (
+                SELECT 1 FROM Carrito_Compras cc 
+                WHERE cc.id_curso = c.id_curso 
+                  AND cc.id_usuario = @userId 
+                  AND cc.estatus = 'activo'
+              ) THEN 1 ELSE 0 END as en_carrito
+            FROM RankedCursos c
+            WHERE c.rn = 1 AND c.nivel IN ('básico', 'intermedio', 'avanzado');
+          `, { userId: user.id });
           
           if (cursosRecomendadosResult && cursosRecomendadosResult.recordset) {
-            recomendaciones = cursosRecomendadosResult.recordset;
+            recomendaciones = cursosRecomendadosResult.recordset.map(curso => ({
+              ...curso,
+              en_carrito: curso.en_carrito === 1
+            }));
             // Construimos la URL completa para cada miniatura
             recomendaciones.forEach(curso => {
               if (curso.miniatura) {
@@ -301,6 +310,7 @@ router.get('/', async function(req, res, next) {
       user: user,
       stats: { cursosInscritos, cursosCompletados, horasEstudio, certificados },
       subscription: subscription,
+      tieneSuscripcionActiva: subscription && subscription.active,
       categorias: recomendaciones,
       recommendedCourses: normalizedRecommended,
       cursosEnProgreso: cursosEnProgreso,
