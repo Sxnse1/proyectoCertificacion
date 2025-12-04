@@ -4,7 +4,7 @@ const sql = require('mssql');
 
 // Configuración de la base de datos desde variables de entorno
 // Soporte para especificar servidor con instancia: e.g. "DESKTOP-6QU5OJ8\\SQLEXPRESS"
-const rawServer = process.env.DB_SERVER || 'localhost';
+const rawServer = process.env.DB_SERVER
 let parsedServer = rawServer;
 let parsedInstance = process.env.DB_INSTANCE || null;
 
@@ -17,12 +17,13 @@ if (rawServer.includes('\\') || rawServer.includes('/')) {
 
 const config = {
     server: parsedServer,
-    database: process.env.DB_DATABASE || 'proyectoCertificacion',
-    user: process.env.DB_USER || 'sa',
+    database: process.env.DB_DATABASE || 'StartEducationDB',
+    user: process.env.DB_USER || 'barberadmin',
     password: process.env.DB_PASSWORD || '',
     // Si se especifica instancia, la librería mssql normalmente ignora el puerto y usa la instancia
     port: parseInt(process.env.DB_PORT) || 1433,
     options: {
+        instanceName: 'SQLEXPRESS',
         encrypt: process.env.DB_ENCRYPT === 'true',
         trustServerCertificate: process.env.DB_TRUST_CERT === 'true',
         enableArithAbort: true,
