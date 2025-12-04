@@ -287,78 +287,89 @@ router.post('/', hasPermission('crear_usuarios'), async function(req, res, next)
     const passwordTemporal = generarPasswordTemporal();
     const hashedPassword = await bcrypt.hash(passwordTemporal, 10);
 
-    // Crear el usuario con contraseña temporal y RBAC
-    const insertQuery = `
-      INSERT INTO Usuarios (nombre, apellido, nombre_usuario, email, password, rol, RolID, estatus, fecha_registro, tiene_password_temporal, fecha_password_temporal)
-      OUTPUT INSERTED.id_usuario, INSERTED.nombre, INSERTED.apellido, INSERTED.nombre_usuario, INSERTED.email, INSERTED.rol, INSERTED.RolID, INSERTED.estatus, INSERTED.fecha_registro
-      VALUES (@nombre, @apellido, @nombre_usuario, @email, @password, @rolNombre, @rolId, @estatus, GETDATE(), 1, GETDATE())
-    `;
-
-    const result = await db.executeQuery(insertQuery, {
-      nombre: nombre.trim(),
-      apellido: apellido.trim(),
-      nombre_usuario: nombre_usuario.trim(),
-      email: email.trim(),
-      password: hashedPassword,
-      rolNombre: rolSeleccionado.NombreRol,
-      rolId: parseInt(rolId),
-      estatus: estatus
-    });
-
-    const newUsuario = result.recordset[0];
-    console.log(`[USUARIOS] ✅ Usuario creado exitosamente - ID: ${newUsuario.id_usuario}`);
-
-    // 🔍 REGISTRAR AUDITORÍA - Usuario creado
-    try {
-      await auditService.logAction({
-        usuarioId: req.session.user.id_usuario,
-        accion: auditService.AUDIT_ACTIONS.USUARIO_CREADO,
-        entidad: auditService.AUDIT_ENTITIES.USUARIO,
-        entidadId: newUsuario.id_usuario,
-        detalles: {
-          usuario_creado: {
-            nombre: newUsuario.nombre,
-            apellido: newUsuario.apellido,
-            email: newUsuario.email,
-            rol: newUsuario.rol,
-            rolId: newUsuario.RolID,
-            estatus: newUsuario.estatus
-          },
-          admin_creador: req.session.user.email,
-          password_temporal_generada: true
-        },
-        ip: req.ip
-      }, db);
-      console.log('[USUARIOS] ✅ Auditoría registrada para creación de usuario');
-    } catch (auditError) {
-      console.error('[USUARIOS] ⚠️ Error registrando auditoría:', auditError.message);
-      // No fallar la operación principal si falla la auditoría
-    }
-
-    // Enviar contraseña temporal por email
-    console.log(`[USUARIOS] 📧 Enviando contraseña temporal por email a: ${email}`);
+    // 🔒 TRANSACCIÓN SQL - Asegurar integridad de datos
+    let newUsuario;
     
     try {
-      const emailResult = await emailService.enviarPasswordTemporal(
-        email.trim(),
-        nombre.trim(),
-        apellido.trim(),
-        passwordTemporal
-      );
+      // Ejecutar creación de usuario y auditoría en transacción atómica
+      newUsuario = await db.executeTransaction(async (txn) => {
+        
+        // 1. Crear el usuario con contraseña temporal y RBAC
+        const insertQuery = `
+          INSERT INTO Usuarios (nombre, apellido, nombre_usuario, email, password, rol, RolID, estatus, fecha_registro, tiene_password_temporal, fecha_password_temporal)
+          OUTPUT INSERTED.id_usuario, INSERTED.nombre, INSERTED.apellido, INSERTED.nombre_usuario, INSERTED.email, INSERTED.rol, INSERTED.RolID, INSERTED.estatus, INSERTED.fecha_registro
+          VALUES (@nombre, @apellido, @nombre_usuario, @email, @password, @rolNombre, @rolId, @estatus, GETDATE(), 1, GETDATE())
+        `;
+        
+        const result = await txn.executeQuery(insertQuery, {
+          nombre: nombre.trim(),
+          apellido: apellido.trim(),
+          nombre_usuario: nombre_usuario.trim(),
+          email: email.trim(),
+          password: hashedPassword,
+          rolNombre: rolSeleccionado.NombreRol,
+          rolId: parseInt(rolId),
+          estatus: estatus
+        });
+        
+        const usuario = result.recordset[0];
+        console.log(`[USUARIOS] ✅ Usuario creado exitosamente - ID: ${usuario.id_usuario}`);
+        
+        // 2. Registrar auditoría en la misma transacción
+        const auditQuery = `
+          INSERT INTO AuditLogs (UsuarioID, Accion, Entidad, EntidadID, Detalles, IP)
+          VALUES (@usuarioId, @accion, @entidad, @entidadId, @detalles, @ip)
+        `;
+        
+        const auditDetalles = JSON.stringify({
+          usuario_creado: {
+            nombre: usuario.nombre,
+            apellido: usuario.apellido,
+            email: usuario.email,
+            rol: usuario.rol,
+            rolId: usuario.RolID,
+            estatus: usuario.estatus
+          },
+          admin_creador: req.session.user.email,
+          password_temporal_generada: true,
+          timestamp: new Date().toISOString()
+        });
+        
+        await txn.executeQuery(auditQuery, {
+          usuarioId: req.session.user.id_usuario,
+          accion: 'USUARIO_CREADO',
+          entidad: 'Usuario',
+          entidadId: usuario.id_usuario,
+          detalles: auditDetalles,
+          ip: req.ip || 'IP no disponible'
+        });
+        
+        console.log('[USUARIOS] ✅ Auditoría registrada en transacción');
+        
+        // Retornar usuario para uso posterior
+        return usuario;
+      });
       
-      if (emailResult.success) {
-        console.log(`[USUARIOS] ✅ Email enviado correctamente - MessageID: ${emailResult.messageId}`);
-      } else {
-        console.log(`[USUARIOS] ⚠️ ${emailResult.message}`);
-      }
-    } catch (emailError) {
-      console.error(`[USUARIOS] ❌ Error enviando email:`, emailError.message);
-      // No fallar la creación del usuario si el email falla
+      console.log('[TRANSACTION] 🎉 Transacción de creación completada exitosamente');
+      
+    } catch (transactionError) {
+      console.error('[TRANSACTION] ❌ Error en transacción - datos revertidos:', transactionError.message);
+      
+      return res.status(500).json({
+        success: false,
+        message: 'Error en la creación del usuario. No se realizaron cambios en la base de datos.',
+        error: process.env.NODE_ENV === 'development' ? transactionError.message : 'Error interno del servidor'
+      });
     }
 
+    // 📧 ENVÍO DE EMAIL CON MANEJO DE FALLOS CRÍTICOS
+    console.log(`[USUARIOS] 📧 Iniciando envío de contraseña temporal por email a: ${email}`);
+    
+    // Respuesta inmediata al administrador
     res.json({
       success: true,
       message: 'Usuario creado exitosamente. Se ha generado una contraseña temporal.',
+      warning: 'Se está enviando el email con las credenciales. Si no llega en 5 minutos, revisa los logs.',
       usuario: {
         id_usuario: newUsuario.id_usuario,
         nombre: newUsuario.nombre,
@@ -368,6 +379,48 @@ router.post('/', hasPermission('crear_usuarios'), async function(req, res, next)
         rol: newUsuario.rol,
         rolId: newUsuario.RolID,
         estatus: newUsuario.estatus
+      }
+    });
+    
+    // 🚨 MANEJO CRÍTICO: Email asíncrono con notificación de fallos
+    setImmediate(async () => {
+      try {
+        const emailResult = await emailService.enviarPasswordTemporal(
+          email.trim(),
+          nombre.trim(),
+          apellido.trim(),
+          passwordTemporal
+        );
+        
+        if (emailResult.success) {
+          console.log(`[USUARIOS] ✅ Email enviado correctamente - MessageID: ${emailResult.messageId}`);
+          
+          // Registrar envío exitoso en auditoría
+          try {
+            await auditService.logAction({
+              usuarioId: req.session.user.id_usuario,
+              accion: 'EMAIL_PASSWORD_ENVIADO',
+              entidad: 'Usuario',
+              entidadId: newUsuario.id_usuario,
+              detalles: {
+                destinatario: email,
+                messageId: emailResult.messageId,
+                timestamp: new Date().toISOString()
+              },
+              ip: req.ip
+            }, db);
+          } catch (auditError) {
+            console.error('[USUARIOS] ⚠️ Error registrando envío de email:', auditError.message);
+          }
+          
+        } else {
+          console.error(`[USUARIOS] ⚠️ Email fallido: ${emailResult.message}`);
+          await this.handleEmailFailure(newUsuario, passwordTemporal, req.session.user, req.ip);
+        }
+        
+      } catch (emailError) {
+        console.error(`[USUARIOS] ❌ Error crítico enviando email:`, emailError.message);
+        await this.handleEmailFailure(newUsuario, passwordTemporal, req.session.user, req.ip);
       }
     });
 
@@ -973,5 +1026,55 @@ function generarPasswordTemporal() {
   }
   return password;
 }
+
+/**
+ * 🚨 MANEJO CRÍTICO DE FALLOS DE EMAIL
+ * ===================================
+ * Cuando el email falla, registra el evento y ofrece alternativas
+ */
+async function handleEmailFailure(usuario, passwordTemporal, admin, adminIP) {
+  try {
+    console.error(`[USUARIOS] 🚨 FALLO CRÍTICO: Email no enviado para usuario ${usuario.email}`);
+    console.error(`[USUARIOS] 💡 SOLUCIÓN: Contraseña temporal: ${passwordTemporal}`);
+    
+    // Registrar el fallo en auditoría para seguimiento
+    await auditService.logAction({
+      usuarioId: admin.id_usuario,
+      accion: 'EMAIL_PASSWORD_FALLIDO',
+      entidad: 'Usuario',
+      entidadId: usuario.id_usuario,
+      detalles: {
+        destinatario: usuario.email,
+        usuario_afectado: {
+          id: usuario.id_usuario,
+          nombre: usuario.nombre,
+          apellido: usuario.apellido,
+          email: usuario.email
+        },
+        password_temporal_perdida: true,
+        admin_responsable: admin.email,
+        timestamp: new Date().toISOString(),
+        acciones_requeridas: [
+          'Revisar configuración SMTP',
+          'Contactar al usuario manualmente',
+          'Considerar reset manual de contraseña'
+        ]
+      },
+      ip: adminIP
+    }, db);
+    
+    // TODO: Implementar notificación al administrador
+    // - Email de alerta al admin
+    // - Webhook a sistema de monitoreo
+    // - Slack/Teams notification
+    console.log(`[USUARIOS] 📝 Fallo registrado en auditoría para seguimiento`);
+    
+  } catch (auditError) {
+    console.error('[USUARIOS] ❌ Error registrando fallo de email en auditoría:', auditError.message);
+  }
+}
+
+// Agregar el método al objeto router para acceso interno
+router.handleEmailFailure = handleEmailFailure;
 
 module.exports = router;

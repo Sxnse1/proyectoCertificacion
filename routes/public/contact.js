@@ -136,13 +136,20 @@ router.post('/', async function(req, res, next) {
       `
     };
     
-    console.log('[CONTACT] 📤 Enviando email...');
+    console.log('[CONTACT] 📤 Programando envío de email...');
     
-    // Enviar email
-    await emailService.sendEmail(emailContent);
+    // OPTIMIZACIÓN: Envío asíncrono sin bloquear respuesta HTTP
+    setImmediate(async () => {
+      try {
+        await emailService.sendEmail(emailContent);
+        console.log('[CONTACT] ✅ Email enviado exitosamente a:', emailContent.to);
+      } catch (emailError) {
+        console.error('[CONTACT] ❌ Error enviando email:', emailError.message);
+        // Email falla en background, pero respuesta ya fue enviada al usuario
+      }
+    });
     
-    console.log('[CONTACT] ✅ Email enviado exitosamente a:', emailContent.to);
-    
+    // Respuesta inmediata al usuario
     res.json({ 
       success: true,
       message: 'Mensaje enviado exitosamente. Te contactaremos pronto.' 

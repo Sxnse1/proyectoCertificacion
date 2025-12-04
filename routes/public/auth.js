@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var bcrypt = require('bcryptjs');
+const auditService = require('../../services/auditService');
 
 /* GET login page */
 router.get('/login', function(req, res, next) {
@@ -129,6 +130,28 @@ router.post('/login', async function(req, res, next) {
     
     if (!passwordMatch) {
       console.log('[AUTH] ❌ Contraseña incorrecta para:', email);
+      
+      // 🔍 AUDIT: Registrar intento de login fallido
+      setImmediate(async () => {
+        try {
+          await auditService.logAction({
+            usuarioId: user.id_usuario,
+            accion: auditService.AUDIT_ACTIONS.LOGIN_FALLIDO,
+            entidad: auditService.AUDIT_ENTITIES.SESION,
+            detalles: {
+              email: email,
+              motivo: 'PASSWORD_INCORRECTO',
+              user_agent: req.get('User-Agent'),
+              timestamp: new Date().toISOString()
+            },
+            ip: req.ip
+          }, sql);
+          console.log('[AUDIT] ✅ Login fallido registrado por contraseña incorrecta');
+        } catch (auditError) {
+          console.error('[AUDIT] ⚠️ Error registrando login fallido:', auditError.message);
+        }
+      });
+      
       return res.render('auth/login-bootstrap', {
         title: 'Iniciar Sesión',
         error: 'Email o contraseña incorrectos',
@@ -143,6 +166,29 @@ router.post('/login', async function(req, res, next) {
     // Verificar si el usuario tiene contraseña temporal
     if (user.tiene_password_temporal) {
       console.log('[AUTH] 🔐 Usuario tiene contraseña temporal, requiere cambio');
+      
+      // 🔍 AUDIT: Registrar login exitoso con contraseña temporal
+      setImmediate(async () => {
+        try {
+          await auditService.logAction({
+            usuarioId: user.id_usuario,
+            accion: auditService.AUDIT_ACTIONS.LOGIN_EXITOSO,
+            entidad: auditService.AUDIT_ENTITIES.SESION,
+            detalles: {
+              email: user.email,
+              nombre: `${user.nombre} ${user.apellido}`,
+              rol: user.rol,
+              tipo_login: 'PASSWORD_TEMPORAL',
+              user_agent: req.get('User-Agent'),
+              timestamp: new Date().toISOString()
+            },
+            ip: req.ip
+          }, sql);
+          console.log('[AUDIT] ✅ Login exitoso registrado (password temporal)');
+        } catch (auditError) {
+          console.error('[AUDIT] ⚠️ Error registrando login exitoso:', auditError.message);
+        }
+      });
       
       // Crear sesión temporal para el cambio de contraseña
       req.session.tempUser = {
@@ -170,6 +216,29 @@ router.post('/login', async function(req, res, next) {
       });
       return;
     }
+    
+    // 🔍 AUDIT: Registrar login exitoso normal
+    setImmediate(async () => {
+      try {
+        await auditService.logAction({
+          usuarioId: user.id_usuario,
+          accion: auditService.AUDIT_ACTIONS.LOGIN_EXITOSO,
+          entidad: auditService.AUDIT_ENTITIES.SESION,
+          detalles: {
+            email: user.email,
+            nombre: `${user.nombre} ${user.apellido}`,
+            rol: user.rol,
+            tipo_login: 'NORMAL',
+            user_agent: req.get('User-Agent'),
+            timestamp: new Date().toISOString()
+          },
+          ip: req.ip
+        }, sql);
+        console.log('[AUDIT] ✅ Login exitoso registrado (normal)');
+      } catch (auditError) {
+        console.error('[AUDIT] ⚠️ Error registrando login exitoso:', auditError.message);
+      }
+    });
     
         // Importar el servicio de two-factor auth
     const twoFactorService = require('../../services/twoFactorService');
@@ -388,6 +457,30 @@ router.get('/dashboard', function(req, res, next) {
 /* POST logout */
 router.post('/logout', function(req, res, next) {
   const userEmail = req.session?.user?.email || 'Usuario desconocido';
+  const userId = req.session?.user?.id || 0;
+  
+  // 🔍 AUDIT: Registrar logout
+  if (userId > 0) {
+    setImmediate(async () => {
+      try {
+        await auditService.logAction({
+          usuarioId: userId,
+          accion: auditService.AUDIT_ACTIONS.LOGOUT,
+          entidad: auditService.AUDIT_ENTITIES.SESION,
+          detalles: {
+            email: userEmail,
+            metodo: 'POST',
+            user_agent: req.get('User-Agent'),
+            timestamp: new Date().toISOString()
+          },
+          ip: req.ip
+        }, sql);
+        console.log('[AUDIT] ✅ Logout registrado via POST');
+      } catch (auditError) {
+        console.error('[AUDIT] ⚠️ Error registrando logout:', auditError.message);
+      }
+    });
+  }
   
   req.session.destroy((err) => {
     if (err) {
@@ -404,6 +497,30 @@ router.post('/logout', function(req, res, next) {
 /* GET logout - También permitir logout por GET */
 router.get('/logout', function(req, res, next) {
   const userEmail = req.session?.user?.email || 'Usuario desconocido';
+  const userId = req.session?.user?.id || 0;
+  
+  // 🔍 AUDIT: Registrar logout
+  if (userId > 0) {
+    setImmediate(async () => {
+      try {
+        await auditService.logAction({
+          usuarioId: userId,
+          accion: auditService.AUDIT_ACTIONS.LOGOUT,
+          entidad: auditService.AUDIT_ENTITIES.SESION,
+          detalles: {
+            email: userEmail,
+            metodo: 'GET',
+            user_agent: req.get('User-Agent'),
+            timestamp: new Date().toISOString()
+          },
+          ip: req.ip
+        }, sql);
+        console.log('[AUDIT] ✅ Logout registrado via GET');
+      } catch (auditError) {
+        console.error('[AUDIT] ⚠️ Error registrando logout:', auditError.message);
+      }
+    });
+  }
   
   req.session.destroy((err) => {
     if (err) {
@@ -530,17 +647,42 @@ router.post('/change-password', async function(req, res, next) {
     
     console.log('[AUTH] ✅ Contraseña actualizada exitosamente para:', tempUser.email);
     
-    // Enviar notificación por email
+    // 🔍 AUDIT: Registrar cambio de contraseña temporal
+    setImmediate(async () => {
+      try {
+        await auditService.logAction({
+          usuarioId: tempUser.id,
+          accion: auditService.AUDIT_ACTIONS.PASSWORD_CAMBIADO,
+          entidad: auditService.AUDIT_ENTITIES.USUARIO,
+          detalles: {
+            email: tempUser.email,
+            nombre: tempUser.nombre,
+            tipo_cambio: 'PASSWORD_TEMPORAL_A_PERMANENTE',
+            user_agent: req.get('User-Agent'),
+            timestamp: new Date().toISOString()
+          },
+          ip: req.ip
+        }, sql);
+        console.log('[AUDIT] ✅ Cambio de contraseña temporal registrado');
+      } catch (auditError) {
+        console.error('[AUDIT] ⚠️ Error registrando cambio de password:', auditError.message);
+      }
+    });
+    
+    // Enviar notificación por email (asíncrono - no bloquea respuesta)
     const emailService = require('../../services/emailService');
-    try {
-      await emailService.enviarNotificacionCambioPassword(
-        tempUser.email,
-        tempUser.nombre.split(' ')[0], // Primer nombre
-        tempUser.nombre.split(' ').slice(1).join(' ') // Apellidos
-      );
-    } catch (emailError) {
-      console.error('[AUTH] ⚠️ Error enviando notificación de cambio:', emailError.message);
-    }
+    setImmediate(async () => {
+      try {
+        await emailService.enviarNotificacionCambioPassword(
+          tempUser.email,
+          tempUser.nombre.split(' ')[0], // Primer nombre
+          tempUser.nombre.split(' ').slice(1).join(' ') // Apellidos
+        );
+        console.log('[AUTH] ✅ Notificación de cambio de password enviada exitosamente');
+      } catch (emailError) {
+        console.error('[AUTH] ⚠️ Error enviando notificación de cambio:', emailError.message);
+      }
+    });
     
     // Crear sesión completa del usuario con permisos RBAC
     const { cargarPermisosUsuario } = require('../../middleware/auth');
@@ -693,23 +835,49 @@ router.post('/forgot-password', async function(req, res, next) {
         { token: resetToken, expiry: resetTokenExpiry, userId: usuario.id_usuario }
       );
       
+      // 🔍 AUDIT: Registrar solicitud de recuperación de password
+      setImmediate(async () => {
+        try {
+          await auditService.logAction({
+            usuarioId: usuario.id_usuario,
+            accion: auditService.AUDIT_ACTIONS.PASSWORD_RESET_SOLICITADO,
+            entidad: auditService.AUDIT_ENTITIES.USUARIO,
+            detalles: {
+              email: usuario.email,
+              nombre: usuario.nombre,
+              apellido: usuario.apellido,
+              token_generado: true,
+              user_agent: req.get('User-Agent'),
+              timestamp: new Date().toISOString()
+            },
+            ip: req.ip
+          }, sql);
+          console.log('[AUDIT] ✅ Solicitud de recuperación registrada');
+        } catch (auditError) {
+          console.error('[AUDIT] ⚠️ Error registrando solicitud de recovery:', auditError.message);
+        }
+      });
+      
       // Enviar email con instrucciones
       const emailService = require('../../services/emailService');
       
       const resetUrl = `${req.protocol}://${req.get('host')}/auth/reset-password?token=${resetToken}`;
       
-      try {
-        await emailService.enviarRecuperacionPassword(
-          usuario.email,
-          usuario.nombre,
-          usuario.apellido,
-          resetUrl
-        );
-        console.log('[AUTH] ✅ Email de recuperación enviado a:', email);
-      } catch (emailError) {
-        console.error('[AUTH] ❌ Error enviando email:', emailError.message);
-        // No revelamos el error de email al usuario por seguridad
-      }
+      // OPTIMIZACIÓN: Envío asíncrono de email de recuperación
+      setImmediate(async () => {
+        try {
+          await emailService.enviarRecuperacionPassword(
+            usuario.email,
+            usuario.nombre,
+            usuario.apellido,
+            resetUrl
+          );
+          console.log('[AUTH] ✅ Email de recuperación enviado a:', email);
+        } catch (emailError) {
+          console.error('[AUTH] ❌ Error enviando email:', emailError.message);
+          // Email falla en background, pero respuesta ya fue enviada
+        }
+      });
     } else {
       console.log('[AUTH] ⚠️ Intento de recuperación para email no existente:', email);
     }
@@ -846,17 +1014,43 @@ router.post('/reset-password', async function(req, res, next) {
     
     console.log('[AUTH] ✅ Contraseña restablecida para usuario:', usuario.email);
     
-    // Enviar email de confirmación (opcional)
-    try {
-      const emailService = require('../../services/emailService');
-      await emailService.enviarConfirmacionCambioPassword(
-        usuario.email,
-        usuario.nombre,
-        usuario.apellido
-      );
-    } catch (emailError) {
-      console.error('[AUTH] ⚠️ Error enviando email de confirmación:', emailError.message);
-    }
+    // 🔍 AUDIT: Registrar reset de contraseña completado
+    setImmediate(async () => {
+      try {
+        await auditService.logAction({
+          usuarioId: usuario.id_usuario,
+          accion: auditService.AUDIT_ACTIONS.PASSWORD_RESET_COMPLETADO,
+          entidad: auditService.AUDIT_ENTITIES.USUARIO,
+          detalles: {
+            email: usuario.email,
+            nombre: usuario.nombre,
+            apellido: usuario.apellido,
+            metodo: 'TOKEN_RESET',
+            user_agent: req.get('User-Agent'),
+            timestamp: new Date().toISOString()
+          },
+          ip: req.ip
+        }, sql);
+        console.log('[AUDIT] ✅ Reset de contraseña completado registrado');
+      } catch (auditError) {
+        console.error('[AUDIT] ⚠️ Error registrando reset completado:', auditError.message);
+      }
+    });
+    
+    // Enviar email de confirmación (opcional - asíncrono)
+    const emailService = require('../../services/emailService');
+    setImmediate(async () => {
+      try {
+        await emailService.enviarConfirmacionCambioPassword(
+          usuario.email,
+          usuario.nombre,
+          usuario.apellido
+        );
+        console.log('[AUTH] ✅ Email de confirmación enviado exitosamente');
+      } catch (emailError) {
+        console.error('[AUTH] ⚠️ Error enviando email de confirmación:', emailError.message);
+      }
+    });
     
     // Redirigir al login con mensaje de éxito
     res.redirect('/auth/login?success=' + encodeURIComponent('Tu contraseña ha sido cambiada exitosamente. Ya puedes iniciar sesión.'));

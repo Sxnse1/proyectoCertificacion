@@ -287,6 +287,14 @@ function tryParseJSON(jsonString) {
  * Constantes para acciones de auditoría estandarizadas
  */
 const AUDIT_ACTIONS = {
+    // Acciones de Autenticación
+    LOGIN_EXITOSO: 'LOGIN_EXITOSO',
+    LOGIN_FALLIDO: 'LOGIN_FALLIDO',
+    LOGOUT: 'LOGOUT',
+    PASSWORD_CAMBIADO: 'PASSWORD_CAMBIADO',
+    PASSWORD_RESET_SOLICITADO: 'PASSWORD_RESET_SOLICITADO',
+    PASSWORD_RESET_COMPLETADO: 'PASSWORD_RESET_COMPLETADO',
+    
     // Acciones de Usuario
     USUARIO_CREADO: 'USUARIO_CREADO',
     USUARIO_ACTUALIZADO: 'USUARIO_ACTUALIZADO',
@@ -328,6 +336,7 @@ const AUDIT_ACTIONS = {
  * Constantes para tipos de entidad
  */
 const AUDIT_ENTITIES = {
+    SESION: 'Sesion',
     USUARIO: 'Usuario',
     CURSO: 'Curso',
     MEMBRESIA: 'Membresia',

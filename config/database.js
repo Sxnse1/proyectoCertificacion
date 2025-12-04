@@ -190,6 +190,96 @@ async function executeQuery(query, params = {}) {
 }
 
 /**
+ * 🔒 TRANSACCIONES SQL - Sistema de integridad de datos
+ * ====================================================
+ */
+
+/**
+ * Inicia una nueva transacción SQL
+ * @returns {Promise<Object>} Objeto transacción con métodos commit/rollback
+ */
+async function beginTransaction() {
+    try {
+        const currentPool = await getPool();
+        const transaction = new sql.Transaction(currentPool);
+        
+        await transaction.begin();
+        console.log('[TRANSACTION] ✅ Transacción iniciada');
+        
+        // Crear objeto con métodos de manejo
+        return {
+            transaction,
+            request: new sql.Request(transaction),
+            
+            // Método para ejecutar queries dentro de la transacción
+            async executeQuery(query, params = {}) {
+                const request = new sql.Request(this.transaction);
+                
+                // Agregar parámetros
+                for (const [key, value] of Object.entries(params)) {
+                    if (typeof value === 'object' && value.value !== undefined && value.type) {
+                        request.input(key, value.type, value.value);
+                    } else {
+                        request.input(key, value);
+                    }
+                }
+                
+                return await request.query(query);
+            },
+            
+            // Confirmar transacción
+            async commit() {
+                try {
+                    await this.transaction.commit();
+                    console.log('[TRANSACTION] ✅ Transacción confirmada exitosamente');
+                } catch (error) {
+                    console.error('[TRANSACTION] ❌ Error en commit:', error.message);
+                    throw error;
+                }
+            },
+            
+            // Revertir transacción
+            async rollback() {
+                try {
+                    await this.transaction.rollback();
+                    console.log('[TRANSACTION] ⚠️ Transacción revertida');
+                } catch (error) {
+                    console.error('[TRANSACTION] ❌ Error en rollback:', error.message);
+                    throw error;
+                }
+            }
+        };
+        
+    } catch (error) {
+        console.error('[TRANSACTION] ❌ Error iniciando transacción:', error.message);
+        throw error;
+    }
+}
+
+/**
+ * Ejecuta operaciones dentro de una transacción con manejo automático
+ * @param {Function} operations - Función async que contiene las operaciones
+ * @returns {Promise<any>} Resultado de las operaciones
+ */
+async function executeTransaction(operations) {
+    const txn = await beginTransaction();
+    
+    try {
+        // Ejecutar operaciones
+        const result = await operations(txn);
+        
+        // Confirmar si todo salió bien
+        await txn.commit();
+        return result;
+        
+    } catch (error) {
+        // Revertir en caso de error
+        await txn.rollback();
+        throw error;
+    }
+}
+
+/**
  * Cierra la conexión a la base de datos
  */
 async function close() {
@@ -208,6 +298,8 @@ module.exports = {
     connect,
     getPool,
     executeQuery,
+    beginTransaction,
+    executeTransaction,
     close,
     sql // Exportamos sql para usar tipos de datos
 };

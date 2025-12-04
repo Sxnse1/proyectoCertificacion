@@ -1,5 +1,6 @@
 const nodemailer = require('nodemailer');
-const fs = require('fs').promises;
+const hbs = require('hbs');
+const fs = require('fs');
 const path = require('path');
 
 class EmailService {
@@ -35,6 +36,36 @@ class EmailService {
   }
 
   /**
+   * 🎨 OPTIMIZACIÓN: Renderiza templates de email usando Handlebars
+   * @param {string} templateName - Nombre del template (sin .hbs)
+   * @param {Object} data - Datos para inyectar en el template
+   * @returns {Promise<string>} HTML renderizado
+   */
+  async renderEmailTemplate(templateName, data) {
+    try {
+      const templatePath = path.join(__dirname, '..', 'views', 'emails', `${templateName}.hbs`);
+      
+      // Verificar que el archivo existe
+      if (!fs.existsSync(templatePath)) {
+        throw new Error(`Template no encontrado: ${templatePath}`);
+      }
+      
+      // Leer el archivo del template
+      const templateSource = fs.readFileSync(templatePath, 'utf8');
+      
+      // Compilar el template con Handlebars
+      const template = hbs.compile(templateSource);
+      
+      // Renderizar con los datos
+      return template(data);
+      
+    } catch (error) {
+      console.error(`[EMAIL] ❌ Error renderizando template ${templateName}:`, error.message);
+      throw error;
+    }
+  }
+
+  /**
    * Envía email con contraseña temporal a nuevo usuario
    */
   async enviarPasswordTemporal(email, nombre, apellido, passwordTemporal) {
@@ -47,14 +78,23 @@ class EmailService {
 
       const nombreCompleto = `${nombre} ${apellido}`;
       
+      // 🎨 OPTIMIZACIÓN: Usar template Handlebars externo
+      const templateHtml = await this.renderEmailTemplate('password-temporal', {
+        nombreCompleto,
+        email,
+        passwordTemporal,
+        siteUrl: process.env.SITE_URL || 'http://localhost:3000',
+        currentYear: new Date().getFullYear()
+      });
+      
       const mailOptions = {
         from: {
           name: 'StartEducation - Plataforma de Cursos',
           address: process.env.SMTP_USER
         },
         to: email,
-        subject: '🔐 Bienvenido a StartEducation - Credenciales de Acceso',
-        html: this.generarTemplatePasswordTemporal(nombreCompleto, email, passwordTemporal)
+        subject: '🎨 Bienvenido a StartEducation - Tu contraseña temporal',
+        html: templateHtml
       };
 
       const info = await this.transporter.sendMail(mailOptions);
@@ -281,6 +321,15 @@ class EmailService {
 
       const nombreCompleto = `${nombre} ${apellido}`;
       
+      // 🎨 OPTIMIZACIÓN: Usar template Handlebars externo
+      const templateHtml = await this.renderEmailTemplate('cambio-password', {
+        nombreCompleto,
+        email,
+        timestamp: new Date().toLocaleString('es-MX'),
+        ip: 'IP no disponible', // Se puede pasar desde el controller
+        currentYear: new Date().getFullYear()
+      });
+      
       const mailOptions = {
         from: {
           name: 'StartEducation - Plataforma de Cursos',
@@ -288,17 +337,7 @@ class EmailService {
         },
         to: email,
         subject: '🔐 Contraseña actualizada exitosamente - StartEducation',
-        html: `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-          <h2 style="color: #333;">🎓 StartEducation</h2>
-          <h3>Contraseña actualizada</h3>
-          <p>Hola <strong>${nombreCompleto}</strong>,</p>
-          <p>Te confirmamos que tu contraseña ha sido actualizada exitosamente.</p>
-          <p>Si no realizaste este cambio, contacta inmediatamente al administrador del sistema.</p>
-          <hr>
-          <p style="color: #666; font-size: 12px;">Este email fue enviado automáticamente desde StartEducation.</p>
-        </div>
-        `
+        html: templateHtml
       };
 
       const info = await this.transporter.sendMail(mailOptions);
@@ -325,76 +364,22 @@ class EmailService {
 
       const nombreCompleto = `${nombre} ${apellido}`;
       
+      // 🎨 OPTIMIZACIÓN: Usar template Handlebars externo
+      const templateHtml = await this.renderEmailTemplate('recuperacion-password', {
+        nombreCompleto,
+        email,
+        resetUrl,
+        currentYear: new Date().getFullYear()
+      });
+      
       const mailOptions = {
         from: {
-          name: 'Plataforma de Barbería',
+          name: 'StartEducation - Plataforma de Cursos',
           address: process.env.SMTP_USER
         },
         to: email,
-        subject: '🔐 Recuperar tu contraseña - Plataforma de Barbería',
-        html: `
-        <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; background: #f8f9fa;">
-          <!-- Header -->
-          <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px 20px; text-align: center;">
-            <h1 style="margin: 0; font-size: 28px; font-weight: 700;">🔐 Recuperar Contraseña</h1>
-            <p style="margin: 10px 0 0 0; font-size: 16px; opacity: 0.9;">Plataforma de Barbería</p>
-          </div>
-          
-          <!-- Content -->
-          <div style="padding: 40px 30px; background: white;">
-            <h2 style="color: #2c3e50; font-size: 24px; margin-bottom: 20px;">¡Hola ${nombreCompleto}!</h2>
-            
-            <p style="color: #555; font-size: 16px; line-height: 1.6; margin-bottom: 25px;">
-              Recibimos una solicitud para restablecer la contraseña de tu cuenta. Si no fuiste tú quien hizo esta solicitud, puedes ignorar este email de forma segura.
-            </p>
-            
-            <p style="color: #555; font-size: 16px; line-height: 1.6; margin-bottom: 30px;">
-              Para crear una nueva contraseña, haz clic en el siguiente botón:
-            </p>
-            
-            <div style="text-align: center; margin: 35px 0;">
-              <a href="${resetUrl}" 
-                 style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
-                        color: white; 
-                        text-decoration: none; 
-                        padding: 15px 30px; 
-                        border-radius: 25px; 
-                        font-weight: 600; 
-                        font-size: 16px; 
-                        display: inline-block;
-                        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);">
-                🔗 Restablecer mi contraseña
-              </a>
-            </div>
-            
-            <div style="background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 8px; padding: 20px; margin: 30px 0;">
-              <h3 style="color: #856404; margin: 0 0 10px 0; font-size: 18px;">
-                ⚠️ Información importante:
-              </h3>
-              <ul style="color: #856404; margin: 0; padding-left: 20px;">
-                <li>Este enlace expirará en <strong>1 hora</strong></li>
-                <li>Solo puede ser usado una vez</li>
-                <li>Si no solicitaste este cambio, ignora este email</li>
-              </ul>
-            </div>
-            
-            <p style="color: #777; font-size: 14px; line-height: 1.5; margin-top: 30px;">
-              Si el botón no funciona, puedes copiar y pegar este enlace en tu navegador:<br>
-              <a href="${resetUrl}" style="color: #667eea; word-break: break-all;">${resetUrl}</a>
-            </p>
-          </div>
-          
-          <!-- Footer -->
-          <div style="background: #2c3e50; color: white; padding: 25px 30px; text-align: center;">
-            <p style="margin: 0; font-size: 14px; opacity: 0.8;">
-              © 2024 Plataforma de Barbería - Todos los derechos reservados
-            </p>
-            <p style="margin: 10px 0 0 0; font-size: 12px; opacity: 0.6;">
-              Este es un email automático, por favor no responder directamente.
-            </p>
-          </div>
-        </div>
-        `
+        subject: '🔐 Recuperar tu contraseña - StartEducation',
+        html: templateHtml
       };
 
       const info = await this.transporter.sendMail(mailOptions);
@@ -428,75 +413,23 @@ class EmailService {
         timeZone: 'America/Mexico_City'
       });
       
+      // 🎨 OPTIMIZACIÓN: Usar template Handlebars externo
+      const templateHtml = await this.renderEmailTemplate('confirmacion-cambio-password', {
+        nombreCompleto,
+        email,
+        timestamp: fechaActual,
+        ip: 'IP no disponible', // Se puede pasar desde el controller
+        currentYear: new Date().getFullYear()
+      });
+      
       const mailOptions = {
         from: {
-          name: 'Plataforma de Barbería',
+          name: 'StartEducation - Plataforma de Cursos',
           address: process.env.SMTP_USER
         },
         to: email,
-        subject: '✅ Contraseña cambiada exitosamente - Plataforma de Barbería',
-        html: `
-        <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; background: #f8f9fa;">
-          <!-- Header -->
-          <div style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%); color: white; padding: 30px 20px; text-align: center;">
-            <h1 style="margin: 0; font-size: 28px; font-weight: 700;">✅ Contraseña Actualizada</h1>
-            <p style="margin: 10px 0 0 0; font-size: 16px; opacity: 0.9;">Plataforma de Barbería</p>
-          </div>
-          
-          <!-- Content -->
-          <div style="padding: 40px 30px; background: white;">
-            <h2 style="color: #2c3e50; font-size: 24px; margin-bottom: 20px;">¡Hola ${nombreCompleto}!</h2>
-            
-            <p style="color: #555; font-size: 16px; line-height: 1.6; margin-bottom: 25px;">
-              Te confirmamos que tu contraseña ha sido cambiada exitosamente el día <strong>${fechaActual}</strong>.
-            </p>
-            
-            <div style="background: #d4edda; border: 1px solid #c3e6cb; border-radius: 8px; padding: 20px; margin: 30px 0; text-align: center;">
-              <h3 style="color: #155724; margin: 0 0 10px 0; font-size: 18px;">
-                🔐 Tu cuenta está segura
-              </h3>
-              <p style="color: #155724; margin: 0; font-size: 16px;">
-                Ya puedes iniciar sesión con tu nueva contraseña
-              </p>
-            </div>
-            
-            <div style="text-align: center; margin: 35px 0;">
-              <a href="${process.env.BASE_URL || 'http://localhost:3000'}/auth/login" 
-                 style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
-                        color: white; 
-                        text-decoration: none; 
-                        padding: 15px 30px; 
-                        border-radius: 25px; 
-                        font-weight: 600; 
-                        font-size: 16px; 
-                        display: inline-block;
-                        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);">
-                🚀 Iniciar Sesión
-              </a>
-            </div>
-            
-            <div style="background: #f8d7da; border: 1px solid #f5c6cb; border-radius: 8px; padding: 20px; margin: 30px 0;">
-              <h3 style="color: #721c24; margin: 0 0 10px 0; font-size: 18px;">
-                ⚠️ ¿No fuiste tú?
-              </h3>
-              <p style="color: #721c24; margin: 0; font-size: 14px; line-height: 1.5;">
-                Si no cambiaste tu contraseña, tu cuenta podría estar comprometida. 
-                Contacta inmediatamente a nuestro equipo de soporte.
-              </p>
-            </div>
-          </div>
-          
-          <!-- Footer -->
-          <div style="background: #2c3e50; color: white; padding: 25px 30px; text-align: center;">
-            <p style="margin: 0; font-size: 14px; opacity: 0.8;">
-              © 2024 Plataforma de Barbería - Todos los derechos reservados
-            </p>
-            <p style="margin: 10px 0 0 0; font-size: 12px; opacity: 0.6;">
-              Este es un email automático, por favor no responder directamente.
-            </p>
-          </div>
-        </div>
-        `
+        subject: '✅ Contraseña restablecida exitosamente - StartEducation',
+        html: templateHtml
       };
 
       const info = await this.transporter.sendMail(mailOptions);
