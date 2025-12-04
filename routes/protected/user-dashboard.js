@@ -71,7 +71,13 @@ router.get('/', async function(req, res, next) {
                 WHERE cc.id_curso = c.id_curso 
                   AND cc.id_usuario = @userId 
                   AND cc.estatus = 'activo'
-              ) THEN 1 ELSE 0 END as en_carrito
+              ) THEN 1 ELSE 0 END as en_carrito,
+              CASE WHEN EXISTS (
+                SELECT 1 FROM Favoritos f 
+                WHERE f.id_curso = c.id_curso 
+                  AND f.id_usuario = @userId 
+                  AND f.estatus IN ('activo', 'guardado', 'comprado')
+              ) THEN 1 ELSE 0 END as en_favoritos
             FROM RankedCursos c
             WHERE c.rn = 1 AND c.nivel IN ('básico', 'intermedio', 'avanzado');
           `, { userId: user.id });
@@ -79,7 +85,8 @@ router.get('/', async function(req, res, next) {
           if (cursosRecomendadosResult && cursosRecomendadosResult.recordset) {
             recomendaciones = cursosRecomendadosResult.recordset.map(curso => ({
               ...curso,
-              en_carrito: curso.en_carrito === 1
+              en_carrito: curso.en_carrito === 1,
+              en_favoritos: curso.en_favoritos === 1
             }));
             // Construimos la URL completa para cada miniatura
             recomendaciones.forEach(curso => {

@@ -24,7 +24,9 @@ router.get('/:cursoId', requireAuth, async function(req, res, next) {
         -- Verificar si tiene suscripción activa (EXISTS)
         CASE WHEN EXISTS(
             SELECT 1 FROM Suscripciones s2 
-            WHERE s2.id_usuario = @userId AND s2.estatus = 'activa' AND s2.fecha_vencimiento >= GETDATE()
+            WHERE s2.id_usuario = @userId 
+              AND s2.estatus = 'activa' 
+              AND s2.fecha_vencimiento > GETDATE()
         ) THEN 1 ELSE 0 END as tiene_suscripcion_activa,
         -- Contar módulos del curso
         (SELECT COUNT(*) FROM Modulos m WHERE m.id_curso = c.id_curso) as total_modulos,
@@ -44,7 +46,7 @@ router.get('/:cursoId', requireAuth, async function(req, res, next) {
 
     const cursoResult = await db.executeQuery(cursoQuery, { 
       cursoId: parseInt(cursoId),
-      userId: user.id_usuario
+      userId: user.id_usuario || user.id
     });
 
     if (!cursoResult.recordset || cursoResult.recordset.length === 0) {

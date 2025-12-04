@@ -56,10 +56,18 @@ class SuscripcionesManager {
             confirmButton.disabled = true;
 
             try {
+                // Obtener token CSRF
+                const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+                
                 const response = await fetch('/suscripciones/crear-preferencia-membresia', {
                     method: 'POST',
+                    credentials: 'same-origin',
                     headers: {
+                        'Accept': 'application/json',
                         'Content-Type': 'application/json',
+                        'csrf-token': csrfToken || '',
+                        'x-csrf-token': csrfToken || '',
+                        'x-xsrf-token': csrfToken || ''
                     },
                     body: JSON.stringify({
                         id_membresia: this.selectedMembershipId

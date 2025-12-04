@@ -81,7 +81,13 @@ router.get('/', async function(req, res, next) {
             WHERE cc.id_curso = c.id_curso 
               AND cc.id_usuario = @userId 
               AND cc.estatus = 'activo'
-          ) THEN 1 ELSE 0 END as en_carrito
+          ) THEN 1 ELSE 0 END as en_carrito,
+          CASE WHEN EXISTS (
+            SELECT 1 FROM Favoritos f 
+            WHERE f.id_curso = c.id_curso 
+              AND f.id_usuario = @userId 
+              AND f.estatus IN ('activo', 'guardado', 'comprado')
+          ) THEN 1 ELSE 0 END as en_favoritos
         FROM Cursos c
         INNER JOIN Usuarios u ON c.id_usuario = u.id_usuario
         INNER JOIN Categorias cat ON c.id_categoria = cat.id_categoria
@@ -97,7 +103,8 @@ router.get('/', async function(req, res, next) {
           precio_formato: curso.precio ? `$${curso.precio.toLocaleString('es-MX')} MXN` : 'Gratis',
           calificacion_promedio: Math.round(curso.calificacion_promedio * 10) / 10,
           fecha_creacion_formato: new Date(curso.fecha_creacion).toLocaleDateString('es-MX'),
-          en_carrito: curso.en_carrito === 1
+          en_carrito: curso.en_carrito === 1,
+          en_favoritos: curso.en_favoritos === 1
         }));
       }
 

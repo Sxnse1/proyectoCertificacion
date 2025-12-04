@@ -774,6 +774,16 @@
                                         </button>
                                         {{/if}}
                                     {{/unless}}
+                                    {{!-- Botón de favoritos: Siempre visible --}}
+                                    {{#if this.en_favoritos}}
+                                    <button class="btn btn-outline-danger btn-sm" disabled style="margin-left:8px;" title="Ya está en favoritos">
+                                        <i class="bi bi-heart-fill"></i> Favorito
+                                    </button>
+                                    {{else}}
+                                    <button class="btn btn-outline-danger btn-sm agregar-favorito-btn" data-curso-id="{{this.id_curso}}" style="margin-left:8px;">
+                                        <i class="bi bi-heart"></i> Favorito
+                                    </button>
+                                    {{/if}}
                                 </div>
                             </div>
                         </div>

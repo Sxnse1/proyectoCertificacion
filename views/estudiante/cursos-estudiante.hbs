@@ -701,6 +701,16 @@
                                     </button>
                                     {{/if}}
                                 {{/unless}}
+                                {{#if en_favoritos}}
+                                <button class="btn btn-outline-danger" disabled title="Ya está en favoritos">
+                                    <i class="bi bi-heart-fill"></i>
+                                </button>
+                                {{else}}
+                                <button class="btn btn-outline-danger" onclick="agregarAFavoritos({{id_curso}})"
+                                    title="Agregar a favoritos">
+                                    <i class="bi bi-heart"></i>
+                                </button>
+                                {{/if}}
                             </div>
                         </div>
                     </div>

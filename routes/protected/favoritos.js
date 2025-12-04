@@ -143,12 +143,17 @@ router.get('/', async function(req, res, next) {
 /**
  * POST /favoritos/agregar - Agregar curso a favoritos
  */
+/**
+ * POST /favoritos/agregar - Agregar curso a favoritos
+ * POST /favoritos/add - Alias para compatibilidad
+ */
 router.post('/agregar', async function(req, res, next) {
   try {
     const user = req.session.user;
-    const { cursoId } = req.body;
+    const { cursoId, id_curso } = req.body;
+    const finalCursoId = cursoId || id_curso;
 
-    if (!user || !cursoId) {
+    if (!user || !finalCursoId) {
       return res.status(400).json({ 
         success: false, 
         message: 'Datos incompletos' 
@@ -164,14 +169,15 @@ router.post('/agregar', async function(req, res, next) {
       });
     }
 
-    console.log('[FAVORITOS] ➕ Agregando curso a favoritos:', { userId: user.id, cursoId });
+    const userId = user.id_usuario || user.id;
+    console.log('[FAVORITOS] ➕ Agregando curso a favoritos:', { userId, cursoId: finalCursoId });
 
     // Verificar si el curso ya está en favoritos
     const existeResult = await db.executeQuery(`
       SELECT id_favorito, estatus 
       FROM Favoritos 
       WHERE id_usuario = @userId AND id_curso = @cursoId
-    `, { userId: user.id, cursoId: parseInt(cursoId) });
+    `, { userId, cursoId: parseInt(finalCursoId) });
 
     if (existeResult && existeResult.recordset && existeResult.recordset.length > 0) {
       const favoritoExistente = existeResult.recordset[0];
@@ -202,7 +208,7 @@ router.post('/agregar', async function(req, res, next) {
     await db.executeQuery(`
       INSERT INTO Favoritos (id_usuario, id_curso, fecha_agregado, estatus)
       VALUES (@userId, @cursoId, GETDATE(), 'activo')
-    `, { userId: user.id, cursoId: parseInt(cursoId) });
+    `, { userId, cursoId: parseInt(finalCursoId) });
 
     console.log('[FAVORITOS] ✅ Curso agregado a favoritos exitosamente');
     res.json({ 
@@ -218,6 +224,15 @@ router.post('/agregar', async function(req, res, next) {
       message: 'Error interno del servidor' 
     });
   }
+});
+
+// Alias para compatibilidad con el frontend
+router.post('/add', async function(req, res, next) {
+  // Reutilizar la misma lógica
+  return router.handle(Object.assign(req, { 
+    url: '/agregar',
+    originalUrl: req.originalUrl.replace('/add', '/agregar')
+  }), res, next);
 });
 
 /**

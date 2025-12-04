@@ -146,6 +146,70 @@ window.agregarAlCarritoLista = function(cursoId) {
     }
 };
 
+// Global function para agregar a favoritos
+window.agregarAFavoritos = async function(cursoId) {
+    const buttonElement = event.target.closest('button');
+    
+    try {
+        // Obtener token CSRF
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+        
+        console.log('[Favoritos] 💖 Agregando curso a favoritos:', cursoId);
+        
+        const response = await fetch('/favoritos/add', {
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'csrf-token': csrfToken || '',
+                'x-csrf-token': csrfToken || '',
+                'x-xsrf-token': csrfToken || ''
+            },
+            body: JSON.stringify({
+                id_curso: cursoId
+            })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            // Cambiar el botón a estado "agregado"
+            buttonElement.innerHTML = '<i class="bi bi-heart-fill"></i>';
+            buttonElement.classList.remove('btn-outline-danger');
+            buttonElement.classList.add('btn-outline-danger');
+            buttonElement.disabled = true;
+            buttonElement.title = 'Ya está en favoritos';
+
+            await Swal.fire({
+                icon: 'success',
+                title: '¡Agregado a Favoritos!',
+                text: 'El curso se ha agregado a tus favoritos exitosamente',
+                showConfirmButton: false,
+                timer: 1500,
+                timerProgressBar: true
+            });
+        } else {
+            await Swal.fire({
+                icon: 'info',
+                title: 'Ya en Favoritos',
+                text: data.message || 'Este curso ya está en tus favoritos',
+                confirmButtonText: 'Entendido',
+                confirmButtonColor: '#ea580c'
+            });
+        }
+    } catch (error) {
+        console.error('[Favoritos] ❌ Error:', error);
+        await Swal.fire({
+            icon: 'error',
+            title: 'Error de Conexión',
+            text: 'No se pudo conectar con el servidor. Intenta nuevamente.',
+            confirmButtonText: 'Entendido',
+            confirmButtonColor: '#ea580c'
+        });
+    }
+};
+
 // Initialize when DOM is ready
 document.addEventListener('DOMContentLoaded', function() {
     window.cursosEstudianteManager = new CursosEstudianteManager();

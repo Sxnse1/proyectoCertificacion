@@ -11,6 +11,7 @@ class UserDashboard {
     init() {
         this.setupWelcomeMessage();
         this.setupCartButtons();
+        this.setupFavoritosButtons();
         this.setupAnimations();
         this.setupHoverEffects();
         this.updateCartBadge();
@@ -54,51 +55,48 @@ class UserDashboard {
                         })
                     });
 
-                    // If server redirected to login it may return HTML; handle that gracefully
+                    // Manejar respuesta del servidor
                     const contentType = res.headers.get('content-type') || '';
+                    
+                    // Si es 401 Unauthorized, entonces sí es sesión expirada
+                    if (res.status === 401) {
+                        await Swal.fire({
+                            icon: 'warning',
+                            title: 'Sesión Expirada',
+                            text: 'Tu sesión ha expirado. Por favor, inicia sesión nuevamente.',
+                            confirmButtonText: 'Ir a Login',
+                            confirmButtonColor: '#ea580c'
+                        });
+                        window.location.href = '/auth/login?error=sesion_expirada';
+                        return;
+                    }
+                    
+                    // Para otros errores, intentar parsear JSON
                     if (!res.ok) {
-                        // For non-2xx responses try to parse JSON, otherwise show generic message
+                        let errorMessage = 'No se pudo agregar al carrito';
+                        
                         if (contentType.includes('application/json')) {
                             const errData = await res.json().catch(()=>null);
-                            await Swal.fire({
-                                icon: 'error',
-                                title: 'Error',
-                                text: errData?.message || 'No se pudo agregar al carrito',
-                                confirmButtonText: 'Entendido',
-                                confirmButtonColor: '#ea580c'
-                            });
-                        } else {
-                            // Probably a redirect to login (HTML)
-                            await Swal.fire({
-                                icon: 'warning',
-                                title: 'Sesión Expirada',
-                                text: 'Debes iniciar sesión para agregar cursos al carrito',
-                                confirmButtonText: 'Ir a Login',
-                                confirmButtonColor: '#ea580c'
-                            });
-                            window.location.href = '/auth/login?error=sesion_expirada';
+                            errorMessage = errData?.message || errorMessage;
                         }
+                        
+                        await Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: errorMessage,
+                            confirmButtonText: 'Entendido',
+                            confirmButtonColor: '#ea580c'
+                        });
+                        
                         btn.disabled = false;
                         btn.innerHTML = originalHtml;
                         return;
                     }
 
+                    // Respuesta exitosa - parsear JSON
                     let data = null;
                     if (contentType.includes('application/json')) {
                         data = await res.json().catch(()=>null);
-                    } else {
-                        // Not JSON (likely HTML redirect). Treat as failure requiring login.
-                        await Swal.fire({
-                            icon: 'warning',
-                            title: 'Sesión Expirada',
-                            text: 'Debes iniciar sesión para agregar cursos al carrito',
-                            confirmButtonText: 'Ir a Login',
-                            confirmButtonColor: '#ea580c'
-                        });
-                        window.location.href = '/auth/login?error=sesion_expirada';
-                        btn.disabled = false;
-                        btn.innerHTML = originalHtml;
-                        return;
                     }
 
                     if (data && data.success) {
@@ -130,6 +128,118 @@ class UserDashboard {
                     }
                 } catch (err) {
                     console.error(err);
+                    await Swal.fire({
+                        icon: 'error',
+                        title: 'Error de Conexión',
+                        text: 'No se pudo conectar con el servidor. Intenta nuevamente.',
+                        confirmButtonText: 'Entendido',
+                        confirmButtonColor: '#ea580c'
+                    });
+                    btn.disabled = false;
+                    btn.innerHTML = originalHtml;
+                }
+            });
+        });
+    }
+
+    // Handler para botones 'Agregar a favoritos'
+    setupFavoritosButtons() {
+        document.querySelectorAll('.agregar-favorito-btn').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+                const cursoId = btn.dataset.cursoId;
+                btn.disabled = true;
+                const originalHtml = btn.innerHTML;
+                btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Agregando...';
+
+                try {
+                    // Obtener token CSRF
+                    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+                    
+                    const res = await fetch('/favoritos/add', {
+                        method: 'POST',
+                        credentials: 'same-origin',
+                        headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json',
+                            'csrf-token': csrfToken || '',
+                            'x-csrf-token': csrfToken || '',
+                            'x-xsrf-token': csrfToken || ''
+                        },
+                        body: JSON.stringify({
+                            id_curso: cursoId
+                        })
+                    });
+
+                    const contentType = res.headers.get('content-type') || '';
+                    
+                    // Si es 401 Unauthorized, entonces sí es sesión expirada
+                    if (res.status === 401) {
+                        await Swal.fire({
+                            icon: 'warning',
+                            title: 'Sesión Expirada',
+                            text: 'Tu sesión ha expirado. Por favor, inicia sesión nuevamente.',
+                            confirmButtonText: 'Ir a Login',
+                            confirmButtonColor: '#ea580c'
+                        });
+                        window.location.href = '/auth/login?error=sesion_expirada';
+                        return;
+                    }
+                    
+                    // Para otros errores, intentar parsear JSON
+                    if (!res.ok) {
+                        let errorMessage = 'No se pudo agregar a favoritos';
+                        
+                        if (contentType.includes('application/json')) {
+                            const errData = await res.json().catch(()=>null);
+                            errorMessage = errData?.message || errorMessage;
+                        }
+                        
+                        await Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: errorMessage,
+                            confirmButtonText: 'Entendido',
+                            confirmButtonColor: '#ea580c'
+                        });
+                        
+                        btn.disabled = false;
+                        btn.innerHTML = originalHtml;
+                        return;
+                    }
+
+                    // Respuesta exitosa - parsear JSON
+                    let data = null;
+                    if (contentType.includes('application/json')) {
+                        data = await res.json().catch(()=>null);
+                    }
+
+                    if (data && data.success) {
+                        btn.innerHTML = '<i class="bi bi-heart-fill"></i> Favorito';
+                        btn.classList.remove('btn-outline-danger');
+                        btn.classList.add('btn-outline-danger');
+                        btn.title = 'Ya está en favoritos';
+                        
+                        await Swal.fire({
+                            icon: 'success',
+                            title: '¡Agregado a Favoritos!',
+                            text: 'El curso se ha agregado a tus favoritos exitosamente',
+                            showConfirmButton: false,
+                            timer: 1500,
+                            timerProgressBar: true
+                        });
+                    } else {
+                        await Swal.fire({
+                            icon: 'info',
+                            title: 'Ya en Favoritos',
+                            text: data?.message || 'Este curso ya está en tus favoritos',
+                            confirmButtonText: 'Entendido',
+                            confirmButtonColor: '#ea580c'
+                        });
+                        btn.disabled = false;
+                        btn.innerHTML = originalHtml;
+                    }
+                } catch (err) {
+                    console.error('[Favoritos] ❌ Error:', err);
                     await Swal.fire({
                         icon: 'error',
                         title: 'Error de Conexión',
